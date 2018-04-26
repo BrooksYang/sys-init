@@ -9,4 +9,8 @@
 |
 */
 
+//发币方账号初始化
 Route::resource('issuer/issurerInit', 'Issue\IssueController');
+
+//币种初始化
+Route::resource('issuer/currencyTypeInit', 'Issue\CurrencyTypeInitController');

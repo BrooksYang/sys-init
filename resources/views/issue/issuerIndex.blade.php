@@ -11,7 +11,7 @@
 
                     {{-- Add Button --}}
                     <div class="pull-right box-tools">
-                        <a href="{{ url('issuer/issurerInit ') }}">
+                        <a href="{{ url('issuer/issurerInit/create') }}">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>
                     </div>

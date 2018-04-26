@@ -18,7 +18,8 @@ class IssueController extends Controller
      */
     public function index(Request $request)
     {
-        if (trim($request->search,'')) {
+        $search = trim($request->search,'');
+        if ($search) {
             $issuers = DB::table('dcuex_issuer_account')
                 ->where('name_cn','like',"%$search%")
                 ->orwhere('name_en','like',"%$search%")
@@ -28,7 +29,7 @@ class IssueController extends Controller
                 ->paginate(PAGE_SIZE);
         }
 
-        return view('issue.index',['issuers' => $issuers]);
+        return view('issue.issuerIndex',['issuers' => $issuers]);
     }
 
     /**
@@ -38,7 +39,7 @@ class IssueController extends Controller
      */
     public function create()
     {
-        return view('issue.create',['editFlag' => false]);
+        return view('issue.issuerCreate',['editFlag' => false]);
     }
 
     /**
@@ -84,7 +85,7 @@ class IssueController extends Controller
                 ->where('id',$id)->first() ;
         }
 
-        return view('issue.create',[
+        return view('issue.issuerCreate',[
             'editFlag' => true,
             'issuer' => $issuer
         ]);
