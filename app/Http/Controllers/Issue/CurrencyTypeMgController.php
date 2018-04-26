@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Issue;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\IssueInitRequest;
 use Illuminate\Support\Facades\DB;
 
-const  PAGE_SIZE = 20;
+const PAGE_SIZE = 20;
+const CURRENCY_TYPE_TALBE = 'dcuex_coin_type';
 
-class IssueController extends Controller
+class CurrencyTypeMgController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,16 +20,15 @@ class IssueController extends Controller
     {
         $search = trim($request->search,'');
         if ($search) {
-            $issuers = DB::table('dcuex_issuer_account')
-                ->where('name_cn','like',"%$search%")
-                ->orwhere('name_en','like',"%$search%")
+            $currencyType = DB::table(CURRENCY_TYPE_TALBE)
+                ->where('name','like',"%$search%")
                 ->paginate(PAGE_SIZE);
         }else{
-            $issuers = \DB::table('dcuex_issuer_account')
+            $currencyType = \DB::table(CURRENCY_TYPE_TALBE)
                 ->paginate(PAGE_SIZE);
         }
 
-        return view('issue.issuerIndex',['issuers' => $issuers]);
+        return view('issue.currencyTypeIndex',['currencyType' => $currencyType]);
     }
 
     /**
@@ -39,7 +38,7 @@ class IssueController extends Controller
      */
     public function create()
     {
-        return view('issue.issuerCreate',['editFlag' => false]);
+        return view('issue.currencyTypeCreate');
     }
 
     /**
@@ -48,15 +47,14 @@ class IssueController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(IssueInitRequest $request)
+    public function store(Request $request)
     {
-        $issuer = $request->except(['_token','repeat_pwd','edit_flag']);
-        $issuer['password'] = bcrypt($issuer['password']);
-        $issuer['created_at'] = gmdate('Y-m-d H:i:s',time());
+        $currencyType = $request->except(['_token','edit_flag']);
+        $currencyType['created_at'] = gmdate('Y-m-d H:i:s',time());
 
-        if (\DB::table('dcuex_issuer_account')->insert($issuer)) {
+        if (DB::table(CURRENCY_TYPE_TALBE)->insert($currencyType)) {
 
-            return redirect('issuer/issurerInit');
+            return redirect('issuer/currencyTypeMg');
         }
     }
 
@@ -79,15 +77,15 @@ class IssueController extends Controller
      */
     public function edit($id)
     {
-       $issuer = [];
+        $currencyType = [];
         if ($id) {
-            $issuer = DB::table('dcuex_issuer_account')
+            $currencyType = DB::table(CURRENCY_TYPE_TALBE)
                 ->where('id',$id)->first() ;
         }
 
-        return view('issue.issuerCreate',[
+        return view('issue.currencyTypeCreate',[
             'editFlag' => true,
-            'issuer' => $issuer
+            'currencyType' => $currencyType
         ]);
     }
 
@@ -100,21 +98,17 @@ class IssueController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $updateIssue = $request->except(['_token', '_method']);
-        $query = DB::table('dcuex_issuer_account')->where('id',$id);
+        $updateCurrencyType = $request->except(['_token', '_method']);
+        $query = DB::table(CURRENCY_TYPE_TALBE)->where('id',$id);
         if($query->first()){
             $query->update([
-                'name_cn' => $updateIssue['name_cn'],
-                'name_en' => $updateIssue['name_en'],
-                'abbr_en' => $updateIssue['abbr_en'],
-                'addr' => $updateIssue['addr'],
-                'phone' => $updateIssue['phone'],
-                'intro' => $updateIssue['intro'],
+                'name' => $updateCurrencyType['name'],
+                'intro' => $updateCurrencyType['intro'],
                 'updated_at' => gmdate('Y-m-d H:i:s',time()),
             ]);
         }
 
-        return redirect('issuer/issurerInit');
+        return redirect('issuer/currencyTypeMg');
     }
 
     /**
@@ -125,7 +119,7 @@ class IssueController extends Controller
      */
     public function destroy($id)
     {
-        if (DB::table('dcuex_issuer_account')->where('id', $id)->delete()) {
+        if (DB::table(CURRENCY_TYPE_TALBE)->where('id', $id)->delete()) {
 
             return response()->json([]);
         }

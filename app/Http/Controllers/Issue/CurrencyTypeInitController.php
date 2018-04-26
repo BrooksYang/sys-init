@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Issue;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class CurrencyTypeInitController extends Controller
 {
@@ -24,7 +25,7 @@ class CurrencyTypeInitController extends Controller
      */
     public function create()
     {
-        //
+        return view('issue.currencyCreate');
     }
 
     /**

@@ -11,14 +11,14 @@
 
                     {{-- Add Button --}}
                     <div class="pull-right box-tools">
-                        <a href="{{ url('issuer/issurerInit/create') }}">
+                        <a href="{{ url('issuer/currencyTypeMg/create') }}">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>
                     </div>
 
                     {{-- Title --}}
                     <h3 class="box-title"><i class="fontello-doc"></i>
-                        <span>系统发币方列表</span>
+                        <span>系统币种类型列表</span>
                     </h3>
                 </div>
 
@@ -28,25 +28,16 @@
                         <table class="table table-hover table-striped">
                             <tr>
                                 <th>序号</th>
-                                <th>中文全称</th>
-                                <th>英文全称</th>
-                                <th>英文简称</th>
-                                <th>账号</th>
-                                <th>地址</th>
-                                <th>联系电话</th>
-                                <th>简介</th>
+                                <th>币种类型名称</th>
+                                <th>描述</th>
                                 <th>创建时间</th>
+                                <th>修改时间</th>
                                 <th>操作</th>
                             </tr>
-                            @foreach($issuers as $key => $item)
+                            @foreach($currencyType as $key => $item)
                                 <tr>
-                                    <td>{{ ($key + 1) + ($issuers->currentPage() - 1) * $issuers->perPage() }}</td>
-                                    <td title="{{ $item->name_cn }}"><strong>{{ str_limit($item->name_cn,15) }}</strong></td>
-                                    <td>{{ $item->name_en }}</td>
-                                    <td> <span class="label label-success">{{ $item->abbr_en }}</span></td>
-                                    <td>{{ $item->issuer }}</td>
-                                    <td title="{{ $item->addr }}">{{ str_limit($item->addr,15) }}</td>
-                                    <td>{{ $item->phone }}</td>
+                                    <td>{{ ($key + 1) + ($currencyType->currentPage() - 1) * $currencyType->perPage() }}</td>
+                                    <td title="{{ $item->name }}"><strong>{{ str_limit($item->name,25) }}</strong></td>
                                     <td>
                                      <!-- Button trigger modal -->
                                         <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLong{{$key}}">
@@ -57,7 +48,7 @@
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLongTitle{{$key}}">{{$item->name_cn}}</h5>
+                                                        <h5 class="modal-title" id="exampleModalLongTitle{{$key}}">{{str_limit($item->name,25)}}</h5>
                                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
@@ -74,12 +65,13 @@
                                         </div>
                                     </td>
                                     <td>{{ $item->created_at }}</td>
+                                    <td>{{ $item->updated_at ?? '--' }}</td>
                                     <td>
-                                        <a href="{{ url("issuer/issurerInit/$item->id/edit") }}">
+                                        <a href="{{ url("issuer/currencyTypeMg/$item->id/edit") }}">
                                             <i class="fontello-edit" title="编辑"></i>
                                         </a>
                                         <a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
-                                                '{{ url("issuer/issurerInit/$item->id") }}',
+                                                '{{ url("issuer/currencyTypeMg/$item->id") }}',
                                                 '{{ csrf_token() }}');">
                                             <i class="fontello-trash-2" title="删除"></i>
                                         </a>
@@ -92,7 +84,7 @@
                         <div class="row">
                             <div class="col-xs-12">
                                 <div class="pull-right">
-                                    {{ $issuers->appends(Request::except('page'))->links() }}
+                                    {{ $currencyType->appends(Request::except('page'))->links() }}
                                 </div>
                             </div>
                         </div>
