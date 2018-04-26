@@ -11,10 +11,6 @@
 
                     {{-- Add Button --}}
                     <div class="pull-right box-tools">
-                        <div class="input-group">
-                            <div class="input-group-addon">@</div>
-                            <input class="form-control" type="email" placeholder="Enter email">
-                        </div>
                         <a href="{{ url('issuer/issurerInit ') }}">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>
