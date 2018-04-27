@@ -146,7 +146,14 @@
     {{-- custom Js--}}
     <script src="{{ asset('vendor/entrance/js/custom.js') }}"></script>
 
-
+    <script>
+        $(function () {
+            //        搜索框
+            $('#search-span').click(function () {
+                $('#search_input').toggleClass('searchHideInput')
+            })
+        })
+    </script>
     <script>
     //Weather Icons
     (function($) {

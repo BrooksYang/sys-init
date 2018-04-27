@@ -778,3 +778,26 @@ message
     width: 30%;
     margin: 30px auto 0 auto;
 }
+/*搜索框样式*/
+.width-0 {
+    height: 28px;
+    width: 0;
+    display: none;
+    border-radius: 0;
+    border-top: 0!important;
+    border-left: 0!important;
+    border-right: 0!important;
+    padding-left: 0.3rem;
+    transition: width 2s;
+    -moz-transition: width 2s;	/* Firefox 4 */
+    -webkit-transition: width 2s;	/* Safari 和 Chrome */
+    -o-transition: width 2s;	/* Opera */
+}
+.searchHideInput {
+    width: 150px;
+    display: inline-block;
+    padding: 6px 0.75rem;
+}
+.in-block{
+    display: inline-block;
+}
