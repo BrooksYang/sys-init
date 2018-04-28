@@ -27,7 +27,7 @@ class CurrencyInitRequest extends FormRequest
         return [
             'currency_title_cn' =>[
                 'required',
-                'unique:dcuex_crypto_currency,currency_title_cn,'.$request->get('currencyTypeInit'),
+                'unique:dcuex_crypto_currency,currency_title_cn,'.$request->currencyTypeInit,
                 'regex:/^[\x7f-\xff]+$/'
             ] ,
             'currency_title_en' =>[
@@ -36,13 +36,13 @@ class CurrencyInitRequest extends FormRequest
             ] ,
             'currency_title_en_abbr' => [
                 'required',
-                'unique:dcuex_crypto_currency,currency_title_en_abbr,'.$request->get('currencyTypeInit'),
+                'unique:dcuex_crypto_currency,currency_title_en_abbr,'.$request->currencyTypeInit,
                 'regex:/^[a-zA-Z]+$/'    //允许英文字符
             ],
             'currency_type_id' => 'required|min:1',
             'currency_issue_date' => 'required|date',
             'currency_issue_amount' => 'required|numeric',
-            'currency_issue_circulation' => 'required|numeric|max:'.$request->get('currency_issue_amount'),
+            'currency_issue_circulation' => 'required|numeric|max:'.$request->currency_issue_amount,
             'currency_issuer_website' => 'required|url',
             'white_paper_url' => 'required|url',
             'block_chain_record_url' => 'required|url',
