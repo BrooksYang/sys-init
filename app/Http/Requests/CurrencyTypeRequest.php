@@ -26,7 +26,7 @@ class CurrencyTypeRequest extends FormRequest
     {
         return [
             'name' =>[
-                'required|unique:dcuex_currency_type,title,'.$request->get('currencyTypeMg'),
+                'required|unique:dcuex_currency_type,title,'.$request->currencyTypeMg,
                 'alpha_dash',
             ]
         ];

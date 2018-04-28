@@ -18,7 +18,7 @@
 
                     {{-- Title --}}
                     <h3 class="box-title"><i class="fontello-doc"></i>
-                        <span>系统发币方列表</span>
+                        <span>系统发行机构合约列表</span>
                     </h3>
                 </div>
 

@@ -26,7 +26,7 @@ class IssueInitRequest extends FormRequest
     public function rules(Request $request)
     {
         //TODO 重置账户和密码
-        $issuerAccountRule = 'required|unique:dcuex_issuer_account,issuer_account,'.$request->get('issurerInit');
+        $issuerAccountRule = 'required|unique:dcuex_issuer_account,issuer_account,'.$request->issurerInit;
         $password = 'required|alpha_dash';
         $repeatPwd = 'required|same:password';
 
