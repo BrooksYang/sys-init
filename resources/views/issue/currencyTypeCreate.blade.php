@@ -16,23 +16,27 @@
                     <form class="form form-horizontal" role="form" method="POST" action="{{ @$editFlag ? url("issuer/currencyTypeMg/$currencyType->id") : url('issuer/currencyTypeMg') }}">
                         {{ csrf_field() }}
                         {{ @$editFlag ? method_field('PATCH') : '' }}
+                        <input type="hidden" name="editFlag" value="{{ @$editFlag }}">
 
                         {{-- Name --}}
-                        <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
+                        <div class="form-group {{ $errors->has('title') ? 'has-error' : '' }}">
                             <div class="col-sm-12">
-                                <input class="form-control input-lg" type="text" name="name" value="{{ $currencyType->name ?? old('name') }}"
+                                <label>币种类型名称</label>
+                                <input class="form-control input-lg" type="text" name="title" value="{{ $currencyType->title ?? old('title') }}"
                                        placeholder="币种类型名称">
-                                @if ($errors->has('name'))
-                                    <span class="help-block"><strong>{{ $errors->first('name') }}</strong></span>
+                                @if ($errors->has('title'))
+                                    <span class="help-block"><strong>{{ $errors->first('title') }}</strong></span>
                                 @endif
                             </div>
                         </div>
 
                         {{-- Description --}}
+
                         <div class="form-group {{ $errors->has('intro') ? 'has-error' : '' }}">
                             <div class="col-sm-12">
+                                <label>币种类型描述</label>
                                 <textarea class="form-control" name="intro" rows="5"
-                                          placeholder="币种描述">{{ $currencyType->intro ?? old('intro') }}</textarea>
+                                          placeholder="币种类型描述">{{ $currencyType->intro ?? old('intro') }}</textarea>
                                 @if ($errors->has('intro'))
                                     <span class="help-block"><strong>{{ $errors->first('intro') }}</strong></span>
                                 @endif

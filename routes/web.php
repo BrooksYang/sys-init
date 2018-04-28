@@ -14,3 +14,6 @@
 Route::get('/', function () {
     return redirect('demo');
 });
+
+//代币 icon显示路由
+Route::get('currencyIcon/{filename}','Binary\PublicController@currencyIcon');

@@ -34,46 +34,21 @@
                                 <th>账号</th>
                                 <th>地址</th>
                                 <th>联系电话</th>
-                                <th>简介</th>
                                 <th>创建时间</th>
+                                {{--<th>修改时间</th>--}}
                                 <th>操作</th>
                             </tr>
-                            @foreach($issuers as $key => $item)
+                            @forelse($issuers as $key => $item)
                                 <tr>
                                     <td>{{ ($key + 1) + ($issuers->currentPage() - 1) * $issuers->perPage() }}</td>
-                                    <td title="{{ $item->name_cn }}"><strong>{{ str_limit($item->name_cn,15) }}</strong></td>
-                                    <td>{{ $item->name_en }}</td>
-                                    <td> <span class="label label-success">{{ $item->abbr_en }}</span></td>
-                                    <td>{{ $item->issuer }}</td>
-                                    <td title="{{ $item->addr }}">{{ str_limit($item->addr,15) }}</td>
-                                    <td>{{ $item->phone }}</td>
-                                    <td>
-                                     <!-- Button trigger modal -->
-                                        <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLong{{$key}}">
-                                            查看
-                                        </a>
-                                        <!-- Modal -->
-                                        <div class="modal fade" id="exampleModalLong{{$key}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle{{$key}}" aria-hidden="true">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLongTitle{{$key}}">{{$item->name_cn}}</h5>
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        {{$item->intro}}
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
+                                    <td title="{{ $item->issuer_title_cn }}"><strong>{{ str_limit($item->issuer_title_cn,15) }}</strong></td>
+                                    <td title="{{$item->issuer_title_en}}">{{ str_limit($item->issuer_title_en,15) }}</td>
+                                    <td> <span class="label label-success">{{ $item->issuer_title_en_abbr }}</span></td>
+                                    <td title="{{$item->issuer_account}}">{{ str_limit($item->issuer_account,15) }}</td>
+                                    <td title="{{ $item->issuer_address }}">{{ str_limit($item->issuer_address,15) }}</td>
+                                    <td>{{ $item->issuer_phone }}</td>
                                     <td>{{ $item->created_at }}</td>
+                                   {{-- <td>{{ $item->updated_at ? $item->updated_at: '--'  }}</td>--}}
                                     <td>
                                         <a href="{{ url("issuer/issurerInit/$item->id/edit") }}">
                                             <i class="fontello-edit" title="编辑"></i>
@@ -85,7 +60,9 @@
                                         </a>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <span class="text-center">暂无数据</span>
+                            @endforelse
                         </table>
 
                         {{-- Paginaton --}}

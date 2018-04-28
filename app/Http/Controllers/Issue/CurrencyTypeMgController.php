@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Issue;
 
+use App\Http\Requests\CurrencyTypeRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
-const PAGE_SIZE = 20;
-const CURRENCY_TYPE_TALBE = 'dcuex_coin_type';
+const CURRENCY_TYPE_PAGE_SIZE  = 20;
 
 class CurrencyTypeMgController extends Controller
 {
@@ -20,12 +20,12 @@ class CurrencyTypeMgController extends Controller
     {
         $search = trim($request->search,'');
         if ($search) {
-            $currencyType = DB::table(CURRENCY_TYPE_TALBE)
-                ->where('name','like',"%$search%")
-                ->paginate(PAGE_SIZE);
+            $currencyType = DB::table('dcuex_currency_type')
+                ->where('title','like',"%$search%")
+                ->paginate(CURRENCY_TYPE_PAGE_SIZE );
         }else{
-            $currencyType = \DB::table(CURRENCY_TYPE_TALBE)
-                ->paginate(PAGE_SIZE);
+            $currencyType = \DB::table('dcuex_currency_type')
+                ->paginate(CURRENCY_TYPE_PAGE_SIZE );
         }
 
         return view('issue.currencyTypeIndex',['currencyType' => $currencyType]);
@@ -47,12 +47,12 @@ class CurrencyTypeMgController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CurrencyTypeRequest $request)
     {
         $currencyType = $request->except(['_token','edit_flag']);
         $currencyType['created_at'] = gmdate('Y-m-d H:i:s',time());
 
-        if (DB::table(CURRENCY_TYPE_TALBE)->insert($currencyType)) {
+        if (DB::table('dcuex_currency_type')->insert($currencyType)) {
 
             return redirect('issuer/currencyTypeMg');
         }
@@ -79,7 +79,7 @@ class CurrencyTypeMgController extends Controller
     {
         $currencyType = [];
         if ($id) {
-            $currencyType = DB::table(CURRENCY_TYPE_TALBE)
+            $currencyType = DB::table('dcuex_currency_type')
                 ->where('id',$id)->first() ;
         }
 
@@ -96,13 +96,13 @@ class CurrencyTypeMgController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CurrencyTypeRequest $request, $id)
     {
-        $updateCurrencyType = $request->except(['_token', '_method']);
-        $query = DB::table(CURRENCY_TYPE_TALBE)->where('id',$id);
+        $updateCurrencyType = $request->except(['_token', '_method', 'editFlag']);
+        $query = DB::table('dcuex_currency_type')->where('id',$id);
         if($query->first()){
             $query->update([
-                'name' => $updateCurrencyType['name'],
+                'title' => $updateCurrencyType['title'],
                 'intro' => $updateCurrencyType['intro'],
                 'updated_at' => gmdate('Y-m-d H:i:s',time()),
             ]);
@@ -119,7 +119,7 @@ class CurrencyTypeMgController extends Controller
      */
     public function destroy($id)
     {
-        if (DB::table(CURRENCY_TYPE_TALBE)->where('id', $id)->delete()) {
+        if (DB::table('dcuex_currency_type')->where('id', $id)->delete()) {
 
             return response()->json([]);
         }

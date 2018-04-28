@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\IssueInitRequest;
 use Illuminate\Support\Facades\DB;
 
-const  PAGE_SIZE = 20;
+const  ISSUER_PAGE_SIZE = 20;
 
 class IssueController extends Controller
 {
@@ -21,12 +21,12 @@ class IssueController extends Controller
         $search = trim($request->search,'');
         if ($search) {
             $issuers = DB::table('dcuex_issuer_account')
-                ->where('name_cn','like',"%$search%")
-                ->orwhere('name_en','like',"%$search%")
-                ->paginate(PAGE_SIZE);
+                ->where('issuer_title_cn','like',"%$search%")
+                ->orwhere('issuer_title_en','like',"%$search%")
+                ->paginate(ISSUER_PAGE_SIZE);
         }else{
             $issuers = \DB::table('dcuex_issuer_account')
-                ->paginate(PAGE_SIZE);
+                ->paginate(ISSUER_PAGE_SIZE);
         }
 
         return view('issue.issuerIndex',['issuers' => $issuers]);
@@ -39,7 +39,7 @@ class IssueController extends Controller
      */
     public function create()
     {
-        return view('issue.issuerCreate',['editFlag' => false]);
+        return view('issue.issuerCreate',['editFlag' => false,'issuerAccountEditFlag'=>true]);
     }
 
     /**
@@ -50,7 +50,7 @@ class IssueController extends Controller
      */
     public function store(IssueInitRequest $request)
     {
-        $issuer = $request->except(['_token','repeat_pwd','edit_flag']);
+        $issuer = $request->except(['_token','repeat_pwd','editFlag', 'issuerAccountEditFlag']);
         $issuer['password'] = bcrypt($issuer['password']);
         $issuer['created_at'] = gmdate('Y-m-d H:i:s',time());
 
@@ -87,6 +87,7 @@ class IssueController extends Controller
 
         return view('issue.issuerCreate',[
             'editFlag' => true,
+            'issuerAccountEditFlag' => false,
             'issuer' => $issuer
         ]);
     }
@@ -98,20 +99,13 @@ class IssueController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(IssueInitRequest $request, $id)
     {
-        $updateIssue = $request->except(['_token', '_method']);
-        $query = DB::table('dcuex_issuer_account')->where('id',$id);
+        $updateIssue = $request->except(['_token', '_method','editFlag', 'issuerAccountEditFlag']);
+        $updateIssue['updated_at'] = gmdate('Y-m-d H:i:s',time());
+        $query = DB::table('dcuex_issuer_account')->where('id',$id);;
         if($query->first()){
-            $query->update([
-                'name_cn' => $updateIssue['name_cn'],
-                'name_en' => $updateIssue['name_en'],
-                'abbr_en' => $updateIssue['abbr_en'],
-                'addr' => $updateIssue['addr'],
-                'phone' => $updateIssue['phone'],
-                'intro' => $updateIssue['intro'],
-                'updated_at' => gmdate('Y-m-d H:i:s',time()),
-            ]);
+            $query->update($updateIssue);
         }
 
         return redirect('issuer/issurerInit');

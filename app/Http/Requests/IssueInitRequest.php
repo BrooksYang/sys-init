@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 class IssueInitRequest extends FormRequest
 {
@@ -21,29 +23,38 @@ class IssueInitRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(Request $request)
     {
+        //TODO 重置账户和密码
+        $issuerAccountRule = 'required|unique:dcuex_issuer_account,issuer_account,'.$request->get('issurerInit');
+        $password = 'required|alpha_dash';
+        $repeatPwd = 'required|same:password';
+
+        if ($request->editFlag) {
+            $issuerAccountRule = $password = $repeatPwd = 'nullable';
+        }
+
         return [
-            'name_cn' =>[
+            'issuer_title_cn' =>[
                 'required',
-                'unique:dcuex_issuer_account,name_cn',
+                'unique:dcuex_issuer_account,issuer_title_cn,'.$request->issurerInit,
                 'regex:/^[\x7f-\xff]+$/'
             ] ,
-            'name_en' =>[
+            'issuer_title_en' =>[
                 'required',
+                'unique:dcuex_issuer_account,issuer_title_en,'.$request->issurerInit,
                 'regex:/^[a-z\sA-Z]+$/'   //允许英文字符和空格
             ] ,
-            'abbr_en' => [
+            'issuer_title_en_abbr' => [
                 'required',
-                'unique:dcuex_issuer_account,abbr_en',
-                'regex:/^[a-zA-Z]+$/'    //允许英文字符
+                'unique:dcuex_issuer_account,issuer_title_en_abbr,'.$request->issurerInit,
             ],
             //账户信息暂不编辑
-            'issuer' => 'required_with:edit_flag|email|unique:dcuex_issuer_account,issuer',
-            'password' => 'required_with:edit_flag|required|alpha_dash',
-            'repeat_pwd' => 'required_with:edit_flag|same:password',
-            'addr' => 'required',
-            'phone' => 'required|phone',
+            'issuer_account' => $issuerAccountRule,
+            'password' => $password,
+            'repeat_pwd' => $repeatPwd,
+            'issuer_address' => 'required',
+            'issuer_phone' => 'required|phone',
         ];
     }
 }
