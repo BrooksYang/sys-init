@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 class CurrencyTypeRequest extends FormRequest
 {
@@ -21,11 +22,11 @@ class CurrencyTypeRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(Request $request)
     {
         return [
             'name' =>[
-                'required',
+                'required|unique:dcuex_currency_type,title,'.$request->currencyTypeMg,
                 'alpha_dash',
             ]
         ];
