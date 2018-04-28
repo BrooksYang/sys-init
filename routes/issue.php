@@ -21,9 +21,8 @@ Route::group(['middleware' => ['web']], function()
     //币种类型管理
     Route::resource('issuer/currencyTypeMg', 'Issue\CurrencyTypeMgController');
 
-   /* Route::resource('backup', 'BackupController', ['only' => [
-        'index', 'store' ,'destroy'
-    ]]);*/
+    //用户代币交易合约
+    Route::resource('issuer/userCurrencyContract','Issue\CurrencyContractToUserController');
 });
 
 

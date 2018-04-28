@@ -11,7 +11,7 @@
 
                     {{-- Add Button --}}
                     <div class="pull-right box-tools">
-                        <a href="{{ url('issuer/issurerInit/create') }}">
+                        <a href="{{ url('issuer/currencyTypeInit/create') }}">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>
                     </div>

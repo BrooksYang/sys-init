@@ -54,7 +54,7 @@ class CurrencyTypeInitController extends Controller
      */
     public function store(CurrencyInitRequest $request)
     {
-        $currencyIcon = $request->except(['_token','edit_flag']);
+        $currencyIcon = $request->except(['_token','editFlag']);
         $currencyIcon['currency_icon'] = basename($request->currency_icon->store('currencyIcon','public'));
         $currencyIcon['created_at'] = gmdate('Y-m-d H:i:s',time());
 
@@ -111,7 +111,6 @@ class CurrencyTypeInitController extends Controller
      */
     public function update(CurrencyInitRequest $request, $id)
     {
-        dump($request->all(),$id);
         $currency = $request->except(['_token','_method','editFlag']);
         $query = DB::table('dcuex_crypto_currency')->where('id',$id);
         $currency['updated_at'] = gmdate('Y-m-d H:i:s',time());

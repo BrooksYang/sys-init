@@ -16,7 +16,7 @@
                 <div class="box-header">
                     {{-- Title --}}
                     <h3 class="box-title">
-                        <span>{{ @$editFlag ? '编辑币种' : '初始化币种' }}</span>
+                        <span>{{ @$editFlag ? '编辑发行机构合约' : '添加发行机构合约' }}</span>
                     </h3>
                 </div>
 
@@ -203,7 +203,7 @@
                         {{-- Description --}}
                         <div class="form-group {{ $errors->has('currency_intro') ? 'has-error' : '' }}">
                             <div class="col-sm-12">
-                                <label>简介</label>
+                                <label>合约简介</label>
                                 <textarea class="form-control" name="currency_intro" rows="5"
                                           placeholder="简介">{{ $currency->currency_intro ?? old('currency_intro') }}</textarea>
                                 @if ($errors->has('currency_intro'))
