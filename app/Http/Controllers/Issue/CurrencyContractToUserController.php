@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\DB;
 
 const USER_CURRENCY_CONTRACT_PAGE_SIZE  = 20;
 
+/**
+ * Class CurrencyContractToUserController
+ * @package App\Http\Controllers\Issue
+ * 代币交易用户合约
+ */
 class CurrencyContractToUserController extends Controller
 {
     /**

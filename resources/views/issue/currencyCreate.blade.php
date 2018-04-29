@@ -79,7 +79,7 @@
                                      style="display: {{ (old('type') || @$permission->group_id) ? 'none' : 'block' }}">
                                     <div class="col-sm-12">
                                         <select class="form-control" name="currency_type_id">
-                                            <option value=0>请选择币种类型</option>
+                                            <option value="">请选择币种类型</option>
                                             @foreach($currencyType as $key => $item)
                                                 <option value="{{ $item->id }}" {{ (@$currency->currency_type_id == $item->id|| old('currency_type_id') == $item->id) ? 'selected' : '' }}>
                                                     {{ $item->title }}

@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\DB;
 
 const CURRENCY_TYPE_PAGE_SIZE  = 20;
 
+/**
+ * Class CurrencyTypeMgController
+ * @package App\Http\Controllers\Issue
+ * 系统代币类型管理
+ */
 class CurrencyTypeMgController extends Controller
 {
     /**
@@ -49,7 +54,7 @@ class CurrencyTypeMgController extends Controller
      */
     public function store(CurrencyTypeRequest $request)
     {
-        $currencyType = $request->except(['_token','edit_flag']);
+        $currencyType = $request->except(['_token','editFlag']);
         $currencyType['created_at'] = gmdate('Y-m-d H:i:s',time());
 
         if (DB::table('dcuex_currency_type')->insert($currencyType)) {

@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\DB;
 
 const CURRENCY_PAGE_SIZE = 20;
 
+/**
+ * Class CurrencyTypeInitController
+ * @package App\Http\Controllers\Issue
+ * 系统币种管理
+ */
 class CurrencyTypeInitController extends Controller
 {
     /**

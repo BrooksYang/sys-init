@@ -5,15 +5,13 @@
 | Issue Routes
 |--------------------------------------------------------------------------
 |
-| 机构发币路由
+| 币种及交易合约路由
 |
 */
 
 
 Route::group(['middleware' => ['web']], function()
 {
-    //发币方账号初始化
-    Route::resource('issuer/issurerInit', 'Issue\IssueController');
 
     //币种初始化
     Route::resource('issuer/currencyTypeInit', 'Issue\CurrencyTypeInitController');
