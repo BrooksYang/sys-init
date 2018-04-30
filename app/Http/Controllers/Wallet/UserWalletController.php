@@ -1,21 +1,20 @@
 <?php
 
-namespace App\Http\Controllers\CryptoWallet;
+namespace App\Http\Controllers\Wallet;
 
-use App\Http\Requests\UserCryptoWalletReequest;
+use App\Http\Requests\UserWalletRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
-const USER_CRYPTO_WALLET_PAGE_SIZE = 20;
+const USER_WALLET_PAGE_SIZE = 20;
 
 /**
- * Class UserCryptoWalletController
- * @package App\Http\Controllers\CryptoWallet
- * 交易用户数字钱包
+ * Class UserWalletController
+ * @package App\Http\Controllers\Wallet
+ * 交易用户记账钱包
  */
-
-class UserCryptoWalletController extends Controller
+class UserWalletController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -25,17 +24,18 @@ class UserCryptoWalletController extends Controller
     public function index(Request $request)
     {
         $search = trim($request->search,'');
-        $userCryptoWallet = DB::table('dcuex_user_crypto_wallet as u_wallet')
+        $userWallet = DB::table('dcuex_user_wallet as u_wallet')
             ->join('users as u','u_wallet.user_id','u.id')
-            ->join('dcuex_crypto_currency as currency','u_wallet.crypto_wallet_currency_id','currency.id')
+            ->join('dcuex_crypto_currency as currency','u_wallet.user_wallet_currency_id','currency.id')
             ->when($search, function ($query) use ($search){
-                return $query->where('u_wallet.crypto_wallet_title','like',"%$search%")
+                return $query->where('currency.currency_title_cn','like',"%$search%")
+                    ->orwhere('currency.currency_title_en_abbr','like',"%$search%")
                     ->orwhere('u.username', 'like', "%$search%");
             })
             ->select('u_wallet.*', 'u.username', 'u.email','currency.currency_title_cn','currency.currency_title_en_abbr')
-            ->paginate(USER_CRYPTO_WALLET_PAGE_SIZE );;
+            ->paginate(USER_WALLET_PAGE_SIZE );;
 
-        return view('cryptoWallet.userCryptoWalletIndex',['userCryptoWallet' => $userCryptoWallet]);
+        return view('wallet.userWalletIndex',['userWallet' => $userWallet]);
     }
 
     /**
@@ -45,7 +45,7 @@ class UserCryptoWalletController extends Controller
      */
     public function create()
     {
-
+       //
     }
 
     /**
@@ -54,15 +54,14 @@ class UserCryptoWalletController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(UserCryptoWalletReequest $request)
+    public function store(UserWalletRequest $request)
     {
-        $userCryptoWallet = $request->except(['_token','editFlag']);
-        if (!empty($userCryptoWallet)) {
-            $userCryptoWallet['created_at'] = gmdate('Y-m-d H:i:s',time());
-            DB::table('dcuex_user_crypto_wallet')->insert($userCryptoWallet);
+        $userWallet = $request->except(['_token','editFlag']);
+        if (!empty($userWallet)) {
+            DB::table('dcuex_user_crypto_wallet')->insert($userWallet);
         }
 
-            return redirect('user/cryptoWallet');
+        return redirect('user/wallet');
     }
 
     /**
@@ -86,16 +85,16 @@ class UserCryptoWalletController extends Controller
     {
         //获取币种信息
         $currency = DB::table('dcuex_crypto_currency')->get(['id', 'currency_title_cn', 'currency_title_en_abbr']);
-        //获取用户数字钱包信息
-        $userCryptoWallet = DB::table('dcuex_user_crypto_wallet as u_wallet')
+        //获取用户记账钱包信息
+        $userWallet = DB::table('dcuex_user_wallet as u_wallet')
             ->join('users as u','u_wallet.user_id','u.id')
             ->where('u_wallet.id',$id)
             ->select('u_wallet.*', 'u.username', 'u.email')
             ->first();
 
-        return view('cryptoWallet.userCryptoWalletCreate', [
+        return view('wallet.userWalletCreate', [
             'currency' => $currency,
-            'userCryptoWallet' => $userCryptoWallet,
+            'userWallet' => $userWallet,
             'editFlag'=>true
         ]);
     }
@@ -107,16 +106,15 @@ class UserCryptoWalletController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UserCryptoWalletReequest $request, $id)
+    public function update(UserWalletRequest $request, $id)
     {
-        $userCryptoWallet = $request->except(['_token', '_method', 'editFlag']);
-        $userCryptoWallet['updated_at'] = gmdate('Y-m-d H:i:s',time());
-        $query = DB::table('dcuex_user_crypto_wallet')->where('id',$id);
-        if(!empty($userCryptoWallet) && $query->first() ){
-            $query->update($userCryptoWallet);
+        $userWallet = $request->except(['_token', '_method', 'editFlag']);
+        $query = DB::table('dcuex_user_wallet')->where('id',$id);
+        if(!empty($userWallet) && $query->first()){
+            $query->update($userWallet);
         }
 
-        return redirect('user/cryptoWallet');
+        return redirect('user/wallet');
     }
 
     /**
@@ -127,9 +125,9 @@ class UserCryptoWalletController extends Controller
      */
     public function destroy($id)
     {
-        return response()->json(['code' => 100050 ,'error' => '不能删除交易用户数字钱包']);
+        return response()->json(['code' => 100060 ,'error' => '不能删除交易用户记账钱包']);
 
-        /*if (DB::table('dcuex_user_crypto_wallet')->where('id', $id)->delete()) {
+        /*if (DB::table('dcuex_user_wallet')->where('id', $id)->delete()) {
 
             return response()->json([]);
         }*/
