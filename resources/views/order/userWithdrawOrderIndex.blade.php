@@ -11,7 +11,7 @@
 
                     {{-- Filter and Add Button --}}
                     <div class="pull-right box-tools">
-                        {{--<a href="{{ url('order/userDeposit/create') }}">
+                        {{--<a href="{{ url('order/withdraw/create') }}">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>--}}
                         <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="筛选订单">
@@ -20,7 +20,7 @@
                         <ul role="menu" class="dropdown-menu">
                         @foreach($orderStatus as $key=>$item)
                             <li>
-                                <a href="{{ url('order/userDeposit') }}?filter={{$key}}">{{$item['name']}}
+                                <a href="{{ url('order/withdraw') }}?filter={{$key}}">{{$item['name']}}
                                 {!!  Request::get('filter') == $key ? '&nbsp;<i class="fa fa-check txt-info"></i>' :
                                 $key ==1 && ! Request::get('filter') ? '&nbsp;<i class="fa fa-check txt-info"></i>' :'' !!}
                                 </a>
@@ -31,7 +31,7 @@
 
                     {{-- Title --}}
                     <h3 class="box-title"><i class="fontello-doc"></i>
-                        <span>用户充值待审核订单列表</span>
+                        <span>用户提币订单待受理列表</span>
                     </h3>
                 </div>
 
@@ -44,56 +44,24 @@
                                 <th>用户名</th>
                                 <th>电话</th>
                                 <th>币种</th>
-                                <th>充值余额</th>
-                                <th>交易号</th>
-                                <th title="运营方数字钱包">钱包名称</th>
-                                <th>凭证</th>
+                                <th>提币金额</th>
+                                <th title="收币钱包ID">收币钱包</th>
                                 <th>状态</th>
                                 <th>操作</th>
                             </tr>
-                            @forelse($userDepositOrder as $key => $item)
+                            @forelse($userWithdrawOrder as $key => $item)
                                 <tr>
-                                    <td>{{ ($key + 1) + ($userDepositOrder->currentPage() - 1) * $userDepositOrder->perPage() }}</td>
+                                    <td>{{ ($key + 1) + ($userWithdrawOrder->currentPage() - 1) * $userWithdrawOrder->perPage() }}</td>
                                     <td title="{{ $item->username }}"><strong>{{ str_limit($item->username,15) }}</strong></td>
                                     <td title="{{$item->phone}}">{{ $item->phone }}</td>
                                     <td title="{{$item->currency_title_cn.' ('.$item->currency_title_en_abbr.')'}}">
                                         <span class="label label-success">{{ str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',15) }}</span>
                                     </td>
-                                    <td title="{{number_format($item->deposit_amount,8,'.',',')}}">{{ number_format($item->deposit_amount,8,'.',',') }}</td>
-                                    <td title="{{$item->deposit_trade_id}}">{{ $item->deposit_trade_id }}</td>
-                                    <td title="{{ $item->sys_crypto_wallet_title }}"><strong>{{ str_limit($item->sys_crypto_wallet_title,15) }}</strong></td>
+                                    <td title="{{number_format($item->withdraw_amount,8,'.',',') }}">{{ number_format($item->withdraw_amount,8,'.',',') }}</td>
+                                    <td title="{{ $item->crypto_wallet_title }}"><strong>{{ str_limit($item->crypto_wallet_title,15) }}</strong></td>
                                     <td>
-                                        <!-- Button trigger modal -->
-                                        <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLong{{$key}}">
-                                            查看
-                                        </a>
-                                        <!-- Modal -->
-                                        <div class="modal fade" id="exampleModalLong{{$key}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle{{$key}}" aria-hidden="true" width="auto">
-                                            <div class="modal-dialog" role="document" width="auto">
-                                                <div class="modal-content" width="auto">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLongTitle{{$key}}">{!!  '<i class="fontello-user-1"></i>'.$item->username.'&nbsp;&nbsp;<i class="fontello-phone"></i>'.$item->phone.'&nbsp;&nbsp;<i class="fa fa-shopping-cart"></i>&nbsp;'.$item->deposit_trade_id !!}</h5>
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        {{--凭证开放路由--}}
-                                                        <img id="preview" src="{{url('')}}/{{ $item->deposit_proof_img }}" style="width:570px"
-                                                             onerror="this.src='http://placehold.it/570x420'"/>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <span class="label label-{{ $orderStatus[$item->withdraw_order_status]['class'] }}">{{ $orderStatus[$item->withdraw_order_status]['name'] }}</span>
                                     </td>
-                                    <td>
-                                        <span class="label label-{{ $orderStatus[$item->deposit_order_status]['class'] }}">{{ $orderStatus[$item->deposit_order_status]['name'] }}</span>
-                                    </td>
-
                                     <td>
                                         <a data-toggle="dropdown" class="dropdown-toggle" type="button">
                                             <span class="box-btn"><i class="fa fa-exchange" title="修改订单状态"></i></span>
@@ -102,10 +70,10 @@
                                         <ul role="menu" class="dropdown-menu">
                                             @foreach($orderStatus as $flag=>$status)
                                                 <li>
-                                                    @if($item->deposit_order_status != $flag)
+                                                    @if($item->withdraw_order_status != $flag)
                                                     <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
-                                                            '{{ url("order/userDeposit/$item->id") }}','deposit_order_status',{{$flag}},
-                                                            '充值订单为<b><strong> {{$status['name']}} </strong></b> 状态',
+                                                            '{{ url("order/withdraw/$item->id") }}?status={{$flag}}','withdraw_order_status',{{$flag}},
+                                                            '提币订单为<b><strong> {{$status['name']}} </strong></b> 状态',
                                                             '{{ csrf_token() }}');">
                                                     {{$status['name']}}</a>
                                                     @endif
@@ -113,7 +81,7 @@
                                             @endforeach
                                         </ul>
                                         <a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
-                                                '{{ url("order/userDeposit/$item->id") }}',
+                                                '{{ url("order/withdraw/$item->id") }}',
                                                 '{{ csrf_token() }}');">
                                             <i class="fontello-trash-2" title="删除"></i>
                                         </a>
@@ -128,7 +96,7 @@
                         <div class="row">
                             <div class="col-xs-12">
                                 <div class="pull-right">
-                                    {{ $userDepositOrder->appends(Request::except('page'))->links() }}
+                                    {{ $userWithdrawOrder->appends(Request::except('page'))->links() }}
                                 </div>
                             </div>
                         </div>
