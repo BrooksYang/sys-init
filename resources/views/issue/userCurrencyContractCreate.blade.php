@@ -1,13 +1,31 @@
 @extends('entrance::layouts.default')
 
-@section('css-import')
-    {{--<link rel="stylesheet" href="{{ url('/vendor/entrance/js/datepicker/bootstrap-datetimepicker.min.css') }}">--}}
-@show
+@section('css-part')
+    <link rel="stylesheet" href="{{ asset('vendor/entrance/js/select2/css/select2.min.css') }}">
+    <style>
+        .select2-selection.select2-selection--multiple, .select2-container--default.select2-container--focus .select2-selection--multiple{
+            border-top: 0;
+            border-left: 0;
+            border-right: 0;
+            border-radius: 0;
+            border-color: rgba(0,0,0,.12);
+        }
+        .select2-container .select2-search--inline .select2-search__field{
+            padding-top: 7px;
+            padding-bottom: 7px;
+        }
+        .text-messages {
+            left: 0;
+            top: 100%;
+        }
+        .text-input-danger, .text-input-danger:focus {
+            border: 1px solid #ff5b5b !important;
+            box-shadow: none;
+        }
+    </style>
+@endsection
 
 
-@section('js-import')
-   {{-- <script src="{{ url('/vendor/entrance/js/datepicker/bootstrap-datetimepicker.js') }}"></script>--}}
-@show
 
 @section('content')
     <div class="row">
@@ -50,6 +68,20 @@
                             </div>
                         </div>
 
+                        {{--选择币种交易对--}}
+                        <div class="col-md-12">
+                            <label>选择交易对</label>
+                            <div class="form-group {{ $errors->has('symbol') ? 'has-error' : '' }}">
+                                <select  class="form-control js-example-basic-multiple" id="symbol" multiple name='symbol[]' required>
+                                    @foreach(config('app.symbol') as $flag => $symbol)
+                                    <option>{{ $symbol }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @if ($errors->has('symbol'))
+                                <span class="help-block" style="color: #a94442"><strong>{{ $errors->first('symbol') }}</strong></span>
+                            @endif
+                        </div>
 
                         <div class="row">
                             {{-- 每日提币上限 --}}
@@ -170,6 +202,19 @@
 @endsection
 
 @section('js-part')
+    <script type="text/javascript" src="{{ asset('/vendor/entrance/js/select2/js/select2.full.min.js') }}"></script>
     <script>
+        $(function () {
+            //select2 初始化
+            $(".js-example-basic-multiple").select2({
+                placeholder: "请选择选择交易对",
+            });
+            //交易对有值--绑定默认默认值
+            var symbolStr = '{{ $symbolStr }}';
+            if(symbolStr != ''){
+                var symbolStr = symbolStr.split(',');
+                $('#symbol').select2().val(symbolStr).trigger('change');
+            }
+        })
     </script>
 @endsection

@@ -67,7 +67,7 @@
                                             <span class="box-btn"><i class="fa fa-exchange" title="修改订单状态"></i></span>
                                         </a>
                                         {{--TODO 订单下拉状态样式调整--}}
-                                        <ul role="menu" class="dropdown-menu">
+                                        <ul role="menu" class="dropdown-menu pull-right">
                                             @foreach($orderStatus as $flag=>$status)
                                                 <li>
                                                     @if($item->withdraw_order_status != $flag)

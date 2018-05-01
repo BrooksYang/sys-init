@@ -35,6 +35,7 @@
                                 <th>最小充值金额</th>
                                 <th>每日卖出限额</th>
                                 <th>提醒信息</th>
+                                <th>交易对</th>
                                 <th>创建时间</th>
                                 <th>操作</th>
                             </tr>
@@ -66,6 +67,37 @@
                                                         <span><b>充值提醒信息：</b></span>{{ $item->user_deposit_warning }}
                                                         <p></p>
                                                         <span><b>提币提醒信息：</b></span>{{ $item->user_withdraw_warning }}
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <!-- Button trigger modal -->
+                                        <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLong{{$key+1}}">
+                                            交易对
+                                        </a>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="exampleModalLong{{$key+1}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle{{$key+1}}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLongTitle{{$key+1}}">合约交易对信息</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        @foreach($symbolByCurrency[$item->currency_id] as $currency => $symbol)
+                                                            <span class="label label-success">{{ $symbol }}</span>&nbsp;&nbsp;&nbsp;
+                                                            @if($loop->index >= 3)
+                                                                <br/>
+                                                            @endif
+                                                        @endforeach
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
