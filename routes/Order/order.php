@@ -11,7 +11,7 @@
 
 use Illuminate\Http\Request;
 
-Route::group(['middleware' => ['web']], function()
+Route::group(['middleware' => ['web', 'auth:admin']], function()
 {
     //用户充值订单
     Route::resource('order/userDeposit', 'Order\UserDepositOrderController');

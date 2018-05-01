@@ -10,7 +10,7 @@
 */
 
 
-Route::group(['middleware' => ['web']], function()
+Route::group(['middleware' => ['web', 'auth:admin']], function()
 {
     //交易用户数字钱包
     Route::resource('user/cryptoWallet', 'CryptoWallet\UserCryptoWalletController');

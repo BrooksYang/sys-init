@@ -34,6 +34,7 @@
                                 <th>提币手续费率</th>
                                 <th>最小充值金额</th>
                                 <th>每日卖出限额</th>
+                                <th>提醒信息</th>
                                 <th>创建时间</th>
                                 <th>操作</th>
                             </tr>
@@ -41,11 +42,39 @@
                                 <tr>
                                     <td>{{ ($key + 1) + ($userCurrencyContract->currentPage() - 1) * $userCurrencyContract->perPage() }}</td>
                                     <td title="{!! $item->currency_title_cn.'&nbsp;&nbsp;('.$item->currency_title_en_abbr.')' !!}"><strong>{!! str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',15)  !!} </strong></td>
-                                    <td>{{ $item->user_withdraw_daily_amount_limit }}</td>
+                                    <td>{{ number_format($item->user_withdraw_daily_amount_limit, 8,'.',',')}}</td>
                                     <td>{{ $item->user_withdraw_daily_count_limit }}</td>
                                     <td>{{ $item->user_withdraw_fee_rate }}</td>
-                                    <td>{{ $item->user_deposit_minimum_amount }}</td>
-                                    <td>{{ $item->user_sell_daily_limit }}</td>
+                                    <td>{{ number_format($item->user_deposit_minimum_amount, 8,'.',',')}}</td>
+                                    <td>{{ number_format($item->user_sell_daily_limit, 8,'.',',')}}</td>
+                                    <td>
+                                        <!-- Button trigger modal -->
+                                        <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLong{{$key}}">
+                                            查看
+                                        </a>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="exampleModalLong{{$key}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle{{$key}}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLongTitle{{$key}}">用户充值/提币提醒信息</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <span><b>充值提醒信息：</b></span>{{ $item->user_deposit_warning }}
+                                                        <p></p>
+                                                        <span><b>提币提醒信息：</b></span>{{ $item->user_withdraw_warning }}
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
                                     <td>{{ $item->created_at }}</td>
                                     <td>
                                         <a href="{{ url("issuer/userCurrencyContract/$item->id/edit") }}">

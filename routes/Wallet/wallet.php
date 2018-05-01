@@ -10,7 +10,7 @@
 */
 
 
-Route::group(['middleware' => ['web']], function()
+Route::group(['middleware' => ['web', 'auth:admin']], function()
 {
     //交易用户记账钱包
     Route::resource('user/wallet', 'Wallet\UserWalletController');

@@ -10,7 +10,7 @@
 */
 
 
-Route::group(['middleware' => ['web']], function()
+Route::group(['middleware' => ['web', 'auth:admin']], function()
 {
 
     //币种初始化

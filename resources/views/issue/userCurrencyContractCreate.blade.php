@@ -126,6 +126,35 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            {{--充值提醒信息--}}
+                            <div class="col-md-6">
+                                <label>充值提醒信息</label>
+                                <div class="form-group {{ $errors->has('user_deposit_warning') ? 'has-error' : '' }}">
+                                    <div class="col-sm-12">
+                                        <textarea class="form-control" name="user_deposit_warning" rows="5"
+                                                  placeholder="充值提醒信息">{{ $userCurrencyContract->user_deposit_warning ?? old('user_deposit_warning') }}</textarea>
+                                        @if ($errors->has('user_deposit_warning'))
+                                            <span class="help-block"><strong>{{ $errors->first('user_deposit_warning') }}</strong></span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{--提币提醒信息--}}
+                            <div class="col-md-6">
+                                <label>提币提醒信息</label>
+                                <div class="form-group {{ $errors->has('user_withdraw_warning') ? 'has-error' : '' }}">
+                                    <div class="col-sm-12">
+                                        <textarea class="form-control" name="user_withdraw_warning" rows="5"
+                                                  placeholder="提币提醒信息">{{ $userCurrencyContract->user_withdraw_warning ?? old('user_withdraw_warning') }}</textarea>
+                                        @if ($errors->has('user_withdraw_warning'))
+                                            <span class="help-block"><strong>{{ $errors->first('user_withdraw_warning') }}</strong></span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
                         {{-- Buttons --}}
                         <div class="form-group">
                             <div class="col-sm-12">

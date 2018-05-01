@@ -139,9 +139,10 @@ class CurrencyTypeInitController extends Controller
      */
     public function destroy($id)
     {
-        if (DB::table('dcuex_crypto_currency')->where('id', $id)->delete()) {
+        return response()->json(['code' => 100020 ,'error' => '不能删除系统交易币种']);
+        /*if (DB::table('dcuex_crypto_currency')->where('id', $id)->delete()) {
 
             return response()->json([]);
-        }
+        }*/
     }
 }

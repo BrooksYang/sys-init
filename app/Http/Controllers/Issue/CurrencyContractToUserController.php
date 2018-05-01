@@ -132,9 +132,10 @@ class CurrencyContractToUserController extends Controller
      */
     public function destroy($id)
     {
-        if (DB::table('dcuex_user_currency_contract')->where('id', $id)->delete()) {
+        return response()->json(['code' => 100010 ,'error' => '不能删除交易用户合约']);
+        /*if (DB::table('dcuex_user_currency_contract')->where('id', $id)->delete()) {
 
             return response()->json([]);
-        }
+        }*/
     }
 }
