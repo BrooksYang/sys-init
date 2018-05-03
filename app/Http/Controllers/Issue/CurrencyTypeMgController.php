@@ -104,13 +104,10 @@ class CurrencyTypeMgController extends Controller
     public function update(CurrencyTypeRequest $request, $id)
     {
         $updateCurrencyType = $request->except(['_token', '_method', 'editFlag']);
+        $updateCurrencyType['updated_at'] = gmdate('Y-m-d H:i:s',time());
         $query = DB::table('dcuex_currency_type')->where('id',$id);
         if($query->first()){
-            $query->update([
-                'title' => $updateCurrencyType['title'],
-                'intro' => $updateCurrencyType['intro'],
-                'updated_at' => gmdate('Y-m-d H:i:s',time()),
-            ]);
+            $query->update($updateCurrencyType);
         }
 
         return redirect('issuer/currencyTypeMg');
@@ -124,6 +121,11 @@ class CurrencyTypeMgController extends Controller
      */
     public function destroy($id)
     {
+        //该类型是否已被引用
+        if (DB::table('dcuex_crypto_currency')->where('currency_type_id',$id)->first()) {
+
+            return response()->json(['code' => 100030 ,'error' => '该类型已被代币使用暂不能删除']);
+        }
         if (DB::table('dcuex_currency_type')->where('id', $id)->delete()) {
 
             return response()->json([]);

@@ -60,6 +60,7 @@ class RouteServiceProvider extends ServiceProvider
             require base_path('routes/CryptoWallet/cryptoWallet.php');
             require base_path('routes/Wallet/wallet.php');
             require base_path('routes/Order/order.php');
+            require base_path('routes/Cms/announcement.php');
         });
     }
 

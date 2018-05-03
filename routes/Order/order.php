@@ -9,7 +9,6 @@
 |
 */
 
-use Illuminate\Http\Request;
 
 Route::group(['middleware' => ['web', 'auth:admin']], function()
 {
