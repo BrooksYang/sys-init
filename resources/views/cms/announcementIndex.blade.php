@@ -50,7 +50,8 @@
                                 <th>摘要</th>
                                 <th>状态</th>
                                 <th>创建人</th>
-                                <th>创建时间</th>
+                                <th>创建时间 &nbsp;&nbsp;<a href="{{ url('cms/announcement')}}?orderC=desc"><i class="fa fa-sort-amount-desc" title="降序"></i></a> &nbsp;<a
+                                            href="{{ url('cms/announcement') }}?orderC=asc"><i class="fa fa-sort-amount-asc" title="升序"></i></a></th>
                                 <th>操作</th>
                             </tr>
                             @forelse($announcement as $key => $item)
