@@ -30,7 +30,7 @@
         <ul class="nav navbar-nav navbar-right">
             <li>
                 <a data-toggle="dropdown" class="dropdown-toggle text-white" href="#">
-                    <img alt="" class="admin-pic img-circle" src="{{ url('assets/images/avatar.png') }}">
+                    <img alt="" class="admin-pic img-circle" src="{{ url('vendor/entrance/img/admin.jpg') }}">
                     Hi, {{ Entrance::user()->name }} <b class="caret"></b>
                 </a>
                 <ul style="margin:25px 15px 0 0;" role="menu" class="dropdown-setting dropdown-menu bg-amber">
