@@ -53,7 +53,7 @@ class CurrencyContractToUserController extends Controller
         $currency = DB::table('dcuex_crypto_currency')
             ->get(['id','currency_title_cn', 'currency_title_en','currency_title_en_abbr']);
 
-        return view('issue.userCurrencyContractCreate',['currency' => $currency, 'symbol' =>'']);
+        return view('issue.userCurrencyContractCreate',['currency' => $currency, 'symbolStr' =>'']);
     }
 
     /**
