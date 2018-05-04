@@ -64,14 +64,14 @@ class CurrencyContractToUserController extends Controller
      */
     public function store(CurrencyContractToUserRequeset $request)
     {
-        $currencyContract = $request->except(['_token', 'symbol', 'editFlag']);
+        $currencyContract = $request->except(['_token', 'symbol', 'quote_currency', 'editFlag']);
         $currencyContract['created_at'] = gmdate('Y-m-d H:i:s',time());
 
         //获取并处理交易对
-        $symbol = $this->sortOutSymbol($request->symbol, $request->currency_id);
+        $symbol = $this->sortOutSymbol($request->symbol, $request->currency_id, $request->quote_currency);
 
         DB::transaction(function () use ($symbol, $currencyContract) {
-            DB::table('dcuex_currency_support_symbol')->insert($symbol);
+            DB::table('dcuex_currency_symbol')->insert($symbol);
             DB::table('dcuex_user_currency_contract')->insert($currencyContract);
         });
 
@@ -114,7 +114,7 @@ class CurrencyContractToUserController extends Controller
             'userCurrencyContract' => $userCurrencyContract,
             'currency' => $currency,
             'symbol' => $symbol,
-            'symbolStr' => implode(',',array_pluck($symbol->toArray(), 'symbol')),
+            'symbolStr' => implode(',',array_pluck($symbol->toArray(), 'quote_currency')),
         ]);
     }
 
@@ -127,17 +127,17 @@ class CurrencyContractToUserController extends Controller
      */
     public function update(CurrencyContractToUserRequeset $request, $id)
     {
-        $userCurrencyContract = $request->except(['_token','_method','symbol','editFlag']);
+        $userCurrencyContract = $request->except(['_token','_method','symbol','quote_currency','editFlag']);
         $currencyId = $request->currency_id;
         $query = DB::table('dcuex_user_currency_contract')->where('id',$id);
         $userCurrencyContract['updated_at'] = gmdate('Y-m-d H:i:s',time());
 
         //获取并处理交易对信息
-        $symbol = $this->sortOutSymbol($request->symbol, $currencyId);
+        $symbol = $this->sortOutSymbol($request->symbol, $currencyId,$request->quote_currency);
 
         DB::transaction(function () use ($query, $userCurrencyContract, $currencyId, $symbol) {
             $query->update($userCurrencyContract);
-            $querySymbol = DB::table('dcuex_currency_support_symbol');
+            $querySymbol = DB::table('dcuex_currency_symbol');
             $querySymbol->where('currency_id', $currencyId)->delete();
             $querySymbol->insert($symbol);
         });
@@ -170,9 +170,9 @@ class CurrencyContractToUserController extends Controller
      */
     public function getSymbol($currencyId, $sortOUt='')
     {
-        return DB::table('dcuex_currency_support_symbol')
+        return DB::table('dcuex_currency_symbol')
             ->where('currency_id', $currencyId)
-            ->get(['symbol']);
+            ->get(['quote_currency']);
     }
 
     /**
@@ -180,13 +180,19 @@ class CurrencyContractToUserController extends Controller
      *
      * @param $requestSymbol
      * @param $currencyId
+     * @param $quoteCurrency
      * @return array
      */
-    public function sortOutSymbol($requestSymbol, $currencyId)
+    public function sortOutSymbol($requestSymbol, $currencyId, $quoteCurrency)
     {
         $symbol = [];
+        $quoteCurrency = strtolower($quoteCurrency);
         foreach ($requestSymbol as $key => $symbolItem) {
-            $symbol[] = ['currency_id'=>$currencyId, 'symbol'=>$symbolItem];
+            $symbol[] = [
+                'currency_id'=>$currencyId,
+                'quote_currency'=>$symbolItem, //计价币种
+                'symbol'=>$quoteCurrency.$symbolItem  //交易对
+            ];
         }
 
         return $symbol;
@@ -199,7 +205,7 @@ class CurrencyContractToUserController extends Controller
      */
     public function symbolByCrrency()
     {
-        $currencySymbol = DB::table('dcuex_currency_support_symbol')->get(['currency_id', 'symbol']);
+        $currencySymbol = DB::table('dcuex_currency_symbol')->get(['currency_id', 'symbol']);
         $sortOutSymbol = [];
         foreach ($currencySymbol as $key => $symbol){
             $sortOutSymbol[$symbol->currency_id][] = $symbol->symbol;

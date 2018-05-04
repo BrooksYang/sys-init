@@ -55,7 +55,7 @@
                                         <select class="form-control" name="currency_id" required>
                                             <option value="">请选择代币</option>
                                             @foreach($currency as $key => $item)
-                                                <option value="{{ $item->id }}" {{ (@$userCurrencyContract->currency_id == $item->id|| old('currency_id') == $item->id) ? 'selected' : '' }}>
+                                                <option value="{{ $item->id }}"  data-quote-currency="{{$item->currency_title_en_abbr}}" {{ (@$userCurrencyContract->currency_id == $item->id || old('currency_id') == $item->id) ? 'selected' : '' }}>
                                                     {!! $item->currency_title_cn.'&nbsp;&nbsp;('.$item->currency_title_en_abbr.')' !!}
                                                 </option>
                                             @endforeach
@@ -63,24 +63,29 @@
                                         @if ($errors->has('currency_id'))
                                             <span class="help-block"><strong>{{ $errors->first('currency_id') }}</strong></span>
                                         @endif
+                                        <input type="hidden" value="" id="quote_currency" name="quote_currency">
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         {{--选择币种交易对--}}
-                        <div class="col-md-12">
-                            <label>选择交易对</label>
-                            <div class="form-group {{ $errors->has('symbol') ? 'has-error' : '' }}">
-                                <select  class="form-control js-example-basic-multiple" id="symbol" multiple name='symbol[]' required>
-                                    @foreach(config('app.symbol') as $flag => $symbol)
-                                    <option>{{ $symbol }}</option>
-                                    @endforeach
-                                </select>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>选择交易对</label>
+                                <div class="form-group {{ $errors->has('quote_currency') ? 'has-error' : '' }}">
+                                    <div class="col-sm-12">
+                                        <select  class="form-control js-example-basic-multiple" id="symbol" multiple name='symbol[]' required>
+                                            @foreach(config('app.symbol') as $flag => $symbol)
+                                            <option>{{ $symbol }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                @if ($errors->has('quote_currency'))
+                                    <span class="help-block" style="color: #a94442"><strong>{{ $errors->first('quote_currency') }}</strong></span>
+                                @endif
                             </div>
-                            @if ($errors->has('symbol'))
-                                <span class="help-block" style="color: #a94442"><strong>{{ $errors->first('symbol') }}</strong></span>
-                            @endif
                         </div>
 
                         <div class="row">
@@ -209,12 +214,32 @@
             $(".js-example-basic-multiple").select2({
                 placeholder: "请选择选择交易对",
             });
-            //交易对有值--绑定默认默认值
+
+            //select-2 交易对有值--绑定默认默认值
             var symbolStr = '{{ $symbolStr }}';
             if(symbolStr != ''){
                 var symbolStr = symbolStr.split(',');
                 $('#symbol').select2().val(symbolStr).trigger('change');
             }
+
+            //获取被选币种的计价币种信息
+            currency = $("select[name='currency_id']");
+            dataQuoteCurrency = currency.find("option:selected").attr("data-quote-currency");
+
+            //获取并初始化计价币种信息
+            $('#quote_currency').val(dataQuoteCurrency);
+
+            //可选交易对信息中排除自有币种
+            $('#symbol option').each(function () {
+                if(dataQuoteCurrency.toLowerCase() == $(this).text()){
+                    $(this).remove();
+                }
+            });
+
+            //监听币种的 onchange 事件并同步更新计价币种信息
+            currency.change(function () {
+                $('#quote_currency').val($(this).find("option:selected").attr("data-quote-currency"));
+            });
         })
     </script>
 @endsection
