@@ -8,7 +8,11 @@ use Illuminate\Support\Facades\DB;
 
 const  USER_LIST_SIZE = 20;
 
-
+/**
+ * Class UserController
+ * @package App\Http\Controllers\User
+ * 交易用户管理
+ */
 class UserController extends Controller
 {
     /**
