@@ -43,6 +43,9 @@
     @section('css-part')
         <style>
             a:hover, a:focus { text-decoration: none }
+            .noDataValue{
+                padding: 30px 0 0;font-size:16px;
+            }
         </style>
     @show
 </head>

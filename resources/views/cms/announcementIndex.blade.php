@@ -12,11 +12,17 @@
 
                     {{-- Add Button --}}
                     <div class="pull-right box-tools">
+                        <form action="{{ url('cms/announcement') }}" class="in-block">
+                            <input id="search_input" type="text" class="form-control width-0" placeholder="搜索公告标题或创建人" name="search" value="{{ $search }}">
+                            <a href="javascript:;">
+                                <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
+                            </a>
+                        </form>
                         <a href="{{ url('cms/announcement/create') }}">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>
-                        <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="筛选订单">
-                            <span class="box-btn"><i class="fa fa-filter" title="筛选订单"></i></span>
+                        <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="筛选公告">
+                            <span class="box-btn"><i class="fa fa-filter" title="筛选公告"></i></span>
                         </a>
                         <ul role="menu" class="dropdown-menu">
                             <li>
@@ -51,7 +57,7 @@
                                 <th>状态</th>
                                 <th>创建人</th>
                                 <th>创建时间 &nbsp;&nbsp;<a href="{{ url('cms/announcement')}}?orderC=desc">
-                                            <i class="fa fa-sort-amount-desc" style="color:{{ Request::getQueryString() != 'orderC=desc' ? 'gray' : '' }}" title="降序"></i></a> &nbsp;
+                                            <i class="fa fa-sort-amount-desc" style="color:{{ Request::getQueryString() != 'orderC=desc' ? !Request::getQueryString() ? '' : 'gray' :''}}" title="降序"></i></a> &nbsp;
                                         <a href="{{ url('cms/announcement') }}?orderC=asc">
                                             <i class="fa fa-sort-amount-asc" style="color:{{ Request::getQueryString() != 'orderC=asc' ? 'gray' : '' }}" title="升序"></i></a></th>
                                 <th>操作</th>
@@ -132,7 +138,11 @@
                                     </td>
                                 </tr>
                             @empty
-                                <span class="text-enter">暂无数据</span>
+                                <tr><td colspan="7" class="text-center">
+                                    <div class="noDataValue">
+                                        暂无数据
+                                    </div>
+                                </td></tr>
                             @endforelse
                         </table>
 

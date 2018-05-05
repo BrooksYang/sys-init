@@ -49,7 +49,7 @@ class AnnouncementController extends Controller
             ->select('anno.*', 'ad.name', 'ad.email')
             ->paginate(ANNOUNCEMENT_PAGE_SIZE );
 
-        return view('cms.announcementIndex',compact('announcementStatus','announcement'));
+        return view('cms.announcementIndex',compact('announcementStatus', 'search', 'announcement'));
     }
 
     /**
