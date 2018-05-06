@@ -14,11 +14,11 @@
                     <div class="pull-right box-tools">
                         <form action="{{ url('issuer/currencyTypeMg') }}" class="in-block">
                             <input id="search_input" type="text" class="form-control width-0" placeholder="搜索币种类型名称" name="search" value="{{ $search ?? Request::get('search')}}">
-                            <a href="javascript:;">
+                            <a href="javascript:;" title="搜索币种类型名称">
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
                         </form>
-                        <a href="{{ url('issuer/currencyTypeMg/create') }}">
+                        <a href="{{ url('issuer/currencyTypeMg/create') }}" title="添加币种类型">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>
                     </div>

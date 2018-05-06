@@ -14,11 +14,11 @@
                     <div class="pull-right box-tools">
                         <form action="{{ url('cms/announcement') }}" class="in-block">
                             <input id="search_input" type="text" class="form-control width-0" placeholder="搜索公告标题或创建人" name="search" value="{{ $search }}">
-                            <a href="javascript:;">
+                            <a href="javascript:;" title="搜索公告标题或创建人">
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
                         </form>
-                        <a href="{{ url('cms/announcement/create') }}">
+                        <a href="{{ url('cms/announcement/create') }}" title="添加公告">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>
                         <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="筛选公告">

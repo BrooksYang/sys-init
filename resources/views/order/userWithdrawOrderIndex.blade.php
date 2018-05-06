@@ -14,7 +14,7 @@
                     <div class="pull-right box-tools">
                         <form action="{{ url('order/withdraw') }}" class="in-block">
                             <input id="search_input" type="text" class="form-control width-0" placeholder="搜索币种或用户名或电话" name="search" value="{{ $search ?? Request::get('search')}}">
-                            <a href="javascript:;">
+                            <a href="javascript:;" title="搜索币种或用户名或电话">
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
                         </form>

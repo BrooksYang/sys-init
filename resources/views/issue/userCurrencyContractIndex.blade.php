@@ -14,11 +14,11 @@
                     <div class="pull-right box-tools">
                         <form action="{{ url('issuer/userCurrencyContract') }}" class="in-block">
                             <input id="search_input" type="text" class="form-control width-0" placeholder="搜索币种中文或英文名称" name="search" value="{{ $search ?? Request::get('search')}}">
-                            <a href="javascript:;">
+                            <a href="javascript:;" title="搜索币种中文或英文名称">
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
                         </form>
-                        <a href="{{ url('issuer/userCurrencyContract/create') }}">
+                        <a href="{{ url('issuer/userCurrencyContract/create') }}" title="添加用户交易合约">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>
                     </div>

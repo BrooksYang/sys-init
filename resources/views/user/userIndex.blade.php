@@ -17,7 +17,7 @@
                         </a>--}}
                         <form action="{{ Request::path() != 'user/manage/pending' ? url('user/manage') : url('user/manage/pending') }}" class="in-block">
                             <input id="search_input" type="text" class="form-control width-0" placeholder="搜索用户名或邮箱或电话" name="search" value="{{ $search }}">
-                            <a href="javascript:;">
+                            <a href="javascript:;" title="搜索用户名或邮箱或电话">
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
                         </form>

@@ -14,11 +14,11 @@
                     <div class="pull-right box-tools">
                         <form action="{{ url('faq/type') }}" class="in-block">
                             <input id="search_input" type="text" class="form-control width-0" placeholder="搜索FAQ类型名称" name="search" value="{{ $search ?? Request::get('search')}}">
-                            <a href="javascript:;">
+                            <a href="javascript:;" title="搜索 FAQ 类型">
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
                         </form>
-                        <a href="{{ url('faq/type/create') }}">
+                        <a href="{{ url('faq/type/create') }}" title="添加 FAQ 类型">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>
                     </div>

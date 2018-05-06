@@ -13,11 +13,11 @@
                     <div class="pull-right box-tools">
                         <form action="{{ url('sys/cryptoWallet') }}" class="in-block">
                             <input id="search_input" type="text" class="form-control width-0" placeholder="搜索钱包或币种名称" name="search" value="{{ $search ?? Request::get('search')}}">
-                            <a href="javascript:;">
+                            <a href="javascript:;" title="搜索钱包或币种名称">
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
                         </form>
-                        <a href="{{ url('sys/cryptoWallet/create') }}">
+                        <a href="{{ url('sys/cryptoWallet/create') }}" title="添加系统数字钱包">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>
                     </div>
