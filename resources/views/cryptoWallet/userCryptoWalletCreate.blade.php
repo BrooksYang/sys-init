@@ -99,7 +99,7 @@
                                 <label>交易用户数字钱包地址</label>
                                 <div class="form-group {{ $errors->has('crypto_wallet_address') ? 'has-error' : '' }}">
                                     <div class="col-sm-12">
-                                        <input class="form-control input-lg" type="url" name="crypto_wallet_address" value="{{ $userCryptoWallet->crypto_wallet_address ?? old('crypto_wallet_address') }}"
+                                        <input class="form-control input-lg" type="text" name="crypto_wallet_address" value="{{ $userCryptoWallet->crypto_wallet_address ?? old('crypto_wallet_address') }}"
                                                placeholder="数字钱包地址" disabled>
                                         @if ($errors->has('crypto_wallet_address'))
                                             <span class="help-block"><strong>{{ $errors->first('crypto_wallet_address') }}</strong></span>

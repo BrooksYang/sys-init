@@ -30,7 +30,7 @@ class SysCryptoWalletReequest extends FormRequest
             'sys_crypto_wallet_title' =>
                 'required|unique:dcuex_sys_crypto_wallet,sys_crypto_wallet_title,'.$request->cryptoWallet,
             'sys_crypto_wallet_address' =>
-                'required|url|unique:dcuex_sys_crypto_wallet,sys_crypto_wallet_address,'.$request->cryptoWallet,
+                'required|unique:dcuex_sys_crypto_wallet,sys_crypto_wallet_address,'.$request->cryptoWallet,
         ];
     }
 }
