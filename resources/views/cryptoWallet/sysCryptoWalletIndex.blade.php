@@ -11,6 +11,12 @@
 
                     {{-- Add Button --}}
                     <div class="pull-right box-tools">
+                        <form action="{{ url('sys/cryptoWallet') }}" class="in-block">
+                            <input id="search_input" type="text" class="form-control width-0" placeholder="搜索钱包或币种名称" name="search" value="{{ $search ?? Request::get('search')}}">
+                            <a href="javascript:;">
+                                <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
+                            </a>
+                        </form>
                         <a href="{{ url('sys/cryptoWallet/create') }}">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>
@@ -69,7 +75,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{ $item->created_at }}</td>
+                                    <td>{{ $item->created_at ? $item->created_at : '--' }}</td>
                                     <td>
                                         <a href="{{ url("sys/cryptoWallet/$item->id/edit") }}">
                                             <i class="fontello-edit" title="编辑"></i>
@@ -82,7 +88,11 @@
                                     </td>
                                 </tr>
                             @empty
-                                <span class="text-center">暂无数据</span>
+                                <tr><td colspan="9" class="text-center">
+                                        <div class="noDataValue">
+                                            暂无数据
+                                        </div>
+                                    </td></tr>
                             @endforelse
                         </table>
 

@@ -1,6 +1,7 @@
 @extends('entrance::layouts.default')
 
 @section('css-part')
+    @parent
 @show
 
 @section('content')
@@ -11,6 +12,12 @@
 
                     {{-- Filter and Add Button --}}
                     <div class="pull-right box-tools">
+                        <form action="{{ url('order/withdraw') }}" class="in-block">
+                            <input id="search_input" type="text" class="form-control width-0" placeholder="搜索币种或用户名或电话" name="search" value="{{ $search ?? Request::get('search')}}">
+                            <a href="javascript:;">
+                                <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
+                            </a>
+                        </form>
                         {{--<a href="{{ url('order/withdraw/create') }}">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>--}}
@@ -88,7 +95,11 @@
                                     </td>
                                 </tr>
                             @empty
-                                <span class="text-center">暂无数据</span>
+                                <tr><td colspan="8" class="text-center">
+                                        <div class="noDataValue">
+                                            暂无数据
+                                        </div>
+                                    </td></tr>
                             @endforelse
                         </table>
 

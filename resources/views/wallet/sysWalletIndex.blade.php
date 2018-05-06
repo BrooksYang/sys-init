@@ -1,6 +1,7 @@
 @extends('entrance::layouts.default')
 
 @section('css-part')
+    @parent
 @show
 
 @section('content')
@@ -10,11 +11,17 @@
                 <div class="box-header">
 
                     {{-- Add Button --}}
-                    {{--<div class="pull-right box-tools">
-                        <a href="{{ url('sys/wallet/create') }}">
+                    <div class="pull-right box-tools">
+                        <form action="{{ url('sys/wallet') }}" class="in-block">
+                            <input id="search_input" type="text" class="form-control width-0" placeholder="搜索币种中文或英文名称" name="search" value="{{ $search ?? Request::get('search')}}">
+                            <a href="javascript:;">
+                                <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
+                            </a>
+                        </form>
+                       {{-- <a href="{{ url('sys/wallet/create') }}">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
-                        </a>
-                    </div>--}}
+                        </a>--}}
+                    </div>
 
                     {{-- Title --}}
                     <h3 class="box-title"><i class="fontello-doc"></i>
@@ -53,7 +60,11 @@
                                     </td>
                                 </tr>
                             @empty
-                                <span class="text-center">暂无数据</span>
+                                <tr><td colspan="5" class="text-center">
+                                        <div class="noDataValue">
+                                            暂无数据
+                                        </div>
+                                    </td></tr>
                             @endforelse
                         </table>
 
