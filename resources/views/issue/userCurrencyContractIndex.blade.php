@@ -1,6 +1,7 @@
 @extends('entrance::layouts.default')
 
 @section('css-part')
+    @parent
 @show
 
 @section('content')
@@ -106,13 +107,19 @@
                                                                 <th>挂单手续费</th>
                                                                 <th>吃单手续费</th>
                                                             </tr>
-                                                            @foreach($symbolByCurrency[$item->currency_id] as $key => $symbol)
+                                                            @forelse($symbolByCurrency[$item->currency_id] ?? [] as $key => $symbol)
                                                                 <tr>
                                                                     <td class=""><span class="label label-success">{{ $symbol->symbol }}</span></td>
                                                                     <td class="fee"><input type="text" value="{{ $symbol->maker_fee }}" name="symbolFee[{{$symbol->id}}][maker_fee]"></td>
                                                                     <td class="fee"><input type="text" value="{{ $symbol->taker_fee }}" name="symbolFee[{{$symbol->id}}][taker_fee]"></td>
                                                                 </tr>
-                                                            @endforeach
+1                                                           @empty
+                                                                <tr><td colspan="3" class="text-center">
+                                                                        <div class="noDataValue">
+                                                                            暂无数据
+                                                                        </div>
+                                                                    </td></tr>
+                                                            @endforelse
                                                         </table>
                                                         @if ($errors->has('symbolFee.*.maker_fee'))
                                                             <span class="help-block"><strong>{{ $errors->first('symbolFee.*.maker_fee') }}</strong></span>
@@ -123,7 +130,9 @@
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                                                        <button type="submit" class="btn btn-secondary" >保存</button>
+                                                        @if($symbolByCurrency[$item->currency_id] ?? '')
+                                                            <button type="submit" class="btn btn-secondary" >保存</button>
+                                                        @endif
                                                     </div>
                                                 </div>
                                                 </form>
@@ -143,7 +152,11 @@
                                     </td>
                                 </tr>
                             @empty
-                                <span class="text-enter">暂无数据</span>
+                                <tr><td colspan="11" class="text-center">
+                                        <div class="noDataValue">
+                                            暂无数据
+                                        </div>
+                                    </td></tr>
                             @endforelse
                         </table>
 
