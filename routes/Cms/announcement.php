@@ -21,5 +21,14 @@ Route::group(['middleware' => ['web', 'auth:admin']], function()
 });
 
 
+/**
+ * FAQ
+ */
+Route::group(['middleware' => ['web', 'auth:admin']], function()
+{
+    //FAQ类型管理
+    Route::resource('faq/type', 'Cms\FaqTypeController');
 
+
+});
 

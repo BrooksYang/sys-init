@@ -12,20 +12,20 @@
 
                     {{-- Add Button --}}
                     <div class="pull-right box-tools">
-                        <form action="{{ url('issuer/currencyTypeMg') }}" class="in-block">
-                            <input id="search_input" type="text" class="form-control width-0" placeholder="搜索币种类型名称" name="search" value="{{ $search ?? Request::get('search')}}">
+                        <form action="{{ url('faq/type') }}" class="in-block">
+                            <input id="search_input" type="text" class="form-control width-0" placeholder="搜索FAQ类型名称" name="search" value="{{ $search ?? Request::get('search')}}">
                             <a href="javascript:;">
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
                         </form>
-                        <a href="{{ url('issuer/currencyTypeMg/create') }}">
+                        <a href="{{ url('faq/type/create') }}">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>
                     </div>
 
                     {{-- Title --}}
                     <h3 class="box-title"><i class="fontello-doc"></i>
-                        <span>系统币种类型列表</span>
+                        <span>系统 FAQ 类型列表</span>
                     </h3>
                 </div>
 
@@ -35,16 +35,16 @@
                         <table class="table table-hover table-striped">
                             <tr>
                                 <th>序号</th>
-                                <th>币种类型名称</th>
+                                <th>类型名称</th>
                                 <th>描述</th>
                                 <th>创建时间</th>
                                 <th>修改时间</th>
                                 <th>操作</th>
                             </tr>
-                            @forelse($currencyType as $key => $item)
+                            @forelse($faqType as $key => $item)
                                 <tr>
-                                    <td>{{ ($key + 1) + ($currencyType->currentPage() - 1) * $currencyType->perPage() }}</td>
-                                    <td title="{{ $item->title }}"><strong>{{ str_limit($item->title,25) }}</strong></td>
+                                    <td>{{ ($key + 1) + ($faqType->currentPage() - 1) * $faqType->perPage() }}</td>
+                                    <td title="{{ $item->type_title }}"><strong>{{ str_limit($item->type_title,25) }}</strong></td>
                                     <td>
                                      <!-- Button trigger modal -->
                                         <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLong{{$key}}">
@@ -55,13 +55,13 @@
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLongTitle{{$key}}">{{str_limit($item->title,25)}}</h5>
+                                                        <h5 class="modal-title" id="exampleModalLongTitle{{$key}}">{{str_limit($item->type_title,25)}}</h5>
                                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        {{$item->intro}}
+                                                        {{$item->type_description}}
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
@@ -74,11 +74,11 @@
                                     <td>{{ $item->created_at ?: '--'}}</td>
                                     <td>{{ $item->updated_at ?: '--'}}</td>
                                     <td>
-                                        <a href="{{ url("issuer/currencyTypeMg/$item->id/edit") }}">
+                                        <a href="{{ url("faq/type/$item->id/edit") }}">
                                             <i class="fontello-edit" title="编辑"></i>
                                         </a>
                                         <a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
-                                                '{{ url("issuer/currencyTypeMg/$item->id") }}',
+                                                '{{ url("faq/type/$item->id") }}',
                                                 '{{ csrf_token() }}');">
                                             <i class="fontello-trash-2" title="删除"></i>
                                         </a>
@@ -97,7 +97,7 @@
                         <div class="row">
                             <div class="col-xs-12">
                                 <div class="pull-right">
-                                    {{ $currencyType->appends(Request::except('page'))->links() }}
+                                    {{ $faqType->appends(Request::except('page'))->links() }}
                                 </div>
                             </div>
                         </div>

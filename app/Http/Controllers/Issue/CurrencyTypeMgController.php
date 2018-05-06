@@ -24,14 +24,11 @@ class CurrencyTypeMgController extends Controller
     public function index(Request $request)
     {
         $search = trim($request->search,'');
-        if ($search) {
-            $currencyType = DB::table('dcuex_currency_type')
-                ->where('title','like',"%$search%")
-                ->paginate(CURRENCY_TYPE_PAGE_SIZE );
-        }else{
-            $currencyType = \DB::table('dcuex_currency_type')
-                ->paginate(CURRENCY_TYPE_PAGE_SIZE );
-        }
+        $currencyType = DB::table('dcuex_currency_type')
+            ->when($search, function ($query) use ($search){
+                return $query->where('title','like',"%$search%");
+            })
+            ->paginate(CURRENCY_TYPE_PAGE_SIZE );
 
         return view('issue.currencyTypeIndex',['currencyType' => $currencyType]);
     }
