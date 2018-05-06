@@ -21,6 +21,9 @@ Route::group(['middleware' => ['web', 'auth:admin']], function()
 
     //用户代币交易合约
     Route::resource('issuer/userCurrencyContract','Issue\CurrencyContractToUserController');
+
+    //交易对费率
+    Route::post('userCurrencyContract/symbol/fee','Issue\CurrencyContractToUserController@symbolFeeUpdate');
 });
 
 

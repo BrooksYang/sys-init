@@ -11,6 +11,12 @@
 
                     {{-- Add Button --}}
                     <div class="pull-right box-tools">
+                        <form action="{{ url('issuer/userCurrencyContract') }}" class="in-block">
+                            <input id="search_input" type="text" class="form-control width-0" placeholder="搜索币种中文或英文名称" name="search" value="{{ $search ?? Request::get('search')}}">
+                            <a href="javascript:;">
+                                <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
+                            </a>
+                        </form>
                         <a href="{{ url('issuer/userCurrencyContract/create') }}">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>
@@ -78,32 +84,49 @@
                                     </td>
                                     <td>
                                         <!-- Button trigger modal -->
-                                        <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLong{{$key+1}}">
+                                        <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLongSymbol{{$key+1}}">
                                             交易对
                                         </a>
                                         <!-- Modal -->
-                                        <div class="modal fade" id="exampleModalLong{{$key+1}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle{{$key+1}}" aria-hidden="true">
+                                        <div class="modal fade" id="exampleModalLongSymbol{{$key+1}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongSymbol{{$key+1}}" aria-hidden="true">
                                             <div class="modal-dialog" role="document">
+                                                <form role="form" method="POST" action="{{ url('userCurrencyContract/symbol/fee') }}" id="symbolFee{{$key+1}}">
+                                                    {{ csrf_field() }}
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLongTitle{{$key+1}}">合约交易对信息</h5>
+                                                        <h5 class="modal-title" id="exampleModalLongSymbolTitle{{$key+1}}">合约交易对信息</h5>
                                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        @foreach($symbolByCurrency[$item->currency_id] as $currency => $symbol)
-                                                            <span class="label label-success">{{ $symbol }}</span>&nbsp;&nbsp;&nbsp;
-                                                            @if($loop->index >= 3)
-                                                                <br/>
-                                                            @endif
-                                                        @endforeach
+                                                        <table class="table table-hover table-striped table-fee">
+                                                            <tr>
+                                                                <th>交易对</th>
+                                                                <th>挂单手续费</th>
+                                                                <th>吃单手续费</th>
+                                                            </tr>
+                                                            @foreach($symbolByCurrency[$item->currency_id] as $key => $symbol)
+                                                                <tr>
+                                                                    <td class=""><span class="label label-success">{{ $symbol->symbol }}</span></td>
+                                                                    <td class="fee"><input type="text" value="{{ $symbol->maker_fee }}" name="symbolFee[{{$symbol->id}}][maker_fee]"></td>
+                                                                    <td class="fee"><input type="text" value="{{ $symbol->taker_fee }}" name="symbolFee[{{$symbol->id}}][taker_fee]"></td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </table>
+                                                        @if ($errors->has('symbolFee.*.maker_fee'))
+                                                            <span class="help-block"><strong>{{ $errors->first('symbolFee.*.maker_fee') }}</strong></span>
+                                                        @endif
+                                                        @if ($errors->has('symbolFee.*.taker_fee'))
+                                                            <span class="help-block"><strong>{{ $errors->first('symbolFee.*.taker_fee') }}</strong></span><br/>
+                                                        @endif
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-
+                                                        <button type="submit" class="btn btn-secondary" >保存</button>
                                                     </div>
                                                 </div>
+                                                </form>
                                             </div>
                                         </div>
                                     </td>
@@ -142,5 +165,17 @@
 
 @section('js-part')
     <script>
+        if('{{$errors->has('symbolFee.*.maker_fee')}}' || '{{$errors->has('symbolFee.*.taker_fee')}}'){
+            layer.msg('交易对费率验证失败');
+        }
+        if('{{ session('indexMsg') ?? ''}}'){
+            layer.msg('更新成功')
+        }
+
+        {{--if('{{$errors->has('symbolFee.*.maker_fee')}}'){--}}
+          {{--layer.msg('{{ $errors->first('symbolFee.*.maker_fee') }}');--}}
+      {{--}else if('{{$errors->has('symbolFee.*.taker_fee')}}'){--}}
+          {{--layer.msg('{{ $errors->first('symbolFee.*.taker_fee') }}');--}}
+      {{--}--}}
     </script>
 @endsection

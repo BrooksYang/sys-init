@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Issue;
 
 use App\Http\Requests\CurrencyContractToUserRequeset;
+use App\Http\Requests\symbolFeeRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -38,7 +39,7 @@ class CurrencyContractToUserController extends Controller
         }
 
         //获取并按币种整理交易对信息
-        $symbolByCurrency = $this->symbolByCrrency();
+        $symbolByCurrency = $this->symbolByCurrency();
 
         return view('issue.userCurrencyContractIndex',compact('userCurrencyContract', 'symbolByCurrency'));
     }
@@ -53,7 +54,7 @@ class CurrencyContractToUserController extends Controller
         $currency = DB::table('dcuex_crypto_currency')
             ->get(['id','currency_title_cn', 'currency_title_en','currency_title_en_abbr']);
 
-        return view('issue.userCurrencyContractCreate',['currency' => $currency, 'symbolStr' =>'']);
+        return view('issue.userCurrencyContractCreate',['currency' => $currency, 'symbolStr' =>'', 'editFlag' =>'']);
     }
 
     /**
@@ -68,7 +69,7 @@ class CurrencyContractToUserController extends Controller
         $currencyContract['created_at'] = gmdate('Y-m-d H:i:s',time());
 
         //获取并处理交易对
-        $symbol = $this->sortOutSymbol($request->symbol, $request->currency_id, $request->quote_currency);
+        $symbol = $this->sortOutSymbol($request->symbol, $request->currency_id, $request->quote_currency,'created_at');
 
         DB::transaction(function () use ($symbol, $currencyContract) {
             DB::table('dcuex_currency_symbol')->insert($symbol);
@@ -114,7 +115,7 @@ class CurrencyContractToUserController extends Controller
             'userCurrencyContract' => $userCurrencyContract,
             'currency' => $currency,
             'symbol' => $symbol,
-            'symbolStr' => implode(',',array_pluck($symbol->toArray(), 'quote_currency')),
+            'symbolStr' => implode(',',$symbol),
         ]);
     }
 
@@ -132,16 +133,20 @@ class CurrencyContractToUserController extends Controller
         $query = DB::table('dcuex_user_currency_contract')->where('id',$id);
         $userCurrencyContract['updated_at'] = gmdate('Y-m-d H:i:s',time());
 
-        //获取并处理交易对信息
-        $symbol = $this->sortOutSymbol($request->symbol, $currencyId,$request->quote_currency);
+        //获取并处理新-旧交易对信息
+        $symbol = $this->sortOutSymbol($request->symbol, $currencyId,$request->quote_currency, 'updated_at');
+        $oldSymbol = DB::table('dcuex_currency_symbol')->where('base_currency_id', $currencyId)
+            ->get(['base_currency_id','quote_currency_id','symbol','maker_fee','taker_fee','created_at']);
+        $symbol = $this->getSymbolFee($symbol, $oldSymbol);
 
         DB::transaction(function () use ($query, $userCurrencyContract, $currencyId, $symbol) {
             $query->update($userCurrencyContract);
             $querySymbol = DB::table('dcuex_currency_symbol');
-            $querySymbol->where('currency_id', $currencyId)->delete();
-            $querySymbol->insert($symbol);
+            $querySymbol->where('base_currency_id', $currencyId)->delete();
+            foreach ($symbol as $key => $itemSymbol) {
+                $querySymbol->insert($itemSymbol);
+            }
         });
-
 
         return redirect('issuer/userCurrencyContract');
     }
@@ -162,17 +167,27 @@ class CurrencyContractToUserController extends Controller
     }
 
     /**
-     * 获取交易对信息
+     * 获取交易对中基础币种所对应计价币种信息
      *
      * @param $currencyId
      * @param string $sortOUt
-     * @return \Illuminate\Support\Collection
+     * @return array
      */
     public function getSymbol($currencyId, $sortOUt='')
     {
-        return DB::table('dcuex_currency_symbol')
-            ->where('currency_id', $currencyId)
-            ->get(['quote_currency']);
+         $quoteCurrencyIds = DB::table('dcuex_currency_symbol')
+            ->where('base_currency_id', $currencyId)
+            ->get(['quote_currency_id'])->toArray();
+
+         $quoteCurrencySymbol =  DB::table('dcuex_crypto_currency')
+            ->whereIn('id', array_pluck($quoteCurrencyIds,'quote_currency_id'))
+            ->get(['currency_title_en_abbr'])->toArray();
+
+        foreach ($quoteCurrencySymbol as $key=>$item) {
+            $quoteCurrencySymbol[$key] = strtolower($item->currency_title_en_abbr);
+        }
+
+        return $quoteCurrencySymbol;
     }
 
     /**
@@ -183,16 +198,31 @@ class CurrencyContractToUserController extends Controller
      * @param $quoteCurrency
      * @return array
      */
-    public function sortOutSymbol($requestSymbol, $currencyId, $quoteCurrency)
+    public function sortOutSymbol($requestSymbol, $currencyId, $quoteCurrency, $action)
     {
-        $symbol = [];
+        $symbol = $queryQuoteCurrency = [];
         $quoteCurrency = strtolower($quoteCurrency);
         foreach ($requestSymbol as $key => $symbolItem) {
+            $queryQuoteCurrency[] = $symbolItem;
             $symbol[] = [
-                'currency_id'=>$currencyId,
-                'quote_currency'=>$symbolItem, //计价币种
+                'base_currency_id'=>$currencyId,
+                //'quote_currency'=>$symbolItem, //计价币种字符
                 'symbol'=>$quoteCurrency.$symbolItem  //交易对
             ];
+        }
+        //获取计价币种信息
+        $quoteCurrencyInfo = DB::table('dcuex_crypto_currency')
+            ->whereIn('currency_title_en_abbr' ,$queryQuoteCurrency)
+            ->get(['id','currency_title_en_abbr'])->toArray();
+
+        //遍历并整理基础币种-计价币种的交易对关系
+        foreach ($symbol as $key => $itemSymbol) {
+            foreach ($quoteCurrencyInfo as $flag => $itemQuoteCurrency ) {
+                if (stristr($itemSymbol['symbol'], $itemQuoteCurrency->currency_title_en_abbr)) {
+                    $symbol[$key]['quote_currency_id'] = $itemQuoteCurrency->id;
+                    $symbol[$key][$action] = gmdate('Y-m-d H:i:s',time());
+                }
+            }
         }
 
         return $symbol;
@@ -203,14 +233,64 @@ class CurrencyContractToUserController extends Controller
      *
      * @return array
      */
-    public function symbolByCrrency()
+    public function symbolByCurrency()
     {
-        $currencySymbol = DB::table('dcuex_currency_symbol')->get(['currency_id', 'symbol']);
+        $currencySymbol = DB::table('dcuex_currency_symbol')
+            ->get(['id','base_currency_id', 'symbol','quote_currency_id','maker_fee','taker_fee']);
         $sortOutSymbol = [];
         foreach ($currencySymbol as $key => $symbol){
-            $sortOutSymbol[$symbol->currency_id][] = $symbol->symbol;
+            $sortOutSymbol[$symbol->base_currency_id][] = $symbol;
         }
 
         return $sortOutSymbol;
+    }
+
+    /**
+     * 同步更新交易对费率
+     *
+     * @param symbolFeeRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function symbolFeeUpdate(symbolFeeRequest $request)
+    {
+        $symbolFee = $request->except('_token');
+
+        foreach ($symbolFee['symbolFee'] as $symbolId => $item) {
+            DB::table('dcuex_currency_symbol')->where('id', $symbolId)
+                ->update([
+                    'maker_fee' => $item['maker_fee'],
+                    'taker_fee' => $item['taker_fee'],
+                    'updated_at' => gmdate('Y-m-d H:i:s',time())
+                ]);
+        }
+
+        return redirect('issuer/userCurrencyContract')->with(['indexMsg'=>'更新成功']);
+    }
+
+    /**
+     * 处理新旧交易对的费率信息
+     *
+     * @param $symbol
+     * @param $oldSymbol
+     * @return mixed
+     */
+    public function getSymbolFee($symbol, $oldSymbol)
+    {
+        foreach ($symbol as $key => &$value) {
+            foreach ($oldSymbol as $flag => $oldValue) {
+                if ($oldValue->symbol == $value['symbol']) {
+                    $value['maker_fee'] = $oldValue->maker_fee;
+                    $value['taker_fee'] = $oldValue->taker_fee;
+                    $value['created_at'] = $oldValue->created_at;
+                    $value['updated_at'] = gmdate('Y-m-d H:i:s',time());
+                }
+            }
+            if (!isset($value['maker_fee']) || !isset($value['taker_fee'])) {
+                $value['created_at'] = gmdate('Y-m-d H:i:s',time());
+                if (isset($value['updated_at'])){ unset($value['updated_at']); }
+            }
+        }
+
+        return $symbol;
     }
 }
