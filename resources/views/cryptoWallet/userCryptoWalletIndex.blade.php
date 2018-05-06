@@ -70,7 +70,7 @@
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        {{$item->crypto_wallet_description}}
+                                                        {{$item->crypto_wallet_description ?: '暂无描述'}}
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
@@ -80,7 +80,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{ $item->created_at ? $item->created_at : '--' }}</td>
+                                    <td>{{ $item->created_at ?: '--' }}</td>
                                     <td>
                                         <a href="{{ url("user/cryptoWallet/$item->id/edit") }}">
                                             <i class="fontello-edit" title="编辑"></i>

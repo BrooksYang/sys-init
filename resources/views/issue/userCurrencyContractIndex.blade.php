@@ -107,13 +107,21 @@
                                                                 <th>挂单手续费</th>
                                                                 <th>吃单手续费</th>
                                                             </tr>
-                                                            @forelse($symbolByCurrency[$item->currency_id] ?? [] as $key => $symbol)
+                                                            @forelse(($symbolByCurrency[$item->currency_id] ?? []) as $key => $symbol)
                                                                 <tr>
                                                                     <td class=""><span class="label label-success">{{ $symbol->symbol }}</span></td>
-                                                                    <td class="fee"><input type="text" value="{{ $symbol->maker_fee }}" name="symbolFee[{{$symbol->id}}][maker_fee]"></td>
-                                                                    <td class="fee"><input type="text" value="{{ $symbol->taker_fee }}" name="symbolFee[{{$symbol->id}}][taker_fee]"></td>
+                                                                    <td class="fee"><input type="text" value="{{ $symbol->maker_fee }}" name="symbolFee[{{$symbol->id}}][maker_fee]">
+                                                                    @if ($errors->has("symbolFee.$symbol->id.maker_fee"))
+                                                                        <span class="help-block" style="color: #a94442"><strong>{{ $errors->first("symbolFee.$symbol->id.maker_fee") }}</strong></span>
+                                                                    @endif
+                                                                    </td>
+                                                                    <td class="fee"><input type="text" value="{{ $symbol->taker_fee }}" name="symbolFee[{{$symbol->id}}][taker_fee]">
+                                                                    @if ($errors->has("symbolFee.$symbol->id.taker_fee"))
+                                                                        <span class="help-block" style="color: #a94442"><strong>{{ $errors->first("symbolFee.$symbol->id.taker_fee") }}</strong></span><br/>
+                                                                    @endif
+                                                                    </td>
                                                                 </tr>
-1                                                           @empty
+                                                           @empty
                                                                 <tr><td colspan="3" class="text-center">
                                                                         <div class="noDataValue">
                                                                             暂无数据
@@ -121,12 +129,6 @@
                                                                     </td></tr>
                                                             @endforelse
                                                         </table>
-                                                        @if ($errors->has('symbolFee.*.maker_fee'))
-                                                            <span class="help-block"><strong>{{ $errors->first('symbolFee.*.maker_fee') }}</strong></span>
-                                                        @endif
-                                                        @if ($errors->has('symbolFee.*.taker_fee'))
-                                                            <span class="help-block"><strong>{{ $errors->first('symbolFee.*.taker_fee') }}</strong></span><br/>
-                                                        @endif
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
@@ -139,7 +141,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{ $item->created_at }}</td>
+                                    <td>{{ $item->created_at ?: '--' }}</td>
                                     <td>
                                         <a href="{{ url("issuer/userCurrencyContract/$item->id/edit") }}">
                                             <i class="fontello-edit" title="编辑"></i>
