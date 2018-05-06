@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\CryptoWallet;
 
-use App\Http\Requests\UserCryptoWalletReequest;
+use App\Http\Requests\UserCryptoWalletRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -54,7 +54,7 @@ class UserCryptoWalletController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(UserCryptoWalletReequest $request)
+    public function store(UserCryptoWalletRequest $request)
     {
         $userCryptoWallet = $request->except(['_token','editFlag']);
         if (!empty($userCryptoWallet)) {
@@ -107,7 +107,7 @@ class UserCryptoWalletController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UserCryptoWalletReequest $request, $id)
+    public function update(UserCryptoWalletRequest $request, $id)
     {
         $userCryptoWallet = $request->except(['_token', '_method', 'editFlag']);
         $userCryptoWallet['updated_at'] = gmdate('Y-m-d H:i:s',time());

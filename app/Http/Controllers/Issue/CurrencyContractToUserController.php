@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Issue;
 
-use App\Http\Requests\CurrencyContractToUserRequeset;
+use App\Http\Requests\CurrencyContractToUserRequest;
 use App\Http\Requests\symbolFeeRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -63,7 +63,7 @@ class CurrencyContractToUserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CurrencyContractToUserRequeset $request)
+    public function store(CurrencyContractToUserRequest $request)
     {
         $currencyContract = $request->except(['_token', 'symbol', 'quote_currency', 'editFlag']);
         $currencyContract['created_at'] = gmdate('Y-m-d H:i:s',time());
@@ -126,7 +126,7 @@ class CurrencyContractToUserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(CurrencyContractToUserRequeset $request, $id)
+    public function update(CurrencyContractToUserRequest $request, $id)
     {
         $userCurrencyContract = $request->except(['_token','_method','symbol','quote_currency','editFlag']);
         $currencyId = $request->currency_id;
