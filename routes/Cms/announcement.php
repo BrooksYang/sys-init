@@ -2,14 +2,17 @@
 
 /*
 |--------------------------------------------------------------------------
-| Cms announcement Routes
+| Content management system Routes
 |--------------------------------------------------------------------------
 |
-| CMS 公告管理路由
+| CMS 内容管理路由
 |
 */
 
-
+/**
+ * 系统公告
+ *
+ */
 Route::group(['middleware' => ['web', 'auth:admin']], function()
 {
     //公告管理
@@ -22,13 +25,18 @@ Route::group(['middleware' => ['web', 'auth:admin']], function()
 
 
 /**
- * FAQ
+ * 系统 FAQ 文档
+ *
  */
 Route::group(['middleware' => ['web', 'auth:admin']], function()
 {
     //FAQ类型管理
     Route::resource('faq/type', 'Cms\FaqTypeController');
 
+    //FAQ管理
+    Route::resource('faq/manage', 'Cms\FaqController');
 
+    //更新FAQ文档状态-草稿/发布状态
+    Route::patch('faq/manage/updateStatus/{faq}', 'Cms\FaqController@updateStatus');
 });
 
