@@ -207,7 +207,7 @@ class CurrencyContractToUserController extends Controller
             $symbol[] = [
                 'base_currency_id'=>$currencyId,
                 //'quote_currency'=>$symbolItem, //计价币种字符
-                'symbol'=>$quoteCurrency.$symbolItem  //交易对
+                'symbol'=>$quoteCurrency.'/'.$symbolItem  //交易对
             ];
         }
         //获取计价币种信息
