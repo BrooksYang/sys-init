@@ -5,11 +5,14 @@
 | User Deposit and Withdraw Order Routes
 |--------------------------------------------------------------------------
 |
-| 充值和提币订单路由
+| 充值和提币订单、用户交易订单路由
 |
 */
 
-
+/**
+ * 充值和提币订单
+ *
+ */
 Route::group(['middleware' => ['web', 'auth:admin']], function()
 {
     //用户充值订单
@@ -20,6 +23,14 @@ Route::group(['middleware' => ['web', 'auth:admin']], function()
 
 });
 
-
+/**
+ * 交易订单
+ *
+ */
+Route::group(['middleware' => ['web', 'auth:admin']], function()
+{
+    //用户交易订单
+    Route::resource('order/exchange', 'Order\ExchangeOrderController', ['only' => ['index']]);
+});
 
 

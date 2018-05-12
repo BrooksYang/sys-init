@@ -18,61 +18,62 @@ class HomeController extends Controller
 {
     public function index()
     {
+        $cacheLength = env('CACHE_LENGTH', CACHE_LENGTH);
         //注册用户数
-        $users = Cache::remember('users', CACHE_LENGTH, function () {
+        $users = Cache::remember('users', $cacheLength, function () {
             return $this->getUser();
         });
         //当天委托订单数
-        $exchangeOrders = Cache::remember('exchangeOrders', CACHE_LENGTH, function () {
+        $exchangeOrders = Cache::remember('exchangeOrders', $cacheLength, function () {
             return $this->getExchangeOrder();
         });
         //当天成交订单数
-        $orderLogs = Cache::remember('orderLogs', CACHE_LENGTH , function () {
+        $orderLogs = Cache::remember('orderLogs', $cacheLength , function () {
             return $this->getOrderLog();
         });
         //当天成交总额
-        $orderAmount = Cache::remember('orderAmount', CACHE_LENGTH, function () {
+        $orderAmount = Cache::remember('orderAmount', $cacheLength, function () {
             return $this->orderAmount();
         });
         //用户账户状态
-        $userAccountStatus = Cache::remember('userAccountStatus', CACHE_LENGTH, function () use ($users) {
+        $userAccountStatus = Cache::remember('userAccountStatus', $cacheLength, function () use ($users) {
             return $this->userAccountStatusStatistic($users);
         });
         //用户邮箱-手机验证状态统计
-        $emailPhoneVerifyStatus = Cache::remember('emailPhoneVerifyStatus', CACHE_LENGTH, function () use ($users) {
+        $emailPhoneVerifyStatus = Cache::remember('emailPhoneVerifyStatus', $cacheLength, function () use ($users) {
             return $this->emailPhoneVerifyStatistic($users);
         });
         //谷歌人机验证状态
-        $googleAuth =  Cache::remember('googleAuth', CACHE_LENGTH, function () use ($users){
+        $googleAuth =  Cache::remember('googleAuth', $cacheLength, function () use ($users){
             return $this->googleAuthStatistic($users);
         });
         //用户认证状态整体分布
-        $userVerifyStatus = Cache::remember('userVerifyStatus', CACHE_LENGTH, function () use ($users){
+        $userVerifyStatus = Cache::remember('userVerifyStatus', $cacheLength, function () use ($users){
             return $this->userVerifyStatus($users);
         });
 
         //币种信息
-        $currency = Cache::remember('currency', CACHE_LENGTH, function () {
+        $currency = Cache::remember('currency', $cacheLength, function () {
             return $this->getCurrency();
         });
         //当天充值订单数量及金额-按处理状态区分
-        $depositOrderStatus = Cache::remember('depositOrderStatus', CACHE_LENGTH, function () {
+        $depositOrderStatus = Cache::remember('depositOrderStatus', $cacheLength, function () {
             return $this->getDepositOrder();
         });
         //当天提币订单数量及金额-按处理状态区分
-        $withdrawOrderStatus = Cache::remember('withdrawOrderStatus', CACHE_LENGTH, function () {
+        $withdrawOrderStatus = Cache::remember('withdrawOrderStatus', $cacheLength, function () {
             return $this->getWithdrawOrder();
         });
         //当天委托订单数量--按处理状态
-        $exchangeOrderByStatus = Cache::remember('exchangeOrderByStatus', CACHE_LENGTH, function () {
+        $exchangeOrderByStatus = Cache::remember('exchangeOrderByStatus', $cacheLength, function () {
             return $this->getExchangeByStatus();
         });
         //当天委托订单成交数量及金额--按类型
-        $exchangeOrderByType = Cache::remember('exchangeOrderByType', CACHE_LENGTH, function () {
+        $exchangeOrderByType = Cache::remember('exchangeOrderByType', $cacheLength, function () {
             return $this->getExchangeOrderByType();
         });
         //当天委托订单成交数量及价格 --按类型
-        $exchangeOrderLog = Cache::remember('exchangeOrderLog', CACHE_LENGTH, function () {
+        $exchangeOrderLog = Cache::remember('exchangeOrderLog', $cacheLength, function () {
             return $this->getExchangeOrderLog();
         });
 

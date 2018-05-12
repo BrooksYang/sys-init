@@ -29,7 +29,7 @@
                             <ul role="menu" class="dropdown-menu pull-right">
                                 <li>
                                     <a href="{{ url('faq/manage') }}">全部
-                                        {!! Request::getRequestUri() == '/faq/manage' ? '&nbsp;<i class="fa fa-check txt-info"></i>' :''!!}
+                                        {!! !in_array(Request::get('filterType'),array_values(array_column($faqType->toArray(),'id'))) ? '&nbsp;<i class="fa fa-check txt-info"></i>' :''!!}
                                     </a>
                                 </li>
                                 @foreach($faqType as $key=>$item)
@@ -79,9 +79,9 @@
                                 <th>关键词</th>
                                 <th>状态</th>
                                 <th>创建时间 &nbsp;&nbsp;<a href="{{ url('faq/manage')}}?orderC=desc">
-                                            <i class="fa fa-sort-amount-desc" style="color:{{ Request::get('orderC') != '=desc' ? !Request::get('orderC') ? '' : 'gray' :''}}" title="降序"></i></a> &nbsp;
+                                            <i class="fa fa-sort-amount-desc" style="color:{{ Request::get('orderC') != 'desc' ? !Request::get('orderC') ? '' : 'gray' :''}}" title="降序"></i></a> &nbsp;
                                         <a href="{{ url('faq/manage') }}?orderC=asc">
-                                            <i class="fa fa-sort-amount-asc" style="color:{{ Request::get('orderC') != '=asc' ? 'gray' : '' }}" title="升序"></i></a></th>
+                                            <i class="fa fa-sort-amount-asc" style="color:{{ Request::get('orderC') != 'asc' ? 'gray' : '' }}" title="升序"></i></a></th>
                                 <th>操作</th>
                             </tr>
                             @forelse($faq as $key => $item)
