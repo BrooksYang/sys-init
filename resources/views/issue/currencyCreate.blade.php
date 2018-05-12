@@ -16,7 +16,7 @@
                 <div class="box-header">
                     {{-- Title --}}
                     <h3 class="box-title">
-                        <span>{{ @$editFlag ? '编辑系统币种' : '添加系统币种' }}</span>
+                        <span>{{ @$editFlag ? '编辑系统代币币种' : '添加系统代币币种' }}</span>
                     </h3>
                 </div>
 
