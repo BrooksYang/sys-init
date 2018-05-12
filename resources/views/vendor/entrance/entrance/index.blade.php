@@ -10,9 +10,9 @@
                         <h2>
                             <span class="bg-green">Today</span>
                         </h2>
-                        <i class="fontello-shop-1"></i>
+                        <i class="fontello-shop"></i>
                         <h4 class="text-green">832</h4>
-                        <h5>SALES</h5>
+                        <h5>委托订单数</h5>
                         <div style="clear:both;"></div>
                     </div>
                 </div>
@@ -21,6 +21,29 @@
             <!-- /.box -->
         </div>
 
+        <div class="col-lg-6">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <div class="news-widget">
+                        <h2>
+                            <span class="bg-red">Today</span>
+                        </h2>
+                        <i class="fontello-money"></i>
+                        <h4 class="text-red">
+                            {{--<small>$</small>--}}8,475</h4>
+                        <h5>成交订单数</h5>
+                        <div style="clear:both;"></div>
+                    </div>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+
+    </div>
+
+    <div class="row">
         <div class="col-lg-6">
             <div class="box">
                 <div class="box-body">
@@ -28,34 +51,12 @@
                         <h2>
                             <span class="bg-aqua">Today</span>
                         </h2>
-                        <i class="fontello-cup"></i>
-                        <h4 class="text-aqua">7,356</h4>
-                        <h5>Visitors</h5>
-                        <div style="clear:both;"></div>
-                    </div>
-                </div>
-            </div>
-            <!-- /.box -->
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-6">
-            <div class="box">
-                <!-- /.box-header -->
-                <div class="box-body">
-                    <div class="news-widget">
-                        <h2>
-                            <span class="bg-red">Last Month</span>
-                        </h2>
                         <i class="fontello-money"></i>
-                        <h4 class="text-red">
-                            <small>$</small>8,475</h4>
-                        <h5>Earning</h5>
+                        <h4 class="text-aqua">7,356</h4>
+                        <h5>成交总额</h5>
                         <div style="clear:both;"></div>
                     </div>
                 </div>
-                <!-- /.box-body -->
             </div>
             <!-- /.box -->
         </div>
@@ -70,7 +71,7 @@
                         </h2>
                         <i class="fontello-user-1"></i>
                         <h4 class="text-blue">1645</h4>
-                        <h5>New User</h5>
+                        <h5>注册用户数</h5>
                         <div style="clear:both;"></div>
                     </div>
                 </div>

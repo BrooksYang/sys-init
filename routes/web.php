@@ -17,3 +17,6 @@ Route::get('/', function () {
 
 //代币 icon显示路由
 Route::get('currencyIcon/{filename}','Binary\PublicController@currencyIcon');
+
+//Dashboard
+Route::get('/home', 'HomeController@index')->middleware(['web', 'auth:admin']);
