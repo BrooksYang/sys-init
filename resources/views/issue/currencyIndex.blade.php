@@ -54,8 +54,31 @@
                                     <td> <span class="label label-success">{{ $item->currency_title_en_abbr }}</span></td>
                                     <td title="{{$item->title}}">{{ str_limit($item->title,15) }}</td>
                                     <td>
-                                        <img src="{{url('currencyIcon')}}/{{ $item->currency_icon }}" style="width:40px"
-                                             onerror="this.src='http://placehold.it/40x40'"/>
+                                        <!-- Button trigger modal -->
+                                        <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLongIcon{{$key}}">
+                                            查看
+                                        </a>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="exampleModalLongIcon{{$key}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongIconTitle{{$key}}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLongIconTitle{{$key}}">币种图标</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div style="text-align: center"><img src="{{url('currencyIcon')}}/{{ $item->currency_icon }}" style="width:150px"
+                                                                onerror="this.src='http://placehold.it/150x150'"/></div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>{{ $item->currency_issue_amount }}</td>
                                     <td>{{ $item->currency_issue_circulation }}</td>
