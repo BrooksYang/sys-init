@@ -22,42 +22,45 @@
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>
                         {{--筛选类别--}}
-                        <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="按类别筛选文档">
-                            <span class="box-btn"><i class="fontello-menu" title="按类别筛选文档"></i></span>
-                        </a>
-                        <ul role="menu" class="dropdown-menu">
-                            <li>
-                                <a href="{{ url('faq/manage') }}">全部
-                                    {!! Request::getRequestUri() == '/faq/manage' ? '&nbsp;<i class="fa fa-check txt-info"></i>' :''!!}
-                                </a>
-                            </li>
-                            @foreach($faqType as $key=>$item)
+                        <div style="display: inline-block;position: relative">
+                            <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="按类别筛选文档">
+                                <span class="box-btn"><i class="fontello-menu" title="按类别筛选文档"></i></span>
+                            </a>
+                            <ul role="menu" class="dropdown-menu pull-right">
                                 <li>
-                                    <a href="{{ url('faq/manage') }}?filterType={{$item->id}}">{{$item->type_title}}
-                                        {!!  Request::get('filterType') == $item->id ? '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
+                                    <a href="{{ url('faq/manage') }}">全部
+                                        {!! Request::getRequestUri() == '/faq/manage' ? '&nbsp;<i class="fa fa-check txt-info"></i>' :''!!}
                                     </a>
                                 </li>
-                            @endforeach
-                        </ul>
-
-                        {{--筛选状态--}}
-                    {{--    <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="按状态筛选文档">
-                            <span class="box-btn"><i class="fa fa-filter" title="按状态筛选文档"></i></span>
-                        </a>
-                        <ul role="menu" class="dropdown-menu">
-                            <li>
-                                <a href="{{ url('faq/manage') }}">全部
-                                    {!! in_array( Request::get('filterStatus'),array_keys($faqStatus)) ? '' :'&nbsp;<i class="fa fa-check txt-info"></i>'!!}
-                                </a>
-                            </li>
-                            @foreach($faqStatus as $key=>$item)
+                                @foreach($faqType as $key=>$item)
+                                    <li>
+                                        <a href="{{ url('faq/manage') }}?filterType={{$item->id}}">{{$item->type_title}}
+                                            {!!  Request::get('filterType') == $item->id ? '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        <div style="display: inline-block;position: relative">
+                            {{--筛选状态--}}
+                            <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="按状态筛选文档">
+                                <span class="box-btn"><i class="fa fa-filter" title="按状态筛选文档"></i></span>
+                            </a>
+                            <ul role="menu" class="dropdown-menu pull-right">
                                 <li>
-                                    <a href="{{ url('faq/manage') }}?filterStatus={{$key}}">{{$item['name']}}
-                                        {!!  Request::get('filterStatus') == $key ? '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
+                                    <a href="{{ url('faq/manage') }}">全部
+                                        {!! in_array( Request::get('filterStatus'),array_keys($faqStatus)) ? '' :'&nbsp;<i class="fa fa-check txt-info"></i>'!!}
                                     </a>
                                 </li>
-                            @endforeach
-                        </ul>--}}
+                                @foreach($faqStatus as $key=>$item)
+                                    <li>
+                                        <a href="{{ url('faq/manage') }}?filterStatus={{$key}}">{{$item['name']}}
+                                            {!!  Request::get('filterStatus') == $key ? '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
                     </div>
 
                     {{-- Title --}}
