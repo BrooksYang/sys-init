@@ -60,8 +60,8 @@
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
-                                                    <div class="modal-body">
-                                                        {{$item->intro}}
+                                                    <div class="modal-body {{ $item->intro ? '' : 'text_c' }}">
+                                                        {{$item->intro ?: '暂无数据'}}
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>

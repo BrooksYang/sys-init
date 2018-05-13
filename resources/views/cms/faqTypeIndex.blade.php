@@ -60,8 +60,8 @@
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
-                                                    <div class="modal-body">
-                                                        {{$item->type_description}}
+                                                    <div class="modal-body {{ $item->type_description?'':'text_c' }}">
+                                                        {{$item->type_description ?: '暂无描述'}}
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>

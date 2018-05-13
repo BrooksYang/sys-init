@@ -64,8 +64,8 @@
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
-                                                    <div class="modal-body">
-                                                        {{$item->sys_crypto_wallet_description}}
+                                                    <div class="modal-body {{ $item->sys_crypto_wallet_description ? '' : 'text_c' }}">
+                                                        {{$item->sys_crypto_wallet_description ?: '暂无数据'}}
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>

@@ -95,7 +95,7 @@
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <span><b>真实姓名：</b></span>{{ $item->full_name }}
+                                                        <span><b>真实姓名：</b></span>{{ $item->full_name ?: '--' }}
                                                         <p></p>
                                                         <span><b>性别：</b></span>{{ $userStatus['gender'][$item->gender]['name'] }} &nbsp;&nbsp;&nbsp;
                                                         <span><b>年龄：</b></span>{{ empty($item->age) ? '--' : $item->age }} &nbsp;&nbsp;&nbsp;

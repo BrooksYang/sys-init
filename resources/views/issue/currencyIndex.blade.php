@@ -98,12 +98,12 @@
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <p><b>发币方官网地址：</b>{{$item->currency_issuer_website}}</p>
-                                                        <p><b>白皮书地址：</b>{{$item->white_paper_url}}</p>
-                                                        <p><b>钱包下载地址：</b>{{$item->wallet_download_url}}</p>
-                                                        <p><b>区块查询链接：</b>{{$item->block_chain_record_url}}</p>
+                                                        <p><b>发币方官网地址：</b>{{$item->currency_issuer_website ?:'--'}}</p>
+                                                        <p><b>白皮书地址：</b>{{$item->white_paper_url ?:'--'}}</p>
+                                                        <p><b>钱包下载地址：</b>{{$item->wallet_download_url ?:'--'}}</p>
+                                                        <p><b>区块查询链接：</b>{{$item->block_chain_record_url ?:'--'}}</p>
                                                         <b>币种简介：</b>
-                                                        {{$item->currency_intro}}
+                                                        {{$item->currency_intro ?:'暂无数据'}}
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>

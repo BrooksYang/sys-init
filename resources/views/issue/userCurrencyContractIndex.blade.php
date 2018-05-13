@@ -71,9 +71,9 @@
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <span><b>充值提醒信息：</b></span>{{ $item->user_deposit_warning }}
+                                                        <span><b>充值提醒信息：</b></span>{{ $item->user_deposit_warning ?:'--'}}
                                                         <p></p>
-                                                        <span><b>提币提醒信息：</b></span>{{ $item->user_withdraw_warning }}
+                                                        <span><b>提币提醒信息：</b></span>{{ $item->user_withdraw_warning ?:'--'}}
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>

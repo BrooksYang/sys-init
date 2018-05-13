@@ -48,6 +48,7 @@
             .noDataValue{
                 padding: 30px 0 0;font-size:16px;
             }
+            .text_c {text-align: center}
         </style>
     @show
 </head>

@@ -69,7 +69,7 @@
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
-                                                    <div class="modal-body">
+                                                    <div class="modal-body {{ $item->crypto_wallet_description?'':'text_c' }}">
                                                         {{$item->crypto_wallet_description ?: '暂无描述'}}
                                                     </div>
                                                     <div class="modal-footer">
