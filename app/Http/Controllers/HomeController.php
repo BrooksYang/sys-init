@@ -18,7 +18,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $cacheLength = env('CACHE_LENGTH', CACHE_LENGTH);
+        $cacheLength = intval(env('CACHE_LENGTH', CACHE_LENGTH));
         //注册用户数
         $users = Cache::remember('users', $cacheLength, function () {
             return $this->getUser();
