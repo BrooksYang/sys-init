@@ -62,7 +62,7 @@ class CurrencyTypeInitController extends Controller
         $currencyIcon = $request->except(['_token','editFlag']);
         $currencyIcon['currency_icon'] = basename($request->currency_icon->store('currencyIcon','public'));
         $currencyIcon['created_at'] = gmdate('Y-m-d H:i:s',time());
-dd($currencyIcon);
+
         if (DB::table('dcuex_crypto_currency')->insert($currencyIcon)) {
 
             return redirect('issuer/currencyTypeInit');
