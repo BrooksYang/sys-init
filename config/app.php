@@ -15,6 +15,7 @@ return [
 
     'name' => env('APP_NAME', '代币交易管理平台'),
     'welcome_msg' => env('APP_WELCOME_MSG', '欢迎进入代币交易管理平台'),
+    'copyright' => env('APP_COPYRIGHT', '源联通证'),
 
     /*
     |--------------------------------------------------------------------------

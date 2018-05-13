@@ -20,6 +20,8 @@
     @show
 
     <!-- Custom styles for this template -->
+    {{--Layout Full width--}}
+   {{-- <link rel="stylesheet" href="{{ asset('vendor/entrance/css/theme-nopadding.css') }}">--}}
     <link rel="stylesheet" href="{{ asset('vendor/entrance/css/theme.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/entrance/css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/entrance/css/style.css') }}">
@@ -92,21 +94,22 @@
                 <p id="spanDate"></p>
                 <p id="clock"></p>
             </div>
-            <div class="copyright">Copyright &copy; 2014
-                <a href="http://ndesaintheme.com/">
+            <div class="copyright">Copyright &copy; 2018
+                <a href="javascript:;">
                     {{ config('app.copyright', 'Laravel') }}
-                </a> Made with
-                <i class="fontello-heart-filled text-red"></i>
+                </a>
+               {{-- Made with
+                <i class="fontello-heart-filled text-red"></i>--}}
             </div>
             <div class="devider-footer"></div>
-            <ul>
+            {{--<ul>
                 <li><i class="fa fa-facebook-square"></i>
                 </li>
                 <li><i class="fa fa-twitter-square"></i>
                 </li>
                 <li><i class="fa fa-instagram"></i>
                 </li>
-            </ul>
+            </ul>--}}
         </div>
         <!-- / FOOTER -->
     </div>

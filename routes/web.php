@@ -12,7 +12,7 @@
 */
 
 Route::get('/', function () {
-    return redirect('demo');
+    return redirect('home');
 });
 
 //代币 icon显示路由
