@@ -1,38 +1,48 @@
-@extends('entrance::layouts.default')
+<!DOCTYPE html>
+<html lang="en">
 
-@section('css-part')
-    @parent
-@endsection
+<head>
+    <meta charset="utf-8">
+    <!--   <meta content="IE=edge" http-equiv="X-UA-Compatible"> -->
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="" name="description">
+    <meta content="" name="author">
+    <link href="{{ asset('ico/favicon.ico') }}" rel="shortcut icon">
 
-@section('content')
-    <div class="wrap-fluid" id="paper-bg">
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="not-found">
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="{{ asset('vendor/entrance/css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/entrance/css/style.css') }}">
 
-                    <img class="img-responsive" alt="" src="{{ url('vendor/entrance/img/404.png') }}">
 
-                    <p>你访问的页面不存在...
+    <style>
+        a:hover, a:focus { text-decoration: none }
+        .a-font{
+            font-size: 18px;
+        }
+    </style>
 
-                    <form class="search-form not-found-search">
-                        <div class="input-group">
-                            <div class="input-group-btn">
-                                <a href="{{ url('demo')}}" class="btn bg-red">返回首页</a>
-                            </div>
-                        </div>
-                        <!-- /.input-group -->
-                    </form>
+</head>
+<body role="document">
+
+<div class="container-fluid paper-wrap bevel tlbr">
+    <div class="wrap-sidebar-content">
+        <div class="wrap-fluid" id="paper-bg">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="not-found">
+
+                        <img class="img-responsive" alt="" src="{{ url('vendor/entrance/img/404.png') }}">
+
+                        <h3>你访问的页面不存在...</h3>
+                        <a href="{{ url('/') }}" class="a-font">返回首页</a>
+                    </div>
                 </div>
-
             </div>
         </div>
     </div>
+</div>
 
-
-@endsection
-
-@section('js-part')
-    <script>
-    </script>
-@endsection
+</body>
+</html>
