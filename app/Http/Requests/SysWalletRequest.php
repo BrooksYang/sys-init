@@ -33,4 +33,15 @@ class SysWalletRequest extends FormRequest
                 'nullable|unumeric|min:1',
         ];
     }
+
+    /**
+     * Get the validation messages that apply to the request.
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'sys_wallet_currency_id.unique' => '该币种的记账钱包已存在', //运营方
+        ];
+    }
 }

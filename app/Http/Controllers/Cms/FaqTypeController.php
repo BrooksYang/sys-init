@@ -55,8 +55,10 @@ class FaqTypeController extends Controller
     {
         $faqType = $request->except(['_token','editFlag']);
         Validator::make($request->all(),[
-            'type_title' => 'required|max:255',
+            'type_title' => 'required|max:255|unique:dcuex_faq_type,type_title,'.$request->type,
             'type_description' => 'nullable|max:500',
+        ],[
+            'type_title.unique' => '该文档类型已存在',
         ])->validate();
 
         $faqType['created_at'] = gmdate('Y-m-d H:i:s',time());
@@ -107,8 +109,10 @@ class FaqTypeController extends Controller
     {
         $faqType = $request->except(['_token', '_method', 'editFlag']);
         Validator::make($request->all(),[
-            'type_title' => 'required|max:255',
+            'type_title' => 'required|max:255|unique:dcuex_faq_type,type_title,'.$request->type,
             'type_description' => 'nullable|max:500',
+        ],[
+            'type_title.unique' => '该文档类型已存在',
         ])->validate();
 
         $faqType['updated_at'] = gmdate('Y-m-d H:i:s',time());

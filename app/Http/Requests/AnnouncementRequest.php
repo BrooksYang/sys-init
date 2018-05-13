@@ -36,4 +36,15 @@ class AnnouncementRequest extends FormRequest
             'anno_content' => 'required',
         ];
     }
+
+    /**
+     * Get the validation messages that apply to the request.
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+          'anno_title.unique' => '该公告标题已存在'
+        ];
+    }
 }

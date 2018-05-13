@@ -38,4 +38,15 @@ class CurrencyContractToUserRequest extends FormRequest
 
         ];
     }
+
+    /**
+     * Get the validation messages that apply to the request.
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'currency_id.unique' => '该币种交易合约已经存在'
+        ];
+    }
 }

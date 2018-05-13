@@ -220,7 +220,7 @@
                                 {{--<input type="hidden" class="" name="currency_icon">--}}
                                 {{--<input class="form-control input-lg" type="file" name="file"
                                        placeholder="币种图标">--}}
-                                <p class="help-block"><small>支持jpg,jpeg,png格式，图片尺寸为80*80</small></p>
+                                <p class="help-block"><small>支持jpg，jpeg，png格式，图片最小尺寸为80*80（宽高比为1/1）</small></p>
                                 @if ($errors->has('currency_icon'))
                                     <span class="help-block"><strong>{{ $errors->first('currency_icon') }}</strong></span>
                                 @endif

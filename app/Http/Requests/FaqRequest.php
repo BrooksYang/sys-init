@@ -37,4 +37,15 @@ class FaqRequest extends FormRequest
             'faq_content' => 'required',
         ];
     }
+
+    /**
+     * Get the validation messages that apply to the request.
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'faq_title.unique' => '该文档标题已存在',
+        ];
+    }
 }

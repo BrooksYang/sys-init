@@ -31,4 +31,15 @@ class CurrencyTypeRequest extends FormRequest
             ]
         ];
     }
+
+    /**
+     * Get the validation messages that apply to the request.
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'name.unique' => '该币种类型名称已存在',
+        ];
+    }
 }

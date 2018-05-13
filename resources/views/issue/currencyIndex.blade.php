@@ -69,7 +69,7 @@
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <div style="text-align: center"><img src="{{url('currencyIcon')}}/{{ $item->currency_icon }}" style="width:150px"
+                                                        <div style="text-align: center;border-radius: 15px"><img src="{{url('currencyIcon')}}/{{ $item->currency_icon }}" style="width:150px"
                                                                 onerror="this.src='http://placehold.it/150x150'"/></div>
                                                     </div>
                                                     <div class="modal-footer">
@@ -80,8 +80,8 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{ $item->currency_issue_amount }}</td>
-                                    <td>{{ $item->currency_issue_circulation }}</td>
+                                    <td>{{ number_format($item->currency_issue_amount,8,'.',',') }}</td>
+                                    <td>{{ number_format($item->currency_issue_circulation,8,'.',',') }}</td>
                                     <td>
                                      <!-- Button trigger modal -->
                                         <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLong{{$key}}">

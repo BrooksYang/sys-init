@@ -33,4 +33,15 @@ class UserWalletRequest extends FormRequest
                 'nullable|unumeric|min:1',
         ];
     }
+
+    /**
+     * Get the validation messages that apply to the request.
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'user_wallet_currency_id' => '该币种的记账钱包已存在', //交易用户
+        ];
+    }
 }
