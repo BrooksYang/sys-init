@@ -113,7 +113,7 @@
                                                     <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                             '{{ url("order/userDeposit/$item->id") }}','deposit_order_status',{{$flag}},
                                                             '充值订单为<b><strong> {{$status['name']}} </strong></b> 状态',
-                                                            '{{ csrf_token() }}');">
+                                                            '{{ csrf_token() }}',{{$status['name']}} );">
                                                     {{$status['name']}}</a>
                                                     @endif
                                                 </li>

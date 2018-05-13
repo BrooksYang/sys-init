@@ -141,23 +141,23 @@
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                 '{{ url("user/manage/$item->id") }}','verify_status',3,
                                                 '用户账号为<b><strong> 认证通过 </strong></b> 状态',
-                                                '{{ csrf_token() }}');"> <i class="fontello-ok" title="认证通过"></i></a>
+                                                '{{ csrf_token() }}', '认证通过');"> <i class="fontello-ok" title="认证通过"></i></a>
                                         @elseif($item->verify_status == 3)
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                 '{{ url("user/manage/$item->id") }}','verify_status',4,
                                                 '用户账号为<b><strong> 认证失败 </strong></b> 状态',
-                                                '{{ csrf_token() }}');"> <i class="fontello-cancel-circled" title="认证失败"></i></a>
+                                                '{{ csrf_token() }}', '认证失败');"> <i class="fontello-cancel-circled" title="认证失败"></i></a>
                                         @endif
                                         @if($item->is_valid)
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                 '{{ url("user/manage/$item->id") }}','is_valid',0,
                                                 '用户账号为<b><strong> 禁用 </strong></b> 状态',
-                                                '{{ csrf_token() }}');"> <i class="fontello-lock-filled" title="禁用"></i></a>
+                                                '{{ csrf_token() }}', '禁用');"> <i class="fontello-lock-filled" title="禁用"></i></a>
                                         @else
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                 '{{ url("user/manage/$item->id") }}','is_valid',1,
                                                 '用户账号为<b><strong> 正常 </strong></b> 状态',
-                                                '{{ csrf_token() }}');"> <i class="fontello-lock-open-filled" title="解禁"></i></a>
+                                                '{{ csrf_token() }}', '正常');"> <i class="fontello-lock-open-filled" title="解禁"></i></a>
                                         @endif
                                         <a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
                                                 '{{ url("user/manage/$item->id") }}',

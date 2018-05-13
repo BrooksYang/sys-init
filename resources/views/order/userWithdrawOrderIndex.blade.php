@@ -81,7 +81,7 @@
                                                     <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                             '{{ url("order/withdraw/$item->id") }}?status={{$flag}}','withdraw_order_status',{{$flag}},
                                                             '提币订单为<b><strong> {{$status['name']}} </strong></b> 状态',
-                                                            '{{ csrf_token() }}');">
+                                                            '{{ csrf_token() }}', {{$status['name']}} );">
                                                     {{$status['name']}}</a>
                                                     @endif
                                                 </li>

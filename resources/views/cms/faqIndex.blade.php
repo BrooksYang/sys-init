@@ -102,12 +102,12 @@
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                     '{{ url("faq/manage/updateStatus/$item->id") }}','is_draft',1,
                                                     '文档为<b><strong> 草稿 </strong></b> 状态',
-                                                    '{{ csrf_token() }}');"> <i class="fontello-volume-off" title="设为草稿"></i></a>
+                                                    '{{ csrf_token() }}', '草稿');"> <i class="fontello-volume-off" title="设为草稿"></i></a>
                                         @else
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                     '{{ url("faq/manage/updateStatus/$item->id") }}?','is_draft',2,
                                                     '文档为<b><strong> 发布 </strong></b> 状态',
-                                                    '{{ csrf_token() }}');"> <i class="fontello-volume-high" title="发布"></i></a>
+                                                    '{{ csrf_token() }}', '发布');"> <i class="fontello-volume-high" title="发布"></i></a>
                                         @endif
                                         <a href="{{ url("faq/manage/$item->id/edit") }}">
                                             <i class="fontello-edit" title="编辑"></i>

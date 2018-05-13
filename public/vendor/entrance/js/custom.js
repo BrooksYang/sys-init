@@ -48,10 +48,11 @@ function itemDelete(id, url, token) {
  * @param update
  * @param msg
  * @param token
+ * @param title
  */
-function itemUpdate(id, url, field, update, msg,token) {
+function itemUpdate(id, url, field, update, msg,token,title='操作') {
     bootbox.confirm({
-        title: "删除",
+        title: title,
         message: "是否确认更改"+msg+'？',
         buttons: {
             cancel: { label: '<i class="fa fa-times"></i> 取消' },

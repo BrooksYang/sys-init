@@ -105,27 +105,27 @@
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                     '{{ url("cms/announcement/updateStatus/$item->id") }}?anno_draft=2','anno_top',1,
                                                     '公告为<b><strong> 置顶 </strong></b> 状态',
-                                                    '{{ csrf_token() }}');"> <i class="fa fa-hand-o-up" title="置顶"></i></a>
+                                                    '{{ csrf_token() }}','置顶');"> <i class="fa fa-hand-o-up" title="置顶"></i></a>
                                         @elseif($item->anno_draft == 2 &&$item->anno_top == 1)
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                     '{{ url("cms/announcement/updateStatus/$item->id") }}?anno_draft=2','anno_top',2,
                                                     '公告为<b><strong> 取消置顶 </strong></b> 状态',
-                                                    '{{ csrf_token() }}');"> <i class="fa fa-hand-o-down" title="取消置顶"></i></a>
+                                                    '{{ csrf_token() }}','取消置顶');"> <i class="fa fa-hand-o-down" title="取消置顶"></i></a>
                                         @endif
                                         @if($item->anno_draft == 1)
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                     '{{ url("cms/announcement/updateStatus/$item->id") }}?anno_top=2','anno_draft',2,
                                                     '公告为<b><strong> 发布 </strong></b> 状态',
-                                                    '{{ csrf_token() }}');"> <i class="fontello-volume-high" title="发布"></i></a>
+                                                    '{{ csrf_token() }}','发布');"> <i class="fontello-volume-high" title="发布"></i></a>
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                     '{{ url("cms/announcement/updateStatus/$item->id") }}?anno_top=1','anno_draft',2,
                                                     '公告为<b><strong> 发布并置顶 </strong></b> 状态',
-                                                    '{{ csrf_token() }}');"> <i class="fontello-export" title="发布并置顶"></i></a>
+                                                    '{{ csrf_token() }}', '发布并置顶');"> <i class="fontello-export" title="发布并置顶"></i></a>
                                         @elseif($item->anno_draft == 2)
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                     '{{ url("cms/announcement/updateStatus/$item->id") }}?anno_top=2','anno_draft',1,
                                                     '公告为<b><strong> 草稿 </strong></b> 状态',
-                                                    '{{ csrf_token() }}');">&nbsp; <i class="fontello-volume-off" title="设为草稿"></i></a>
+                                                    '{{ csrf_token() }}', '草稿');">&nbsp; <i class="fontello-volume-off" title="设为草稿"></i></a>
                                         @endif
                                         <a href="{{ url("cms/announcement/$item->id/edit") }}">
                                             <i class="fontello-edit" title="编辑"></i>
