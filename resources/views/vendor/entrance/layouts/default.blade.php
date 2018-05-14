@@ -7,7 +7,7 @@
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <meta content="" name="description">
     <meta content="" name="author">
-    <link href="{{ asset('ico/favicon.ico') }}" rel="shortcut icon">
+    <link href="{{ asset('favicon.ico') }}" rel="shortcut icon">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
@@ -99,6 +99,7 @@
                 <a href="javascript:;">
                     {{ config('app.copyright', 'Laravel') }}
                 </a>
+                <img src="{{ asset('logo_80.png') }}" alt="" style="width: 25px">
                {{-- Made with
                 <i class="fontello-heart-filled text-red"></i>--}}
             </div>
