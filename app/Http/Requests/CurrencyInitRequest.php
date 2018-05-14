@@ -49,7 +49,7 @@ class CurrencyInitRequest extends FormRequest
             'currency_issue_circulation' => 'required|numeric|max:'.$request->currency_issue_amount,
             'currency_issuer_website' => 'required|url',
             'white_paper_url' => 'required|url',
-            'wallet_download_url' => 'required|url',
+            'wallet_download_url' => 'nullable|url',
             'block_chain_record_url' => 'required|url',
             //TODO 图片类-型尺寸限定
             'currency_icon' => 'mimes:jpeg,png,bmp|dimensions:min_width=80,min_height=80,ratio=1/1',
