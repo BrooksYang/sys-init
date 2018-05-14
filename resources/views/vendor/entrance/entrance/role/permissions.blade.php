@@ -29,7 +29,7 @@
                                     <div class="col-sm-12">
                                         <div class="checkbox">
                                             @foreach($group->permissions as $permission)
-                                                <label>
+                                                <label title="{{ $permission->description }}">
                                                     <input type="checkbox" name="permissions[]"
                                                            value="{{ $permission->id }}"
                                                             {{ in_array($permission->id, $permissionIds) ? 'checked' : '' }} >
@@ -63,7 +63,7 @@
                                 <div class="col-sm-12">
                                     <div class="checkbox">
                                         @foreach($module->permissions as $permission)
-                                            <label>
+                                            <label title="{{ $permission->description }}">
                                                 <input type="checkbox" name="permissions[]"
                                                        value="{{ $permission->id }}"
                                                         {{ in_array($permission->id, $permissionIds) ? 'checked' : '' }} >
