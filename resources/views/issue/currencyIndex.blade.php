@@ -92,7 +92,7 @@
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLongTitle{{$key}}">{{$item->currency_title_cn}}</h5>
+                                                        <h5 class="modal-title" id="exampleModalLongTitle{{$key}}">{{$item->currency_title_cn ?:'币种名称'}}&nbsp;{{$item->currency_title_en?:'英文名称'}}({{$item->currency_title_en_abbr?:'简写'}})</h5>
                                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
@@ -103,7 +103,7 @@
                                                         <p><b>钱包下载地址：</b>{{$item->wallet_download_url ?:'--'}}</p>
                                                         <p><b>区块查询链接：</b>{{$item->block_chain_record_url ?:'--'}}</p>
                                                         <b>币种简介：</b>
-                                                        {{$item->currency_intro ?:'暂无数据'}}
+                                                        {!! $item->currency_intro ?:'暂无数据' !!}
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>

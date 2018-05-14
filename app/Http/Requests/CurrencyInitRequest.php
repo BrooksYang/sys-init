@@ -51,6 +51,7 @@ class CurrencyInitRequest extends FormRequest
             'white_paper_url' => 'required|url',
             'wallet_download_url' => 'nullable|url',
             'block_chain_record_url' => 'required|url',
+            'currency_intro' => 'nullable',
             //TODO 图片类-型尺寸限定
             'currency_icon' => 'mimes:jpeg,png,bmp|dimensions:min_width=80,min_height=80,ratio=1/1',
 

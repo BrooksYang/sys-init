@@ -202,14 +202,27 @@
 
                         {{-- Description --}}
                         <div class="form-group {{ $errors->has('currency_intro') ? 'has-error' : '' }}">
-                            <div class="col-sm-12">
+                            <div class="col-md-12">
+                                <label>合约简介</label>
+                                <div class="form-group {{ $errors->has('currency_intro') ? 'has-error' : '' }}">
+                                    <div class="col-sm-12">
+                                        <textarea id="questionContent" name="currency_intro" rows="8" cols="150" style="visibility: hidden; display: none;"
+                                                  placeholder="请填写公告内容">{{ $currency->currency_intro ?? old('currency_intro') }}</textarea>
+
+                                        @if ($errors->has('currency_intro'))
+                                            <span class="help-block"><strong>{{ $errors->first('currency_intro') }}</strong></span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                           {{-- <div class="col-sm-12">
                                 <label>合约简介</label>
                                 <textarea class="form-control" name="currency_intro" rows="5"
                                           placeholder="简介">{{ $currency->currency_intro ?? old('currency_intro') }}</textarea>
                                 @if ($errors->has('currency_intro'))
                                     <span class="help-block"><strong>{{ $errors->first('currency_intro') }}</strong></span>
                                 @endif
-                            </div>
+                            </div>--}}
                         </div>
 
                         {{--图标--}}
@@ -251,8 +264,15 @@
 @endsection
 
 @section('js-part')
+    <script type="text/javascript" src="{{ asset('assets/ckeditor/ckeditor.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/ckfinder/ckfinder.js') }}"></script>
     <script>
         $(function(){
+            CKEDITOR.replace('questionContent', {
+                height:'300px',
+            });
+
+
             //日期插件
             /*$("#form_datetime").datetimepicker({
                 format: 'yyyy-mm-dd',//显示格式
