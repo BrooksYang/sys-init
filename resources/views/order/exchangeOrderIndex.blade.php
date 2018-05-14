@@ -102,7 +102,7 @@
                                     <td title="{{ $item->id }}">{{ str_limit($item->id, 15) }}</td>
                                     <td title="{{ $item->phone }}">{{ str_limit($item->phone, 15) }}</td>
                                     <td title="{{ $item->email }}">{{ str_limit($item->email, 12) }}</td>
-                                    <td><span class="label label-info">{{ $item->symbol }}</span></td>
+                                    <td><span class="label label-info">{{ strtoupper($item->base_currency) }}/{{ strtoupper($item->quote_currency) }}</span></td>
                                     <td>{{ $item->maker_fee.'%'}}</td>
                                     <td>{{ $item->taker_fee.'%'}}</td>
                                     <td>{{ number_format($item->amount,8,'.',',') }}</td>
