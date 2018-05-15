@@ -1,12 +1,17 @@
 @extends('entrance::layouts.default')
 
 @section('css-import')
-    {{--<link rel="stylesheet" href="{{ url('/vendor/entrance/js/datepicker/bootstrap-datetimepicker.min.css') }}">--}}
+    <link rel="stylesheet" href="{{ asset('vendor/entrance/js/timepicker/bootstrap-timepicker.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/entrance/js/datepicker/datepicker.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/entrance/js/datepicker/clockface.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('vendor/entrance/css/entypo-icon.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/entrance/css/entypo.css') }}">
+
 @show
 
 
 @section('js-import')
-   {{-- <script src="{{ url('/vendor/entrance/js/datepicker/bootstrap-datetimepicker.js') }}"></script>--}}
 @show
 
 @section('content')
@@ -78,7 +83,7 @@
                                 <div class="form-group {{ $errors->has('currency_type_id') ? 'has-error' : '' }}" id="typeForm"
                                      style="display: {{ (old('type') || @$permission->group_id) ? 'none' : 'block' }}">
                                     <div class="col-sm-12">
-                                        <select class="form-control" name="currency_type_id">
+                                        <select class="form-control input-sm" name="currency_type_id">
                                             <option value="">请选择币种类型</option>
                                             @foreach($currencyType as $key => $item)
                                                 <option value="{{ $item->id }}" {{ (@$currency->currency_type_id == $item->id|| old('currency_type_id') == $item->id) ? 'selected' : '' }}>
@@ -98,11 +103,15 @@
                                 <label>发行时间</label>
                                 <div class="form-group {{ $errors->has('currency_issue_date') ? 'has-error' : '' }}">
                                     <div class="col-sm-12">
-                                        <input id="form_datetime" class="form-control input-sm" name="currency_issue_date" size="16" type="text" value="{{ $currency->currency_issue_date ?? old('currency_issue_date') }}"
-                                               placeholder="发行时间">
-                                        @if ($errors->has('currency_issue_date'))
-                                            <span class="help-block"><strong>{{ $errors->first('currency_issue_date') }}</strong></span>
-                                        @endif
+                                        <div id="datetimepicker1" class="input-group date">
+                                            <input class="form-control input-sm" name="currency_issue_date" size="16" type="text" value="{{ $currency->currency_issue_date ?? old('currency_issue_date') }}"
+                                                   placeholder="发行时间" data-format="yyyy-MM-dd hh:mm:ss">
+                                            <span class="input-group-addon add-on">
+                                                <i style="font-style:normal;" data-time-icon="entypo-clock" data-date-icon="entypo-calendar"> </i></span>
+                                            @if ($errors->has('currency_issue_date'))
+                                                <span class="help-block"><strong>{{ $errors->first('currency_issue_date') }}</strong></span>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -272,6 +281,13 @@
 @endsection
 
 @section('js-part')
+    <script type='text/javascript' src='{{ asset('vendor/entrance/js/timepicker/bootstrap-timepicker.js') }}'></script>
+    <script type='text/javascript' src='{{ asset('vendor/entrance/js/datepicker/bootstrap-datepicker.js') }}'></script>
+    <script type='text/javascript' src='{{ asset('vendor/entrance/js/datepicker/clockface.js') }}'></script>
+    <script type='text/javascript' src='{{ asset('vendor/entrance/js/datepicker/bootstrap-datetimepicker.js') }}'></script>
+
+
+
     <script type="text/javascript" src="{{ asset('assets/ckeditor/ckeditor.js') }}"></script>
     <script type="text/javascript" src="{{ asset('assets/ckfinder/ckfinder.js') }}"></script>
     <script>
@@ -280,9 +296,11 @@
                 height:'300px',
             });
 
-
-            //日期插件
-            /*$("#form_datetime").datetimepicker({
+            //日期时间插件
+            $('#datetimepicker1').datetimepicker({
+                language: 'zh'
+            });
+           /* $("#datetimepicker1").datetimepicker({
                 format: 'yyyy-mm-dd',//显示格式
                 todayHighlight: 1,//今天高亮
                 minView: "month",//设置只显示到月份
