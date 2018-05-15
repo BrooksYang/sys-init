@@ -200,14 +200,30 @@
                             </div>
                         </div>
 
+                        {{--简介 --}}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>合约简介</label>
+                                <div class="form-group {{ $errors->has('currency_summary') ? 'has-error' : '' }}">
+                                    <div class="col-md-12">
+                                        <textarea class="form-control" name="currency_summary" rows="5"
+                                                  placeholder="请填写合约简介">{{ $currency->currency_summary ?? old('currency_summary') }}</textarea>
+                                            @if ($errors->has('currency_summary'))
+                                                <span class="help-block"><strong>{{ $errors->first('currency_summary') }}</strong></span>
+                                            @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         {{-- Description --}}
                         <div class="form-group {{ $errors->has('currency_intro') ? 'has-error' : '' }}">
                             <div class="col-md-12">
-                                <label>合约简介</label>
+                                <label>合约详细介绍</label>
                                 <div class="form-group {{ $errors->has('currency_intro') ? 'has-error' : '' }}">
                                     <div class="col-sm-12">
                                         <textarea id="questionContent" name="currency_intro" rows="8" cols="150" style="visibility: hidden; display: none;"
-                                                  placeholder="请填写公告内容">{{ $currency->currency_intro ?? old('currency_intro') }}</textarea>
+                                                  placeholder="请填写合约详细介绍">{{ $currency->currency_intro ?? old('currency_intro') }}</textarea>
 
                                         @if ($errors->has('currency_intro'))
                                             <span class="help-block"><strong>{{ $errors->first('currency_intro') }}</strong></span>
@@ -215,14 +231,6 @@
                                     </div>
                                 </div>
                             </div>
-                           {{-- <div class="col-sm-12">
-                                <label>合约简介</label>
-                                <textarea class="form-control" name="currency_intro" rows="5"
-                                          placeholder="简介">{{ $currency->currency_intro ?? old('currency_intro') }}</textarea>
-                                @if ($errors->has('currency_intro'))
-                                    <span class="help-block"><strong>{{ $errors->first('currency_intro') }}</strong></span>
-                                @endif
-                            </div>--}}
                         </div>
 
                         {{--图标--}}
