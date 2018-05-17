@@ -149,7 +149,7 @@
                     <hr>
                     <div class="row">
                         <div class="col-md-10">
-                            <!-- 委托订单成家数量及价格统计--按状态 -->
+                            <!-- 委托订单成交数量及价格统计--按状态 -->
                             <div id="exchangeOrderLog" style="width: 100%;height:600px;"></div>
                         </div>
                     </div>
@@ -686,7 +686,7 @@
             yAxis: [
                 {
                     type: 'value',
-                    name: '成家总额',
+                    name: '成交总额',
                     min: 0,
                     max: {{ $exchangeOrderByType['maxCashAmount'] }},
                     interval: {{ $exchangeOrderByType['cashAmountInterval'] }},
@@ -777,7 +777,7 @@
             yAxis: [
                 {
                     type: 'value',
-                    name: '成家价格',
+                    name: '成交价格',
                     min: 0,
                     max: {{ $exchangeOrderLog['maxPrice'] }},
                     interval: {{ $exchangeOrderLog['priceInterval'] }},
