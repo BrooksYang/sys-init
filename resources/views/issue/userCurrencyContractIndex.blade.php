@@ -109,7 +109,7 @@
                                                             </tr>
                                                             @forelse(($symbolByCurrency[$item->currency_id] ?? []) as $key => $symbol)
                                                                 <tr>
-                                                                    <td class=""><span class="label label-success">{{ $symbol->symbol }}</span></td>
+                                                                    <td class=""><span class="label label-success">{{ strtoupper($symbol->abbr).'/'.strtoupper(explode(strtolower($symbol->abbr),strtolower($symbol->symbol))[1]) }}</span></td>
                                                                     <td class="fee"><input type="text" value="{{ $symbol->maker_fee }}" name="symbolFee[{{$symbol->id}}][maker_fee]">
                                                                     @if ($errors->has("symbolFee.$symbol->id.maker_fee"))
                                                                         <span class="help-block" style="color: #a94442"><strong>{{ $errors->first("symbolFee.$symbol->id.maker_fee") }}</strong></span>

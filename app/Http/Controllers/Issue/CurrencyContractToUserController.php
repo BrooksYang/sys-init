@@ -235,8 +235,10 @@ class CurrencyContractToUserController extends Controller
      */
     public function symbolByCurrency()
     {
-        $currencySymbol = DB::table('dcuex_currency_symbol')
-            ->get(['id','base_currency_id', 'symbol','quote_currency_id','maker_fee','taker_fee']);
+        $currencySymbol = DB::table('dcuex_currency_symbol as symbol')
+            ->join('dcuex_crypto_currency as currency','symbol.base_currency_id','currency.id')
+            ->get(['symbol.id','base_currency_id', 'symbol','quote_currency_id','maker_fee','taker_fee',
+                'currency_title_en_abbr as abbr']);
         $sortOutSymbol = [];
         foreach ($currencySymbol as $key => $symbol){
             $sortOutSymbol[$symbol->base_currency_id][] = $symbol;
