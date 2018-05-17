@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Cms;
 use App\Http\Requests\FaqRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 const FAQ_PAGE_SIZE = 20;
@@ -29,10 +30,15 @@ class FaqController extends Controller
             1 => ['name' => '草稿' ,'class' => 'default'],
             2 => ['name' => '发布' ,'class' => 'success'],
         ];
+        $faqRecommend = [
+            1 => ['name' => '推荐' ,'class' => 'primary'],
+            2 => ['name' => '不推荐' ,'class' => 'default'],
+        ];
         $search = trim($request->search,'');
         $orderC = trim($request->orderC,'');
         $filterType= trim($request->filterType,'');
         $filterStatus= trim($request->filterStatus,'');
+        $filterRecommend= trim($request->filterRecommend,'');
         $faq = DB::table('dcuex_faq as faq')
             ->when($filterType, function ($query) use ($filterType){
                 return $query->join('dcuex_faq_to_type as ftt','faq.id','ftt.faq_id')
@@ -41,6 +47,9 @@ class FaqController extends Controller
             })
             ->when($filterStatus, function ($query) use ($filterStatus){
                 return $query->where('faq.is_draft', $filterStatus);
+            })
+            ->when($filterRecommend, function ($query) use ($filterRecommend){
+                return $query->where('faq.is_recommend', $filterRecommend);
             })
             ->when($search, function ($query) use ($search){
                 return $query->where('faq.faq_title','like',"%$search%")
@@ -56,7 +65,7 @@ class FaqController extends Controller
 
         $faqType = $this->getFaqType();
 
-        return view('cms.faqIndex', compact('faqStatus', 'faqType','faq'));
+        return view('cms.faqIndex', compact('faqStatus', 'faqRecommend','faqType','faq'));
     }
 
     /**
@@ -81,6 +90,7 @@ class FaqController extends Controller
     {
         $faq = $request->except(['_token', 'type_id', 'editFlag']);
         $typeId = $request->type_id;
+        $faq['submitter_id'] = Auth::id();
         $faq['created_at'] = gmdate('Y-m-d H:i:s',time());
 
         DB::transaction(function () use ($faq, $typeId) {
@@ -101,7 +111,15 @@ class FaqController extends Controller
      */
     public function show($id)
     {
-        $faq = DB::table('dcuex_faq')->where('id', $id)->first();
+        $queryFaq = DB::table('dcuex_faq as faq')->where('faq.id', $id);
+        $isAdmin = $queryFaq->first(['is_admin']);
+        $faq = $queryFaq->when($isAdmin->is_admin == 1, function ($query) use ($id){
+            return $query->join('auth_admins as admin','faq.submitter_id','admin.id')
+                ->select(['faq.*','admin.name','admin.email']);
+        })->when($isAdmin->is_admin == 2, function ($query) use ($id){
+            return $query->join('users','faq.submitter_id','users.id')
+                ->select(['faq.*','users.username as name','users.email','users.phone']);
+        })->first();
 
         $faqTypeIds = DB::table('dcuex_faq_to_type')->where('faq_id', $id)->get(['type_id'])->toArray();
         $faqType = DB::table('dcuex_faq_type')->whereIn('id',array_pluck($faqTypeIds, 'type_id'))

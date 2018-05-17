@@ -49,13 +49,20 @@
                             <ul role="menu" class="dropdown-menu pull-right">
                                 <li>
                                     <a href="{{ url('faq/manage') }}">全部
-                                        {!! in_array( Request::get('filterStatus'),array_keys($faqStatus)) ? '' :'&nbsp;<i class="fa fa-check txt-info"></i>'!!}
+                                        {!! (in_array( Request::get('filterStatus'),array_keys($faqStatus)) || in_array( Request::get('filterRecommend'),array_keys($faqRecommend)) ) ? '' :'&nbsp;<i class="fa fa-check txt-info"></i>'!!}
                                     </a>
                                 </li>
                                 @foreach($faqStatus as $key=>$item)
                                     <li>
                                         <a href="{{ url('faq/manage') }}?filterStatus={{$key}}">{{$item['name']}}
                                             {!!  Request::get('filterStatus') == $key ? '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
+                                        </a>
+                                    </li>
+                                @endforeach
+                                @foreach($faqRecommend as $key=>$item)
+                                    <li>
+                                        <a href="{{ url('faq/manage') }}?filterRecommend={{$key}}">{{$item['name']}}
+                                            {!!  Request::get('filterRecommend') == $key ? '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
                                         </a>
                                     </li>
                                 @endforeach
@@ -88,6 +95,7 @@
                                 <tr>
                                     <td>{{ ($key + 1) + ($faq->currentPage() - 1) * $faq->perPage() }}</td>
                                     <td title="{{ $item->faq_title }}"><strong>
+                                            {!! $item->is_recommend ==1 ?'<i class="fontello-star-filled" title="已推荐"></i>' : '<i class=""></i>' !!}
                                             <a href="{{ url("faq/manage/$item->id")}}">{{ str_limit($item->faq_title,30) }} </a></strong>
                                     </td>
                                     <td title="{{ $item->faq_key_words}}"><span class="label label-info">{{ str_limit($item->faq_key_words,15) }}</span></td>
@@ -98,7 +106,34 @@
                                     <td>{{ $item->created_at ?: '--'}}</td>
                                     {{--<td>{{ $item->updated_at ?? '--' }}</td>--}}
                                     <td>
-                                        @if($item->is_draft == 2)
+                                        @if($item->is_draft == 2 && $item->is_recommend ==1)
+                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
+                                                    '{{ url("faq/manage/updateStatus/$item->id") }}?is_draft=2','is_recommend',1,
+                                                    '文档为<b><strong> 推荐 </strong></b> 状态',
+                                                    '{{ csrf_token() }}','推荐');"> <i class="fontello-star-filled" title="推荐"></i></a>
+                                        @elseif($item->is_draft == 2 &&$item->is_recommend == 2)
+                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
+                                                    '{{ url("faq/manage/updateStatus/$item->id") }}?is_draft=2','is_recommend',2,
+                                                    '文档为<b><strong> 取消推荐 </strong></b> 状态',
+                                                    '{{ csrf_token() }}','取消推荐');"> <i class="fontello-star" title="取消推荐"></i></a>
+                                        @endif
+                                        @if($item->is_draft == 1)
+                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
+                                                    '{{ url("faq/manage/updateStatus/$item->id") }}?is_recommend=2','is_draft',2,
+                                                    '文档为<b><strong> 发布 </strong></b> 状态',
+                                                    '{{ csrf_token() }}','发布');"> <i class="fontello-volume-high" title="发布"></i></a>
+                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
+                                                    '{{ url("faq/manage/updateStatus/$item->id") }}?is_recommend=1','is_draft',2,
+                                                    '文档为<b><strong> 发布并推荐 </strong></b> 状态',
+                                                    '{{ csrf_token() }}', '发布并推荐');"> <i class="fontello-export" title="发布并推荐"></i></a>
+                                        @elseif($item->is_draft == 2)
+                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
+                                                    '{{ url("faq/manage/updateStatus/$item->id") }}?is_recommend=2','is_draft',1,
+                                                    '文档为<b><strong> 草稿 </strong></b> 状态',
+                                                    '{{ csrf_token() }}', '草稿');">&nbsp; <i class="fontello-volume-off" title="设为草稿"></i></a>
+                                        @endif
+
+                                      {{--  @if($item->is_draft == 2)
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                     '{{ url("faq/manage/updateStatus/$item->id") }}','is_draft',1,
                                                     '文档为<b><strong> 草稿 </strong></b> 状态',
@@ -108,7 +143,7 @@
                                                     '{{ url("faq/manage/updateStatus/$item->id") }}?','is_draft',2,
                                                     '文档为<b><strong> 发布 </strong></b> 状态',
                                                     '{{ csrf_token() }}', '发布');"> <i class="fontello-volume-high" title="发布"></i></a>
-                                        @endif
+                                        @endif--}}
                                         <a href="{{ url("faq/manage/$item->id/edit") }}">
                                             <i class="fontello-edit" title="编辑"></i>
                                         </a>

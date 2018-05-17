@@ -18,6 +18,9 @@
                             <div class="text-center">
                                 <h4>{{ $faq->faq_title }}</h4>
                             </div>
+                            <p class="text-center" style="line-height: 15px">
+                                <i class="fontello-user-outline"></i>{{ $faq->name }}&nbsp;&nbsp;<i class="fontello-mail"></i>{{ $faq->email }}&nbsp;&nbsp;{!! isset($faq->phone) ? "<i class='fontello-phone-outline'></i>".$faq->phone :'' !!}<br>
+                            </p>
                             <p class="text-center">
                                 【关键词】：<span class="label label-info">{{ @$faq->faq_key_words }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
                                 创建时间：{{ $faq->created_at ?:'--'}}&nbsp;&nbsp;&nbsp;&nbsp;

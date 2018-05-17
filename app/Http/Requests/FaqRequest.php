@@ -33,6 +33,7 @@ class FaqRequest extends FormRequest
             ],
             'faq_key_words' => 'nullable|max:255',
             'is_draft' => 'required',
+            'is_recommend' => 'required',
             'type_id' => 'required',
             'faq_content' => 'required',
         ];

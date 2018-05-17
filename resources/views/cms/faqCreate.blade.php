@@ -117,18 +117,34 @@
 
                         {{--状态--}}
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="form-group">
-                                    <div class="col-md-2">
+                                    <div class="col-md-4">
                                         <label>是否发布</label>
                                         <div class="radio">
                                             <label>
                                                 <input type="radio" name="is_draft" id="is_draft_1" value=1  {{ @$editFlag ? ($faq->is_draft ==1 ? 'checked ' :'') : 'checked' }}
-                                                       >草稿
+                                                        onclick="javascript:$('#is_recommend_2').prop('checked',true); $('#is_recommend_1').attr('disabled',true);">草稿
                                             </label>
                                             <label class="pull-right">
                                                 <input type="radio" name="is_draft" id="is_draft_2" value=2  {{ @$editFlag ? ($faq->is_draft ==2 ? 'checked ' :'') : '' }}
-                                                       >发布
+                                                        onclick="javascript:$('#is_recommend_1').attr('disabled',false);">发布
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <label>是否推荐</label>
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" name="is_recommend" id="is_recommend_2" value=2  {{ @$editFlag ? ($announcement->is_recommend ==2 ? 'checked ' :'') : 'checked' }} >不推荐
+                                            </label>
+                                            <label class="pull-right">
+                                                <input type="radio" name="is_recommend" id="is_recommend_1" value=1  {{ @$editFlag ? ($announcement->is_recommend ==1 ? 'checked ' :'') : '' }}>推荐
                                             </label>
                                         </div>
                                     </div>
@@ -171,6 +187,10 @@
             CKEDITOR.replace('faq_content', {
                 height:'300px',
             });
+
+            if( $('#is_draft_1').prop('checked') ){
+                $('#is_recommend_1').attr('disabled',true)
+            }
 
         })
     </script>
