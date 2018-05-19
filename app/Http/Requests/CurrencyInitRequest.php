@@ -53,9 +53,8 @@ class CurrencyInitRequest extends FormRequest
             'block_chain_record_url' => 'required|url',
             'currency_summary' => 'nullable|max:500',
             'currency_intro' => 'nullable',
-            //TODO 图片类-型尺寸限定
-            'currency_icon' => 'mimes:jpeg,png,bmp|dimensions:min_width=80,min_height=80,ratio=1/1',
-
+            //TODO 图片类-型尺寸限定-UploadHandle
+            //'currency_icon' => 'mimes:jpeg,png,bmp|dimensions:min_width=80,min_height=80,ratio=1/1',
         ];
     }
 

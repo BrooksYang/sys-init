@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Issue;
 
 use App\Http\Requests\CurrencyInitRequest;
+use App\Traits\ImgCrop;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,8 @@ const CURRENCY_PAGE_SIZE = 20;
  */
 class CurrencyTypeInitController extends Controller
 {
+   use ImgCrop;
+
     /**
      * Display a listing of the resource.
      *
@@ -59,7 +62,7 @@ class CurrencyTypeInitController extends Controller
      */
     public function store(CurrencyInitRequest $request)
     {
-        $currencyIcon = $request->except(['_token','editFlag']);
+        $currencyIcon = $request->except(['_token','editFlag','x','y','w','h']);
         if ($request->hasFile('currency_icon')) {
             $currencyIcon['currency_icon'] = basename($request->currency_icon->store('currencyIcon','public'));
         }
@@ -118,7 +121,7 @@ class CurrencyTypeInitController extends Controller
      */
     public function update(CurrencyInitRequest $request, $id)
     {
-        $currency = $request->except(['_token','_method','editFlag']);
+        $currency = $request->except(['_token','_method','editFlag','x','y','w','h']);
         $query = DB::table('dcuex_crypto_currency')->where('id',$id);
         $currency['updated_at'] = gmdate('Y-m-d H:i:s',time());
 
@@ -146,5 +149,27 @@ class CurrencyTypeInitController extends Controller
 
             return response()->json([]);
         }*/
+    }
+
+    /**
+     * 上传币种图标
+     *
+     * @param $dir
+     */
+    public function upload($dir)
+    {
+
+        $this->imgUpload(base64_decode($dir));
+    }
+
+    /**
+     * 裁剪币种图标
+     *
+     * @param $dir
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function crop($dir)
+    {
+        return $this->imgCrop('width', 'height', base64_decode($dir), 'cropImg');
     }
 }

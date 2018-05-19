@@ -7,6 +7,28 @@
 
     <link rel="stylesheet" href="{{ asset('vendor/entrance/css/entypo-icon.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/entrance/css/entypo.css') }}">
+    {{-- 图片裁剪 --}}
+    <link rel="stylesheet" href="{{ url('imageCrop/css/jcrop/css/jquery.Jcrop.css') }}">
+    <link rel="stylesheet" href="{{ url('imageCrop/css/image-crop.min.css') }}">
+    <link rel="stylesheet" href="{{ url('imageCrop/css/jquery.fileupload.css') }}">
+    <style>
+        .chooseB{
+            padding: 6px 12px; border: 1px solid #E3E3E3; background-color: #fff;width: 82px;
+        }
+        .fileInput{
+            opacity: 0; width: 80px; height: 33px;  position: absolute;  top:0;  right:0;
+        }
+        .cropB{
+            padding: 6px 12px; border: 1px solid #E3E3E3; background-color: #fff;
+        }
+        .buttonA{
+            margin-bottom: 10px; margin-top: 10px;
+        }
+        button:disabled {
+            cursor: not-allowed;
+            pointer-events: all !important;
+        }
+    </style>
 
 @show
 
@@ -27,7 +49,7 @@
 
                 {{-- Form --}}
                 <div class="box-body">
-                    <form class="form form-horizontal" role="form" method="POST" action="{{ @$editFlag ? url("issuer/currencyTypeInit/$currency->id") : url('issuer/currencyTypeInit') }}" enctype="multipart/form-data">
+                    <form id="formCurreny" class="form form-horizontal" role="form" method="POST" action="{{ @$editFlag ? url("issuer/currencyTypeInit/$currency->id") : url('issuer/currencyTypeInit') }}" enctype="multipart/form-data">
                         {{ csrf_field() }}
                         {{ @$editFlag ? method_field('PATCH') : '' }}
                         <input type="hidden" name="editFlag" value="{{ @$editFlag }}">
@@ -108,10 +130,10 @@
                                                    placeholder="发行时间" data-format="yyyy-MM-dd hh:mm:ss">
                                             <span class="input-group-addon add-on">
                                                 <i style="font-style:normal;" data-time-icon="entypo-clock" data-date-icon="entypo-calendar"> </i></span>
-                                            @if ($errors->has('currency_issue_date'))
-                                                <span class="help-block"><strong>{{ $errors->first('currency_issue_date') }}</strong></span>
-                                            @endif
                                         </div>
+                                        @if ($errors->has('currency_issue_date'))
+                                            <span class="help-block"><strong>{{ $errors->first('currency_issue_date') }}</strong></span>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -244,12 +266,49 @@
 
                         {{--图标--}}
                         <div class="form-group {{ $errors->has('currency_icon') ? 'has-error' : '' }}">
+                            <div class="col-md-8">
+                                <label>上传币种图标 <span style="color: #666;font-weight:normal;">(300*300)</span></label>
+                                <p class="help-block"><small>支持jpg，jpeg，png格式，图片最大尺寸为600*600&nbsp;&nbsp;最小尺寸为80*80{{--（宽高比为1/1）--}}</small></p>
+                                @if ($errors->has('currency_icon'))
+                                    <span class="help-block"><strong>{{ $errors->first('currency_icon') }}</strong></span>
+                                @endif
+                                <input type="hidden" id="x" name="x">
+                                <input type="hidden" id="y" name="y">
+                                <input type="hidden" id="w" name="w">
+                                <input type="hidden" id="h" name="h">
+                                {{--上传图片的存储路径 不包括配置中的--}}
+                                <input type="hidden" id="thumbnail" name="currency_icon" value="{{ old('currency_icon') }}">
+                                <div id="Avatar">
+                                    {{--图片显示路由--}}
+                                    @if($editFlag ?? '')
+                                        <img id="logoShow" src="{{url('currencyIcon')}}/{{ $currency->currency_icon }}" style="width:180px"
+                                             onerror="this.src='http://placehold.it/180x180'"/>
+                                    @else
+                                        <img id="logoShow" src="{{url('currencyIcon')}}/{{ $currency->currency_icon ?? old('currency_icon') }}" style="width:180px"
+                                             onerror="this.src='http://placehold.it/180x180'"/>
+                                    @endif
+                                </div>
+                                <div class="buttonA">
+                                    <div class="pull-left" style="position: relative;">
+                                        <button type="button" class="chooseB">选择图片</button>
+                                        {{--上传路由--}}
+                                        <input id="fileupload" type="file" name="files[]" data-url="" multiple class="fileInput">
+                                    </div>
+                                    <div class="pull-left" style="margin-left: 10px;">
+                                        <button type="button" class="crop cropB" disabled>裁剪</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="text-align: right;" id="upload_progress"></div>
+                            <div class="spacer-15"></div>
+                        </div>
+                        {{--<div class="form-group {{ $errors->has('currency_icon') ? 'has-error' : '' }}">
                             <div class="col-sm-12">
                                 <label>上传币种图标</label>
                                 <input type="file" class="" name="currency_icon" value="" id="imgPicker">
-                                {{--<input type="hidden" class="" name="currency_icon">--}}
-                                {{--<input class="form-control input-lg" type="file" name="file"
-                                       placeholder="币种图标">--}}
+                                --}}{{--<input type="hidden" class="" name="currency_icon">--}}{{--
+                                --}}{{--<input class="form-control input-lg" type="file" name="file"
+                                       placeholder="币种图标">--}}{{--
                                 <p class="help-block"><small>支持jpg，jpeg，png格式，图片最小尺寸为80*80（宽高比为1/1）</small></p>
                                 @if ($errors->has('currency_icon'))
                                     <span class="help-block"><strong>{{ $errors->first('currency_icon') }}</strong></span>
@@ -264,13 +323,13 @@
                                     @endif
                                 </div>
                             </div>
-                        </div>
+                        </div>--}}
 
                         {{-- Buttons --}}
                         <div class="form-group">
                             <div class="col-sm-12">
                                 <a href="{{ url('issuer/currencyTypeInit') }}" class="btn btn-default">返回</a>
-                                <button type="submit" class="btn btn-default pull-right">确定</button>
+                                <div class="pull-right"><button type="submit" class="btn btn-default pull-right">确定</button></div>
                             </div>
                         </div>
                     </form>
@@ -290,6 +349,12 @@
 
     <script type="text/javascript" src="{{ asset('assets/ckeditor/ckeditor.js') }}"></script>
     <script type="text/javascript" src="{{ asset('assets/ckfinder/ckfinder.js') }}"></script>
+
+    {{--上传、裁剪--}}
+    <script type="text/javascript" src="{{ asset('imageCrop/js/jquery.ui.widget.js') }}"> </script>
+    <script type="text/javascript" src="{{ asset('imageCrop/js/jquery.iframe-transport.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('imageCrop/js/jquery.fileupload.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('imageCrop/css/jcrop/js/jquery.Jcrop.min.js') }}"></script>
     <script>
         $(function(){
             CKEDITOR.replace('questionContent', {
@@ -310,7 +375,7 @@
                 autoclose: 1//选择后自动关闭
             });*/
 
-            document
+           /* document
                 .querySelector('#imgPicker')
                 .addEventListener('change', function(){
                     //当没选中图片时，清除预览
@@ -328,8 +393,146 @@
 
                     //读取选中的图片，并转换成dataURL格式
                     reader.readAsDataURL(this.files[0]);
-                },false);
+                },false);*/
 
+            var logoOld = $('#thumbnail').val();
+            /*配置项：图片上传、显示、裁剪路由 url('自定义')*/
+            var image_uplod_route = '{{ url('issuer/currencyIcon/upload').'/'.base64_encode('app/public/currencyIcon')}}';
+            var image_view_route = '{{url('currencyIcon')}}';
+            var image_crop_route = '{{ url('issuer/currencyIcon/crop').'/'.base64_encode('app/public/currencyIcon') }}';
+            //上传及裁剪--预览区的尺寸
+            var image_upload_preview_width = 400;
+            var image_crop_preview_width = 160;
+            var image_crop_preview_height = 160;
+            //裁剪尺寸
+            var image_crop_width = 200;
+            var image_crop_height = 200;
+
+            $('#fileupload').attr('data-url',image_uplod_route);
+            if (logoOld) $('#logoShow').attr('src', image_view_route + '/' +logoOld);
+
+            $('#fileupload').fileupload({
+                dataType: 'json',
+                acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+                maxFileSize: 99900000000000,
+                maxChunkSize: 1000000,
+                maxNumberOfFiles: 1,
+                done: function (e, data) {
+                    var Avatar = $('#Avatar');
+                    var filename = data.result.files[0].name; // 上传之后的文件名
+                    var fileType = data.result.files[0].type;
+                    var fileError = data.result.files[0].error;
+                    console.log(data.result.files[0].type);
+                    if(fileType != 'image/jpeg' && fileType !='image/png'){
+                        layer.msg('不支持的图片类型');
+                        return false;
+                    }
+                    if(fileError){ layer.msg(fileError); return false;}
+
+                    var UrlLocation = image_view_route + '/' + filename; //文件存储完整路径
+                    $("#thumbnail").val(filename); //文件存储路径(需拼接上配置跟路径)
+                    Avatar.empty(); // 更改图片后再次初始化  确保图片不变形
+                    //以下为原始图片预览区（width: 200px）及裁剪图片预览区(width: 50px; height: 50px;)
+                    var html = `
+                    <div class="responsive-1024">
+                        <img src="" id="avatarCrop" alt="Example" style="width: `+image_upload_preview_width+`px;"/>
+                    </div>
+                    <div class="responsive-1024">
+                        <div id="preview-pane" style="right: -230px;">
+                        <div class="preview-container" style="width: `+image_crop_preview_width+`px; height: `+image_crop_preview_height+`px;">
+                        <img src="" class="jcrop-preview" alt="Preview" />
+                    </div>
+                    `;
+                    Avatar.html(html);
+                    $('#avatarCrop').attr('src',UrlLocation);
+                    $('.jcrop-preview').attr('src',UrlLocation);
+                    // Create variables (in this scope) to hold the API and image size
+                    var jcrop_api,
+                        boundx,
+                        boundy,
+                        // Grab some information about the preview pane
+                        $preview = $('#preview-pane'),
+                        $pcnt = $('#preview-pane .preview-container'),
+                        $pimg = $('#preview-pane .preview-container img'),
+
+                        xsize = $pcnt.width(),
+                        ysize = $pcnt.height();
+
+                    $('#avatarCrop').Jcrop({
+                        onChange: updatePreview,
+                        onSelect: updateCoords,
+                        aspectRatio: xsize / ysize
+                    },function(){
+                        // Use the API to get the real image size
+                        var bounds = this.getBounds();
+                        boundx = bounds[0];
+                        boundy = bounds[1];
+                        // Store the API in the jcrop_api variable
+                        jcrop_api = this;
+                        // Move the preview into the jcrop container for css positioning
+                        $preview.appendTo(jcrop_api.ui.holder);
+                    });
+
+                    function updateCoords(c)
+                    {
+                        $('#x').val(c.x);
+                        $('#y').val(c.y);
+                        $('#w').val(c.w);
+                        $('#h').val(c.h);
+                        $('.cropB').removeAttr('disabled');
+                        updatePreview(c);
+                    }
+
+                    function updatePreview(c)
+                    {
+                        if (parseInt(c.w) > 0)
+                        {
+                            var rx = xsize / c.w;
+                            var ry = ysize / c.h;
+
+                            $pimg.css({
+                                width: Math.round(rx * boundx) + 'px',
+                                height: Math.round(ry * boundy) + 'px',
+                                marginLeft: '-' + Math.round(rx * c.x) + 'px',
+                                marginTop: '-' + Math.round(ry * c.y) + 'px'
+                            });
+                        }
+                    }
+                }
+            });
+
+            $('.crop').click(function(){
+                layer.load(2);
+                $.ajax({
+                    /*图片裁剪路由-get- url('自定义');*/
+                    url:image_crop_route,
+                    data:{"x":$("#x").val(),"y":$("#y").val(),"w":$("#w").val(),"h":$("#h").val(),
+                        "width":image_crop_width, "height":image_crop_height,
+                        "cropImg":$("#thumbnail").val()},
+                    cache:false,
+                    type:'get',
+                    success:function (data) {
+                        layer.closeAll('loading');
+                        $('.cropB').attr('disabled','disabled');
+                        var Avatar = $('#Avatar');
+                        Avatar.empty();
+                        //以下为裁剪后图片预览区（width: 480px），与原图片预览区宽度一致
+                        var html ='<img src="" alt="Example" class="" style="width: 200px;" id="avatarCropImg"/>';
+                        Avatar.html(html);
+                        var url = image_view_route + '/' + data.url + '?t=' + Math.random();
+                        $('#avatarCropImg').attr('src', url);
+                    },
+                    error:function () {
+                        layer.msg('网络错误');
+                    }
+                });
+            })
+
+            $('#formCurreny').submit(function () {
+                if(!($("#x").val() && $("#y").val() && $("#w").val() && $("#h").val())){
+                    layer.msg('请裁剪图片'); return false;
+                }
+            });
         });
     </script>
 @endsection
