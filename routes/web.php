@@ -19,4 +19,8 @@ Route::get('/', function () {
 Route::get('currencyIcon/{filename}','Binary\PublicController@currencyIcon');
 
 //Dashboard
-Route::get('/home', 'HomeController@index')->middleware(['web', 'auth:admin']);
+Route::group(['middleware' => ['web', 'auth:admin']], function () {
+    Route::get('/home', 'HomeController@index');
+    Route::get('/demo', 'HomeController@index');
+});
+
