@@ -23,6 +23,10 @@ class HomeController extends Controller
         $users = Cache::remember('users', $cacheLength, function () {
             return $this->getUser();
         });
+        //最近7天注册用户数
+        $lastSevenDayUser = Cache::remember('lastSevenDayUser', $cacheLength, function () {
+           return $this->getLastSevenDayUser(7);
+        });
         //当天委托订单数
         $exchangeOrders = Cache::remember('exchangeOrders', $cacheLength, function () {
             return $this->getExchangeOrder();
@@ -96,7 +100,8 @@ class HomeController extends Controller
             'withdrawOrderStatus',
             'exchangeOrderByStatus',
             'exchangeOrderByType',
-            'exchangeOrderLog'
+            'exchangeOrderLog',
+            'lastSevenDayUser'
         ));
     }
 
@@ -462,5 +467,21 @@ class HomeController extends Controller
         $orderLogCount['priceInterval'] = ($orderLogCount['maxPrice']/10)*2;
 
         return $orderLogCount;
+    }
+
+    /**
+     * 最近7天注册用户数
+     *
+     * @param $day
+     * @return int
+     */
+    public function getLastSevenDayUser($day)
+    {
+        $time = strtotime('-'.$day.' day', time());
+        $beginTime = gmdate('Y-m-d 00:00:00', $time);
+        $endTime = gmdate('Y-m-d 23:59:59', time());
+        return DB::table('users')
+            ->where('created_at','>=',$beginTime)->where('created_at', '<=',$endTime)
+            ->count();
     }
 }

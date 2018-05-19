@@ -1,5 +1,11 @@
 @extends('entrance::layouts.default')
 
+@section('css-part')
+    <style>
+        .sevenDay{color: #32526E;font-size: 22px;font-weight: bold;}
+    </style>
+@endsection
+
 @section('content')
     <div class="row">
         <div class="col-lg-6">
@@ -71,7 +77,7 @@
                         </h2>
                         <i class="fontello-user-1"></i>
                         <h4 class="text-blue">{{ number_format($users,0,'',',') }}</h4>
-                        <h5>当前注册用户数</h5>
+                        <h5>当前注册用户数/最近7天新增用户 <span class="sevenDay">{{ number_format($lastSevenDayUser,0,'',',') }}</span></h5>
                         <div style="clear:both;"></div>
                     </div>
                 </div>
