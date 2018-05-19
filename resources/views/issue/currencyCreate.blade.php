@@ -514,6 +514,7 @@
                     cache:false,
                     type:'get',
                     success:function (data) {
+                        hasCrop = true;
                         layer.closeAll('loading');
                         $('.cropB').attr('disabled','disabled');
                         var Avatar = $('#Avatar');
