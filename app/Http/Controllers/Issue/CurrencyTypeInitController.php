@@ -128,6 +128,9 @@ class CurrencyTypeInitController extends Controller
         if ($request->hasFile('currency_icon') && $request->file('currency_icon')->isValid()) {
             $currency['currency_icon'] = basename($request->currency_icon->store('currencyIcon','public'));
         }
+        if (!$request->currency_icon) {
+            unset($currency['currency_icon']);
+        }
 
         if ($query->first()) {
             $query->update($currency);
@@ -170,6 +173,6 @@ class CurrencyTypeInitController extends Controller
      */
     public function crop($dir)
     {
-        return $this->imgCrop('width', 'height', base64_decode($dir), 'cropImg');
+        return $this->imgCrop('width', 'height','imageUploadPreviewWidth', base64_decode($dir), 'cropImg');
     }
 }

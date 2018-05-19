@@ -29,22 +29,23 @@ trait ImgCrop {
      * 图片剪裁
      * @param $width
      * @param $height
+     * @param $imageUploadPreviewWidth
      * @param $dir 上传图片存储位置
      * @param $imgName  上传图片时ajax携带的图片参数
      * @return \Illuminate\Http\JsonResponse
      */
-    public function imgCrop($width, $height, $dir, $imgName)
+    public function imgCrop($width, $height,$imageUploadPreviewWidth, $dir, $imgName)
     {
         //图片最终保存的宽高
-        $height = intval(Input::get($height));
         $width = intval(Input::get($width));
+        $height = intval(Input::get($height));
 
         //图片加载路径
         $imagePathBase = Input::get($imgName);
         $imageLoadPath = storage_path($dir) . "/$imagePathBase";
 
-        //页面内原始图片预览区宽度，默认600
-        $orgImgWidth = 600;
+        //页面内原始图片预览区宽度-页面上传图片预览区宽度保持一致
+        $orgImgWidth = Input::get($imageUploadPreviewWidth);
         $getImgWidth = Input::get('imgWidth');
         if($getImgWidth){
             $orgImgWidth = intval($getImgWidth);

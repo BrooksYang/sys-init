@@ -281,10 +281,10 @@
                                 <div id="Avatar">
                                     {{--图片显示路由--}}
                                     @if($editFlag ?? '')
-                                        <img id="logoShow" src="{{url('currencyIcon')}}/{{ $currency->currency_icon }}" style="width:180px"
+                                        <img id="logoShow" src="{{url('currencyIcon')}}/{{ $currency->currency_icon }}" style="width:200px"
                                              onerror="this.src='http://placehold.it/180x180'"/>
                                     @else
-                                        <img id="logoShow" src="{{url('currencyIcon')}}/{{ $currency->currency_icon ?? old('currency_icon') }}" style="width:180px"
+                                        <img id="logoShow" src="{{url('currencyIcon')}}/{{ $currency->currency_icon ?? old('currency_icon') }}" style="width:200px"
                                              onerror="this.src='http://placehold.it/180x180'"/>
                                     @endif
                                 </div>
@@ -408,6 +408,7 @@
             var image_crop_width = 200;
             var image_crop_height = 200;
 
+            var hasUpload = hasCrop =  0;
             $('#fileupload').attr('data-url',image_uplod_route);
             if (logoOld) $('#logoShow').attr('src', image_view_route + '/' +logoOld);
 
@@ -422,13 +423,13 @@
                     var filename = data.result.files[0].name; // 上传之后的文件名
                     var fileType = data.result.files[0].type;
                     var fileError = data.result.files[0].error;
-                    console.log(data.result.files[0].type);
+                    //console.log(data.result.files[0]);
                     if(fileType != 'image/jpeg' && fileType !='image/png'){
                         layer.msg('不支持的图片类型');
                         return false;
                     }
                     if(fileError){ layer.msg(fileError); return false;}
-
+                    if(!fileError && filename){ hasUpload = filename;}
                     var UrlLocation = image_view_route + '/' + filename; //文件存储完整路径
                     $("#thumbnail").val(filename); //文件存储路径(需拼接上配置跟路径)
                     Avatar.empty(); // 更改图片后再次初始化  确保图片不变形
@@ -507,6 +508,7 @@
                     /*图片裁剪路由-get- url('自定义');*/
                     url:image_crop_route,
                     data:{"x":$("#x").val(),"y":$("#y").val(),"w":$("#w").val(),"h":$("#h").val(),
+                        'imageUploadPreviewWidth':image_upload_preview_width,
                         "width":image_crop_width, "height":image_crop_height,
                         "cropImg":$("#thumbnail").val()},
                     cache:false,
@@ -529,7 +531,8 @@
             })
 
             $('#formCurreny').submit(function () {
-                if(!($("#x").val() && $("#y").val() && $("#w").val() && $("#h").val())){
+                var cripSize = ($("#x").val() && $("#y").val() && $("#w").val() && $("#h").val());
+                if(hasUpload && (!cripSize || !hasCrop)){
                     layer.msg('请裁剪图片'); return false;
                 }
             });
