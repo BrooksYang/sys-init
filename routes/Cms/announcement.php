@@ -13,7 +13,7 @@
  * 系统公告
  *
  */
-Route::group(['middleware' => ['web', 'auth:admin']], function()
+Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen']], function()
 {
     //公告管理
     Route::resource('cms/announcement', 'Cms\AnnouncementController');
@@ -28,7 +28,7 @@ Route::group(['middleware' => ['web', 'auth:admin']], function()
  * 系统 FAQ 文档
  *
  */
-Route::group(['middleware' => ['web', 'auth:admin']], function()
+Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen']], function()
 {
     //FAQ类型管理
     Route::resource('faq/type', 'Cms\FaqTypeController');

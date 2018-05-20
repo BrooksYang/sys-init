@@ -35,8 +35,11 @@
                 </a>
                 <ul style="margin:25px 15px 0 0;" role="menu" class="dropdown-setting dropdown-menu bg-amber">
                     <li>
+                        <a href="{{ url('lockScreen') }}"   class="text-white">
+                            <i class="fontello-desktop"></i>&nbsp;&nbsp;锁屏
+                        </a>
                         <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"  class="text-white">
-                            <i class="icon-upload"></i>&nbsp;&nbsp;退出
+                            <i class="fontello-upload-outline"></i>&nbsp;&nbsp;退出
                         </a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                             {{ csrf_field() }}

@@ -200,6 +200,9 @@ class CurrencyContractToUserController extends Controller
      */
     public function sortOutSymbol($requestSymbol, $currencyId, $quoteCurrency, $action)
     {
+        if (!$requestSymbol) {
+            return [];
+        }
         $symbol = $queryQuoteCurrency = [];
         $quoteCurrency = strtolower($quoteCurrency);
         foreach ($requestSymbol as $key => $symbolItem) {

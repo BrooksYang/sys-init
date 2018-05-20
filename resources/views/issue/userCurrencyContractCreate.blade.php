@@ -76,7 +76,7 @@
                                 <label>选择交易对</label>
                                 <div class="form-group {{ $errors->has('quote_currency') ? 'has-error' : '' }}">
                                     <div class="col-sm-12">
-                                        <select  class="form-control js-example-basic-multiple" id="symbol" multiple name='symbol[]' required>
+                                        <select  class="form-control js-example-basic-multiple" id="symbol" multiple name='symbol[]' >
                                             @foreach(config('app.symbol') as $flag => $symbol)
                                             <option>{{ $symbol }}</option>
                                             @endforeach

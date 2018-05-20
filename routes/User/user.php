@@ -10,14 +10,13 @@
 */
 
 
-Route::group(['middleware' => ['web', 'auth:admin']], function()
+Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen']], function()
 {
     //认证用户待审核
     Route::get('user/manage/pending', 'User\UserController@pendingUser');
 
     //用户管理
     Route::resource('user/manage', 'User\UserController');
-
 
 
 });
