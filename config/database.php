@@ -52,6 +52,13 @@ return [
             'prefix' => '',
             'strict' => true,
             'engine' => null,
+            'dump' => [
+                //'dump_binary_path' => '/path/to/the/binary',
+                'use_single_transaction',
+                'timeout' => 60 * 5,
+                //'exclude_tables' => [table1', 'table2'],
+                //'add_extra_option' => '--optionname=optionvalue',
+            ]
         ],
 
         'pgsql' => [
@@ -76,6 +83,26 @@ return [
             'password' => env('DB_PASSWORD', ''),
             'charset' => 'utf8',
             'prefix' => '',
+        ],
+
+        'mongodb' => [
+            'driver'   => 'mongodb',
+            'host'     => env('MONGO_HOST', 'MONGO_HOST'),
+            'port'     => env('MONGO_PORT', 27017),
+            'database' => env('MONGO_DATABASE','MONGO_DATABASE'),
+            'username' => env('MONGO_USERNAME','MONGO_USERNAME'),
+            'password' => env('MONGO_PASSWORD','MONGO_PASSWORD'),
+            'options' => [
+                'database' =>  env('MONGO_DATABASE','dataBase'), // sets the authentication database required by mongo 3
+            ],
+            'dump' => [
+                //'dump_binary_path' => '/path/to/the/binary',
+                'use_single_transaction',
+                'timeout' => 60 * 10,
+                //'exclude_tables' => [table1', 'table2'],
+                //'add_extra_option' => '--optionname=optionvalue',
+            ]
+
         ],
 
     ],

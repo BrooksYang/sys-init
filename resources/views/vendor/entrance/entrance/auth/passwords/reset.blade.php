@@ -11,7 +11,7 @@
                     <div id="paper-top">
                         <div class="row">
                             <div class="col-lg-12 no-pad">
-                                <a class="navbar-brand logo-text" href="#">{{ config('app.name', 'Laravel') }}</a>
+                                <a class="navbar-brand logo-text" href="#">{{ config('app.name_cn', 'Laravel') }}</a>
                             </div>
                         </div>
                     </div>

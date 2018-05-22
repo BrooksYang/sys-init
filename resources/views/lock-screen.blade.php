@@ -9,7 +9,7 @@
     <meta content="" name="author">
     <link href="{{ asset('favicon.ico') }}" rel="shortcut icon">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name_cn', 'Laravel') }}</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="{{ asset('vendor/entrance/css/bootstrap.css') }}">
@@ -59,7 +59,7 @@
         <div class="col-lg-12">
             <a class="navbar-brand lockscreen-text text-white" href="#">
                 <img src="{{ url('logo_80.png') }}" alt="" class="" style="width: 50px">
-                {{ config('app.name', 'Laravel')}}</a>
+                {{ config('app.name_cn', 'Laravel')}}</a>
         </div>
     </div>
     <div class="row">

@@ -9,7 +9,7 @@
     <meta content="" name="author">
     <link href="{{ asset('ico/favicon.ico') }}" rel="shortcut icon">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name_cn', 'Laravel') }}</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="{{ asset('vendor/entrance/css/bootstrap.css') }}">
