@@ -6,11 +6,16 @@ namespace App\Traits;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Class MongoLogHelper
+ * @package App\Traits
+ * 管理端日志记录
+ */
 trait MongoLogHelper {
 
 
     /**
-     * 插入日志记录 --单条 insert
+     * 插入日志记录（单条insert）
      *
      * @param $data
      */
@@ -43,12 +48,22 @@ trait MongoLogHelper {
         Log::info($logResult);
     }
 
-
+    /**
+     * 头部信息
+     *
+     * @param $headKey
+     * @return mixed|string
+     */
     public function getHead($headKey)
     {
         return isset(\Request::header()[$headKey]) ? head(\Request::header()[$headKey]) : '';
     }
 
+    /**
+     * 处理类型
+     * @param $type
+     * @return string
+     */
     public function getType($type)
     {
         $path = \Request::path();
@@ -59,6 +74,11 @@ trait MongoLogHelper {
         return $type;
     }
 
+    /**
+     * 操作描述
+     *
+     * @return string
+     */
     public function beLongToApp()
     {
         $method = \Request::method();

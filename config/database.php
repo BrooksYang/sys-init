@@ -93,7 +93,7 @@ return [
             'username' => env('MONGO_USERNAME','MONGO_USERNAME'),
             'password' => env('MONGO_PASSWORD','MONGO_PASSWORD'),
             'options' => [
-                'database' =>  env('MONGO_DATABASE','dataBase'), // sets the authentication database required by mongo 3
+                'database' =>  env('MONGO_DATABASE','admin'), // sets the authentication database required by mongo 3
             ],
             'dump' => [
                 //'dump_binary_path' => '/path/to/the/binary',
