@@ -10,7 +10,7 @@
 */
 
 
-Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen']], function()
+Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function()
 {
 
     //币种初始化

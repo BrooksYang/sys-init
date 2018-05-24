@@ -25,8 +25,9 @@ class CurrencyTypeRequest extends FormRequest
     public function rules(Request $request)
     {
         return [
-            'name' =>[
-                'required|unique:dcuex_currency_type,title,'.$request->currencyTypeMg,
+            'title' =>[
+                'required',
+                'unique:dcuex_currency_type,title,'.$request->currencyTypeMg,
                 'alpha_dash',
             ]
         ];
@@ -39,7 +40,7 @@ class CurrencyTypeRequest extends FormRequest
     public function messages()
     {
         return [
-            'name.unique' => '该币种类型名称已存在',
+            'title.unique' => '该币种类型名称已存在',
         ];
     }
 }

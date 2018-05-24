@@ -13,7 +13,7 @@
  * 充值和提币订单
  *
  */
-Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen']], function()
+Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function()
 {
     //用户充值订单
     Route::resource('order/userDeposit', 'Order\UserDepositOrderController');
@@ -27,7 +27,7 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen']], function()
  * 交易订单
  *
  */
-Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen']], function()
+Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function()
 {
     //用户交易订单
     Route::resource('order/exchange', 'Order\ExchangeOrderController', ['only' => ['index']]);

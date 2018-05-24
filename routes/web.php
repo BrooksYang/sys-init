@@ -19,7 +19,7 @@ Route::get('/', function () {
 Route::get('currencyIcon/{filename}','Binary\PublicController@currencyIcon');
 
 //Dashboard
-Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen']], function () {
+Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function () {
     Route::get('/home', 'HomeController@index');
     Route::get('/demo', 'HomeController@index');
 });
@@ -29,5 +29,4 @@ Route::group(['middleware' => ['web','auth:admin']], function () {
     Route::get('/lockScreen', 'Auth\LockScreenController@lockScreen');
     Route::post('/lockScreen', 'Auth\LockScreenController@unlock');
 });
-
 

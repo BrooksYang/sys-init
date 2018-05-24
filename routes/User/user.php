@@ -10,7 +10,7 @@
 */
 
 
-Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen']], function()
+Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function()
 {
     //认证用户待审核
     Route::get('user/manage/pending', 'User\UserController@pendingUser');
