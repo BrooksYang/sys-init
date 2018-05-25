@@ -81,7 +81,7 @@ trait MongoLogHelper {
         $segment = \Request::segment(3) ?: '';
 
         $msgL = in_array($path,['login','demo']) ? true : '';
-        if ($msgL) { return '登录系统';}
+        if ($msgL || ($path == 'home' && str_contains($this->getHead('referer'),'login'))) { return '登录系统';}
         if($path == 'home'){ return '浏览系统数据面板'; }
 
         if ($segment && is_numeric($segment)) {
