@@ -87,11 +87,11 @@ return [
 
         'mongodb' => [
             'driver'   => 'mongodb',
-            'host'     => env('MONGO_HOST', 'MONGO_HOST'),
+            'host'     => env('MONGO_HOST', 'localhost'),
             'port'     => env('MONGO_PORT', 27017),
-            'database' => env('MONGO_DATABASE','MONGO_DATABASE'),
-            'username' => env('MONGO_USERNAME','MONGO_USERNAME'),
-            'password' => env('MONGO_PASSWORD','MONGO_PASSWORD'),
+            'database' => env('MONGO_DATABASE','dcuex'),
+            'username' => env('MONGO_USERNAME','dcu'),
+            'password' => env('MONGO_PASSWORD','dcu@2018!)'),
             'options' => [
                 'database' =>  env('MONGO_DATABASE','admin'), // sets the authentication database required by mongo 3
             ],

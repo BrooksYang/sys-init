@@ -78,12 +78,13 @@ trait MongoLogHelper {
     {
         $method = \Request::method();
         $path = \Request::path();
+        $segment = \Request::segment(3) ?: '';
 
         $msgL = in_array($path,['login','demo']) ? true : '';
         if ($msgL) { return '登录系统';}
         if($path == 'home'){ return '浏览系统数据面板'; }
 
-        if (\Request::segment(3)) {
+        if ($segment && is_numeric($segment)) {
             $pathArray = explode(\Request::segment(3),\Request::path());
             $pathArray[0] .='{'.\Request::segment(2).'}';
             $path = implode($pathArray);
