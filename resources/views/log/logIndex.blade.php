@@ -234,7 +234,8 @@
                                                         <p></p>
                                                         <span><b>请求方法：</b></span>{{ $item->method ?: '--' }}
                                                         <p></p>
-                                                        <span><b>参数：</b></span>{{ $item->parameter ?: '--' }}
+                                                        <span><b>参数：</b></span><?php
+                                                            if($item->parameter) {var_dump(json_decode($item->parameter,true));}else{ echo '--';} ?>
                                                         <p></p>
                                                         <span><b>Referer：</b></span>{{ $item->referer ?: '--' }}
                                                         <p></p>

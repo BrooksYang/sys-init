@@ -4,7 +4,6 @@ namespace App\Traits;
 
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class MongoLogHelper
@@ -35,17 +34,17 @@ trait MongoLogHelper {
             'app' => $this->beLongToApp()->name ?? '',
             'route' => \Request::path(),
             'method' => \Request::method(),
-            'parameter' => \Request::getQueryString(),
+            'parameter' => \Request::all() ? json_encode(\Request::all()) : '',
             'message' => $this->beLongToApp()->description ?? $this->beLongToApp(),
         ];
 
         $info = $infoInit + $data;
 
-        //插入 mongo 日志
+        //插入日志
         $logResult = \App\MongoLog::insert($info);
 
-        //记录 mongo 插入返回结果到文件日志
-        Log::info($logResult);
+        //记录返回结果到文件日志
+        info('logRes',[$logResult]);
     }
 
     /**
@@ -66,12 +65,8 @@ trait MongoLogHelper {
      */
     public function getType($type)
     {
-        $path = \Request::path();
-        $typeL = in_array(\Request::path(),['login','demo']) ? true : $type;
-        $typeH = ($path=='home' && str_contains($this->getHead('referer'), 'login')) ? true : $type;
-        if ($typeL || $typeH) { return 'login';}
+        return in_array(\Request::path(),['login','demo']) ? 'login' : $type;
 
-        return $type;
     }
 
     /**
@@ -82,21 +77,20 @@ trait MongoLogHelper {
     public function beLongToApp()
     {
         $method = \Request::method();
-        $uri = \Request::path();
+        $path = \Request::path();
 
-        $msgL = in_array(\Request::path(),['login','demo']) ? true : '';
-        $msgH = ($uri=='home' && str_contains($this->getHead('referer'), 'login')) ? true : '';
-        if ($msgL || $msgH) { return '登录系统'; }
-        if ($uri=='home') { return '浏览系统数据面板'; }
+        $msgL = in_array($path,['login','demo']) ? true : '';
+        if ($msgL) { return '登录系统';}
+        if($path == 'home'){ return '浏览系统数据面板'; }
 
         if (\Request::segment(3)) {
-            $uriArray = explode(\Request::segment(3),\Request::path());
-            $uriArray[0] .='{'.\Request::segment(2).'}';
-            $uri = implode($uriArray);
+            $pathArray = explode(\Request::segment(3),\Request::path());
+            $pathArray[0] .='{'.\Request::segment(2).'}';
+            $path = implode($pathArray);
         }
 
         $appInfo = \DB::table('auth_permissions as p')->join('auth_modules as m','p.module_id', 'm.id')
-            ->where('p.method',$method)->where('p.uri',$uri)
+            ->where('p.method',$method)->where('p.uri',$path)
             ->get(['p.description','m.name'])->first();
 
         return $appInfo;

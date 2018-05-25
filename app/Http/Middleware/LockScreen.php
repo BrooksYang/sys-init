@@ -15,7 +15,6 @@ class LockScreen
      */
     public function handle($request, Closure $next)
     {
-        info('middleWareHasCheck', [$request->session()->has('locked')]);
         if ($request->session()->has('locked')) {
 
             return redirect('/lockScreen');
