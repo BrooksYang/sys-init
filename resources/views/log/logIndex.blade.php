@@ -226,7 +226,7 @@
                                                         <p></p>
                                                         <span><b>级别：</b></span><span class="label label-{{ $level[$item->level]['class'] }}">{{ $level[$item->level]['name'] }}</span>
                                                         <p></p>
-                                                        <span><b>日志时间：</b></span>{{ $item->datetime }}
+                                                        <span><b>日志时间：</b></span>{{ $item->datetime ?? $item->created_at }}
                                                         <p></p>
                                                         <span><b>类型：</b></span>{{ $item->type ?: '--' }}
                                                         <p></p>
@@ -241,6 +241,8 @@
                                                         <p></p>
                                                         <span><b>Session：</b></span>{{ $item->session ?: '--' }}
                                                         <p></p>
+                                                        {!! $item->context ? '<span><b>Context：</b></span>'.$item->context .'<p></p>': '' !!}
+                                                        {!! $item->extra ? '<span><b>备注：</b></span>'.$item->extra .'<p></p>': '' !!}
                                                         <span><b>用户代理：</b></span>{{ $item->agent }}
                                                         <p></p>
                                                     </div>

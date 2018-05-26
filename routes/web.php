@@ -24,6 +24,9 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     Route::get('/demo', 'HomeController@index');
 });
 
+//Auth-logout
+Route::post('logout', 'Auth\LoginController@logout')->name('logout');
+
 //LockScreen and Unlock
 Route::group(['middleware' => ['web','auth:admin']], function () {
     Route::get('/lockScreen', 'Auth\LockScreenController@lockScreen');

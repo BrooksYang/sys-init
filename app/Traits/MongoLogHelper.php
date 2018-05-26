@@ -30,7 +30,7 @@ trait MongoLogHelper {
             'session' => \Request::cookie()[strtolower(config('app.name')).'_session'] ?? '',
             'referer' => $this->getHead('referer'),
             'agent' => $this->getHead('user-agent'),
-            'datetime' => gmdate('Y-m-d H:i:s',time()),
+            'created_at' => gmdate('Y-m-d H:i:s',time()),
             'app' => $this->beLongToApp()->name ?? '',
             'route' => \Request::path(),
             'method' => \Request::method(),
@@ -65,7 +65,8 @@ trait MongoLogHelper {
      */
     public function getType($type)
     {
-        return in_array(\Request::path(),['login','demo']) ? 'login' : $type;
+        $path = \Request::path();
+        return in_array($path,['login','demo']) || ($path == 'home' && str_contains($this->getHead('referer'),'login'))? 'login' : $type;
 
     }
 
