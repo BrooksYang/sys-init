@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Traits\MongoLogHelper;
 use Closure;
+use Illuminate\Support\Facades\App;
 
 
 /**
@@ -26,6 +27,11 @@ class WriteLog
     public function handle($request, Closure $next)
     {
         $response = $next($request);
+
+        // 开发环境不记录日志
+        if (App::environment() != 'production') {
+            return $response;
+        }
 
         $data = ['level' => $this->getLevel($request->method())];
         $this->LogInto($data);
