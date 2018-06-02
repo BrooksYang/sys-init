@@ -51,8 +51,8 @@
                                     <td title="{{$item->currency_title_cn.' ('.$item->currency_title_en_abbr.')'}}">
                                         <span class="label label-success">{{ str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',15) }}</span>
                                     </td>
-                                    <td title="{{$item->user_wallet_balance}}">{{ $item->user_wallet_balance }}</td>
-                                    <td title="{{$item->user_wallet_balance_freeze_amount}}">{{ $item->user_wallet_balance_freeze_amount }}</td>
+                                    <td title="{{number_format($item->user_wallet_balance,8,'.',',')}}">{{ number_format($item->user_wallet_balance,8,'.',',')}}</td>
+                                    <td title="{{number_format($item->user_wallet_balance_freeze_amount,8,'.',',')}}">{{ number_format($item->user_wallet_balance_freeze_amount,8,'.',',') }}</td>
                                     <td>
                                         <a href="{{ url("user/wallet/$item->id/edit") }}">
                                             <i class="fontello-edit" title="编辑"></i>
