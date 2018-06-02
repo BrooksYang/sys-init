@@ -35,7 +35,7 @@ class UserOtcWalletController extends Controller
             ->select('u_wallet.*', 'u.username', 'u.email','currency.currency_title_cn','currency.currency_title_en_abbr')
             ->paginate(USER_OTC_WALLET_PAGE_SIZE );;
 
-        return view('otcWallet.userOtcWalletIndex',['userOtcWallet' => $userOtcWallet]);
+        return view('wallet.userOtcWalletIndex',['userOtcWallet' => $userOtcWallet]);
     }
 
     /**
@@ -48,7 +48,7 @@ class UserOtcWalletController extends Controller
         //获取币种信息
        /* $currency = DB::table('dcuex_crypto_currency')->get(['id', 'currency_title_cn', 'currency_title_en_abbr']);
 
-        return view('otcWallet.userOtcWalletCreate',['currency' => $currency]);*/
+        return view('wallet.userOtcWalletCreate',['currency' => $currency]);*/
     }
 
     /**
@@ -95,7 +95,7 @@ class UserOtcWalletController extends Controller
             ->select('u_wallet.*', 'u.username', 'u.email')
             ->first();
 
-        return view('otcWallet.userOtcWalletCreate', [
+        return view('wallet.userOtcWalletCreate', [
             'currency' => $currency,
             'userOtcWallet' => $userOtcWallet,
             'editFlag'=>true
