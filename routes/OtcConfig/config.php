@@ -19,6 +19,8 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen', 'mongo.log']]
     Route::resource('otc/config', 'OtcConfig\ConfigController', ['except' => [
         'create', 'store', 'index', 'show', 'destroy']]);
 
+    //系统法币
+    Route::resource('otc/legalCurrency', 'OtcLegalCurrency\LegalCurrencyController');
 
 });
 
