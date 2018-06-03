@@ -12,24 +12,28 @@
 
                     {{-- Filter and Add Button --}}
                     <div class="pull-right box-tools">
-                        <form action="{{ url('order/withdraw') }}" class="in-block">
+                        <form action="{{ url('order/otc') }}" class="in-block">
                             <input id="search_input" type="text" class="form-control width-0" placeholder="搜索币种或用户名或电话" name="search" value="{{ $search ?? Request::get('search')}}">
                             <a href="javascript:;" title="搜索币种或用户名或电话">
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
                         </form>
-                        {{--<a href="{{ url('order/withdraw/create') }}">
+                        {{--<a href="{{ url('order/otc/create') }}">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>--}}
                         <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="筛选订单">
                             <span class="box-btn"><i class="fa fa-filter" title="筛选订单"></i></span>
                         </a>
                         <ul role="menu" class="dropdown-menu">
+                            <li>
+                                <a href="{{ url('order/otc') }}">全部
+                                    {!! in_array( Request::get('filterStatus'),array_keys($orderStatus)) ? '' :'&nbsp;<i class="fa fa-check txt-info"></i>'!!}
+                                </a>
+                            </li>
                         @foreach($orderStatus as $key=>$item)
                             <li>
-                                <a href="{{ url('order/withdraw') }}?filter={{$key}}">{{$item['name']}}
-                                {!!  Request::get('filter') == $key ? '&nbsp;<i class="fa fa-check txt-info"></i>' :
-                                $key ==1 && ! Request::get('filter') ? '&nbsp;<i class="fa fa-check txt-info"></i>' :'' !!}
+                                <a href="{{ url('order/otc') }}?filterStatus={{$key}}">{{$item['name']}}
+                                {!!  Request::get('filterStatus') == $key ? '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
                                 </a>
                             </li>
                         @endforeach
@@ -38,7 +42,7 @@
 
                     {{-- Title --}}
                     <h3 class="box-title"><i class="fontello-doc"></i>
-                        <span>用户提币订单待受理列表</span>
+                        <span>用户 OTC 交易订单列表</span>
                     </h3>
                 </div>
 
@@ -49,25 +53,33 @@
                             <tr>
                                 <th>序号</th>
                                 <th>用户名</th>
-                                <th>电话</th>
+                                {{--<th>广告用户</th>--}}
+                                <th>类型</th>
                                 <th>币种</th>
-                                <th>提币金额</th>
-                                <th title="收币钱包ID">收币钱包</th>
+                                <th>单价</th>
+                                <th>法币</th>
+                                <th>数量</th>
+                                <th>总价</th>
                                 <th>状态</th>
                                 <th>操作</th>
                             </tr>
-                            @forelse($userWithdrawOrder as $key => $item)
+                            @forelse($userOtcOrder as $key => $item)
                                 <tr>
-                                    <td>{{ ($key + 1) + ($userWithdrawOrder->currentPage() - 1) * $userWithdrawOrder->perPage() }}</td>
-                                    <td title="{{ $item->username }}"><strong>{{ str_limit($item->username,15) }}</strong></td>
-                                    <td title="{{$item->phone}}">{{ $item->phone }}</td>
+                                    <td>{{ ($key + 1) + ($userOtcOrder->currentPage() - 1) * $userOtcOrder->perPage() }}</td>
+                                    <td title="电话：{{$item->phone}}"><strong>{{ str_limit($item->username,15) }}</strong></td>
+                                   {{-- <td title="{{ $item->from_username }} 电话：{{$item->from_user_phone}}"><strong>{{ str_limit($item->from_username,15) }}</strong></td>--}}
+                                    <td>
+                                        <span class="label label-{{ $orderType[$item->type]['class'] }}">{{ $orderType[$item->type]['name'] }}</span>
+                                    </td>
                                     <td title="{{$item->currency_title_cn.' ('.$item->currency_title_en_abbr.')'}}">
                                         <span class="label label-success">{{ str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',15) }}</span>
                                     </td>
-                                    <td title="{{number_format($item->withdraw_amount,8,'.',',') }}">{{ number_format($item->withdraw_amount,8,'.',',') }}</td>
-                                    <td title="{{ $item->crypto_wallet_title }}"><strong>{{ str_limit($item->crypto_wallet_title ?: '--',15) }}</strong></td>
+                                    <td title="{{number_format($item->price,8,'.',',') }}">{{ number_format($item->price,8,'.',',') }}</td>
+                                    <td title="{{ $item->name }}">{{ $item->abbr }}</td>
+                                    <td title="{{number_format($item->field_amount,8,'.',',') }}">{{ number_format($item->field_amount,8,'.',',') }}</td>
+                                    <td title="{{number_format($item->cash_amount,8,'.',',') }}">{{ number_format($item->cash_amount,8,'.',',') }}</td>
                                     <td>
-                                        <span class="label label-{{ $orderStatus[$item->withdraw_order_status]['class'] }}">{{ $orderStatus[$item->withdraw_order_status]['name'] }}</span>
+                                        <span class="label label-{{ $orderStatus[$item->status]['class'] }}">{{ $orderStatus[$item->status]['name'] }}</span>
                                     </td>
                                     <td>
                                        {{-- <a data-toggle="dropdown" class="dropdown-toggle" type="button">
@@ -76,10 +88,10 @@
                                         <ul role="menu" class="dropdown-menu pull-right">
                                             @foreach($orderStatus as $flag=>$status)
                                                 <li>
-                                                    @if($item->withdraw_order_status != $flag)
+                                                    @if($item->status != $flag)
                                                     <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
-                                                            '{{ url("order/withdraw/$item->id") }}?status={{$flag}}','withdraw_order_status',{{$flag}},
-                                                            '提币订单为<b><strong> {{$status['name']}} </strong></b> 状态',
+                                                            '{{ url("order/otc/$item->id") }}','status',{{$flag}},
+                                                            'OTC订单为<b><strong> {{$status['name']}} </strong></b> 状态',
                                                             '{{ csrf_token() }}', '{{$status['name']}}' );">
                                                     {{$status['name']}}</a>
                                                     @endif
@@ -87,14 +99,14 @@
                                             @endforeach
                                         </ul>--}}
                                         <a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
-                                                '{{ url("order/withdraw/$item->id") }}',
+                                                '{{ url("order/otc/$item->id") }}',
                                                 '{{ csrf_token() }}');">
                                             <i class="fontello-trash-2" title="删除"></i>
                                         </a>
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="8" class="text-center">
+                                <tr><td colspan="10" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
@@ -106,7 +118,7 @@
                         <div class="row">
                             <div class="col-xs-12">
                                 <div class="pull-right">
-                                    {{ $userWithdrawOrder->appends(Request::except('page'))->links() }}
+                                    {{ $userOtcOrder->appends(Request::except('page'))->links() }}
                                 </div>
                             </div>
                         </div>

@@ -30,6 +30,7 @@ class LegalCurrencyController extends Controller
                     ->orwhere('abbr', 'like',"%$search%")
                     ->orwhere('country', 'like',"%$search%");
             })
+            ->orderBy('created_at', 'desc')
             ->paginate(LEGAL_CURRENCY_PAGE_SIZE );
 
         return view('otcLegalCurrency.LegalcurrencIndex',['legalCurrency' => $legalCurrency]);
