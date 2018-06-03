@@ -61,6 +61,10 @@
                                 <th>数量</th>
                                 <th>总价</th>
                                 <th>状态</th>
+                                <th>创建时间 &nbsp;&nbsp;<a href="{{ url('order/otc')}}?orderC=desc">
+                                        <i class="fa fa-sort-amount-desc" style="color:{{ Request::getQueryString() != 'orderC=desc' ? !Request::getQueryString() ? '' : 'gray' :''}}" title="降序"></i></a> &nbsp;
+                                    <a href="{{ url('order/otc') }}?orderC=asc">
+                                        <i class="fa fa-sort-amount-asc" style="color:{{ Request::getQueryString() != 'orderC=asc' ? 'gray' : '' }}" title="升序"></i></a></th>
                                 <th>操作</th>
                             </tr>
                             @forelse($userOtcOrder as $key => $item)
@@ -81,6 +85,7 @@
                                     <td>
                                         <span class="label label-{{ $orderStatus[$item->status]['class'] }}">{{ $orderStatus[$item->status]['name'] }}</span>
                                     </td>
+                                    <td>{{ $item->created_at ?: '--' }}</td>
                                     <td>
                                        {{-- <a data-toggle="dropdown" class="dropdown-toggle" type="button">
                                             <span class="box-btn"><i class="fa fa-exchange" title="修改订单状态"></i></span>
