@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\OtcWallet;
+namespace App\Http\Controllers\Wallet;
 
 use App\Http\Requests\UserOtcWalletRequest;
 use Illuminate\Http\Request;

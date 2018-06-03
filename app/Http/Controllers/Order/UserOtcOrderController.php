@@ -57,7 +57,7 @@ class UserOtcOrderController extends Controller
             ->when($orderC, function ($query) use ($orderC){
                 return $query->orderBy('otcOrder.created_at', $orderC);
             }, function ($query) {
-                return $query->orderBy('otcOrder.created_at', 'desc'); //默认最后成交时间倒序
+                return $query->orderBy('otcOrder.created_at', 'desc'); //默认创建时间倒序
             })
             ->select(
                 'otcOrder.*', 'u.username', 'u.phone',

@@ -2,21 +2,21 @@
 
 /*
 |--------------------------------------------------------------------------
-| OTC Wallet Routes
+| OTC Trade Ad
 |--------------------------------------------------------------------------
 |
-| 交易用户 OTC 记账钱包路由
+| OTC 用户交易广告
 |
 */
 
-
+/**
+ * OTC 交易广告
+ *
+ */
 Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function()
 {
-    //交易用户 OTC 记账钱包
-    Route::resource('otc/user/wallet', 'OtcWallet\UserOtcWalletController',['except' => ['create', 'store',
-        'edit', 'update']]);
-
-
+    //用户 OTC 交易广告
+    Route::resource('otc/ad', 'OtcAd\OtcAdController', ['only' => ['index','destroy']]);
 });
 
 

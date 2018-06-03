@@ -64,7 +64,7 @@ class RouteServiceProvider extends ServiceProvider
             require base_path('routes/User/user.php');
             require base_path('routes/Log/log.php');
             require base_path('routes/OtcConfig/config.php');
-            require base_path('routes/OtcWallet/otcWallet.php');
+            require base_path('routes/OtcAd/otcAd.php');
         });
     }
 
