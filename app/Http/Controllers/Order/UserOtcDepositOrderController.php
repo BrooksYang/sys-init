@@ -6,15 +6,14 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
-const OTC_ORDER_PAGE_SIZE = 20;
-const OTC_ORDER_STATUS_TRANSFER_OUT =4;
+const USER_OTC_DEPOSIT_ORDER_PAGE_SIZE = 20;
 
 /**
- * Class UserOtcOrderController
+ * Class UserOtcDepositOrderController
  * @package App\Http\Controllers\Order
- * 交易 OTC 订单管理
+ * OTC-用户充值订单
  */
-class UserOtcOrderController extends Controller
+class UserOtcDepositOrderController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -23,50 +22,47 @@ class UserOtcOrderController extends Controller
      */
     public function index(Request $request)
     {
-        $orderType = [
-            1 => ['name' => '卖单', 'class' => 'info'],
-            2 => ['name' => '买单', 'class' => 'primary']
-        ];
+        //订单状态
         $orderStatus = [
-            1 => ['name' => '已下单', 'class' => 'info'],
-            2 => ['name' => '已支付', 'class' => 'primary'],
-            3 => ['name' => '待放币', 'class' => 'warning'],
-            4 => ['name' => '已放币', 'class' => 'success'],
-            5 => ['name' => '已取消', 'class' => 'default']
+            1 => ['name' => '处理中' ,'class' => 'default'],
+            2 => ['name' => '成功' ,'class' => 'success'],
+            3 => ['name' => '失败' ,'class' => 'danger'],
+            4 => ['name' => '退回处理中' ,'class' => 'primary'],
+            5 => ['name' => '已退回' ,'class' => 'info'],
+            6 => ['name' => '退回失败' ,'class' => 'warning'],
         ];
 
         //按币种-用户名-电话检索
         $search = trim($request->search,'');
-        $filterStatus = trim($request->filterStatus,'');
+        $filter = trim($request->filter,'');
         $orderC = trim($request->orderC,'');
-        $userOtcOrder = DB::table('otc_orders as otcOrder')
-            ->join('users as u','otcOrder.user_id','u.id') //用户信息
-            ->join('dcuex_crypto_currency as currency','otcOrder.currency_id','currency.id')  //币种
-            ->join('otc_legal_currencies as legal_currency','otcOrder.legal_currency_id','legal_currency.id') //法币
+        $userOtcDepositOrder = DB::table('otc_deposits as order')
+            ->join('users as u','order.user_id','u.id') //用户信息
+            ->join('dcuex_crypto_currency as currency','order.currency_id','currency.id')  //币种
+            ->join('dcuex_sys_crypto_wallet as s_wallet','order.sys_wallet_id','s_wallet.id') //运营方数字钱包
             ->when($search, function ($query) use ($search){
                 return $query->where('currency.currency_title_cn','like',"%$search%")
                     ->orwhere('currency.currency_title_en_abbr','like',"%$search%")
-                    ->orwhere('legal_currency.name','like',"%$search%")
-                    ->orwhere('legal_currency.abbr','like',"%$search%")
                     ->orwhere('u.username', 'like', "%$search%")
                     ->orwhere('u.phone', 'like', "%$search%");
             })
-            ->when($filterStatus, function ($query) use ($filterStatus){
-                return $query->where('otcOrder.status', $filterStatus);
+            ->when($filter, function ($query) use ($filter){
+                return $query->where('order.status', $filter);
+            }, function ($query) {
+                return $query->where('order.status', 1); //默认过滤等待处理中
             })
             ->when($orderC, function ($query) use ($orderC){
-                return $query->orderBy('otcOrder.created_at', $orderC);
+                return $query->orderBy('order.created_at', $orderC);
             }, function ($query) {
-                return $query->orderBy('otcOrder.created_at', 'desc'); //默认创建时间倒序
+                return $query->orderBy('order.created_at', 'desc'); //默认创建时间倒序
             })
             ->select(
-                'otcOrder.*', 'u.username', 'u.phone',
+                'order.*', 'u.username', 'u.phone',
                 'currency.currency_title_cn','currency.currency_title_en_abbr',
-                'legal_currency.name','legal_currency.abbr'
-            )
-            ->paginate(OTC_ORDER_PAGE_SIZE );;
-
-        return view('order.userOtcOrderIndex',compact('orderStatus', 'orderType','userOtcOrder'));
+                's_wallet.sys_crypto_wallet_title')
+            ->paginate(USER_OTC_DEPOSIT_ORDER_PAGE_SIZE );
+    //dd($userOtcDepositOrder);
+        return view('order.userOtcDepositOrderIndex',compact('orderStatus', 'userOtcDepositOrder'));
     }
 
     /**
@@ -125,21 +121,21 @@ class UserOtcOrderController extends Controller
             $request->field => $request->update,
             'updated_at' => gmdate('Y-m-d H:i:s',time()),
         ];
-        $query = DB::table('otc_orders')->where('id', $id);
+        $query = DB::table('otc_deposits')->where('id', $id);
 
-        //如核对通过则从交易用户的对应记账钱包中提币
+        //如凭证审核通过则向交易用户的对应记账钱包充值
         $jsonArray = ['code' =>0, 'msg' => '更新成功' ];
-        if ($request->update == OTC_ORDER_STATUS_TRANSFER_OUT) {
+        if ($request->update == 2) {
             DB::transaction(function () use ($query, $orderStatus) {
-                //更新提币订单
+                //更新充值订单
                 $query->update($orderStatus);
                 //获取订单信息
-                $order = $query->get(['user_id' ,'currency_id', 'field_amount'])->first();
+                $order = $query->get(['user_id' ,'currency_id', 'amount'])->first();
                 //更新记账钱包余额
                 DB::table('otc_balances')
                     ->where('user_id' ,$order->user_id)
                     ->where('currency_id', $order->currency_id)
-                    ->decrement('available', $order->field_amount);
+                    ->increment('available', $order->amount);
             });
 
             return response()->json($jsonArray);
@@ -158,9 +154,9 @@ class UserOtcOrderController extends Controller
      */
     public function destroy($id)
     {
-        return response()->json(['code' => 100090 ,'error' => '不能删除交易用户 OTC 订单']);
+        return response()->json(['code' => 100060 ,'error' => '不能删除交易用户 OTC 充值订单']);
 
-        /*if (DB::table('otc_orders')->where('id', $id)->delete()) {
+        /*if (DB::table('otc_deposits')->where('id', $id)->delete()) {
 
             return response()->json([]);
         }*/
