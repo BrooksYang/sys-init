@@ -21,8 +21,8 @@
                         {{--<a href="{{ url('otc/ad/create') }}">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>--}}
-                        <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="筛选订单">
-                            <span class="box-btn"><i class="fa fa-filter" title="筛选订单"></i></span>
+                        <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="筛选广告">
+                            <span class="box-btn"><i class="fa fa-filter" title="筛选广告"></i></span>
                         </a>
                         <ul role="menu" class="dropdown-menu">
                             <li>
@@ -66,10 +66,10 @@
                                 <th>认证</th>
                                 <th>收款方式</th>
                                 <th>银行</th>
-                                <th>创建时间 &nbsp;&nbsp;<a href="{{ url('order/ad')}}?orderC=desc">
-                                        <i class="fa fa-sort-amount-desc" style="color:{{ Request::getQueryString() != 'orderC=desc' ? (!Request::getQueryString() || !str_contains(Request::getQueryString(),'orderC=')) ? '' : 'gray' :''}}" title="降序"></i></a> &nbsp;
-                                    <a href="{{ url('order/otc') }}?orderC=asc">
-                                        <i class="fa fa-sort-amount-asc" style="color:{{ Request::getQueryString() != 'orderC=asc' ? 'gray' : '' }}" title="升序"></i></a></th>
+                                <th>创建时间 &nbsp;&nbsp;<a href="{{ url('otc/ad')}}?orderC=desc">
+                                        <i class="fa fa-sort-amount-desc" style="color:{{ Request::get('orderC') != 'desc' ? !Request::get('orderC') ? '' : 'gray' :'' }}" title="降序"></i></a> &nbsp;
+                                    <a href="{{ url('otc/ad') }}?orderC=asc">
+                                        <i class="fa fa-sort-amount-asc" style="color:{{ Request::get('orderC') != 'asc' ? 'gray' : '' }}" title="升序"></i></a></th>
                                 {{--<th>操作</th>--}}
                             </tr>
                             @forelse($otcAd as $key => $item)

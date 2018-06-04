@@ -62,9 +62,9 @@
                                 <th>总价</th>
                                 <th>状态</th>
                                 <th>创建时间 &nbsp;&nbsp;<a href="{{ url('order/otc')}}?orderC=desc">
-                                        <i class="fa fa-sort-amount-desc" style="color:{{ Request::getQueryString() != 'orderC=desc' ? (!Request::getQueryString() || !str_contains(Request::getQueryString(),'orderC=')) ? '' : 'gray' :''}}" title="降序"></i></a> &nbsp;
+                                        <i class="fa fa-sort-amount-desc" style="color:{{ Request::get('orderC') != 'desc' ? !Request::get('orderC') ? '' : 'gray' :'' }}" title="降序"></i></a> &nbsp;
                                     <a href="{{ url('order/otc') }}?orderC=asc">
-                                        <i class="fa fa-sort-amount-asc" style="color:{{ Request::getQueryString() != 'orderC=asc' ? 'gray' : '' }}" title="升序"></i></a></th>
+                                        <i class="fa fa-sort-amount-asc" style="color:{{ Request::get('orderC') != 'asc' ? 'gray' : '' }}" title="升序"></i></a></th>
                                 <th>操作</th>
                             </tr>
                             @forelse($userOtcOrder as $key => $item)
