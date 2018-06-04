@@ -128,7 +128,7 @@ class UserOtcWalletController extends Controller
      */
     public function destroy($id)
     {
-        return response()->json(['code' => 100060 ,'error' => '不能删除交易用户记账钱包']);
+        return response()->json(['code' => 200010 ,'error' => '不能删除交易用户 OTC 记账钱包']);
 
         /*if (DB::table('otc_balances')->where('id', $id)->delete()) {
 

@@ -136,7 +136,7 @@ class OtcAdController extends Controller
      */
     public function destroy($id)
     {
-        return response()->json(['code' => 100090 ,'error' => '不能删除交易用户 OTC 广告信息 ']);
+        return response()->json(['code' => 200020 ,'error' => '不能删除交易用户 OTC 广告信息 ']);
 
         /*if (DB::table('otc_advertisements')->where('id', $id)->delete()) {
 

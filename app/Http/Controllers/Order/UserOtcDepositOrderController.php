@@ -154,7 +154,7 @@ class UserOtcDepositOrderController extends Controller
      */
     public function destroy($id)
     {
-        return response()->json(['code' => 100060 ,'error' => '不能删除交易用户 OTC 充值订单']);
+        return response()->json(['code' => 200030 ,'error' => '不能删除交易用户 OTC 充值订单']);
 
         /*if (DB::table('otc_deposits')->where('id', $id)->delete()) {
 

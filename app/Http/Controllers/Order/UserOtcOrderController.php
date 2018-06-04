@@ -12,7 +12,7 @@ const OTC_ORDER_STATUS_TRANSFER_OUT =4;
 /**
  * Class UserOtcOrderController
  * @package App\Http\Controllers\Order
- * 交易 OTC 订单管理
+ * OTC 交易订单管理
  */
 class UserOtcOrderController extends Controller
 {
@@ -158,7 +158,7 @@ class UserOtcOrderController extends Controller
      */
     public function destroy($id)
     {
-        return response()->json(['code' => 100090 ,'error' => '不能删除交易用户 OTC 订单']);
+        return response()->json(['code' => 200040 ,'error' => '不能删除交易用户 OTC 交易订单']);
 
         /*if (DB::table('otc_orders')->where('id', $id)->delete()) {
 
