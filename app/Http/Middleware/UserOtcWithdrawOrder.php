@@ -5,12 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Class UserWithdrawOrder
- * @package App\Http\Middleware
- * 用户提币-钱包可用余额检查-提币金额-钱包余额-冻结金额
- */
-class UserWithdrawOrder
+class UserOtcWithdrawOrder
 {
     /**
      * Handle an incoming request.
@@ -26,16 +21,16 @@ class UserWithdrawOrder
         $withdrawOrder = last(explode('/',$request->path()) );
         $orderStatus = last(explode('=',$request->getQueryString()) );
         if (in_array($method,['PATCH','PUT']) && is_numeric($withdrawOrder) && $orderStatus == 3) {
-            $withdrawOrderInfo = DB::table('dcuex_user_withdraw_order as w_order')
-                ->join('dcuex_user_wallet as u_wallet', 'w_order.withdraw_currency_id', 'u_wallet.user_wallet_currency_id')
+            $withdrawOrderInfo = DB::table('otc_withdraws as w_order')
+                ->join('otc_balances as u_wallet', 'w_order.currency_id', 'u_wallet.currency_id')
                 ->where('w_order.id', $withdrawOrder)
-                ->get(['withdraw_currency_id','withdraw_amount', 'user_wallet_balance', 'user_wallet_balance_freeze_amount'])
+                ->get(['w_order.currency_id', 'w_order.amount', 'available', 'frozen'])
                 ->first();
 
-            $validBalance = $withdrawOrderInfo->user_wallet_balance - $withdrawOrderInfo->withdraw_amount >= $withdrawOrderInfo->user_wallet_balance_freeze_amount;
+            $validBalance = $withdrawOrderInfo->available - $withdrawOrderInfo->amount >= $withdrawOrderInfo->frozen;
             if (!$validBalance) {
 
-                return response()->json(['code'=>100070 ,'msg' => '钱包可用余额不足']);
+                return response()->json(['code'=>200060 ,'msg' => '钱包可用余额不足']);
             }
         }
 

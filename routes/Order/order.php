@@ -19,11 +19,15 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     Route::resource('order/userDeposit', 'Order\UserDepositOrderController');
 
     //用户提币订单
-    Route::resource('order/withdraw', 'Order\UserWithdrawOrderController', ['only' => ['index','destroy']]);
-        //->middleware('order.withdraw');
+    Route::resource('order/withdraw', 'Order\UserWithdrawOrderController', ['only' => ['index','update','destroy']])
+        ->middleware('order.withdraw');
 
     // OTC用户充值订单
     Route::resource('order/otc/userDeposit', 'Order\UserOtcDepositOrderController', ['only' => ['index','update','destroy']]);
+
+    // OTC用户提币订单
+    Route::resource('order/otc/withdraw', 'Order\UserOtcWithdrawOrderController', ['only' => ['index','update','destroy']])
+        ->middleware('order.otcWithdraw');
 
 });
 

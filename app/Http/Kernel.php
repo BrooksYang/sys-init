@@ -60,6 +60,7 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'order.withdraw' => \App\Http\Middleware\UserWithdrawOrder::class,
+        'order.otcWithdraw' => \App\Http\Middleware\UserOtcWithdrawOrder::class,
         'lock.screen' => \App\Http\Middleware\LockScreen::class,
         'mongo.log' => \App\Http\Middleware\WriteLog::class
     ];
