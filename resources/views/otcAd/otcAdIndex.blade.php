@@ -27,10 +27,10 @@
                         <ul role="menu" class="dropdown-menu">
                             <li>
                                 <a href="{{ url('otc/ad') }}">全部
-                                    {!! in_array( Request::get('filterReceiptWay'),array_keys($receiptWay)) ? '' :'&nbsp;<i class="fa fa-check txt-info"></i>'!!}
+                                    {!! in_array( Request::get('filterReceiptWay'),array_keys($status)) ? '' :'&nbsp;<i class="fa fa-check txt-info"></i>'!!}
                                 </a>
                             </li>
-                        @foreach($receiptWay as $key=>$item)
+                        @foreach($status as $key=>$item)
                             <li>
                                 <a href="{{ url('otc/ad') }}?filterReceiptWay={{$key}}">{{$item['name']}}
                                 {!!  Request::get('filterReceiptWay') == $key ? '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
@@ -65,7 +65,6 @@
                                 <th>完成率</th>
                                 <th>认证</th>
                                 <th>收款方式</th>
-                                <th>银行</th>
                                 <th>创建时间 &nbsp;&nbsp;<a href="{{ url('otc/ad')}}?orderC=desc">
                                         <i class="fa fa-sort-amount-desc" style="color:{{ Request::get('orderC') != 'desc' ? !Request::get('orderC') ? '' : 'gray' :'' }}" title="降序"></i></a> &nbsp;
                                     <a href="{{ url('otc/ad') }}?orderC=asc">
@@ -110,7 +109,7 @@
                                                         <p></p>
                                                         <span><b>高级认证：</b></span>{!! $item->need_advanced_auth ?? $item->need_phone_auth ? '<span class="label label-info">需要</span>': '<span class="label label-default">不需要</span>' !!}
                                                         <P></P>
-                                                        <span><b>相关说明：</b></span>{!! $item->instruction ?? '暂无说明' !!}
+                                                        <span><b>备注：</b></span>{!! $item->remark ?? '暂无说明' !!}
                                                         <P></P>
                                                     </div>
                                                     <div class="modal-footer">
@@ -121,8 +120,9 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{ $receiptWay[$item->receipt_way]['name'] }}</td>
-                                    <td>{{ $item->bank }}</td>
+                                    <td>
+                                        <span class="label label-{{ $status[$item->status]['class'] }}">{{ $status[$item->status]['name'] }}</span>
+                                    </td>
                                     <td>{{ $item->created_at ?: '--' }}</td>
                                    {{-- <td>
                                        --}}{{-- <a data-toggle="dropdown" class="dropdown-toggle" type="button">

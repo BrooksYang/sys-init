@@ -26,22 +26,16 @@ class OtcAdController extends Controller
             1 => ['name' => '卖单', 'class' => 'info'],
             2 => ['name' => '买单', 'class' => 'primary']
         ];
-        $receiptWay = [
-            1 =>  ['name' => '银行卡',        'class' => ''],
-            2 =>  ['name' => '支付宝',        'class' => ''],
-            3 =>  ['name' => '微信',          'class' => ''],
-            4 =>  ['name' => 'PayPal',       'class' => ''],
-            5 =>  ['name' => '西联汇款',      'class' => ''],
-            6 =>  ['name' => 'SWIFT',        'class' => ''],
-            7 =>  ['name' => 'PayNow',       'class' => ''],
-            8 =>  ['name' => 'Paytm',        'class' => ''],
-            9 =>  ['name' => 'QIWI',         'class' => ''],
-            10 => ['name' => 'e-Transter',   'class' => ''],
+        $status = [
+            1 =>  ['name' => '进行中',  'class' => 'info'],
+            2 =>  ['name' => '已完成',  'class' => 'success'],
+            3 =>  ['name' => '已下架',  'class' => 'default'],
+
         ];
 
         //按币种-用户名-电话检索
         $search = trim($request->search,'');
-        $filterReceiptWay = trim($request->filterReceiptWay,'');
+        $filterStatus = trim($request->filterReceiptWay,'');
         $orderC = trim($request->orderC,'');
         $otcAd = DB::table('otc_advertisements as otcAd')
             ->join('users as u','otcAd.user_id','u.id') //用户信息
@@ -55,8 +49,8 @@ class OtcAdController extends Controller
                     ->orwhere('u.username', 'like', "%$search%")
                     ->orwhere('u.phone', 'like', "%$search%");
             })
-            ->when($filterReceiptWay, function ($query) use ($filterReceiptWay){
-                return $query->where('otcAd.receipt_way', $filterReceiptWay);
+            ->when($filterStatus, function ($query) use ($filterStatus){
+                return $query->where('otcAd.status', $filterStatus);
             })
             ->when($orderC, function ($query) use ($orderC){
                 return $query->orderBy('otcAd.created_at', $orderC);
@@ -70,7 +64,7 @@ class OtcAdController extends Controller
             )
             ->paginate(OTC_AD_PAGE_SIZE );
 
-        return view('otcAd.otcAdIndex', compact('orderType', 'receiptWay','otcAd'));
+        return view('otcAd.otcAdIndex', compact('orderType', 'status','otcAd'));
     }
 
     /**
