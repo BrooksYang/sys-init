@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 const EXCHANGE_ORDER_TYPE = [1=>'市价买', 2=>'市价卖', 3=>'限价买', 4=>'限价卖'];
+const OTC_ORDER_STATUS = [1 => '已下单',2=>'已支付',3=>'待放币',4=>'已放币',5=>'已取消'];
 const CACHE_LENGTH = 10;
 
 /**
@@ -19,6 +20,8 @@ class HomeController extends Controller
     public function index()
     {
         $cacheLength = intval(env('CACHE_LENGTH', CACHE_LENGTH));
+        $tc = $otc = [];
+
         //注册用户数
         $users = Cache::remember('users', $cacheLength, function () {
             return $this->getUser();
@@ -26,18 +29,6 @@ class HomeController extends Controller
         //最近7天注册用户数
         $lastSevenDayUser = Cache::remember('lastSevenDayUser', $cacheLength, function () {
            return $this->getLastSevenDayUser(7);
-        });
-        //当天委托订单数
-        $exchangeOrders = Cache::remember('exchangeOrders', $cacheLength, function () {
-            return $this->getExchangeOrder();
-        });
-        //当天成交订单数
-        $orderLogs = Cache::remember('orderLogs', $cacheLength , function () {
-            return $this->getOrderLog();
-        });
-        //当天成交总额
-        $orderAmount = Cache::remember('orderAmount', $cacheLength, function () {
-            return $this->orderAmount();
         });
         //用户账户状态
         $userAccountStatus = Cache::remember('userAccountStatus', $cacheLength, function () use ($users) {
@@ -60,49 +51,103 @@ class HomeController extends Controller
         $currency = Cache::remember('currency', $cacheLength, function () {
             return $this->getCurrency();
         });
-        //当天充值订单数量及金额-按处理状态区分
-        $depositOrderStatus = Cache::remember('depositOrderStatus', $cacheLength, function () {
-            return $this->getDepositOrder();
-        });
-        //当天提币订单数量及金额-按处理状态区分
-        $withdrawOrderStatus = Cache::remember('withdrawOrderStatus', $cacheLength, function () {
-            return $this->getWithdrawOrder();
-        });
-        //当天委托订单数量--按处理状态
-        $exchangeOrderByStatus = Cache::remember('exchangeOrderByStatus', $cacheLength, function () {
-            return $this->getExchangeByStatus();
-        });
-        //当天委托订单成交数量及金额--按类型
-        $exchangeOrderByType = Cache::remember('exchangeOrderByType', $cacheLength, function () {
-            return $this->getExchangeOrderByType();
-        });
-        //当天委托订单成交数量及价格 --按类型
-        $exchangeOrderLog = Cache::remember('exchangeOrderLog', $cacheLength, function () {
-            return $this->getExchangeOrderLog();
-        });
 
-        //提币订单状态
-        //$withdrawOrderStatus = $this->withdrawOrderStatus();
-        //提币订单类型
-        //$orderType = $this->orderType();
-
-        return view('home' ,compact(
+        $public = compact(
             'users',
             'userAccountStatus',
             'emailPhoneVerifyStatus',
             'googleAuth',
             'userVerifyStatus',
-            'exchangeOrders',
-            'orderLogs',
-            'orderAmount',
             'currency',
-            'depositOrderStatus',
-            'withdrawOrderStatus',
-            'exchangeOrderByStatus',
-            'exchangeOrderByType',
-            'exchangeOrderLog',
             'lastSevenDayUser'
-        ));
+        );
+
+        //===================================== TC 统计 ===============================================================
+        if (env('APP_TC_MODULE')) {
+            //当天委托订单数
+            $exchangeOrders = Cache::remember('exchangeOrders', $cacheLength, function () {
+                return $this->getExchangeOrder();
+            });
+            //当天成交订单数
+            $orderLogs = Cache::remember('orderLogs', $cacheLength , function () {
+                return $this->getOrderLog();
+            });
+            //当天成交总额
+            $orderAmount = Cache::remember('orderAmount', $cacheLength, function () {
+                return $this->orderAmount();
+            });
+
+            //当天充值订单数量及金额-按处理状态区分
+            $depositOrderStatus = Cache::remember('depositOrderStatus', $cacheLength, function () {
+                return $this->getDepositOrder();
+            });
+            //当天提币订单数量及金额-按处理状态区分
+            $withdrawOrderStatus = Cache::remember('withdrawOrderStatus', $cacheLength, function () {
+                return $this->getWithdrawOrder();
+            });
+            //当天委托订单数量--按处理状态
+            $exchangeOrderByStatus = Cache::remember('exchangeOrderByStatus', $cacheLength, function () {
+                return $this->getExchangeByStatus();
+            });
+            //当天委托订单成交数量及金额--按类型
+            $exchangeOrderByType = Cache::remember('exchangeOrderByType', $cacheLength, function () {
+                return $this->getExchangeOrderByType();
+            });
+            //当天委托订单成交数量及价格 --按类型
+            $exchangeOrderLog = Cache::remember('exchangeOrderLog', $cacheLength, function () {
+                return $this->getExchangeOrderLog();
+            });
+
+            //提币订单状态
+            //$withdrawOrderStatus = $this->withdrawOrderStatus();
+            //提币订单类型
+            //$orderType = $this->orderType();
+            $tc = compact(
+                'exchangeOrders',
+                'orderLogs',
+                'orderAmount',
+                'depositOrderStatus',
+                'withdrawOrderStatus',
+                'exchangeOrderByStatus',
+                'exchangeOrderByType',
+                'exchangeOrderLog'
+            );
+        }
+
+
+        //===================================== OTC 统计===============================================================
+        if (env('APP_OTC_MODULE')) {
+            //当天 OTC 订单成交数量及价格--按状态
+            $otcOrder = Cache::remember('otcOrder', $cacheLength, function () {
+                return $this->getOtcOrder();
+            });
+            //当天 OTC 充值订单数量及金额-按处理状态区分
+            $otcDepositOrderStatus = Cache::remember('otcDepositOrderStatus', $cacheLength, function () {
+                return $this->getOtcDepositOrder();
+            });
+            //当天 OTC 提币订单数量及金额-按处理状态区分
+            $otcWithdrawOrderStatus = Cache::remember('otcWithdrawOrderStatus', $cacheLength, function () {
+                return $this->getOtcWithdrawOrder();
+            });
+            //当天 OTC 累计成功充值金额
+            $grandOtcDepositOrder = Cache::remember('grandOtcDepositOrder', $cacheLength, function () {
+                return $this->getOtcDepositOrderByS(2);
+            });
+            //当天 OTC 累计成功提币金额
+            $grandOtcWithdrawOrder = Cache::remember('grandOtcWithdrawOrder', $cacheLength, function () {
+                return $this->getOtcWithdrawOrderByS(3);
+            });
+
+            $otc = compact(
+                'otcOrder',
+                'otcDepositOrderStatus',
+                'otcWithdrawOrderStatus',
+                'grandOtcDepositOrder',
+                'grandOtcWithdrawOrder'
+            );
+        }
+
+        return view('home', $public + $tc + $otc);
     }
 
 
@@ -483,5 +528,124 @@ class HomeController extends Controller
         return DB::table('users')
             ->where('created_at','>=',$beginTime)->where('created_at', '<=',$endTime)
             ->count();
+    }
+
+    /**
+     * 当天 OTC 交易订单信息
+     *
+     * @return mixed
+     *
+     */
+    public function getOtcOrder()
+    {
+        $otcOrder['order'] =  DB::table('otc_orders')
+            ->select(DB::raw('sum(field_amount) as amount'), 'status', DB::raw('avg(price) as price'))
+            ->where('created_at' ,'like', env('APP_GMDATE',gmdate('Y-m-d')).'%')
+            ->groupBy('status')->orderBy('status','asc')->get();
+
+        $otcOrderCount['order'] = [];
+        foreach ($otcOrder['order'] as $key => $item) {
+            $otcOrderCount['order'][$item->status] = $item;
+        }
+        $otcOrderCount['status'] = OTC_ORDER_STATUS;
+        $otcOrderArr = $otcOrder['order']->toArray();
+        $otcOrderCount['maxAmount'] = max(array_column($otcOrderArr,'amount') ?: [0]);
+        $otcOrderCount['amountInterval'] = ($otcOrderCount['maxAmount']/10)*2;
+        $otcOrderCount['maxPrice'] = max(array_column($otcOrderArr,'price') ?: [0]);
+        $otcOrderCount['priceInterval'] = ($otcOrderCount['maxPrice']/10)*2;
+
+        return $otcOrderCount;
+    }
+
+    /**
+     * 当天 OTC 充值订单数量及金额-按处理状态区分
+     *
+     * @return mixed
+     */
+    public function getOtcDepositOrder()
+    {
+        $query = DB::table('otc_deposits');
+        $otcDepositOrder['order'] = $query->select(DB::raw("count(status) as orderNum"),
+            DB::raw("sum(amount) as deposit_amount"),'status as deposit_order_status')
+            ->where('created_at', 'like',env('APP_GMDATE', gmdate('Y-m-d')).'%')
+            ->groupBy('deposit_order_status')->orderBy('deposit_order_status','desc')
+            ->get();
+
+        $otcDepositOrderCount['order'] = [];
+        foreach ($otcDepositOrder['order'] as $key => $item) {
+            $otcDepositOrderCount['order'][$item->deposit_order_status]= $item;
+        }
+        $otcDepositOrderCount['orderStatus'] = [6=>'退回失败',5=>'已退回',4=>'退回处理中',3=>'失败',2=>'成功',1=>'处理中'];
+
+        return $otcDepositOrderCount;
+    }
+
+    /**
+     * 当天 OTC 提币订单数量及金额-按处理状态区分
+     *
+     * @return mixed
+     */
+    public function getOtcWithdrawOrder()
+    {
+        $query = DB::table('otc_withdraws');
+        $otcWithdrawOrder['order'] = $query->select(DB::raw("count(status) as orderNum"),
+            DB::raw("sum(amount) as amount"),'status')
+            ->where('created_at', 'like',env('APP_GMDATE', gmdate('Y-m-d')).'%')
+            ->groupBy('status')->orderBy('status','asc')
+            ->get();
+
+        $otcWithdrawOrderCount['order'] = [];
+        foreach ($otcWithdrawOrder['order'] as $key => $item) {
+            $otcWithdrawOrderCount['order'][$item->status] = $item;
+        }
+        $otcWithdrawOrderCount['orderStatus'] = [1=>'等待受理', 2=>'处理中', 3=>'已发币', 4=>'失败'];
+        $otcWithdrawOrderArr = $otcWithdrawOrder['order']->toArray();
+
+        $otcWithdrawOrderCount['maxAmount'] = max(array_column($otcWithdrawOrderArr,'amount') ?: [0]);
+        $otcWithdrawOrderCount['amountInterval'] = ($otcWithdrawOrderCount['maxAmount']/10)*2;
+        $otcWithdrawOrderCount['maxOrder'] = max(array_column($otcWithdrawOrderArr,'orderNum') ?: [0]);
+        $otcWithdrawOrderCount['orderInterval'] = ($otcWithdrawOrderCount['maxOrder']/10)*2;
+
+        return $otcWithdrawOrderCount;
+    }
+
+    /**
+     * 当天 OTC 累计成功充值金额
+     *
+     * @param $status
+     * @return int|mixed*
+     */
+    public function getOtcDepositOrderByS($status)
+    {
+        $otcDepositOrder = DB::table('otc_deposits')
+            ->where('created_at', 'like',env('APP_GMDATE', gmdate('Y-m-d')).'%')
+            ->where('status', $status)->get(['amount']);
+
+        $grandOtcDepositOrder = 0;
+        foreach ($otcDepositOrder as $key => $item){
+            $grandOtcDepositOrder += $item->amount;
+        }
+
+        return $grandOtcDepositOrder;
+    }
+
+    /**
+     * 当天 OTC 累计成功放币金额
+     *
+     * @param $status
+     * @return int|mixed
+     */
+    public function getOtcWithdrawOrderByS($status)
+    {
+        $otcWithdrawOrder = DB::table('otc_withdraws')
+            ->where('created_at', 'like',env('APP_GMDATE', gmdate('Y-m-d')).'%')
+            ->where('status', $status)->get(['amount']);
+
+        $grandOtcWithdrawOrder = 0;
+        foreach ($otcWithdrawOrder as $key => $item){
+            $grandOtcWithdrawOrder += $item->amount;
+        }
+
+        return $grandOtcWithdrawOrder;
     }
 }
