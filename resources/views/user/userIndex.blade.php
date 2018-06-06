@@ -21,19 +21,39 @@
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
                         </form>
+                        {{--筛选测试账户--}}
+                        <div style="display: inline-block;position: relative">
+                            <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="按类别筛选文档">
+                                <span class="box-btn"><i class="fontello-menu" title="按类别筛选文档"></i></span>
+                            </a>
+                            <ul role="menu" class="dropdown-menu pull-right">
+                                <li>
+                                    <a href="{{ url('user/manage') }}">全部
+                                        {!! !Request::get('filterObj') || !Request::get('filter') ? Request::path() == 'user/manage/pending' ? '' : '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url('user/manage') }}?filterObj=is_test&filter=1">测试账户
+                                        {!!  Request::get('filterObj') && Request::get('filter') == 1 ? '&nbsp;<i class="fa fa-check txt-info"></i>' :
+                                             Request::path() == 'user/manage/pending' &&  Request::get('filterObj') && Request::get('filter') ==1 ? '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
                         <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="筛选认证用户">
                             <span class="box-btn"><i class="fa fa-filter" title="筛选认证用户"></i></span>
                         </a>
                         <ul role="menu" class="dropdown-menu">
                             <li>
                                 <a href="{{ url('user/manage') }}">全部
-                                    {!! !Request::get('filter') ? Request::path() == 'user/manage/pending' ? '' : '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
+                                    {!! !Request::get('filterObj') || !Request::get('filter') ? Request::path() == 'user/manage/pending' ? '' : '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
                                 </a>
                             </li>
                         @foreach($userStatus['verify_status'] as $key=>$item)
                             <li>
                                 <a href="{{ url('user/manage') }}?filterObj=verify_status&filter={{$key}}">{{$item['name']}}
-                                {!!  Request::get('filter') == $key ? '&nbsp;<i class="fa fa-check txt-info"></i>' :
+                                {!!  Request::get('filterObj') && Request::get('filter') == $key ? '&nbsp;<i class="fa fa-check txt-info"></i>' :
                                      Request::path() == 'user/manage/pending' && $key ==2 ? '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
                                 </a>
                             </li>
@@ -67,6 +87,7 @@
                                 <th>谷歌认证</th>
                                 <th>审核状态</th>
                                 <th>用户状态</th>
+                                <th title="是否为测试账户/测试奖励获赠次数">账户</th>
                                 <th>注册时间&nbsp;&nbsp;<a href="{{ Request::path() != 'user/manage/pending' ? url('user/manage') : url('user/manage/pending') }}?orderC=desc">
                                         <i class="fa fa-sort-amount-desc" style="color:{{ Request::getQueryString() != 'orderC=desc' ? !Request::getQueryString() ? '' : 'gray' :''}}" title="降序"></i></a> &nbsp;
                                     <a href="{{ Request::path() != 'user/manage/pending' ? url('user/manage') : url('user/manage/pending') }}?orderC=asc">
@@ -134,6 +155,7 @@
                                     <td><span class="label label-{{ $userStatus['is_valid'][$item->is_valid]['class'] }}">
                                         {{ $userStatus['is_valid'][$item->is_valid]['name'] }}</span>
                                     </td>
+                                    <td title="{{ $item->is_test ? '测试账户/测试奖励获赠次数'.$item->received_times.'次' : '非测试账户/测试奖励获赠次数'.$item->received_times.'次' }}">{!! $item->is_test ? '<i class="fa fa-check" title=""></i>/'.$item->received_times.'次' : '<i class="fa fa-times" title=""></i>/'.$item->received_times.'次' !!}</td>
                                     <td>{{ empty($item->created_at)? '--' : $item->created_at}}</td>
 
                                     <td>

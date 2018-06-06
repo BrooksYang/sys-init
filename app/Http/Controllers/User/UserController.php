@@ -30,9 +30,7 @@ class UserController extends Controller
         $filterObj = trim($request->filterObj,'');
         $filter = trim($request->filter,'');
         $orderC = trim($request->orderC,'');
-        if (($filterObj && !$filter) || !$filterObj && $filter) {
-            abort(404);
-        }
+
         $user = DB::table('users as u')
             ->when($search, function ($query) use ($search){
                 return $query->where('username','like',"%$search%")
