@@ -28,7 +28,7 @@ class PublicController extends Controller
 
 
     /**
-     * 显示storage/roomCover直播房间封面
+     * 显示storage/app/public 下币种 Icon
      *
      * @param $filename
      * @return \Illuminate\Http\Response
