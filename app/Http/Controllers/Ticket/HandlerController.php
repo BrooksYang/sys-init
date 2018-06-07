@@ -50,7 +50,7 @@ class HandlerController extends Controller
     {
         
         if(Entrance::user()->role_id == $this->supervisor) {
-            $task = DB::table('jntz_ticket')
+            $task = DB::table('otc_ticket')
                                 ->where('supervisor_id', Entrance::user()->id)
                                 ->where('ticket_state',2)
                                 ->orWhere('ticket_state',6)
@@ -58,7 +58,7 @@ class HandlerController extends Controller
                                 ->get();
 
         } elseif(Entrance::user()->role_id == $this->admin) {
-            $task = DB::table('jntz_ticket')->orderByDesc('created_at')->get();
+            $task = DB::table('otc_ticket')->orderByDesc('created_at')->get();
         }
 
         return response()->json(['task'=>$task]);
@@ -81,17 +81,8 @@ class HandlerController extends Controller
             'created_at'=>\Carbon\Carbon::now(),
             'updated_at'=>\Carbon\Carbon::now(),
         ];
-        DB::table('jntz_ticket_reply')->insert($reply);
-        DB::table('jntz_ticket')->where('id',$request->input('ticket_id'))->update(['ticket_state'=>3]);
-
-
-        $userId = DB::table('jntz_ticket')->where('id',$request->input('ticket_id'))->first()->user_id;
-        $user = DB::table('jntz_user')->where('id',$userId)->first();
-        $code = DB::table('conf_countries')->where('id',$user->country_id)->first()->code;
-        
-        $phone = $code . @$user->account;
-
-        SendSms::dispatch($phone, "您的工单有新的回复，请及时查看！");
+        DB::table('otc_ticket_reply')->insert($reply);
+        DB::table('otc_ticket')->where('id',$request->input('ticket_id'))->update(['ticket_state'=>3]);        
         
 
         return response()->json(['msg'=>'success']);  
@@ -105,10 +96,10 @@ class HandlerController extends Controller
      */
     public function deleteReply($id)
     {
-        $reply = DB::table('jntz_ticket_reply')->where('id',$id)->first();
+        $reply = DB::table('otc_ticket_reply')->where('id',$id)->first();
 
-        DB::table('jntz_ticket_reply')->where('id',$id)->delete();
-        DB::table('jntz_ticket')->where('id',$reply->ticket_id)->update(['ticket_state'=>3]);
+        DB::table('otc_ticket_reply')->where('id',$id)->delete();
+        DB::table('otc_ticket')->where('id',$reply->ticket_id)->update(['ticket_state'=>3]);
 
         return response()->json(['msg'=>'success']); 
     }
@@ -121,8 +112,8 @@ class HandlerController extends Controller
     public function destroy($id)
     {
         DB::transaction(function () use($id) {
-            DB::table('jntz_ticket')->where('id',$id)->delete();
-            DB::table('jntz_ticket_reply')->where('ticket_id',$id)->delete();
+            DB::table('otc_ticket')->where('id',$id)->delete();
+            DB::table('otc_ticket_reply')->where('ticket_id',$id)->delete();
         });
 
         return response()->json(['msg'=>'success']);
@@ -143,17 +134,8 @@ class HandlerController extends Controller
             'created_at'=>\Carbon\Carbon::now(),
             'updated_at'=>\Carbon\Carbon::now(),
         ];
-        DB::table('jntz_ticket_reply')->insert($reply);
-        DB::table('jntz_ticket')->where('id',$request->input('ticketId'))->update(['ticket_state'=>3]); // 修改原始工单的状态为已回复
-
-        //发送短信
-        $userId = DB::table('jntz_ticket')->where('id',$request->input('ticketId'))->first()->user_id;
-        $user = DB::table('jntz_user')->where('id',$userId)->first();
-        $code = DB::table('conf_countries')->where('id',$user->country_id)->first()->code;
-        
-        $phone = $code . @$user->account;
-
-        SendSms::dispatch($phone, "您的工单有新的回复，请及时查看！");
+        DB::table('otc_ticket_reply')->insert($reply);
+        DB::table('otc_ticket')->where('id',$request->input('ticketId'))->update(['ticket_state'=>3]); // 修改原始工单的状态为已回复
 
 
         return response()->json(['msg'=>'success']);
@@ -168,8 +150,8 @@ class HandlerController extends Controller
     public function detail($id)
     {
         $data['ticketStatus'] = $this->ticketStatus;
-        $data['ticket'] = DB::table('jntz_ticket')->where('id',$id)->first();
-        $replyMatrix = DB::table('jntz_ticket_reply')
+        $data['ticket'] = DB::table('otc_ticket')->where('id',$id)->first();
+        $replyMatrix = DB::table('otc_ticket_reply')
                             ->where('ticket_id',$id)
                             ->where('reply_parent_id',0)
                             ->get();
@@ -178,7 +160,7 @@ class HandlerController extends Controller
         //一级回复
         foreach ($replyMatrix as $reply) {
             // 二次回复不存在的情况
-            if ( DB::table('jntz_ticket_reply')->where('reply_parent_id', $reply->id)->exists()==false ) {
+            if ( DB::table('otc_ticket_reply')->where('reply_parent_id', $reply->id)->exists()==false ) {
                 $levelOne = [
                     'id' => $reply->id,
                     'ticketId' => $reply->ticket_id,
@@ -191,7 +173,7 @@ class HandlerController extends Controller
                 ];
             } else {
                 // 二级回复存在则获取相关的内容
-                $res = DB::table('jntz_ticket_reply')
+                $res = DB::table('otc_ticket_reply')
                                         ->where('ticket_id',$id)
                                         ->where('reply_parent_id',$reply->id)
                                         ->get();
@@ -240,13 +222,13 @@ class HandlerController extends Controller
         $data['ticketStatus'] = $this->ticketStatus;
         
         if(Entrance::user()->role_id == $this->supervisor) {
-            $data['tickets'] = DB::table('jntz_ticket')
+            $data['tickets'] = DB::table('otc_ticket')
                                 ->where('supervisor_id', Entrance::user()->id)
                                 ->orderByDesc('created_at')
                                 ->paginate('30');
 
         } elseif(Entrance::user()->role_id == $this->admin) {
-            $data['tickets'] = DB::table('jntz_ticket')->orderByDesc('created_at')->paginate('30');
+            $data['tickets'] = DB::table('otc_ticket')->orderByDesc('created_at')->paginate('30');
         }
         
 
@@ -277,14 +259,14 @@ class HandlerController extends Controller
      */
     public function ticketTransfer($ticketId)
     {
-        $data['supervisorList'] = DB::table('jntz_supervisor_state')
-                    ->join('auth_admins','jntz_supervisor_state.supervisor_id','=','auth_admins.id')
-                    ->where('jntz_supervisor_state.live_state',0)
-                    ->where('jntz_supervisor_state.active_state',0)
+        $data['supervisorList'] = DB::table('otc_supervisor_state')
+                    ->join('auth_admins','otc_supervisor_state.supervisor_id','=','auth_admins.id')
+                    ->where('otc_supervisor_state.live_state',0)
+                    ->where('otc_supervisor_state.active_state',0)
                     ->get();
                     // dd($data['supervisorList']);
         $data['ticketId'] = $ticketId;
-        $data['ticket'] = DB::table('jntz_ticket')->where('id',$ticketId)->first();
+        $data['ticket'] = DB::table('otc_ticket')->where('id',$ticketId)->first();
         $data['ticketStatus'] = $this->ticketStatus;
 
         return view('Ticket.Handler.transfer',$data);
@@ -300,11 +282,11 @@ class HandlerController extends Controller
         $ticketId = $request->input('ticketId');
         $transferTo = $request->input('transferTo');
         $transferFrom = $request->input('transferFrom');
-        DB::table('jntz_ticket')->where('id',$ticketId)->update(['supervisor_id'=>$transferTo]); // 更新工单
-        $transferToCount = DB::table('jntz_ticket')->where('supervisor_id',$transferTo)->count(); // 查数
-        $transferFromCount = DB::table('jntz_ticket')->where('supervisor_id',$transferFrom)->count(); // 查数
-        DB::table('jntz_supervisor_state')->where('supervisor_id',$transferTo)->update(['ticket_amount'=>$transferToCount]);
-        DB::table('jntz_supervisor_state')->where('supervisor_id',$transferFrom)->update(['ticket_amount'=>$transferFromCount]);
+        DB::table('otc_ticket')->where('id',$ticketId)->update(['supervisor_id'=>$transferTo]); // 更新工单
+        $transferToCount = DB::table('otc_ticket')->where('supervisor_id',$transferTo)->count(); // 查数
+        $transferFromCount = DB::table('otc_ticket')->where('supervisor_id',$transferFrom)->count(); // 查数
+        DB::table('otc_supervisor_state')->where('supervisor_id',$transferTo)->update(['ticket_amount'=>$transferToCount]);
+        DB::table('otc_supervisor_state')->where('supervisor_id',$transferFrom)->update(['ticket_amount'=>$transferFromCount]);
 
         return response()->json(['msg'=>'success']);
     }
