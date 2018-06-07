@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\MongoLog;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class LoginController extends Controller
 {
@@ -47,9 +48,11 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
-        MongoLog::where('session',\Request::cookie()[str_slug(env('APP_NAME', 'laravel'), '_').'_session'])
-            ->where('type','login')
-            ->update(['context' => 'logout#'.gmdate('Y-m-d H:i:s')]);
+        if (App::environment() == 'production') {
+            MongoLog::where('session',\Request::cookie()[str_slug(env('APP_NAME', 'laravel'), '_').'_session'])
+                ->where('type','login')
+                ->update(['context' => 'logout#'.gmdate('Y-m-d H:i:s')]);
+        }
 
         $this->guard()->logout();
 
