@@ -2,6 +2,13 @@
 
 @section('css-part')
     @parent
+    <link href="{{ asset('/css/hbfont/hbfont.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        .hbfont [class^="icon-"]:before,
+        .hbfont [class*=" icon-"]:before{
+            font-family: inherit;
+        }
+    </style>
 @show
 
 @section('content')
