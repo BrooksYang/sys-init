@@ -57,8 +57,6 @@ mongo
 service mongod stop
 service mongod start
 service mongod restart
-
-
 ```
 
 mongo数据库的创建并授权用户
@@ -66,7 +64,6 @@ mongo数据库的创建并授权用户
 use  dcuex
 db.createUser({ user: "dcu", pwd: "dcu@2018!)", roles: [{ role: "dbOwner", db: "dcuex" }] })
 db.auth("dcu", "dcu@2018!)")
-
 ```
 
 
