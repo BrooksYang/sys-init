@@ -53,7 +53,7 @@
                                     <td>{{ ($key + 1) + ($payType->currentPage() - 1) * $payType->perPage() }}</td>
                                     <td title="{{ $item->name }}"><strong>{{ str_limit($item->name,25) }}</strong></td>
                                     <td>{{ ucwords($item->name_en) ?: '--'}}</td>
-                                    <td><i class="{{ $item->icon ?: 'fa fa-credit-card' }}" ></i></td>
+                                    <td class="hbfont"><i class="{{ $item->icon ?: 'fa fa-credit-card' }}" ></i></td>
                                     <td>{{ $item->updated_at ?: '--'}}</td>
                                     <td>
                                         <a href="{{ url("otc/payType/$item->id/edit") }}">
