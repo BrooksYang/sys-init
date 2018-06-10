@@ -85,8 +85,12 @@
   			}
   		});
   		// 菜单较多时会出现部分隐藏
-        $('.wrap-sidebar-content').css('height',$(this).height()+300);
-        $('#paper-bg').css('min-height',$(this).height()+300);
+        if($('#paper-bg').height()<$(this).height()){
+            $('.wrap-sidebar-content').css('height',$(this).height()+300);
+            $('#paper-bg').css('min-height',$(this).height()+300)
+        }else {
+            $('.wrap-sidebar-content').css('height',$('#paper-bg').height()+100);
+        }
     }
 });
 })(jQuery);
