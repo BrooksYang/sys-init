@@ -85,7 +85,7 @@
   			}
   		});
   		// 菜单较多时会出现部分隐藏
-        if($('#paper-bg').height()<$(this).height()){
+        if($('#paper-bg').height()-20 < $(this).height()){
             $('.wrap-sidebar-content').css('height',$(this).height()+300);
             $('#paper-bg').css('min-height',$(this).height()+300)
         }else {

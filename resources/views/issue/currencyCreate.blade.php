@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="{{ url('imageCrop/css/image-crop.min.css') }}">
     <link rel="stylesheet" href="{{ url('imageCrop/css/jquery.fileupload.css') }}">
     <style>
+        #Avatar{
+            height: 200px;
+        }
         .chooseB{
             padding: 6px 12px; border: 1px solid #E3E3E3; background-color: #fff;width: 82px;
         }
