@@ -256,7 +256,7 @@
                                 <label>合约详细介绍</label>
                                 <div class="form-group {{ $errors->has('currency_intro') ? 'has-error' : '' }}">
                                     <div class="col-sm-12">
-                                        <textarea id="questionContent" name="currency_intro" rows="8" cols="150" style="visibility: hidden; display: none;"
+                                        <textarea id="questionContent" name="currency_intro" rows="8" style="height: 400px" style="visibility: hidden; display: none;"
                                                   placeholder="请填写合约详细介绍">{{ $currency->currency_intro ?? old('currency_intro') }}</textarea>
 
                                         @if ($errors->has('currency_intro'))
