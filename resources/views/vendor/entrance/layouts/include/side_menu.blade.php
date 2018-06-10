@@ -1,5 +1,5 @@
 <!-- SIDE MENU -->
-<div class="wrap-sidebar-content">
+{{--<div class="wrap-sidebar-content">--}}
     <div id="skin-select">
         <a id="toggle">
             <span class="fa icon-menu"></span>
@@ -66,4 +66,4 @@
             </div>
         </div>
     </div>
-</div>
+{{--</div>--}}

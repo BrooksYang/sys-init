@@ -13,7 +13,7 @@
 
     //pass the options variable to the function
     accordionze: function(options) {
-        
+
 		var defaults = {
 			accordionze: 'true',
 			speed: 300,
@@ -84,6 +84,9 @@
   				}
   			}
   		});
+  		// 菜单较多时会出现部分隐藏
+        $('.wrap-sidebar-content').css('height',$(this).height()+300);
+        $('#paper-bg').css('min-height',$(this).height()+300);
     }
 });
 })(jQuery);
