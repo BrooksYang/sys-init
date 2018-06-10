@@ -8,6 +8,9 @@
         .hbfont [class*=" icon-"]:before{
             font-family: inherit;
         }
+        .box-tools .fa,.box-title [class^="fontello-"]:before, [class*=" fontello-"]:before,.wrap-sidebar-content .fa,.wrap-sidebar-content [class^="icon-"]:before, [class*=" icon-"]:before{
+            line-height: inherit;
+        }
     </style>
 @show
 
