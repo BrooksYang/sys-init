@@ -111,7 +111,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="10" class="text-center">
+                                <tr><td colspan="11" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
