@@ -5,8 +5,6 @@
     <link rel="stylesheet" href="{{ asset('vendor/entrance/js/datepicker/datepicker.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/entrance/js/datepicker/clockface.css') }}">
 
-    <link rel="stylesheet" href="{{ asset('vendor/entrance/css/entypo-icon.css') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/entrance/css/entypo.css') }}">
     {{-- 图片裁剪 --}}
     <link rel="stylesheet" href="{{ url('imageCrop/css/jcrop/css/jquery.Jcrop.css') }}">
     <link rel="stylesheet" href="{{ url('imageCrop/css/image-crop.min.css') }}">
@@ -33,11 +31,8 @@
         }
     </style>
 
-@show
+@endsection
 
-
-@section('js-import')
-@show
 
 @section('content')
     <div class="row">
@@ -270,7 +265,7 @@
                         {{--图标--}}
                         <div class="form-group {{ $errors->has('currency_icon') ? 'has-error' : '' }}">
                             <div class="col-md-8">
-                                <label>上传币种图标 <span style="color: #666;font-weight:normal;">(300*300)</span></label>
+                                <label>上传币种图标 <span style="color: #666;font-weight:normal;">(200*200)</span></label>
                                 <p class="help-block"><small>支持jpg，jpeg，png格式，图片最大尺寸为600*600&nbsp;&nbsp;最小尺寸为80*80{{--（宽高比为1/1）--}}</small></p>
                                 @if ($errors->has('currency_icon'))
                                     <span class="help-block"><strong>{{ $errors->first('currency_icon') }}</strong></span>
@@ -404,9 +399,9 @@
             var image_view_route = '{{url('currencyIcon')}}';
             var image_crop_route = '{{ url('issuer/currencyIcon/crop').'/'.base64_encode('app/public/currencyIcon') }}';
             //上传及裁剪--预览区的尺寸
-            var image_upload_preview_width = 400;
-            var image_crop_preview_width = 160;
-            var image_crop_preview_height = 160;
+            var image_upload_preview_width = 200;
+            var image_crop_preview_width = 80;
+            var image_crop_preview_height = 80;
             //裁剪尺寸
             var image_crop_width = 200;
             var image_crop_height = 200;
@@ -442,7 +437,7 @@
                         <img src="" id="avatarCrop" alt="Example" style="width: `+image_upload_preview_width+`px;"/>
                     </div>
                     <div class="responsive-1024">
-                        <div id="preview-pane" style="right: -230px;">
+                        <div id="preview-pane" style="right: -95px;">
                         <div class="preview-container" style="width: `+image_crop_preview_width+`px; height: `+image_crop_preview_height+`px;">
                         <img src="" class="jcrop-preview" alt="Preview" />
                     </div>
@@ -529,6 +524,7 @@
                         $('#avatarCropImg').attr('src', url);
                     },
                     error:function () {
+                        layer.closeAll('loading');
                         layer.msg('网络错误');
                     }
                 });

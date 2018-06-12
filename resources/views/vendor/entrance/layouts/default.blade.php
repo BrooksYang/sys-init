@@ -16,9 +16,6 @@
     <!-- Bootstrap theme -->
     <!--  <link rel="stylesheet" href="{{ asset('vendor/entrance') }}/css/bootstrap-theme.min.css"> -->
 
-    @section('css-import')
-    @show
-
     <!-- Custom styles for this template -->
     {{--Layout Full width--}}
    {{-- <link rel="stylesheet" href="{{ asset('vendor/entrance/css/theme-nopadding.css') }}">--}}
@@ -37,6 +34,10 @@
     <script src="{{ asset('vendor/entrance/js/pace/pace.js') }}"></script>
     <link href="{{ asset('vendor/entrance/js/pace/themes/orange/pace-theme-flash.css') }}" rel="stylesheet" />
 
+
+    @section('css-import')
+
+    @show
     @section('js-import')
     @show
 
