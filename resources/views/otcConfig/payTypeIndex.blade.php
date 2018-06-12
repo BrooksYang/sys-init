@@ -12,7 +12,7 @@
             line-height: inherit;
         }
     </style>
-@show
+@endsection
 
 @section('content')
     <div class="row">

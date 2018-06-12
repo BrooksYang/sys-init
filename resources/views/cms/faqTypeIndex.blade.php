@@ -1,8 +1,5 @@
 @extends('entrance::layouts.default')
 
-@section('css-part')
-    @parent
-@show
 
 @section('content')
     <div class="row">

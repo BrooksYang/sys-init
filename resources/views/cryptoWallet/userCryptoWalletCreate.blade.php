@@ -1,11 +1,7 @@
 @extends('entrance::layouts.default')
 
-@section('css-import')
-@show
 
 
-@section('js-import')
-@show
 
 @section('content')
     <div class="row">
