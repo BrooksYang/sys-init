@@ -128,7 +128,17 @@ class UserWithdrawOrderController extends Controller
                 DB::table('dcuex_user_wallet')
                     ->where('user_id' ,$order->user_id)
                     ->where('user_wallet_currency_id', $order->withdraw_currency_id)
-                    ->decrement('user_wallet_balance', $order->withdraw_amount);
+                    ->decrement(
+                        'user_wallet_balance_freeze_amount', $order->withdraw_amount,
+                        ['updated_at' => gmdate('Y-m-d H:i:s',time()) ]
+                    );
+
+                DB::table('dcuex_sys_wallet')
+                    ->where('sys_wallet_currency_id', $order->withdraw_currency_id)
+                    ->decrement(
+                        'sys_wallet_balance_freeze_amount', $order->withdraw_amount,
+                        ['updated_at' => gmdate('Y-m-d H:i:s',time()) ]
+                    );
             });
 
             return response()->json($jsonArray);
