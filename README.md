@@ -84,6 +84,6 @@ APP_ENV=production
 
 ```
 supervisor_role_id = 3
- 或者
+
 permission_role = [148-158]
 ```
