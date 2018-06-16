@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -20,7 +21,41 @@ class HomeController extends Controller
     public function index()
     {
         $cacheLength = intval(env('CACHE_LENGTH', CACHE_LENGTH));
-        $tc = $otc = [];
+        $tc = $otc = $otcTicket = [];
+
+        //工单客服数据面板
+        if (\Entrance::user()->role_id == config('app.supervisor_role_id')) {
+            //当天 OTC 系统未分配工单数量
+            $sysTicketByNotAssign = Cache::remember('sysTicketByNotAssign', $cacheLength, function () {
+                return $this->getSysTicketByState(1);
+            });
+            //当天 OTC 系统等待处理的工单数量
+            $sysTicketByWaitingFor = Cache::remember('sysTicketByWaitingFor', $cacheLength, function () {
+                return $this->getSysTicketByState(6);
+            });
+            //当天 OTC 客服-我的工单数量
+            $myTicket = Cache::remember('myTicket', $cacheLength, function () {
+                return $this->getSysTicketByState(6);
+            });
+            //当天 OTC 客服-我的待处理工单数量
+            $myTicketByWaitingFor = Cache::remember('myTicketByWaitingFor', $cacheLength, function () {
+                return $this->getSysTicketByState(6);
+            });
+            // OTC 客服-我的工单数量--按处理状态
+            $myTicketByStatus = Cache::remember('myTicketByStatus', $cacheLength, function () {
+                return $this->getMyTicketByState();
+            });
+
+            $otcTicket = compact(
+                'sysTicketByNotAssign',
+                'sysTicketByWaitingFor',
+                'myTicket',
+                'myTicketByWaitingFor',
+                'myTicketByStatus'
+            );
+
+            return view('ticketHome', $otcTicket);
+        }
 
         //注册用户数
         $users = Cache::remember('users', $cacheLength, function () {
@@ -461,7 +496,7 @@ class HomeController extends Controller
 
         return compact('orderStatus', 'order', 'status');
     }
-    
+
     /**
      * 当天委托交易订单成交数量及金额-按类型区分
      *
@@ -484,7 +519,7 @@ class HomeController extends Controller
        $orderByTypeCount['amountInterval'] = ($orderByTypeCount['maxAmount']/10)*2;
        $orderByTypeCount['maxCashAmount'] = max(array_column($orderByTypeArr,'cash_amount') ?: [0]);
        $orderByTypeCount['cashAmountInterval'] = ($orderByTypeCount['maxCashAmount']/10)*2;
-    
+
         return $orderByTypeCount;
     }
 
@@ -647,5 +682,60 @@ class HomeController extends Controller
         }
 
         return $grandOtcWithdrawOrder;
+    }
+
+    /**
+     * 按状态获取客服或系统工单
+     *
+     * @param $state
+     * @param string $supervisor
+     * @return mixed
+     */
+    public function getSysTicketByState($state, $supervisor='')
+    {
+        return DB::table('otc_ticket')
+            ->when($supervisor, function ($query) {
+                return $query->where('supervisor_id', Auth::id());
+            })
+            ->where('created_at', 'like',env('APP_GMDATE', gmdate('Y-m-d')).'%')
+            ->where('ticket_state', $state)->count('id');
+    }
+
+    /**
+     * 按状态获取客服-我的工单
+     *
+     * @return array
+     */
+    public function getMyTicketByState()
+    {
+        $orderStatus = DB::table('otc_ticket')
+            ->select(DB::raw('count(ticket_state) as statusNum'), 'ticket_state as status')
+            ->where('supervisor_id', Auth::id())
+            ->groupBy('status')->orderBy('status', 'asc')->get();
+
+        //工单状态 1 未分配 2 已分配 3 已回复 4 已关闭 5 正在处理 6等待处理',
+        $status = $this->getSysTicketState(true);
+        $order = [];
+        foreach ($orderStatus as $key => $item) {
+            $order[$item->status] = $item;
+            $order[$item->status]->statusName = $status[$item->status];
+        }
+
+        return compact('orderStatus', 'order', 'status');
+    }
+
+    /**
+     * 系统工单状态
+     *
+     * @param string $supervisor
+     * @return array
+     */
+    public function getSysTicketState($supervisor='')
+    {
+        if ($supervisor) {
+            return [2=>'已分配', 3=>'已回复',4=>'已关闭',5=>'正在处理', 6=>'等待处理'];
+        }
+
+        return [1=>'未分配',2=>'已分配', 3=>'已回复',4=>'已关闭',5=>'正在处理', 6=>'等待处理'];
     }
 }
