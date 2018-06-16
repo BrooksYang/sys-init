@@ -14,7 +14,7 @@
 
             @foreach($groups as $group)
                 @if (!$group->permissions->isEmpty())
-                    <div class="col-lg-4">
+                    <div class="col-lg-12">
                         <div class="box">
                             {{-- Module Name --}}
                             <div class="box-header">
@@ -48,7 +48,7 @@
             @endforeach
 
             @foreach($modules as $module)
-                <div class="col-lg-4">
+                <div class="col-lg-12">
                     <div class="box">
                         {{-- Module Name --}}
                         <div class="box-header">

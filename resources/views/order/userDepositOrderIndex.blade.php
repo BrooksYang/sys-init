@@ -48,11 +48,15 @@
                                 <th>用户名</th>
                                 <th>电话</th>
                                 <th>币种</th>
-                                <th>充值余额</th>
+                                <th>充值金额</th>
                                 <th>交易号</th>
                                 <th title="运营方数字钱包">钱包名称</th>
                                 <th>凭证</th>
                                 <th>状态</th>
+                                <th>创建时间 &nbsp;&nbsp;<a href="{{ url('order/userDeposit')}}?orderC=desc">
+                                        <i class="fa fa-sort-amount-desc" style="color:{{ Request::get('orderC') != 'desc' ? !Request::get('orderC') ? '' : 'gray' :'' }}" title="降序"></i></a> &nbsp;
+                                    <a href="{{ url('order/userDeposit') }}?orderC=asc">
+                                        <i class="fa fa-sort-amount-asc" style="color:{{ Request::get('orderC') != 'asc' ? 'gray' : '' }}" title="升序"></i></a></th>
                                 <th>操作</th>
                             </tr>
                             @forelse($userDepositOrder as $key => $item)
@@ -124,7 +128,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="10" class="text-center">
+                                <tr><td colspan="11" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>

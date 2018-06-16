@@ -7,6 +7,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
 const USER_DEPOSIT_ORDER_PAGE_SIZE = 20;
+const DEPOSITS_PROCESSING = 1;
+const DEPOSITS_SUCCESS = 2;
+const DEPOSITS_FAIL = 3;
+const DEPOSITS_RETURN_PROCESSING= 4;
+const DEPOSITS_RETURNED = 5;
+const DEPOSITS_RETURN_FAIL = 6;
 
 /**
  * Class UserDepositOrderController
@@ -35,6 +41,7 @@ class UserDepositOrderController extends Controller
         //按币种-用户名-电话检索
         $search = trim($request->search,'');
         $filter = trim($request->filter,'');
+        $orderC = trim($request->orderC,'');
         $userDepositOrder = DB::table('dcuex_user_deposit_order as order')
             ->join('users as u','order.user_id','u.id') //用户信息
             ->join('dcuex_crypto_currency as currency','order.currency_id','currency.id')  //币种
@@ -50,7 +57,11 @@ class UserDepositOrderController extends Controller
             }, function ($query) {
                 return $query->where('order.deposit_order_status', 1); //默认过滤等待处理中
             })
-            ->orderBy('created_at', 'desc')
+            ->when($orderC, function ($query) use ($orderC){
+                return $query->orderBy('order.created_at', $orderC);
+            }, function ($query) {
+                return $query->orderBy('order.created_at', 'desc'); //默认创建时间倒序
+            })
             ->select(
                 'order.*', 'u.username', 'u.phone',
                 'currency.currency_title_cn','currency.currency_title_en_abbr',
@@ -118,9 +129,14 @@ class UserDepositOrderController extends Controller
         ];
         $query = DB::table('dcuex_user_deposit_order')->where('id', $id);
 
+        if (!$this->checkAction($id, $request->update)) {
+
+            return response()->json(['code'=>100061 ,'msg' => '非法操作']);
+        }
+
         //如凭证审核通过则向交易用户的对应记账钱包充值
         $jsonArray = ['code' =>0, 'msg' => '更新成功' ];
-        if ($request->update == 2) {
+        if ($request->update == DEPOSITS_SUCCESS) {
             DB::transaction(function () use ($query, $orderStatus) {
                 //更新充值订单
                 $query->update($orderStatus);
@@ -130,7 +146,17 @@ class UserDepositOrderController extends Controller
                 DB::table('dcuex_user_wallet')
                     ->where('user_id' ,$order->user_id)
                     ->where('user_wallet_currency_id', $order->currency_id)
-                    ->increment('user_wallet_balance', $order->deposit_amount);
+                    ->increment(
+                        'user_wallet_balance', $order->deposit_amount,
+                        ['updated_at' => gmdate('Y-m-d H:i:s',time()) ]
+                    );
+
+                DB::table('dcuex_sys_wallet')
+                    ->where('sys_wallet_currency_id', $order->currency_id)
+                    ->increment(
+                        'sys_wallet_balance', $order->amount,
+                        ['updated_at' => gmdate('Y-m-d H:i:s',time()) ]
+                    );
             });
 
             return response()->json($jsonArray);
@@ -155,5 +181,26 @@ class UserDepositOrderController extends Controller
 
             return response()->json([]);
         }*/
+    }
+
+    /**
+     * 检查订单的更新操作
+     * @param $orderId
+     * @param $orderStatus
+     * @return bool
+     */
+    public function checkAction($orderId, $orderStatus)
+    {
+        $orderSrcStatus = DB::table('dcuex_user_deposit_order as deposits')
+            ->where('deposits.id', $orderId)->value('deposit_order_status');
+
+        $actionStatus = in_array($orderStatus, [
+            DEPOSITS_PROCESSING, DEPOSITS_FAIL, DEPOSITS_RETURN_PROCESSING,DEPOSITS_RETURNED,DEPOSITS_RETURN_FAIL]);
+
+        if (($orderSrcStatus == DEPOSITS_SUCCESS) && $actionStatus) {
+            return FALSE;
+        }
+
+        return TRUE;
     }
 }

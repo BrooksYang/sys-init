@@ -7,6 +7,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
 const USER_OTC_DEPOSIT_ORDER_PAGE_SIZE = 20;
+const DEPOSITS_PROCESSING = 1;
+const DEPOSITS_SUCCESS = 2;
+const DEPOSITS_FAIL = 3;
+const DEPOSITS_RETURN_PROCESSING= 4;
+const DEPOSITS_RETURNED = 5;
+const DEPOSITS_RETURN_FAIL = 6;
 
 /**
  * Class UserOtcDepositOrderController
@@ -61,7 +67,7 @@ class UserOtcDepositOrderController extends Controller
                 'currency.currency_title_cn','currency.currency_title_en_abbr',
                 's_wallet.sys_crypto_wallet_title')
             ->paginate(USER_OTC_DEPOSIT_ORDER_PAGE_SIZE );
-    //dd($userOtcDepositOrder);
+
         return view('order.userOtcDepositOrderIndex',compact('orderStatus', 'userOtcDepositOrder'));
     }
 
@@ -123,9 +129,14 @@ class UserOtcDepositOrderController extends Controller
         ];
         $query = DB::table('otc_deposits')->where('id', $id);
 
+        if (!$this->checkAction($id, $request->update)) {
+
+            return response()->json(['code'=>200031 ,'msg' => '非法操作']);
+        }
+
         //如凭证审核通过则向交易用户的对应记账钱包充值
         $jsonArray = ['code' =>0, 'msg' => '更新成功' ];
-        if ($request->update == 2) {
+        if ($request->update == DEPOSITS_SUCCESS) {
             DB::transaction(function () use ($query, $orderStatus) {
                 //更新充值订单
                 $query->update($orderStatus);
@@ -135,7 +146,17 @@ class UserOtcDepositOrderController extends Controller
                 DB::table('otc_balances')
                     ->where('user_id' ,$order->user_id)
                     ->where('currency_id', $order->currency_id)
-                    ->increment('available', $order->amount);
+                    ->increment(
+                        'available', $order->amount,
+                        ['updated_at' => gmdate('Y-m-d H:i:s',time()) ]
+                    );
+
+                DB::table('dcuex_sys_wallet')
+                    ->where('sys_wallet_currency_id', $order->currency_id)
+                    ->increment(
+                        'sys_wallet_balance', $order->amount,
+                        ['updated_at' => gmdate('Y-m-d H:i:s',time()) ]
+                    );
             });
 
             return response()->json($jsonArray);
@@ -160,5 +181,26 @@ class UserOtcDepositOrderController extends Controller
 
             return response()->json([]);
         }*/
+    }
+
+    /**
+     * 检查订单的更新操作
+     * @param $orderId
+     * @param $orderStatus
+     * @return bool
+     */
+    public function checkAction($orderId, $orderStatus)
+    {
+        $orderSrcStatus = DB::table('otc_deposits as deposits')
+            ->where('deposits.id', $orderId)->value('status');
+
+        $actionStatus = in_array($orderStatus, [
+            DEPOSITS_PROCESSING, DEPOSITS_FAIL, DEPOSITS_RETURN_PROCESSING,DEPOSITS_RETURNED,DEPOSITS_RETURN_FAIL]);
+
+        if (($orderSrcStatus == DEPOSITS_SUCCESS) && $actionStatus) {
+            return FALSE;
+        }
+
+        return TRUE;
     }
 }

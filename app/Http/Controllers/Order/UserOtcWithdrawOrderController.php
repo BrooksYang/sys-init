@@ -133,7 +133,17 @@ class UserOtcWithdrawOrderController extends Controller
                 DB::table('otc_balances')
                     ->where('user_id' ,$order->user_id)
                     ->where('currency_id', $order->currency_id)
-                    ->decrement('available', $order->amount);
+                    ->decrement(
+                        'frozen', $order->amount,
+                        ['updated_at' => gmdate('Y-m-d H:i:s',time()) ]
+                    );
+
+                DB::table('dcuex_sys_wallet')
+                    ->where('sys_wallet_currency_id', $order->currency_id)
+                    ->decrement(
+                        'sys_wallet_balance_freeze_amount', $order->amount,
+                        ['updated_at' => gmdate('Y-m-d H:i:s',time()) ]
+                    );
             });
 
             return response()->json($jsonArray);
