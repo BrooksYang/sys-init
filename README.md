@@ -77,3 +77,13 @@ APP_ENV=local
  或者
 APP_ENV=production
 ```
+
+### 关于工单客服
+
+系统自动分配工单给客服 - 需添加客服角色并授权
+
+```
+supervisor_role_id = 3
+ 或者
+permission_role = [148-158]
+```
