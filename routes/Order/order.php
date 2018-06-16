@@ -16,7 +16,7 @@
 Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function()
 {
     //用户充值订单
-    Route::resource('order/userDeposit', 'Order\UserDepositOrderController');
+    Route::resource('order/userDeposit', 'Order\UserDepositOrderController',['only' => ['index','update','destroy']]);
 
     //用户提币订单
     Route::patch('order/withdraw/{withdraw}', 'Order\UserWithdrawOrderController@update')->where('withdraw', '[0-9]+')

@@ -48,7 +48,7 @@
                                 <th>用户名</th>
                                 <th>电话</th>
                                 <th>币种</th>
-                                <th>充值余额</th>
+                                <th>充值金额</th>
                                 <th>交易号</th>
                                 <th title="运营方数字钱包">钱包名称</th>
                                 <th>凭证</th>
@@ -128,7 +128,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="10" class="text-center">
+                                <tr><td colspan="11" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
