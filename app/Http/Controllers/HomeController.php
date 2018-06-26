@@ -25,45 +25,81 @@ class HomeController extends Controller
 
         //工单客服数据面板
         if (\Entrance::user()->role_id == config('app.supervisor_role_id')) {
-            //当天 OTC 系统未分配工单数量
-            $sysTicketByNotAssign = Cache::remember('sysTicketByNotAssign', $cacheLength, function () {
-                return $this->getSysTicketByState(1);
-            });
-            //当天 OTC 系统等待处理的工单数量
-            $sysTicketByWaitingFor = Cache::remember('sysTicketByWaitingFor', $cacheLength, function () {
-                return $this->getSysTicketByState(6);
-            });
-            //当天 OTC 客服-我的工单数量
-            $myTicket = Cache::remember('myTicket', $cacheLength, function () {
-                return $this->getSysTicketByState(6);
-            });
-            //当天 OTC 客服-我的待处理工单数量
-            $myTicketByWaitingFor = Cache::remember('myTicketByWaitingFor', $cacheLength, function () {
-                return $this->getSysTicketByState(6);
-            });
-            // OTC 客服-我的工单数量--按处理状态
-            $myTicketByStatus = Cache::remember('myTicketByStatus', $cacheLength, function () {
-                return $this->getMyTicketByState();
-            });
-
-            $otcTicket = compact(
-                'sysTicketByNotAssign',
-                'sysTicketByWaitingFor',
-                'myTicket',
-                'myTicketByWaitingFor',
-                'myTicketByStatus'
-            );
-
-            return view('ticketHome', $otcTicket);
+            
+            return view('ticketHome', $this->ticketStatisticItem($cacheLength));
         }
 
+        //公共统计
+        $public = $this->publicStatisticItem($cacheLength);
+
+        // TC 统计
+        if (env('APP_TC_MODULE')) {
+
+            $tc = $this->tcStatisticItem($cacheLength);
+        }
+
+        // OTC 统计
+        if (env('APP_OTC_MODULE')) {
+
+            $otc = $this->otcStatisticItem($cacheLength);
+        }
+
+        return view('home', $public + $tc + $otc);
+    }
+
+    /**
+     *
+     * 客服工单统计项
+     * @param $cacheLength
+     * @return array
+     */
+    public function ticketStatisticItem($cacheLength)
+    {
+        //当天 OTC 系统未分配工单数量
+        $sysTicketByNotAssign = Cache::remember('sysTicketByNotAssign', $cacheLength, function () {
+            return $this->getSysTicketByState(1);
+        });
+        //当天 OTC 系统等待处理的工单数量
+        $sysTicketByWaitingFor = Cache::remember('sysTicketByWaitingFor', $cacheLength, function () {
+            return $this->getSysTicketByState(6);
+        });
+        //当天 OTC 客服-我的工单数量
+        $myTicket = Cache::remember('myTicket', $cacheLength, function () {
+            return $this->getSysTicketByState(6);
+        });
+        //当天 OTC 客服-我的待处理工单数量
+        $myTicketByWaitingFor = Cache::remember('myTicketByWaitingFor', $cacheLength, function () {
+            return $this->getSysTicketByState(6);
+        });
+        // OTC 客服-我的工单数量--按处理状态
+        $myTicketByStatus = Cache::remember('myTicketByStatus', $cacheLength, function () {
+            return $this->getMyTicketByState();
+        });
+
+        return compact(
+            'sysTicketByNotAssign',
+            'sysTicketByWaitingFor',
+            'myTicket',
+            'myTicketByWaitingFor',
+            'myTicketByStatus'
+        );
+    }
+
+    /**
+     *
+     * 数据面板公共统计项
+     * @param $cacheLength
+     * @return array
+     */
+    public function publicStatisticItem($cacheLength)
+    {
         //注册用户数
         $users = Cache::remember('users', $cacheLength, function () {
             return $this->getUser();
         });
         //最近7天注册用户数
         $lastSevenDayUser = Cache::remember('lastSevenDayUser', $cacheLength, function () {
-           return $this->getLastSevenDayUser(7);
+            return $this->getLastSevenDayUser(7);
         });
         //用户账户状态
         $userAccountStatus = Cache::remember('userAccountStatus', $cacheLength, function () use ($users) {
@@ -87,7 +123,7 @@ class HomeController extends Controller
             return $this->getCurrency();
         });
 
-        $public = compact(
+        return compact(
             'users',
             'userAccountStatus',
             'emailPhoneVerifyStatus',
@@ -96,96 +132,104 @@ class HomeController extends Controller
             'currency',
             'lastSevenDayUser'
         );
-
-        //===================================== TC 统计 ===============================================================
-        if (env('APP_TC_MODULE')) {
-            //当天委托订单数
-            $exchangeOrders = Cache::remember('exchangeOrders', $cacheLength, function () {
-                return $this->getExchangeOrder();
-            });
-            //当天成交订单数
-            $orderLogs = Cache::remember('orderLogs', $cacheLength , function () {
-                return $this->getOrderLog();
-            });
-            //当天成交总额
-            $orderAmount = Cache::remember('orderAmount', $cacheLength, function () {
-                return $this->orderAmount();
-            });
-
-            //当天充值订单数量及金额-按处理状态区分
-            $depositOrderStatus = Cache::remember('depositOrderStatus', $cacheLength, function () {
-                return $this->getDepositOrder();
-            });
-            //当天提币订单数量及金额-按处理状态区分
-            $withdrawOrderStatus = Cache::remember('withdrawOrderStatus', $cacheLength, function () {
-                return $this->getWithdrawOrder();
-            });
-            //当天委托订单数量--按处理状态
-            $exchangeOrderByStatus = Cache::remember('exchangeOrderByStatus', $cacheLength, function () {
-                return $this->getExchangeByStatus();
-            });
-            //当天委托订单成交数量及金额--按类型
-            $exchangeOrderByType = Cache::remember('exchangeOrderByType', $cacheLength, function () {
-                return $this->getExchangeOrderByType();
-            });
-            //当天委托订单成交数量及价格 --按类型
-            $exchangeOrderLog = Cache::remember('exchangeOrderLog', $cacheLength, function () {
-                return $this->getExchangeOrderLog();
-            });
-
-            //提币订单状态
-            //$withdrawOrderStatus = $this->withdrawOrderStatus();
-            //提币订单类型
-            //$orderType = $this->orderType();
-            $tc = compact(
-                'exchangeOrders',
-                'orderLogs',
-                'orderAmount',
-                'depositOrderStatus',
-                'withdrawOrderStatus',
-                'exchangeOrderByStatus',
-                'exchangeOrderByType',
-                'exchangeOrderLog'
-            );
-        }
-
-
-        //===================================== OTC 统计===============================================================
-        if (env('APP_OTC_MODULE')) {
-            //当天 OTC 订单成交数量及价格--按状态
-            $otcOrder = Cache::remember('otcOrder', $cacheLength, function () {
-                return $this->getOtcOrder();
-            });
-            //当天 OTC 充值订单数量及金额-按处理状态区分
-            $otcDepositOrderStatus = Cache::remember('otcDepositOrderStatus', $cacheLength, function () {
-                return $this->getOtcDepositOrder();
-            });
-            //当天 OTC 提币订单数量及金额-按处理状态区分
-            $otcWithdrawOrderStatus = Cache::remember('otcWithdrawOrderStatus', $cacheLength, function () {
-                return $this->getOtcWithdrawOrder();
-            });
-            //当天 OTC 累计成功充值金额
-            $grandOtcDepositOrder = Cache::remember('grandOtcDepositOrder', $cacheLength, function () {
-                return $this->getOtcDepositOrderByS(2);
-            });
-            //当天 OTC 累计成功提币金额
-            $grandOtcWithdrawOrder = Cache::remember('grandOtcWithdrawOrder', $cacheLength, function () {
-                return $this->getOtcWithdrawOrderByS(3);
-            });
-
-            $otc = compact(
-                'otcOrder',
-                'otcDepositOrderStatus',
-                'otcWithdrawOrderStatus',
-                'grandOtcDepositOrder',
-                'grandOtcWithdrawOrder'
-            );
-        }
-
-        return view('home', $public + $tc + $otc);
     }
 
+    /**
+     *
+     * TC 币币交易数据面板统计项
+     * @param $cacheLength
+     * @return array
+     */
+    public function tcStatisticItem($cacheLength)
+    {
+        //当天委托订单数
+        $exchangeOrders = Cache::remember('exchangeOrders', $cacheLength, function () {
+            return $this->getExchangeOrder();
+        });
+        //当天成交订单数
+        $orderLogs = Cache::remember('orderLogs', $cacheLength , function () {
+            return $this->getOrderLog();
+        });
+        //当天成交总额
+        $orderAmount = Cache::remember('orderAmount', $cacheLength, function () {
+            return $this->orderAmount();
+        });
 
+        //当天充值订单数量及金额-按处理状态区分
+        $depositOrderStatus = Cache::remember('depositOrderStatus', $cacheLength, function () {
+            return $this->getDepositOrder();
+        });
+        //当天提币订单数量及金额-按处理状态区分
+        $withdrawOrderStatus = Cache::remember('withdrawOrderStatus', $cacheLength, function () {
+            return $this->getWithdrawOrder();
+        });
+        //当天委托订单数量--按处理状态
+        $exchangeOrderByStatus = Cache::remember('exchangeOrderByStatus', $cacheLength, function () {
+            return $this->getExchangeByStatus();
+        });
+        //当天委托订单成交数量及金额--按类型
+        $exchangeOrderByType = Cache::remember('exchangeOrderByType', $cacheLength, function () {
+            return $this->getExchangeOrderByType();
+        });
+        //当天委托订单成交数量及价格 --按类型
+        $exchangeOrderLog = Cache::remember('exchangeOrderLog', $cacheLength, function () {
+            return $this->getExchangeOrderLog();
+        });
+
+        //提币订单状态
+        //$withdrawOrderStatus = $this->withdrawOrderStatus();
+        //提币订单类型
+        //$orderType = $this->orderType();
+        return compact(
+            'exchangeOrders',
+            'orderLogs',
+            'orderAmount',
+            'depositOrderStatus',
+            'withdrawOrderStatus',
+            'exchangeOrderByStatus',
+            'exchangeOrderByType',
+            'exchangeOrderLog'
+        );
+    }
+
+    /**
+     *
+     * OTC 场外交易数据面板统计项
+     * @param $cacheLength
+     * @return array
+     */
+    public function otcStatisticItem($cacheLength)
+    {
+        //当天 OTC 订单成交数量及价格--按状态
+        $otcOrder = Cache::remember('otcOrder', $cacheLength, function () {
+            return $this->getOtcOrder();
+        });
+        //当天 OTC 充值订单数量及金额-按处理状态区分
+        $otcDepositOrderStatus = Cache::remember('otcDepositOrderStatus', $cacheLength, function () {
+            return $this->getOtcDepositOrder();
+        });
+        //当天 OTC 提币订单数量及金额-按处理状态区分
+        $otcWithdrawOrderStatus = Cache::remember('otcWithdrawOrderStatus', $cacheLength, function () {
+            return $this->getOtcWithdrawOrder();
+        });
+        //当天 OTC 累计成功充值金额
+        $grandOtcDepositOrder = Cache::remember('grandOtcDepositOrder', $cacheLength, function () {
+            return $this->getOtcDepositOrderByS(2);
+        });
+        //当天 OTC 累计成功提币金额
+        $grandOtcWithdrawOrder = Cache::remember('grandOtcWithdrawOrder', $cacheLength, function () {
+            return $this->getOtcWithdrawOrderByS(3);
+        });
+
+        return compact(
+            'otcOrder',
+            'otcDepositOrderStatus',
+            'otcWithdrawOrderStatus',
+            'grandOtcDepositOrder',
+            'grandOtcWithdrawOrder'
+        );
+    }
+    
     /**
      * 用户账户状态统计
      *
