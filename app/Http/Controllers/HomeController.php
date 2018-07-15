@@ -20,7 +20,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $cacheLength = intval(env('CACHE_LENGTH', CACHE_LENGTH));
+        $cacheLength = intval(config('app.cache_length'));
         $tc = $otc = $otcTicket = [];
 
         //工单客服数据面板
