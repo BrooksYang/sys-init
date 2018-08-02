@@ -206,7 +206,7 @@
                                 <div class="form-group {{ $errors->has('wallet_download_url') ? 'has-error' : '' }}">
                                     <div class="col-sm-12">
                                         <input class="form-control input-lg" type="url" name="wallet_download_url" value="{{ $currency->wallet_download_url ?? old('wallet_download_url') }}"
-                                               placeholder="白皮书地址">
+                                               placeholder="钱包下载地址">
                                         @if ($errors->has('wallet_download_url'))
                                             <span class="help-block"><strong>{{ $errors->first('wallet_download_url') }}</strong></span>
                                         @endif
@@ -232,11 +232,11 @@
                         {{--简介 --}}
                         <div class="row">
                             <div class="col-md-12">
-                                <label>合约简介</label>
+                                <label>币种简介</label>
                                 <div class="form-group {{ $errors->has('currency_summary') ? 'has-error' : '' }}">
                                     <div class="col-md-12">
                                         <textarea class="form-control" name="currency_summary" rows="5"
-                                                  placeholder="请填写合约简介">{{ $currency->currency_summary ?? old('currency_summary') }}</textarea>
+                                                  placeholder="请填写币种简介">{{ $currency->currency_summary ?? old('currency_summary') }}</textarea>
                                             @if ($errors->has('currency_summary'))
                                                 <span class="help-block"><strong>{{ $errors->first('currency_summary') }}</strong></span>
                                             @endif
@@ -248,11 +248,11 @@
                         {{-- Description --}}
                         <div class="form-group {{ $errors->has('currency_intro') ? 'has-error' : '' }}">
                             <div class="col-md-12">
-                                <label>合约详细介绍</label>
+                                <label>详细介绍</label>
                                 <div class="form-group {{ $errors->has('currency_intro') ? 'has-error' : '' }}">
                                     <div class="col-sm-12">
                                         <textarea id="questionContent" name="currency_intro" rows="8" style="height: 400px" style="visibility: hidden; display: none;"
-                                                  placeholder="请填写合约详细介绍">{{ $currency->currency_intro ?? old('currency_intro') }}</textarea>
+                                                  placeholder="请填写币种详细介绍">{{ $currency->currency_intro ?? old('currency_intro') }}</textarea>
 
                                         @if ($errors->has('currency_intro'))
                                             <span class="help-block"><strong>{{ $errors->first('currency_intro') }}</strong></span>
