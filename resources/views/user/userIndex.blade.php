@@ -20,8 +20,8 @@
                         </form>
                         {{--筛选测试账户--}}
                         <div style="display: inline-block;position: relative">
-                            <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="按类别筛选文档">
-                                <span class="box-btn"><i class="fontello-menu" title="按类别筛选文档"></i></span>
+                            <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="按类别筛选用户">
+                                <span class="box-btn"><i class="fontello-menu" title="按类别筛选用户"></i></span>
                             </a>
                             <ul role="menu" class="dropdown-menu pull-right">
                                 <li>
