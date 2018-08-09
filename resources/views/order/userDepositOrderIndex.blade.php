@@ -101,6 +101,7 @@
                                     <td>
                                         <span class="label label-{{ $orderStatus[$item->deposit_order_status]['class'] }}">{{ $orderStatus[$item->deposit_order_status]['name'] }}</span>
                                     </td>
+                                    <td>{{ $item->created_at ?: '--' }}</td>
 
                                     <td>
                                         <a data-toggle="dropdown" class="dropdown-toggle" type="button">
