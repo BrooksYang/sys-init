@@ -159,7 +159,7 @@ class UserWithdrawOrderController extends Controller
     {
         return response()->json(['code' => 100070 ,'error' => '不能删除交易用户提币订单']);
 
-        /*if (DB::table('dcuex_user_deposit_order')->where('id', $id)->delete()) {
+        /*if (DB::table('dcuex_user_withdraw_order')->where('id', $id)->delete()) {
 
             return response()->json([]);
         }*/

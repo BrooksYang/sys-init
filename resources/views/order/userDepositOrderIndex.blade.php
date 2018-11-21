@@ -51,6 +51,8 @@
                                 <th>充值金额</th>
                                 <th>交易号</th>
                                 <th title="运营方数字钱包">钱包名称</th>
+                                <th>来源地址</th>
+                                <th>收款地址</th>
                                 <th>凭证</th>
                                 <th>状态</th>
                                 <th>创建时间 &nbsp;&nbsp;<a href="{{ url('order/userDeposit')}}?orderC=desc">
@@ -70,6 +72,8 @@
                                     <td title="{{number_format($item->deposit_amount,8,'.',',')}}">{{ number_format($item->deposit_amount,8,'.',',') }}</td>
                                     <td title="{{$item->deposit_trade_id}}">{{ $item->deposit_trade_id }}</td>
                                     <td title="{{ $item->sys_crypto_wallet_title }}"><strong>{{ str_limit($item->sys_crypto_wallet_title,15) }}</strong></td>
+                                    <td title="{{$item->from}}">{{ strtotime($item->from, 15) }}</td>
+                                    <td title="{{$item->to}}">{{ strtotime($item->to, 15) }}</td>
                                     <td>
                                         <!-- Button trigger modal -->
                                         <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLong{{$key}}">
@@ -129,7 +133,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="11" class="text-center">
+                                <tr><td colspan="13" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
