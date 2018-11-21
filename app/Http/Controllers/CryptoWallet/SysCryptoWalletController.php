@@ -24,8 +24,18 @@ class SysCryptoWalletController extends Controller
      */
     public function index(Request $request)
     {
+
+        //钱包类型，1普通，2主钱包(用于归集，提币转账)
+        $type = [
+            0 => ['name' => '全部',   'class' => ''],
+            1 => ['name' => '普通',   'class' => ''],
+            2 => ['name' => '主钱包', 'class' => '']
+        ];
+
         //支持按钱包名称和币种检索
         $search = trim($request->search,'');
+        $filterType = trim($request->filterType,'');
+
         $sysCryptoWallet = DB::table('dcuex_sys_crypto_wallet as s_wallet')
             ->join('dcuex_crypto_currency as currency','s_wallet.sys_crypto_wallet_currency_id','currency.id')
             ->when($search, function ($query) use ($search){
@@ -33,10 +43,13 @@ class SysCryptoWalletController extends Controller
                     ->orwhere('currency.currency_title_cn', 'like', "%$search%")
                     ->orwhere('currency.currency_title_en_abbr', 'like', "%$search%");
             })
+            ->when($filterType, function ($query) use ($filterType) {
+                return $query->where('s_wallet.type', $filterType);
+            })
             ->select('s_wallet.*','currency.currency_title_cn','currency.currency_title_en_abbr')
             ->paginate(SYS_CRYPTO_WALLET_PAGE_SIZE );;
 
-        return view('cryptoWallet.sysCryptoWalletIndex',['sysCryptoWallet' => $sysCryptoWallet]);
+        return view('cryptoWallet.sysCryptoWalletIndex', compact('sysCryptoWallet','type'));
     }
 
     /**

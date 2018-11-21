@@ -24,7 +24,15 @@ class UserCryptoWalletController extends Controller
      */
     public function index(Request $request)
     {
+        $type = [
+            0 => ['name' => '全部',   'class' => ''],
+            1 => ['name' => '普通',   'class' => ''],
+            2 => ['name' => '主钱包', 'class' => '']
+        ];
+
         $search = trim($request->search,'');
+        $filterType = trim($request->filterType,'');
+
         $userCryptoWallet = DB::table('dcuex_user_crypto_wallet as u_wallet')
             ->join('users as u','u_wallet.user_id','u.id')
             ->join('dcuex_crypto_currency as currency','u_wallet.crypto_wallet_currency_id','currency.id')
@@ -32,10 +40,13 @@ class UserCryptoWalletController extends Controller
                 return $query->where('u_wallet.crypto_wallet_title','like',"%$search%")
                     ->orwhere('u.username', 'like', "%$search%");
             })
+            ->when($filterType, function ($query) use ($filterType) {
+                return $query->where('u_wallet.type', $filterType);
+            })
             ->select('u_wallet.*', 'u.username', 'u.email','currency.currency_title_cn','currency.currency_title_en_abbr')
             ->paginate(USER_CRYPTO_WALLET_PAGE_SIZE );;
 
-        return view('cryptoWallet.userCryptoWalletIndex',['userCryptoWallet' => $userCryptoWallet]);
+        return view('cryptoWallet.userCryptoWalletIndex', compact('userCryptoWallet', 'type'));
     }
 
     /**
