@@ -27,11 +27,13 @@ class UserOtcOrderController extends Controller
             1 => ['name' => '卖单', 'class' => 'info'],
             2 => ['name' => '买单', 'class' => 'primary']
         ];
+
+        //1已下单，2已支付，3确认收款(已发币)，4确认收币，5已取消
         $orderStatus = [
             1 => ['name' => '已下单', 'class' => 'info'],
             2 => ['name' => '已支付', 'class' => 'primary'],
-            3 => ['name' => '待放币', 'class' => 'warning'],
-            4 => ['name' => '已放币', 'class' => 'success'],
+            3 => ['name' => '已发币', 'class' => 'warning'], // 3确认收款(已发币)
+            4 => ['name' => '已完成', 'class' => 'success'], // 4确认收币
             5 => ['name' => '已取消', 'class' => 'default']
         ];
 
@@ -121,33 +123,7 @@ class UserOtcOrderController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $orderStatus = [
-            $request->field => $request->update,
-            'updated_at' => gmdate('Y-m-d H:i:s',time()),
-        ];
-        $query = DB::table('otc_orders')->where('id', $id);
 
-        //如核对通过则从交易用户的对应记账钱包中提币
-        $jsonArray = ['code' =>0, 'msg' => '更新成功' ];
-        if ($request->update == OTC_ORDER_STATUS_TRANSFER_OUT) {
-            DB::transaction(function () use ($query, $orderStatus) {
-                //更新提币订单
-                $query->update($orderStatus);
-                //获取订单信息
-                $order = $query->get(['user_id' ,'currency_id', 'field_amount'])->first();
-                //更新记账钱包余额
-                DB::table('otc_balances')
-                    ->where('user_id' ,$order->user_id)
-                    ->where('currency_id', $order->currency_id)
-                    ->decrement('available', $order->field_amount);
-            });
-
-            return response()->json($jsonArray);
-
-        }elseif ($query->update($orderStatus)) {
-
-            return response()->json($jsonArray);
-        }
     }
 
     /**

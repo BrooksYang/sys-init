@@ -18,6 +18,22 @@
                         <a href="{{ url('sys/cryptoWallet/create') }}" title="添加系统数字钱包">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>
+
+                        {{--按钱包类型筛选--}}
+                        <div style="display: inline-block;position: relative">
+                            <a data-toggle="dropdown" class="dropdown-toggle"  type="button" title="按类型筛选钱包">
+                                <span class="box-btn"><i class="fa fa-bars" title="按类型筛选钱包"></i></span>
+                            </a>
+                            <ul role="menu" class="dropdown-menu">
+                                @foreach($type as $key=>$item)
+                                    <li>
+                                        <a href="{{ url('sys/cryptoWallet') }}?filterType={{$key}}">{{$item['name']}}
+                                            {!!  (Request::get('filterType') == $key) || (!Request::get('filterType') && $key == 0)? '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
                     </div>
 
                     {{-- Title --}}
@@ -35,6 +51,7 @@
                                 <th>钱包名称</th>
                                 <th>钱包地址</th>
                                 <th>币种</th>
+                                <th title="普通/主钱包">钱包类型&nbsp;<i class="fa fa-info-circle"></i></th>
                                 <th>描述</th>
                                 <th>创建时间</th>
                                 <th>操作</th>
@@ -47,6 +64,7 @@
                                     <td title="{{$item->currency_title_cn.' ('.$item->currency_title_en_abbr.')'}}">
                                         <span class="label label-success">{{ str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',15) }} </span>
                                     </td>
+                                    <td title="{{ @$type[$item->type]['name'] }}">{{ @$type[$item->type]['name'] }}</td>
                                     <td>
                                      <!-- Button trigger modal -->
                                         <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLong{{$key}}">

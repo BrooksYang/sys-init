@@ -61,7 +61,7 @@
                                 <th>成单数</th>
                                 <th>完成率</th>
                                 <th>认证</th>
-                                <th>收款方式</th>
+                                <th>状态</th>
                                 <th>创建时间 &nbsp;&nbsp;<a href="{{ url('otc/ad')}}?orderC=desc">
                                         <i class="fa fa-sort-amount-desc" style="color:{{ Request::get('orderC') != 'desc' ? !Request::get('orderC') ? '' : 'gray' :'' }}" title="降序"></i></a> &nbsp;
                                     <a href="{{ url('otc/ad') }}?orderC=asc">
