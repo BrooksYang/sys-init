@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'YuanLianTongZheng'),
-    'name_cn' => env('APP_NAME_CN', '源联通证数字资产交易所'),
-    'welcome_msg' => env('APP_WELCOME_MSG', '欢迎进入源联通证数字资产交易所'),
-    'copyright' => env('APP_COPYRIGHT', '源联通证'),
+    'name' => env('APP_NAME', 'BitAU'),
+    'name_cn' => env('APP_NAME_CN', '澳大利亚国家数字加密交易所'),
+    'welcome_msg' => env('APP_WELCOME_MSG', '欢迎进入BitAU澳大利亚国家数字加密交易所'),
+    'copyright' => env('APP_COPYRIGHT', 'BitAU'),
 
     /*
      |--------------------------------------------------------------------------
