@@ -233,12 +233,12 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <label>币种简介</label>
-                                <div class="form-group {{ $errors->has('currency_summary') ? 'has-error' : '' }}">
+                                <div class="form-group {{ $errors->has('currency_intro') ? 'has-error' : '' }}">
                                     <div class="col-md-12">
-                                        <textarea class="form-control" name="currency_summary" rows="5"
-                                                  placeholder="请填写币种简介">{{ $currency->currency_summary ?? old('currency_summary') }}</textarea>
-                                            @if ($errors->has('currency_summary'))
-                                                <span class="help-block"><strong>{{ $errors->first('currency_summary') }}</strong></span>
+                                        <textarea class="form-control" name="currency_intro" rows="5"
+                                                  placeholder="请填写币种简介">{{ $currency->currency_intro ?? old('currency_intro') }}</textarea>
+                                            @if ($errors->has('currency_intro'))
+                                                <span class="help-block"><strong>{{ $errors->first('currency_intro') }}</strong></span>
                                             @endif
                                     </div>
                                 </div>
@@ -246,7 +246,7 @@
                         </div>
 
                         {{-- Description --}}
-                        <div class="form-group {{ $errors->has('currency_intro') ? 'has-error' : '' }}">
+                        {{--<div class="form-group {{ $errors->has('currency_intro') ? 'has-error' : '' }}">
                             <div class="col-md-12">
                                 <label>详细介绍</label>
                                 <div class="form-group {{ $errors->has('currency_intro') ? 'has-error' : '' }}">
@@ -260,7 +260,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>--}}
 
                         {{--图标--}}
                         <div class="form-group {{ $errors->has('currency_icon') ? 'has-error' : '' }}">

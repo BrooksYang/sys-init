@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Order;
 
+use App\Models\OTC\OtcBalance;
+use App\Models\OTC\OtcWithdraw;
+use App\Models\Wallet\SysWallet;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +27,7 @@ class UserOtcWithdrawOrderController extends Controller
     {
         //订单状态
         $orderStatus = [
+            0 => ['name' => '全部',    'class' => ''],
             1 => ['name' => '待受理',  'class' => 'default'],
             2 => ['name' => '处理中',  'class' => 'primary'],
             3 => ['name' => '已发币',  'class' => 'success'],
@@ -46,8 +50,6 @@ class UserOtcWithdrawOrderController extends Controller
             })
             ->when($filter, function ($query) use ($filter){
                 return $query->where('withdraw.status', $filter);
-            }, function ($query) {
-                return $query->where('withdraw.status', 1); //默认过滤等待处理中
             })
             ->when($orderC, function ($query) use ($orderC){
                 return $query->orderBy('withdraw.created_at', $orderC);
@@ -115,43 +117,30 @@ class UserOtcWithdrawOrderController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $orderStatus = [
-            $request->field => $request->update,
-            'updated_at' => gmdate('Y-m-d H:i:s',time()),
-        ];
-        $query = DB::table('otc_withdraws')->where('id', $id);
+        $order = OtcWithdraw::findOrFail($id);
 
         //如核对通过则从交易用户的对应记账钱包中提币
         $jsonArray = ['code' =>0, 'msg' => '更新成功' ];
-        if ($request->update == 3) {
-            DB::transaction(function () use ($query, $orderStatus) {
-                //更新提币订单
-                $query->update($orderStatus);
-                //获取订单信息
-                $order = $query->get(['user_id' ,'currency_id', 'amount'])->first();
-                //更新记账钱包余额
-                DB::table('otc_balances')
-                    ->where('user_id' ,$order->user_id)
-                    ->where('currency_id', $order->currency_id)
-                    ->decrement(
-                        'frozen', $order->amount,
-                        ['updated_at' => gmdate('Y-m-d H:i:s',time()) ]
-                    );
 
-                DB::table('dcuex_sys_wallet')
-                    ->where('sys_wallet_currency_id', $order->currency_id)
-                    ->decrement(
-                        'sys_wallet_balance_freeze_amount', $order->amount,
-                        ['updated_at' => gmdate('Y-m-d H:i:s',time()) ]
-                    );
-            });
+        DB::transaction(function () use ($order) {
+            bcscale(config('app.bcmath_scale'));
+            //更新提币订单
+            $order->status = OtcWithdraw::OTC_RELEASED;
+            $order->updated_at = gmdate('Y-m-d H:i:s',time());
+            $order->save();
 
-            return response()->json($jsonArray);
+            //更新记账钱包余额
+            $balance = OtcBalance::where('user_id' ,$order->user_id)->where('currency_id', $order->currency_id)->first();
+            $balance->frozen = bcsub($balance->frozen, $order->amount);
+            $balance->save();
 
-        }elseif ($query->update($orderStatus)) {
+            $sysWallet = SysWallet::where('sys_wallet_currency_id', $order->currency_id)->first();
+            $sysWallet->sys_wallet_balance_freeze_amount  = bcsub($sysWallet->sys_wallet_balance_freeze_amount, $order->amount);
+            $sysWallet->updated_at = gmdate('Y-m-d H:i:s',time());
+            $sysWallet->save();
+        });
 
-            return response()->json($jsonArray);
-        }
+        return response()->json($jsonArray);
     }
 
     /**
