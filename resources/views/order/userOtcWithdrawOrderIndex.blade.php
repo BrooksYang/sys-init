@@ -25,7 +25,7 @@
                             <li>
                                 <a href="{{ url('order/otc/withdraw') }}?filter={{$key}}">{{$item['name']}}
                                 {!!  Request::get('filter') == $key ? '&nbsp;<i class="fa fa-check txt-info"></i>' :
-                                $key ==1 && ! Request::get('filter') ? '&nbsp;<i class="fa fa-check txt-info"></i>' :'' !!}
+                                $key ==0 && ! Request::get('filter') ? '&nbsp;<i class="fa fa-check txt-info"></i>' :'' !!}
                                 </a>
                             </li>
                         @endforeach
@@ -71,22 +71,12 @@
                                     </td>
                                     <td>{{ $item->created_at ?: '--' }}</td>
                                     <td>
-                                        <a data-toggle="dropdown" class="dropdown-toggle" type="button">
-                                            <span class="box-btn"><i class="fa fa-exchange" title="修改订单状态"></i></span>
-                                        </a>
-                                        <ul role="menu" class="dropdown-menu pull-right">
-                                            @foreach($orderStatus as $flag=>$status)
-                                                <li>
-                                                    @if($item->status != $flag)
-                                                    <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
-                                                            '{{ url("order/otc/withdraw/$item->id") }}?status={{$flag}}','status',{{$flag}},
-                                                            ' OTC 提币订单为<b><strong> {{$status['name']}} </strong></b> 状态',
-                                                            '{{ csrf_token() }}', '{{$status['name']}}' );">
-                                                    {{$status['name']}}</a>
-                                                    @endif
-                                                </li>
-                                            @endforeach
-                                        </ul>
+                                        @if($item->status == \App\Models\OTC\OtcWithdraw::OTC_PENDING )
+                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
+                                                    '{{ url("order/otc/withdraw/$item->id") }}','status',3,
+                                                    ' OTC 提币订单为<b><strong> 已发币 </strong></b> 状态',
+                                                    '{{ csrf_token() }}', '已发币' );"> <i class="fontello-ok"></i> </a>
+                                        @endif
                                         <a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
                                                 '{{ url("order/otc/withdraw/$item->id") }}',
                                                 '{{ csrf_token() }}');">
