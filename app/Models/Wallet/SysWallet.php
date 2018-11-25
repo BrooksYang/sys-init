@@ -8,7 +8,7 @@ class SysWallet extends Model
 {
 
     /**
-     * OTC钱包余额表
+     * 系统记账钱包余额表
      *
      * @var string
      */

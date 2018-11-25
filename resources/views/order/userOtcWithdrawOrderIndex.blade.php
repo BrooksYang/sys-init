@@ -65,7 +65,7 @@
                                         <span class="label label-success">{{ str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',15) }}</span>
                                     </td>
                                     <td title="{{number_format($item->amount,8,'.',',') }}">{{ number_format($item->amount,8,'.',',') }}</td>
-                                    <td title="{{ $item->crypto_wallet_title }}"><strong>{{ str_limit($item->crypto_wallet_title ?: '--',15) }}</strong></td>
+                                    <td title="{{ $item->crypto_wallet_address }}"><strong>{{ str_limit($item->crypto_wallet_address ?: '--',15) }}</strong></td>
                                     <td>
                                         <span class="label label-{{ $orderStatus[$item->status]['class'] }}">{{ $orderStatus[$item->status]['name'] }}</span>
                                     </td>
@@ -75,7 +75,7 @@
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                     '{{ url("order/otc/withdraw/$item->id") }}','status',3,
                                                     ' OTC 提币订单为<b><strong> 已发币 </strong></b> 状态',
-                                                    '{{ csrf_token() }}', '已发币' );"> <i class="fontello-ok"></i> </a>
+                                                    '{{ csrf_token() }}', '已发币' );" title="已发币"> <i class="fontello-ok"></i> </a>
                                         @endif
                                         <a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
                                                 '{{ url("order/otc/withdraw/$item->id") }}',
