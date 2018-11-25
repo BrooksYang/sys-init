@@ -59,7 +59,7 @@ class UserOtcWithdrawOrderController extends Controller
             ->select(
                 'withdraw.*', 'u.username', 'u.phone',
                 'currency.currency_title_cn','currency.currency_title_en_abbr',
-                'u_wallet.crypto_wallet_title')
+                'u_wallet.crypto_wallet_address')
             ->paginate(USER_OTC_WITHDRAW_ORDER_PAGE_SIZE );
 
         return view('order.userOtcWithdrawOrderIndex', compact('orderStatus', 'userOtcWithdrawOrder'));
