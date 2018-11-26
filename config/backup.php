@@ -120,7 +120,7 @@ return [
         'notifiable' => \Spatie\Backup\Notifications\Notifiable::class,
 
         'mail' => [
-            'to' => env('SFTP_NOTIFY_TO','420703001@qq.com')
+            'to' => env('SFTP_NOTIFY_TO','420703001@qq.com'),
         ],
 
         'slack' => [
