@@ -64,6 +64,24 @@ return [
             'url' => env('AWS_URL'),
         ],
 
+        'sftp' => [
+            'driver' => 'sftp',
+            'host' => env('SFTP_HOST'),
+            'username' => env('SFTP_USER', 'root'),
+            'password' => env('SFTP_PWD'),
+            'root' => env('SFTP_PATH', '/data/backup/'), //目录已存在且可写
+            'timeout' => 5 * 60,
+
+            // 基于 SSH 密钥的身份验证设置...
+            // 'privateKey' => '/path/to/privateKey',
+            // 'password' => 'encryption-password',
+
+            // 可选的 SFTP 配置...
+            // 'port' => 22,
+            // 'root' => '',
+            // 'timeout' => 30,
+        ],
+
     ],
 
 ];
