@@ -59,9 +59,8 @@ class CurrencyContractToUserController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param CurrencyContractToUserRequest $request
+     * @return mixed
      */
     public function store(CurrencyContractToUserRequest $request)
     {
@@ -135,8 +134,11 @@ class CurrencyContractToUserController extends Controller
 
         //获取并处理新-旧交易对信息
         $symbol = $this->sortOutSymbol($request->symbol, $currencyId,$request->quote_currency, 'updated_at');
+        // TODO 需要-更新和维护除交易对及费率外的其余字段
         $oldSymbol = DB::table('dcuex_currency_symbol')->where('base_currency_id', $currencyId)
-            ->get(['base_currency_id','quote_currency_id','symbol','maker_fee','taker_fee','created_at']);
+            ->get(['base_currency_id','quote_currency_id','symbol','maker_fee','taker_fee',
+               'base_currency','quote_currency', 'last_price', 'last_price_yesterday','change',
+                'price_precision','amount_precision','created_at']);
         $symbol = $this->getSymbolFee($symbol, $oldSymbol);
 
         DB::transaction(function () use ($query, $userCurrencyContract, $currencyId, $symbol) {
@@ -209,7 +211,8 @@ class CurrencyContractToUserController extends Controller
             $queryQuoteCurrency[] = $symbolItem;
             $symbol[] = [
                 'base_currency_id'=>$currencyId,
-                //'quote_currency'=>$symbolItem, //计价币种字符
+                'base_currency'=>$quoteCurrency, //基础币种字符
+                'quote_currency'=>$symbolItem, //计价币种字符
                 'symbol'=>$quoteCurrency.$symbolItem  //交易对
             ];
         }
@@ -287,6 +290,13 @@ class CurrencyContractToUserController extends Controller
                     $value['maker_fee'] = $oldValue->maker_fee;
                     $value['taker_fee'] = $oldValue->taker_fee;
                     $value['created_at'] = $oldValue->created_at;
+                    $value['base_currency'] = $oldValue->base_currency;
+                    $value['quote_currency'] = $oldValue->quote_currency;
+                    $value['last_price'] = $oldValue->last_price;
+                    $value['last_price_yesterday'] = $oldValue->last_price_yesterday;
+                    $value['change'] = $oldValue->change;
+                    $value['price_precision'] = $oldValue->price_precision;
+                    $value['amount_precision'] = $oldValue->amount_precision;
                     $value['updated_at'] = gmdate('Y-m-d H:i:s',time());
                 }
             }

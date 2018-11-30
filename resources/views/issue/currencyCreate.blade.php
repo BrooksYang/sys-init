@@ -355,7 +355,7 @@
     <script type="text/javascript" src="{{ asset('imageCrop/css/jcrop/js/jquery.Jcrop.min.js') }}"></script>
     <script>
         $(function(){
-            CKEDITOR.replace('questionContent', {
+          /*  CKEDITOR.replace('questionContent', {
                 height:'300px',
             });
 
