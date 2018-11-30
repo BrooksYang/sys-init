@@ -357,7 +357,7 @@
         $(function(){
           /*  CKEDITOR.replace('questionContent', {
                 height:'300px',
-            });
+            });*/
 
             //日期时间插件
             $('#datetimepicker1').datetimepicker({
