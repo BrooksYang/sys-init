@@ -35,6 +35,7 @@
                                 <th>币种</th>
                                 <th>余额</th>
                                 <th>冻结金额</th>
+                                <th>误差金额</th>
                                 <th>操作</th>
                             </tr>
                             @forelse($sysWallet as $key => $item)
@@ -45,6 +46,7 @@
                                     </td>
                                     <td title="{{number_format($item->sys_wallet_balance,8,'.',',')}}">{{ number_format($item->sys_wallet_balance,8,'.',',') }}</td>
                                     <td title="{{number_format($item->sys_wallet_balance_freeze_amount,8,'.',',')}}">{{ number_format($item->sys_wallet_balance_freeze_amount,8,'.',',') }}</td>
+                                    <td title="{{number_format($item->lost,10,'.',',')}}">{{ number_format($item->lost,10,'.',',') }}</td>
                                     <td>
                                         <a href="{{ url("sys/wallet/$item->id/edit") }}">
                                             <i class="fontello-edit" title="编辑"></i>
@@ -57,7 +59,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="5" class="text-center">
+                                <tr><td colspan="6" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
