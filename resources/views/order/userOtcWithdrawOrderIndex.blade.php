@@ -48,7 +48,7 @@
                                 <th>电话</th>
                                 <th>币种</th>
                                 <th>提币金额</th>
-                                <th title="收币钱包ID">收币钱包</th>
+                                <th title="收币钱包地址">收币地址</th>
                                 <th>状态</th>
                                 <th>创建时间 &nbsp;&nbsp;<a href="{{ url('order/otc/withdraw')}}?orderC=desc">
                                         <i class="fa fa-sort-amount-desc" style="color:{{ Request::get('orderC') != 'desc' ? !Request::get('orderC') ? '' : 'gray' :'' }}" title="降序"></i></a> &nbsp;
@@ -65,17 +65,30 @@
                                         <span class="label label-success">{{ str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',15) }}</span>
                                     </td>
                                     <td title="{{number_format($item->amount,8,'.',',') }}">{{ number_format($item->amount,8,'.',',') }}</td>
-                                    <td title="{{ $item->crypto_wallet_address }}"><strong>{{ str_limit($item->crypto_wallet_address ?: '--',15) }}</strong></td>
+                                    <td title="{{ $item->crypto_wallet_title }}"><strong>{{ $item->crypto_wallet_address }}</strong></td>
                                     <td>
                                         <span class="label label-{{ $orderStatus[$item->status]['class'] }}">{{ $orderStatus[$item->status]['name'] }}</span>
                                     </td>
                                     <td>{{ $item->created_at ?: '--' }}</td>
                                     <td>
-                                        @if($item->status == \App\Models\OTC\OtcWithdraw::OTC_PENDING )
+                                        @if(in_array($item->status, [\App\Models\OTC\OtcWithdraw::OTC_PENDING,\App\Models\OTC\OtcWithdraw::OTC_FAILED]) )
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                     '{{ url("order/otc/withdraw/$item->id") }}','status',3,
                                                     ' OTC 提币订单为<b><strong> 已发币 </strong></b> 状态',
                                                     '{{ csrf_token() }}', '已发币' );" title="已发币"> <i class="fontello-ok"></i> </a>
+                                        @elseif(in_array($item->status, [\App\Models\OTC\OtcWithdraw::OTC_WAITING] ))
+                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
+                                                    '{{ url("order/otc/withdraw/$item->id") }}','status',2,
+                                                    ' OTC 提币订单为<b><strong> 处理中 </strong></b> 状态',
+                                                    '{{ csrf_token() }}', '处理中' );" title="处理中"> <i class=" fontello-loop"></i> </a>
+                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
+                                                    '{{ url("order/otc/withdraw/$item->id") }}','status',3,
+                                                    ' OTC 提币订单为<b><strong> 已发币 </strong></b> 状态',
+                                                    '{{ csrf_token() }}', '已发币' );" title="已发币"> <i class="fontello-ok"></i>
+                                            </a><a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
+                                                    '{{ url("order/otc/withdraw/$item->id") }}','status',4,
+                                                    ' OTC 提币订单为<b><strong> 失败 </strong></b> 状态',
+                                                    '{{ csrf_token() }}', '失败' );" title="失败"> <i class="fontello-reply"></i> </a>
                                         @endif
                                         <a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
                                                 '{{ url("order/otc/withdraw/$item->id") }}',

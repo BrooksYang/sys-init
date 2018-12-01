@@ -40,7 +40,7 @@ return [
      |
      */
 
-    'bcmath_scale' => env('bcmath_scale', 8),
+    'bcmath_scale' => env('bcmath_scale', 10),
 
     /*
     |--------------------------------------------------------------------------
