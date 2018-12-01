@@ -26,7 +26,7 @@
                             <li>
                                 <a href="{{ url('order/withdraw') }}?filter={{$key}}">{{$item['name']}}
                                 {!!  Request::get('filter') == $key ? '&nbsp;<i class="fa fa-check txt-info"></i>' :
-                                $key ==1 && ! Request::get('filter') ? '&nbsp;<i class="fa fa-check txt-info"></i>' :'' !!}
+                                $key == 0 && ! Request::get('filter') ? '&nbsp;<i class="fa fa-check txt-info"></i>' :'' !!}
                                 </a>
                             </li>
                         @endforeach
@@ -49,7 +49,7 @@
                                 <th>电话</th>
                                 <th>币种</th>
                                 <th>提币金额</th>
-                                <th title="收币钱包ID">收币钱包</th>
+                                <th title="收币地址">收币地址</th>
                                 <th>状态</th>
                                 <th>操作</th>
                             </tr>
@@ -62,27 +62,30 @@
                                         <span class="label label-success">{{ str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',15) }}</span>
                                     </td>
                                     <td title="{{number_format($item->withdraw_amount,8,'.',',') }}">{{ number_format($item->withdraw_amount,8,'.',',') }}</td>
-                                    <td title="{{ $item->crypto_wallet_title }}"><strong>{{ str_limit($item->crypto_wallet_title ?: '--',15) }}</strong></td>
+                                    <td title="{{ $item->crypto_wallet_title }}"><strong>{{ $item->crypto_wallet_address }}</strong></td>
                                     <td>
                                         <span class="label label-{{ $orderStatus[$item->withdraw_order_status]['class'] }}">{{ $orderStatus[$item->withdraw_order_status]['name'] }}</span>
                                     </td>
                                     <td>
-                                        <a data-toggle="dropdown" class="dropdown-toggle" type="button">
-                                            <span class="box-btn"><i class="fa fa-exchange" title="修改订单状态"></i></span>
-                                        </a>
-                                        <ul role="menu" class="dropdown-menu pull-right">
-                                            @foreach($orderStatus as $flag=>$status)
-                                                <li>
-                                                    @if($item->withdraw_order_status != $flag)
-                                                    <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
-                                                            '{{ url("order/withdraw/$item->id") }}?status={{$flag}}','withdraw_order_status',{{$flag}},
-                                                            '提币订单为<b><strong> {{$status['name']}} </strong></b> 状态',
-                                                            '{{ csrf_token() }}', '{{$status['name']}}' );">
-                                                    {{$status['name']}}</a>
-                                                    @endif
-                                                </li>
-                                            @endforeach
-                                        </ul>
+                                        @if(in_array($item->withdraw_order_status, [\App\Models\Order\UserWithDrawOrder::PROCESSING,\App\Models\Order\UserWithDrawOrder::FAILED]) )
+                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
+                                                    '{{ url("order/withdraw/$item->id") }}','withdraw_order_status',3,
+                                                    ' OTC 提币订单为<b><strong> 已发币 </strong></b> 状态',
+                                                    '{{ csrf_token() }}', '已发币' );" title="已发币"> <i class="fontello-ok"></i> </a>
+                                        @elseif(in_array($item->withdraw_order_status, [\App\Models\Order\UserWithDrawOrder::WAITING] ))
+                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
+                                                    '{{ url("order/withdraw/$item->id") }}','withdraw_order_status',2,
+                                                    ' OTC 提币订单为<b><strong> 处理中 </strong></b> 状态',
+                                                    '{{ csrf_token() }}', '处理中' );" title="处理中"> <i class=" fontello-loop"></i> </a>
+                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
+                                                    '{{ url("order/withdraw/$item->id") }}','withdraw_order_status',3,
+                                                    ' OTC 提币订单为<b><strong> 已发币 </strong></b> 状态',
+                                                    '{{ csrf_token() }}', '已发币' );" title="已发币"> <i class="fontello-ok"></i>
+                                            </a><a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
+                                                    '{{ url("order/withdraw/$item->id") }}','withdraw_order_status',4,
+                                                    ' OTC 提币订单为<b><strong> 失败 </strong></b> 状态',
+                                                    '{{ csrf_token() }}', '失败' );" title="失败"> <i class="fontello-reply"></i> </a>
+                                        @endif
                                         <a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
                                                 '{{ url("order/withdraw/$item->id") }}',
                                                 '{{ csrf_token() }}');">

@@ -59,7 +59,7 @@ class UserOtcWithdrawOrderController extends Controller
             ->select(
                 'withdraw.*', 'u.username', 'u.phone',
                 'currency.currency_title_cn','currency.currency_title_en_abbr',
-                'u_wallet.crypto_wallet_address')
+                'u_wallet.crypto_wallet_title','u_wallet.crypto_wallet_address')
             ->paginate(USER_OTC_WITHDRAW_ORDER_PAGE_SIZE );
 
         return view('order.userOtcWithdrawOrderIndex', compact('orderStatus', 'userOtcWithdrawOrder'));
@@ -118,27 +118,60 @@ class UserOtcWithdrawOrderController extends Controller
     public function update(Request $request, $id)
     {
         $order = OtcWithdraw::findOrFail($id);
+        $balance = OtcBalance::firstOrNew(['user_id' => $order->user_id, 'currency_id' => $order->currency_id]);
+        $sysWallet = SysWallet::where('sys_wallet_currency_id', $order->currency_id)->first();
 
         //如核对通过则从交易用户的对应记账钱包中提币
         $jsonArray = ['code' =>0, 'msg' => '更新成功' ];
+        bcscale(config('app.bcmath_scale'));
 
-        DB::transaction(function () use ($order) {
-            bcscale(config('app.bcmath_scale'));
-            //更新提币订单
-            $order->status = OtcWithdraw::OTC_RELEASED;
+        // 已发币
+        if ($request->update  == OtcWithdraw::OTC_RELEASED) {
+            DB::transaction(function () use ($order,$balance,$sysWallet) {
+                //更新提币订单
+                $order->status = OtcWithdraw::OTC_RELEASED;
+                $order->updated_at = gmdate('Y-m-d H:i:s',time());
+                $order->save();
+
+                //更新记账钱包余额
+                $balance->frozen = bcsub($balance->frozen, $order->amount);
+                $balance->updated_at = gmdate('Y-m-d H:i:s',time());
+                $balance->save();
+
+                $sysWallet->sys_wallet_balance = bcsub($sysWallet->sys_wallet_balance, $order->amount);
+                //$sysWallet->sys_wallet_balance_freeze_amount  = bcsub($sysWallet->sys_wallet_balance_freeze_amount, $order->amount);
+                $sysWallet->updated_at = gmdate('Y-m-d H:i:s',time());
+                $sysWallet->save();
+            });
+        }
+
+        // 失败-恢复冻结金额
+        if ($request->update  == OtcWithdraw::OTC_FAILED) {
+            DB::transaction(function () use ($order,$balance,$sysWallet) {
+                //更新提币订单
+                $order->status = OtcWithdraw::OTC_FAILED;
+                $order->updated_at = gmdate('Y-m-d H:i:s',time());
+                $order->save();
+
+                //更新记账钱包余额
+                $balance->frozen = bcsub($balance->frozen, $order->amount);
+                $balance->available = bcadd($balance->available, $order->amount);
+                $balance->updated_at = gmdate('Y-m-d H:i:s',time());
+                $balance->save();
+
+                $sysWallet->sys_wallet_balance = bcadd($sysWallet->sys_wallet_balance, $order->amount);
+                //$sysWallet->sys_wallet_balance_freeze_amount  = bcsub($sysWallet->sys_wallet_balance_freeze_amount, $order->amount);
+                $sysWallet->updated_at = gmdate('Y-m-d H:i:s',time());
+                $sysWallet->save();
+            });
+        }
+
+        // 处理中
+        if ($request->update == OtcWithdraw::OTC_PENDING) {
+            $order->status = OtcWithdraw::OTC_PENDING;
             $order->updated_at = gmdate('Y-m-d H:i:s',time());
             $order->save();
-
-            //更新记账钱包余额
-            $balance = OtcBalance::where('user_id' ,$order->user_id)->where('currency_id', $order->currency_id)->first();
-            $balance->frozen = bcsub($balance->frozen, $order->amount);
-            $balance->save();
-
-            $sysWallet = SysWallet::where('sys_wallet_currency_id', $order->currency_id)->first();
-            $sysWallet->sys_wallet_balance_freeze_amount  = bcsub($sysWallet->sys_wallet_balance_freeze_amount, $order->amount);
-            $sysWallet->updated_at = gmdate('Y-m-d H:i:s',time());
-            $sysWallet->save();
-        });
+        }
 
         return response()->json($jsonArray);
     }
