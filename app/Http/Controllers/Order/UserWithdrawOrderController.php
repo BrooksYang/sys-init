@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Order;
 
+use App\Models\Order\UserWithdrawOrder;
+use App\Models\Wallet\SysWallet;
+use App\Models\Wallet\UserWallet;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
