@@ -1,24 +1,24 @@
 <?php
 
-namespace App\Models\OTC;
+namespace App\Models\Order;
 
 use Illuminate\Database\Eloquent\Model;
 
-class OtcWithdraw extends Model
+class UserWithdrawOrder extends Model
 {
-
     // 订单状态：1 等待受理 2 处理中 3 已发币 4 失败',
-    const OTC_WAITING  = 1;
-    const OTC_PENDING  = 2;
-    const OTC_RELEASED = 3;
-    const OTC_FAILED   = 4;
+    const WAITING     = 1;
+    const PROCESSING  = 2;
+    const RELEASED    = 3;
+    const FAILED      = 4;
+
 
     /**
-     * OTC提现订单
+     * 用户提币订单表
      *
      * @var string
      */
-    protected $table = 'otc_withdraws';
+    protected $table = 'dcuex_user_withdraw_order';
 
     /**
      * The attributes that are mass assignable.
@@ -26,9 +26,4 @@ class OtcWithdraw extends Model
      * @var array
      */
     protected $guarded = [];
-
-
-
-
-
 }

@@ -81,7 +81,7 @@ class UserWithdrawOrder
             ->get(['withdraw_currency_id','withdraw_amount', 'user_wallet_balance', 'user_wallet_balance_freeze_amount'])
             ->first();
 
-        $validBalance = $withdrawOrderInfo->user_wallet_balance - $withdrawOrderInfo->withdraw_amount >= $withdrawOrderInfo->user_wallet_balance_freeze_amount;
+        $validBalance = $withdrawOrderInfo->user_wallet_balance <= $withdrawOrderInfo->withdraw_amount;
 
         return $validBalance;
     }
