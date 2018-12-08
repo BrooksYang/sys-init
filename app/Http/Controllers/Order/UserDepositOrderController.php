@@ -123,48 +123,7 @@ class UserDepositOrderController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $orderStatus = [
-            $request->field => $request->update,
-            'updated_at' => gmdate('Y-m-d H:i:s',time()),
-        ];
-        $query = DB::table('dcuex_user_deposit_order')->where('id', $id);
-
-        if (!$this->checkAction($id, $request->update)) {
-
-            return response()->json(['code'=>100061 ,'msg' => '非法操作']);
-        }
-
-        //如凭证审核通过则向交易用户的对应记账钱包充值
-        $jsonArray = ['code' =>0, 'msg' => '更新成功' ];
-        if ($request->update == DEPOSITS_SUCCESS) {
-            DB::transaction(function () use ($query, $orderStatus) {
-                //更新充值订单
-                $query->update($orderStatus);
-                //获取订单信息
-                $order = $query->get(['user_id' ,'currency_id', 'deposit_amount'])->first();
-                //更新记账钱包余额
-                DB::table('dcuex_user_wallet')
-                    ->where('user_id' ,$order->user_id)
-                    ->where('user_wallet_currency_id', $order->currency_id)
-                    ->increment(
-                        'user_wallet_balance', $order->deposit_amount,
-                        ['updated_at' => gmdate('Y-m-d H:i:s',time()) ]
-                    );
-
-                DB::table('dcuex_sys_wallet')
-                    ->where('sys_wallet_currency_id', $order->currency_id)
-                    ->increment(
-                        'sys_wallet_balance', $order->amount,
-                        ['updated_at' => gmdate('Y-m-d H:i:s',time()) ]
-                    );
-            });
-
-            return response()->json($jsonArray);
-
-        }elseif ($query->update($orderStatus)) {
-
-            return response()->json($jsonArray);
-        }
+        //
     }
 
     /**
