@@ -55,11 +55,10 @@
                                 <th>收款地址</th>
                                 <th>凭证</th>
                                 <th>状态</th>
-                                <th>创建时间 &nbsp;&nbsp;<a href="{{ url('order/userDeposit')}}?orderC=desc">
-                                        <i class="fa fa-sort-amount-desc" style="color:{{ Request::get('orderC') != 'desc' ? !Request::get('orderC') ? '' : 'gray' :'' }}" title="降序"></i></a> &nbsp;
-                                    <a href="{{ url('order/userDeposit') }}?orderC=asc">
-                                        <i class="fa fa-sort-amount-asc" style="color:{{ Request::get('orderC') != 'asc' ? 'gray' : '' }}" title="升序"></i></a></th>
-                                <th>操作</th>
+                                <th>创建时间 &nbsp;&nbsp;<a href="{{ url('order/userDeposit')}}?orderC=desc{{'&'.str_replace(['&orderC=asc'],'',Request::getQueryString())}}">
+                                        <i class="fa fa-sort-amount-desc" style="color:{{  strpos(Request::getQueryString(),'orderC=desc') !== false ?  '' : strpos(Request::getQueryString(),'orderC=asc') !== false ? 'gray' : '' }}" title="降序"></i></a> &nbsp;
+                                    <a href="{{ url('order/userDeposit') }}?orderC=asc{{'&'.str_replace(['&orderC=desc'],'',Request::getQueryString())}}">
+                                        <i class="fa fa-sort-amount-asc" style="color:{{ strpos(Request::getQueryString(),'orderC=asc') !== false ?  '' : 'gray' }}" title="升序"></i></a></th>
                             </tr>
                             @forelse($userDepositOrder as $key => $item)
                                 <tr>
@@ -107,33 +106,9 @@
                                     </td>
                                     <td>{{ $item->created_at ?: '--' }}</td>
 
-                                    <td>
-                                        <a data-toggle="dropdown" class="dropdown-toggle" type="button">
-                                            <span class="box-btn"><i class="fa fa-exchange" title="修改订单状态"></i></span>
-                                        </a>
-                                        {{--TODO 订单下拉状态样式调整--}}
-                                        <ul role="menu" class="dropdown-menu pull-right">
-                                            @foreach($orderStatus as $flag=>$status)
-                                                <li>
-                                                    @if($item->deposit_order_status != $flag)
-                                                    <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
-                                                            '{{ url("order/userDeposit/$item->id") }}','deposit_order_status',{{$flag}},
-                                                            '充值订单为<b><strong> {{$status['name']}} </strong></b> 状态',
-                                                            '{{ csrf_token() }}','{{$status['name']}}' );">
-                                                    {{$status['name']}}</a>
-                                                    @endif
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                        <a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
-                                                '{{ url("order/userDeposit/$item->id") }}',
-                                                '{{ csrf_token() }}');">
-                                            <i class="fontello-trash-2" title="删除"></i>
-                                        </a>
-                                    </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="13" class="text-center">
+                                <tr><td colspan="12" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
