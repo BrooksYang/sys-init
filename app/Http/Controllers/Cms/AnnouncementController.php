@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Cms;
 
 use App\Http\Requests\AnnouncementRequest;
+use App\Traits\ImgCrop;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,8 @@ const ANNOUNCEMENT_PAGE_SIZE = 20;
  */
 class AnnouncementController extends Controller
 {
+    use ImgCrop;
+
     /**
      * Display a listing of the resource.
      *
@@ -65,14 +68,23 @@ class AnnouncementController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param $request
      * @return \Illuminate\Http\Response
      */
     public function store(AnnouncementRequest $request)
     {
-        $announcement = $request->except(['_token','editFlag']);
+        $announcement = $request->except(['_token','editFlag','files','x','y','w','h']);
         $announcement['account_id'] = Auth::id();
         $announcement['created_at'] = gmdate('Y-m-d H:i:s',time());
+
+        $fieldName = config('imgCrop.announcement.dir');
+        if ($request->$fieldName) {
+            $announcement[$fieldName] = 'storage/'.config('imgCrop.announcement.dir').'/'.$request->$fieldName;
+            if ($request->hasFile($fieldName)) {
+                $announcement[$fieldName] = $request->file($fieldName)->store('public/payPath');
+            }
+        }
+
         if (DB::table('dcuex_cms_announcement')->insert($announcement)) {
 
             return redirect('cms/announcement');
@@ -120,17 +132,26 @@ class AnnouncementController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(AnnouncementRequest $request, $id)
     {
-        $announcement = $request->except(['_token','_method','editFlag']);
+        $announcement = $request->except(['_token','_method','editFlag','files','x','y','w','h']);
         $query = DB::table('dcuex_cms_announcement')->where('id', $id);
         $request->anno_top == 1 ? $announcement['created_at'] = gmdate('Y-m-d H:i:s',time()) : null;
         $announcement['account_id'] = Auth::id();
         $announcement['updated_at'] = gmdate('Y-m-d H:i:s',time());
+
+        $fieldName = config('imgCrop.announcement.dir');
+        if ($request->$fieldName) {
+            $announcement[$fieldName] = 'storage/'.config('imgCrop.announcement.dir').'/'.$request->$fieldName;
+            if ($request->hasFile($fieldName)) {
+                $announcement[$fieldName] = $request->file($fieldName)->store('public/payPath');
+            }
+        }
+
         if ($query->update($announcement)) {
 
             return redirect('cms/announcement');
@@ -185,5 +206,34 @@ class AnnouncementController extends Controller
 
             return response()->json(['code' =>0, 'msg' => '更新成功' ]);
         }
+    }
+
+    /**
+     * 上传图片
+     *
+     * @param $dir
+     */
+    public function upload($dir)
+    {
+        $model = config('imgCrop.annoCover.model');
+
+        $this->imgUpload(
+            base64_decode($dir),
+            config("imgCrop.$model.upload.max_width"),
+            config("imgCrop.$model.upload.max_height"),
+            config("imgCrop.$model.upload.min_width"),
+            config("imgCrop.$model.upload.min_height")
+        );
+    }
+
+    /**
+     * 裁剪图片
+     *
+     * @param $dir
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function crop($dir)
+    {
+        return $this->imgCrop('width', 'height','imageUploadPreviewWidth', base64_decode($dir), 'cropImg');
     }
 }
