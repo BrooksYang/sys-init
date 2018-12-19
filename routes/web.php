@@ -33,3 +33,18 @@ Route::group(['middleware' => ['web','auth:admin']], function () {
     Route::post('/lockScreen', 'Auth\LockScreenController@unlock');
 });
 
+/*
+|--------------------------------------------------------------------------
+| 图片处理
+|--------------------------------------------------------------------------
+| 图片上传和裁剪
+|
+*/
+Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen']], function ()
+{
+    // 公告封面上传和裁剪
+    Route::post('anno/cover/upload/{dir}', 'Cms\AnnouncementController@upload');
+    Route::patch('anno/cover/upload/{dir}', 'Cms\AnnouncementController@upload');
+    Route::get('anno/cover/crop/{dir}', 'Cms\AnnouncementController@crop');
+
+});
