@@ -40,3 +40,14 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     Route::patch('faq/manage/updateStatus/{faq}', 'Cms\FaqController@updateStatus');
 });
 
+/**
+ * 系统广告位
+ *
+ */
+Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function()
+{
+    // 系统广告位管理
+    Route::resource('portal/ads', 'Cms\AdsController');
+
+});
+
