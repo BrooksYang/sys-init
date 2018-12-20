@@ -7,12 +7,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
 const USER_OTC_DEPOSIT_ORDER_PAGE_SIZE = 20;
-const DEPOSITS_PROCESSING = 1;
-const DEPOSITS_SUCCESS = 2;
-const DEPOSITS_FAIL = 3;
-const DEPOSITS_RETURN_PROCESSING= 4;
-const DEPOSITS_RETURNED = 5;
-const DEPOSITS_RETURN_FAIL = 6;
+const OTC_DEPOSITS_PROCESSING = 1;
+const OTC_DEPOSITS_SUCCESS = 2;
+const OTC_DEPOSITS_FAIL = 3;
+const OTC_DEPOSITS_RETURN_PROCESSING= 4;
+const OTC_DEPOSITS_RETURNED = 5;
+const OTC_DEPOSITS_RETURN_FAIL = 6;
 
 /**
  * Class UserOtcDepositOrderController
@@ -154,9 +154,9 @@ class UserOtcDepositOrderController extends Controller
             ->where('deposits.id', $orderId)->value('status');
 
         $actionStatus = in_array($orderStatus, [
-            DEPOSITS_PROCESSING, DEPOSITS_FAIL, DEPOSITS_RETURN_PROCESSING,DEPOSITS_RETURNED,DEPOSITS_RETURN_FAIL]);
+            OTC_DEPOSITS_PROCESSING, OTC_DEPOSITS_FAIL, OTC_DEPOSITS_RETURN_PROCESSING,OTC_DEPOSITS_RETURNED,OTC_DEPOSITS_RETURN_FAIL]);
 
-        if (($orderSrcStatus == DEPOSITS_SUCCESS) && $actionStatus) {
+        if (($orderSrcStatus == OTC_DEPOSITS_SUCCESS) && $actionStatus) {
             return FALSE;
         }
 

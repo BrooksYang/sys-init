@@ -12,12 +12,17 @@ trait ImgCrop {
      * 图片上传
      * @param $dir
      */
-    public function imgUpload($dir)
+    public function imgUpload($dir, $maxWidth, $maxHeight, $minWidth = 80, $minHeight = 80)
     {
         $option = array(
             //配置上传路径
             'upload_dir' => storage_path($dir) . '/',
             'upload_url' => storage_path($dir) . '/',
+            //配置尺寸
+            'max_width'  => $maxWidth,
+            'max_height' => $maxHeight,
+            'min_width'  => $minWidth,
+            'min_height' => $minHeight,
             'image_versions' =>['' =>['auto_orient' => true]], // 不添加缩略图
         );
 

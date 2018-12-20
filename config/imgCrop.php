@@ -37,5 +37,38 @@ return [
         'name'  => 'cover'
     ],
 
+    /*
+   |--------------------------------------------------------------------------
+   | Banner Crop config 首页banner 1920*473
+   |--------------------------------------------------------------------------
+   |
+   | Banner cropping related configuration information.
+   | upload 允许的尺寸   preview 预览区的尺寸   crop 裁剪的尺寸  dir 存储目录名  name 字段名.
+   |
+   */
+    'banner' => [
+        'upload' => [
+            'max_width'  => 2200,
+            'max_height' => 542,
+            'min_width'  => 1920,
+            'min_height' => 473,
+        ],
+
+        'preview' => [
+            'upload_width' => 400,
+            'crop_width'   => 220,
+            'crop_height'  => 54,
+        ],
+
+        'crop' => [
+            'width'  => 1920,
+            'height' => 473,
+        ],
+
+        'scale' => 0.6,
+        'dir'   => 'portalImg',
+        'route' => 'portal/banner/',
+        'name'  => 'cover'
+    ],
 
 ];
