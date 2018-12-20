@@ -47,4 +47,9 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen']], function ()
     Route::patch('anno/cover/upload/{dir}', 'Cms\AnnouncementController@upload');
     Route::get('anno/cover/crop/{dir}', 'Cms\AnnouncementController@crop');
 
+    // 首页Banner上传和裁剪
+    Route::post('portal/banner/upload/{dir}', 'Cms\AdsController@upload');
+    Route::patch('portal/banner/upload/{dir}', 'Cms\AdsController@upload');
+    Route::get('portal/banner/crop/{dir}', 'Cms\AdsController@crop');
+
 });
