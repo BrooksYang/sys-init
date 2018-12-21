@@ -8,7 +8,12 @@ use App\Traits\ImgCrop;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class AdsController extends Controller
+/**
+ * 系统
+ * Class AdsController
+ * @package App\Http\Controllers\Cms
+ */
+class BannerController extends Controller
 {
     use ImgCrop;
     /**
@@ -113,9 +118,7 @@ class AdsController extends Controller
      */
     public function update(AdsRequest $request, $id)
     {
-        $banner = $request->except(['_token','_method','editFlag','files','x','y','w','h',
-
-        ]);
+        $banner = $request->except(['_token','_method','editFlag','files','x','y','w','h']);
         $banner['location'] = PortalAds::LOCATION_ONE;
         $banner['order'] =  $request->order?:1;
         $banner['updated_at'] = gmdate('Y-m-d H:i:s',time());
