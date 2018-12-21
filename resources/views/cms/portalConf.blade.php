@@ -52,7 +52,7 @@
                             <div class="col-md-12">
                             <div class="form-group {{ $errors->has('phone') ? 'has-error' : '' }}">
                                 <div class="col-sm-12">
-                                    <label></label>
+                                    <label>联系电话</label>
                                     <input class="form-control input-lg" type="text" name="phone" value="{{ $portalConf->phone ?? old('phone') }}"
                                            placeholder="请填写联系电话">
                                     @if ($errors->has('phone'))
@@ -131,7 +131,7 @@
 
                                     @if($editFlag ?? '')
                                         <img id="logoShow" src="{{ url('')}}/{{ $$model->$logoName }}" style='width:{{config("imgCrop.$model.preview.upload_width")}}px'
-                                             onerror="this.src='http://placehold.it/{{ config("imgCrop.$model.pre.crop_width") }}x{{ config("imgCrop.$model.preview.crop_height") }}'" />
+                                             onerror="this.src='http://placehold.it/{{ config("imgCrop.$model.preview.crop_width") }}x{{ config("imgCrop.$model.preview.crop_height") }}'" />
                                     @else
                                         <img id="logoShow" src="{{ old($logoName) ? url('').'/'.'storage/'.$model.'/'.old($logoName) :''}}" style='width:{{config("imgCrop.$model.preview.upload_width")}}px'
                                              onerror="this.src='http://placehold.it/{{ config("imgCrop.$model.preview.crop_width") }}x{{ config("imgCrop.$model.preview.crop_height") }}'" />

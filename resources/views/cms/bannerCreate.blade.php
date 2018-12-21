@@ -115,7 +115,7 @@
 
                                     @if($editFlag ?? '')
                                         <img id="logoShow" src="{{ url('')}}/{{ $$model->$logoName }}" style='width:{{config("imgCrop.$model.preview.upload_width")}}px'
-                                             onerror="this.src='http://placehold.it/{{ config("imgCrop.$model.pre.crop_width") }}x{{ config("imgCrop.$model.preview.crop_height") }}'" />
+                                             onerror="this.src='http://placehold.it/{{ config("imgCrop.$model.preview.crop_width") }}x{{ config("imgCrop.$model.preview.crop_height") }}'" />
                                     @else
                                         <img id="logoShow" src="{{ old($logoName) ? url('').'/'.'storage/'.$model.'/'.old($logoName) :''}}" style='width:{{config("imgCrop.$model.preview.upload_width")}}px'
                                              onerror="this.src='http://placehold.it/{{ config("imgCrop.$model.preview.crop_width") }}x{{ config("imgCrop.$model.preview.crop_height") }}'" />
