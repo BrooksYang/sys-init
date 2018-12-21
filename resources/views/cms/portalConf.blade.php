@@ -1,5 +1,5 @@
 @extends('entrance::layouts.default')
-<?php $model = 'banner'; $logoName = config("imgCrop.$model.name"); ?>
+<?php $model = 'portalConf'; $logoName = config("imgCrop.$model.name"); ?>
 @section('css-part')
     {{-- 图片裁剪 --}}
     <link rel="stylesheet" href="{{ url('imageCrop/css/jcrop/css/jquery.Jcrop.css') }}">
@@ -36,59 +36,75 @@
                 <div class="box-header">
                     {{-- Title --}}
                     <h3 class="box-title">
-                        <span>{{ @$editFlag ? '编辑首页轮播图' : '添加首页轮播图' }}</span>
+                        <span>{{ @$editFlag ? '编辑站点基本信息' : '添加站点基本信息' }}</span>
                     </h3>
                 </div>
 
                 {{-- Form --}}
                 <div class="box-body">
-                    <form class="form form-horizontal" id="form" role="form" method="POST" action="{{ @$editFlag ? url("portal/ads/$banner->id") : url('portal/ads') }}">
+                    <form class="form form-horizontal" id="form" role="form" method="POST" action="{{ @$editFlag ? url("portal/conf/$portalConf->id") : url('portal/conf') }}">
                         {{ csrf_field() }}
                         {{ @$editFlag ? method_field('PATCH') : '' }}
                         <input type="hidden" name="editFlag" value="{{ @$editFlag }}">
 
-                        {{-- title --}}
+                        {{-- 联系电话 --}}
                         <div class="row">
                             <div class="col-md-12">
-                            <div class="form-group {{ $errors->has('title') ? 'has-error' : '' }}">
+                            <div class="form-group {{ $errors->has('phone') ? 'has-error' : '' }}">
                                 <div class="col-sm-12">
-                                    <label>Banner标题</label>
-                                    <input class="form-control input-lg" type="text" name="title" value="{{ $banner->title ?? old('title') }}"
-                                           placeholder="请填写标题">
-                                    @if ($errors->has('title'))
-                                        <span class="help-block"><strong>{{ $errors->first('title') }}</strong></span>
+                                    <label>联系电话</label>
+                                    <input class="form-control input-lg" type="text" name="phone" value="{{ $portalConf->phone ?? old('phone') }}"
+                                           placeholder="请填写联系电话">
+                                    @if ($errors->has('phone'))
+                                        <span class="help-block"><strong>{{ $errors->first('phone') }}</strong></span>
                                     @endif
                                 </div>
                             </div>
                             </div>
                         </div>
 
-                        {{-- 链接地址 --}}
+                        {{-- 邮箱 --}}
                         <div class="row">
                             <div class="col-md-12">
-                            <div class="form-group {{ $errors->has('url') ? 'has-error' : '' }}">
+                            <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
                                 <div class="col-sm-12">
-                                    <label>链接地址</label>
-                                    <input class="form-control input-lg" type="text" name="url" value="{{ $banner->url ?? old('url') }}"
-                                           placeholder="请填写链接地址">
-                                    @if ($errors->has('url'))
-                                        <span class="help-block"><strong>{{ $errors->first('url') }}</strong></span>
+                                    <label>邮箱地址</label>
+                                    <input class="form-control input-lg" type="email" name="email" value="{{ $portalConf->email ?? old('email') }}"
+                                           placeholder="请填写邮箱地址" >
+                                    @if ($errors->has('email'))
+                                        <span class="help-block"><strong>{{ $errors->first('email') }}</strong></span>
                                     @endif
                                 </div>
                             </div>
                             </div>
                         </div>
 
-                        {{-- 轮播顺序 --}}
+                        {{-- 网站地址 --}}
                         <div class="row">
                             <div class="col-md-12">
-                            <div class="form-group {{ $errors->has('order') ? 'has-error' : '' }}">
+                            <div class="form-group {{ $errors->has('website') ? 'has-error' : '' }}">
                                 <div class="col-sm-12">
-                                    <label>轮播顺序</label>
-                                    <input class="form-control input-lg" type="text" name="order" value="{{ $banner->order ?? old('order') }}"
-                                           placeholder="请填写链接地址">
-                                    @if ($errors->has('order'))
-                                        <span class="help-block"><strong>{{ $errors->first('order') }}</strong></span>
+                                    <label>网站地址</label>
+                                    <input class="form-control input-lg" type="url" name="website" value="{{ $portalConf->website ?? old('website') }}"
+                                           placeholder="请填写网站地址" required>
+                                    @if ($errors->has('website'))
+                                        <span class="help-block"><strong>{{ $errors->first('website') }}</strong></span>
+                                    @endif
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+
+                        {{-- 版权信息 --}}
+                        <div class="row">
+                            <div class="col-md-12">
+                            <div class="form-group {{ $errors->has('copyright') ? 'has-error' : '' }}">
+                                <div class="col-sm-12">
+                                    <label>版权信息</label>
+                                    <input class="form-control input-lg" type="text" name="copyright" value="{{ $portalConf->copyright ?? old('copyright') }}"
+                                           placeholder="版权信息" required>
+                                    @if ($errors->has('copyright'))
+                                        <span class="help-block"><strong>{{ $errors->first('copyright') }}</strong></span>
                                     @endif
                                 </div>
                             </div>
@@ -96,10 +112,10 @@
                         </div>
 
 
-                        {{--封面图--}}
+                        {{--站点logo--}}
                         <div class="form-group {{ $errors->has($logoName) ? 'has-error' : '' }}">
                             <div class="col-md-8">
-                                <label>上传轮播图 <span style="color: #666;font-weight:normal;">({{ config("imgCrop.$model.crop.width") }}*{{ config("imgCrop.$model.crop.height") }})</span></label>
+                                <label>站点logo <span style="color: #666;font-weight:normal;">({{ config("imgCrop.$model.crop.width") }}*{{ config("imgCrop.$model.crop.height") }})</span></label>
                                 <p class="help-block"><small>支持jpg，jpeg，png格式，图片推荐最小尺寸为{{ config("imgCrop.$model.crop.width") }}*{{ config("imgCrop.$model.crop.height") }}</small></p>
                                 @if ($errors->has($logoName))
                                     <span class="help-block"><strong>{{ $errors->first($logoName) }}</strong></span>
@@ -139,7 +155,7 @@
                         {{-- Buttons --}}
                         <div class="form-group">
                             <div class="col-sm-12">
-                                <a href="{{ url('portal/ads') }}" class="btn btn-default">返回</a>
+                                <a href="{{ url('portal/conf') }}" class="btn btn-default">返回</a>
                                 <button type="submit" class="btn btn-default pull-right">确定</button>
                             </div>
                         </div>
@@ -179,7 +195,7 @@
             var image_crop_height = '{{ config("imgCrop.$model.crop.height") }}';
 
             //裁剪操作按钮与图片的间距-自适应
-            var crop_button_margin_min = parseInt(image_crop_height)+10+'px';
+            var crop_button_margin_min = parseInt(image_crop_height)+80+'px';
             var crop_button_margin_max = parseInt(image_upload_preview_width)+10+'px';
 
             var hasUpload = hasCrop =  0;
