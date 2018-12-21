@@ -48,8 +48,13 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen']], function ()
     Route::get('anno/cover/crop/{dir}', 'Cms\AnnouncementController@crop');
 
     // 首页Banner上传和裁剪
-    Route::post('portal/banner/upload/{dir}', 'Cms\AdsController@upload');
-    Route::patch('portal/banner/upload/{dir}', 'Cms\AdsController@upload');
-    Route::get('portal/banner/crop/{dir}', 'Cms\AdsController@crop');
+    Route::post('portal/banner/upload/{dir}', 'Cms\BannerController@upload');
+    Route::patch('portal/banner/upload/{dir}', 'Cms\BannerController@upload');
+    Route::get('portal/banner/crop/{dir}', 'Cms\BannerController@crop');
+
+    // 首页Logo上传和裁剪
+    Route::post('portal/logo/upload/{dir}', 'Cms\PortalConfController@upload');
+    Route::patch('portal/logo/upload/{dir}', 'Cms\PortalConfController@upload');
+    Route::get('portal/logo/crop/{dir}', 'Cms\PortalConfController@crop');
 
 });

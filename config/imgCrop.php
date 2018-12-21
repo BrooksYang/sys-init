@@ -2,16 +2,15 @@
 
 return [
 
-   /*
-  |--------------------------------------------------------------------------
-  | Announcement-Cover  Image Crop config 公告通知封面 256*144
-  |--------------------------------------------------------------------------
-  |
-  | Announcement-Cover cropping related configuration information.
-  | upload 允许的尺寸   preview 预览区的尺寸   crop 裁剪的尺寸  dir 存储目录名  name 字段名.
-  |
-  */
-
+    /*
+    |--------------------------------------------------------------------------
+    | Announcement-Cover  Image Crop config 公告通知封面 256*144
+    |--------------------------------------------------------------------------
+    |
+    | Announcement-Cover cropping related configuration information.
+    | upload 允许的尺寸   preview 预览区的尺寸   crop 裁剪的尺寸  dir 存储目录名  name 字段名.
+    |
+    */
     'announcement' => [
         'upload' => [
             'max_width'  => 600,
@@ -37,7 +36,7 @@ return [
         'name'  => 'cover'
     ],
 
-    /*
+   /*
    |--------------------------------------------------------------------------
    | Banner Crop config 首页banner 1920*473
    |--------------------------------------------------------------------------
@@ -69,6 +68,40 @@ return [
         'dir'   => 'portalImg',
         'route' => 'portal/banner/',
         'name'  => 'cover'
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Logo Crop config 首页logo 1920*473
+    |--------------------------------------------------------------------------
+    |
+    | Logo cropping related configuration information.
+    | upload 允许的尺寸   preview 预览区的尺寸   crop 裁剪的尺寸  dir 存储目录名  name 字段名.
+    |
+    */
+    'portalConf' => [
+        'upload' => [
+            'max_width'  => 150,
+            'max_height' => 150,
+            'min_width'  => 35,
+            'min_height' => 35,
+        ],
+
+        'preview' => [
+            'upload_width' => 120,
+            'crop_width'   => 60,
+            'crop_height'  => 60,
+        ],
+
+        'crop' => [
+            'width'  => 35,
+            'height' => 35,
+        ],
+
+        'scale' => 1,
+        'dir'   => 'portalImg',
+        'route' => 'portal/logo/',
+        'name'  => 'logo'
     ],
 
 ];

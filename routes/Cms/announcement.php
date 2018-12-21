@@ -41,13 +41,15 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
 });
 
 /**
- * 系统广告位
+ * 系统门户配置
  *
  */
 Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function()
 {
     // 系统广告位管理
-    Route::resource('portal/ads', 'Cms\AdsController');
+    Route::resource('portal/ads', 'Cms\BannerController');
 
+    // 门户基本信息配置
+    Route::resource('portal/conf', 'Cms\PortalConfController',['except' => ['index','show','destroy']]);
 });
 
