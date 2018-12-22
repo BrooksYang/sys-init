@@ -51,5 +51,8 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
 
     // 门户基本信息配置
     Route::resource('portal/conf', 'Cms\PortalConfController',['except' => ['index','show','destroy']]);
+
+    // 门户上币申请
+    Route::resource('portal/token/apply', 'Cms\TokenApplyController',['only' => ['index','destroy']]);
 });
 

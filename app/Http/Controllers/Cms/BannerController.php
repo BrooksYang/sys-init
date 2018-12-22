@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 /**
- * 系统
+ * 系统轮播图管理
  * Class AdsController
  * @package App\Http\Controllers\Cms
  */
