@@ -38,7 +38,7 @@ return [
 
    /*
    |--------------------------------------------------------------------------
-   | Banner Crop config 首页banner 1920*473
+   | Banner Crop config 首页banner 1920*650
    |--------------------------------------------------------------------------
    |
    | Banner cropping related configuration information.
@@ -48,20 +48,20 @@ return [
     'banner' => [
         'upload' => [
             'max_width'  => 2200,
-            'max_height' => 542,
+            'max_height' => 745,
             'min_width'  => 1920,
-            'min_height' => 473,
+            'min_height' => 650,
         ],
 
         'preview' => [
-            'upload_width' => 400,
+            'upload_width' => 420,
             'crop_width'   => 220,
-            'crop_height'  => 54,
+            'crop_height'  => 74,
         ],
 
         'crop' => [
             'width'  => 1920,
-            'height' => 473,
+            'height' => 650,
         ],
 
         'scale' => 0.6,
@@ -72,7 +72,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Logo Crop config 首页logo 1920*473
+    | Logo Crop config 首页logo 35*35
     |--------------------------------------------------------------------------
     |
     | Logo cropping related configuration information.

@@ -36,6 +36,7 @@
                 <div class="box-header">
                     {{-- Title --}}
                     <h3 class="box-title">
+                        <i class="fontello-doc"></i>
                         <span>{{ @$editFlag ? '编辑首页轮播图' : '添加首页轮播图' }}</span>
                     </h3>
                 </div>
@@ -172,6 +173,7 @@
             var image_crop_route = '{{ url(config("imgCrop.$model.route").'crop').'/'.base64_encode('app/public/'.config("imgCrop.$model.dir")) }}';
             //上传及裁剪--预览区的尺寸
             var image_upload_preview_width = '{{ config("imgCrop.$model.preview.upload_width") }}';
+            var image_upload_preview_height = '{{ config("imgCrop.$model.preview.upload_height") }}';
             var image_crop_preview_width = '{{ config("imgCrop.$model.preview.crop_width") }}';
             var image_crop_preview_height = '{{ config("imgCrop.$model.preview.crop_height") }}';
             //裁剪尺寸
@@ -179,7 +181,7 @@
             var image_crop_height = '{{ config("imgCrop.$model.crop.height") }}';
 
             //裁剪操作按钮与图片的间距-自适应
-            var crop_button_margin_min = parseInt(image_crop_height)+10+'px';
+            var crop_button_margin_min = parseInt(image_upload_preview_height)+10+'px';
             var crop_button_margin_max = parseInt(image_upload_preview_width)+10+'px';
 
             var hasUpload = hasCrop =  0;
@@ -204,7 +206,7 @@
                         return false;
                     }
                     if(fileError){ layer.msg(fileError); return false;}
-                    Avatar.css('height',crop_button_margin_max);
+                    //Avatar.css('height',crop_button_margin_max);
                     if(!fileError && filename){ hasUpload = filename;}
                     var UrlLocation = image_view_route + '/' + filename; //文件存储完整路径
                     $("#thumbnail").val(filename); //文件存储路径(需拼接上配置跟路径)
@@ -298,7 +300,7 @@
                         //以下为裁剪后图片预览区（width: 194px），与原图片预览区宽度一致
                         var html ='<img src="" alt="Example" class="" style="width: '+image_upload_preview_width+'px;" id="avatarCropImg"/>';
                         Avatar.html(html);
-                        Avatar.css('height',crop_button_margin_min);
+                        //Avatar.css('height',crop_button_margin_min);
                         var url = image_view_route + '/' + data.url + '?t=' + Math.random();
                         $('#avatarCropImg').attr('src', url);
                     },
