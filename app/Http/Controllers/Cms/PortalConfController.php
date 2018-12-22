@@ -8,6 +8,11 @@ use App\Traits\ImgCrop;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+/**
+ * 站点基本信息配置
+ * Class PortalConfController
+ * @package App\Http\Controllers\Cms
+ */
 class PortalConfController extends Controller
 {
     use ImgCrop;
