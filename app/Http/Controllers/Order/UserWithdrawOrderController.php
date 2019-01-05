@@ -27,11 +27,12 @@ class UserWithdrawOrderController extends Controller
     {
         //订单状态
         $orderStatus = [
-            0 => ['name' => '全部',      'class' => ''],
-            1 => ['name' => '等待受理',   'class' => 'default'],
-            2 => ['name' => '处理中',    'class' => 'primary'],
-            3 => ['name' => '已发币',    'class' => 'success'],
-            4 => ['name' => '失败',      'class' => 'danger'],
+            0  => ['name' => '全部',      'class' => ''],
+            -1 => ['name' => '已撤销',    'class' => 'waring'],
+            1  => ['name' => '等待受理',   'class' => 'default'],
+            2  => ['name' => '处理中',    'class' => 'primary'],
+            3  => ['name' => '已发币',    'class' => 'success'],
+            4  => ['name' => '失败',      'class' => 'danger'],
         ];
 
         //按币种-用户名-电话检索
@@ -120,8 +121,9 @@ class UserWithdrawOrderController extends Controller
         $jsonArray = ['code' =>0, 'msg' => '更新成功' ];
         bcscale(config('app.bcmath_scale'));
 
+        // TODO 真实钱包
         // 已发币
-        if ($request->update  == UserWithdrawOrder::RELEASED) {
+        /*if ($request->update  == UserWithdrawOrder::RELEASED) {
             DB::transaction(function () use($order, $userWallet, $sysWallet){
                 // 更新提币订单
                 $order->withdraw_order_status = UserWithdrawOrder::RELEASED;
@@ -166,7 +168,7 @@ class UserWithdrawOrderController extends Controller
             $order->withdraw_order_status = UserWithdrawOrder::PROCESSING;
             $order->updated_at = gmdate('Y-m-d H:i:s',time());
             $order->save();
-        }
+        }*/
 
         return response()->json($jsonArray);
     }

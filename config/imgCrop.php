@@ -70,6 +70,41 @@ return [
         'name'  => 'cover'
     ],
 
+
+   /*
+   |--------------------------------------------------------------------------
+   | Banner-Wap Crop config 首页banner - Wap端  750*490
+   |--------------------------------------------------------------------------
+   |
+   | Banner-Wap cropping related configuration information.
+   | upload 允许的尺寸   preview 预览区的尺寸   crop 裁剪的尺寸  dir 存储目录名  name 字段名.
+   |
+   */
+    'bannerWap' => [
+        'upload' => [
+            'max_width'  => 950,
+            'max_height' => 621,
+            'min_width'  => 750,
+            'min_height' => 490,
+        ],
+
+        'preview' => [
+            'upload_width' => 420,
+            'crop_width'   => 220,
+            'crop_height'  => 144,
+        ],
+
+        'crop' => [
+            'width'  => 750,
+            'height' => 490,
+        ],
+
+        'scale' => 0.6,
+        'dir'   => 'portalImg',
+        'route' => 'portal/banner/wap/',
+        'name'  => 'cover_wap'
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Logo Crop config 首页logo 35*35

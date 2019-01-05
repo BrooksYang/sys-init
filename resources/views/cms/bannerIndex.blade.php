@@ -39,6 +39,7 @@
                                 <th>URL</th>
                                 <th>排序号</th>
                                 <th>轮播图</th>
+                                <th>轮播图-Wap端</th>
                                 <th>创建时间 &nbsp;&nbsp;<a href="{{ url('portal/ads')}}?orderC=desc">
                                             <i class="fa fa-sort-amount-desc" style="color:{{ Request::get('orderC') != 'desc' ? !Request::get('orderC') ? '' : 'gray' :''}}" title="降序"></i></a> &nbsp;
                                         <a href="{{ url('portal/ads') }}?orderC=asc">
@@ -61,7 +62,7 @@
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLongTitle{{$key}}">系统Banne图&nbsp; {{ str_limit($item->title,15) }}</h5>
+                                                        <h5 class="modal-title" id="exampleModalLongTitle{{$key}}">系统Banner图&nbsp; {{ str_limit($item->title,15) }}</h5>
                                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
@@ -79,12 +80,47 @@
                                             </div>
                                         </div>
                                     </td>
+                                    <td>
+                                     <!-- Button trigger modal -->
+                                        <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLongWap{{$key}}">
+                                            查看
+                                        </a>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="exampleModalLongWap{{$key}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongWapTitle{{$key}}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLongWapTitle{{$key}}">系统Banner图-Wap端&nbsp; {{ str_limit($item->title,15) }}</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body text_c">
+                                                        <div style="text-align: center;">
+                                                            <img src="{{url($item->cover_wap)}}" style="width:{{ config('imgCrop.bannerWap.preview.crop_width') }}px"
+                                                             onerror="this.src='http://placehold.it/{{ config('imgCrop.bannerWap.preview.crop_width') }}x{{ config('imgCrop.bannerWap.preview.crop_height') }}'"/></div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
                                     <td>{{ $item->created_at }}</td>
                                     {{--<td>{{ $item->updated_at ?? '--' }}</td>--}}
                                     <td>
+                                        {{--Banner图 Web端--}}
                                         <a href="{{ url("portal/ads/$item->id/edit") }}">
                                             <i class="fontello-edit" title="编辑"></i>
                                         </a>
+
+                                        {{--Banner图 Wap端--}}
+                                        <a href="{{ url("portal/ads/wap/$item->id/edit") }}">
+                                            <i class="fontello-mobile" title="编辑Wap端"></i>
+                                        </a>
+
                                         <a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
                                                 '{{ url("portal/ads/$item->id") }}',
                                                 '{{ csrf_token() }}');">
