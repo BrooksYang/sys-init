@@ -121,8 +121,9 @@ class UserWithdrawOrderController extends Controller
         $jsonArray = ['code' =>0, 'msg' => '更新成功' ];
         bcscale(config('app.bcmath_scale'));
 
+        // TODO 真实钱包
         // 已发币
-        if ($request->update  == UserWithdrawOrder::RELEASED) {
+        /*if ($request->update  == UserWithdrawOrder::RELEASED) {
             DB::transaction(function () use($order, $userWallet, $sysWallet){
                 // 更新提币订单
                 $order->withdraw_order_status = UserWithdrawOrder::RELEASED;
@@ -167,7 +168,7 @@ class UserWithdrawOrderController extends Controller
             $order->withdraw_order_status = UserWithdrawOrder::PROCESSING;
             $order->updated_at = gmdate('Y-m-d H:i:s',time());
             $order->save();
-        }
+        }*/
 
         return response()->json($jsonArray);
     }
