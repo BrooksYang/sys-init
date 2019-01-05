@@ -27,11 +27,12 @@ class UserWithdrawOrderController extends Controller
     {
         //订单状态
         $orderStatus = [
-            0 => ['name' => '全部',      'class' => ''],
-            1 => ['name' => '等待受理',   'class' => 'default'],
-            2 => ['name' => '处理中',    'class' => 'primary'],
-            3 => ['name' => '已发币',    'class' => 'success'],
-            4 => ['name' => '失败',      'class' => 'danger'],
+            0  => ['name' => '全部',      'class' => ''],
+            -1 => ['name' => '已撤销',    'class' => 'waring'],
+            1  => ['name' => '等待受理',   'class' => 'default'],
+            2  => ['name' => '处理中',    'class' => 'primary'],
+            3  => ['name' => '已发币',    'class' => 'success'],
+            4  => ['name' => '失败',      'class' => 'danger'],
         ];
 
         //按币种-用户名-电话检索
