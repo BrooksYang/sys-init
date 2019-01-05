@@ -84,6 +84,8 @@
                                 <th>吃单手续费</th>
                                 <th title="限价单数量、市价单金额或数量">数额</th>
                                 <th>已成交数量</th>
+                                <th>未成交数量</th>
+                                <th>委托总额</th>
                                 <th>已成交总金额</th>
                                 <th title="限价单价格">价格</th>
                                 <th>成交均价</th>
@@ -106,7 +108,9 @@
                                     <td>{{ $item->maker_fee.'%'}}</td>
                                     <td>{{ $item->taker_fee.'%'}}</td>
                                     <td>{{ number_format($item->amount,8,'.',',') }}</td>
-                                    <td>{{ number_format(8198150123456.78,8,'.',',') }}</td>
+                                    <td>{{ number_format($item->field_amount,8,'.',',') }}</td>
+                                    <td>{{ number_format($item->left_amount,8,'.',',') }}</td>
+                                    <td>{{ number_format($item->total,8,'.',',') }}</td>
                                     <td>{{ number_format($item->field_cash_amount,8,'.',',') }}</td>
                                     <td>{{ number_format($item->price,8,'.',',') }}</td>
                                     <td>{{ number_format($item->traded_average_price,8,'.',',') }}</td>
@@ -121,7 +125,7 @@
                                     {{--<td></td>--}}
                                 </tr>
                             @empty
-                                <tr><td colspan="15" class="text-center">
+                                <tr><td colspan="17" class="text-center">
                                     <div class="noDataValue">
                                         暂无数据
                                     </div>
