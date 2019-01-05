@@ -49,6 +49,9 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     // 系统广告位管理
     Route::resource('portal/ads', 'Cms\BannerController');
 
+    // 系统广告位管理- Wap端
+    Route::resource('portal/ads/wap', 'Cms\BannerWapController', ['only' => ['edit', 'update']]);
+
     // 门户基本信息配置
     Route::resource('portal/conf', 'Cms\PortalConfController',['except' => ['index','show','destroy']]);
 

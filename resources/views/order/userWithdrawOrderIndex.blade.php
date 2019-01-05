@@ -35,7 +35,7 @@
 
                     {{-- Title --}}
                     <h3 class="box-title"><i class="fontello-doc"></i>
-                        <span>用户提币订单待受理列表</span>
+                        <span>用户提币订单列表</span>
                     </h3>
                 </div>
 
@@ -50,8 +50,10 @@
                                 <th>币种</th>
                                 <th>提币金额</th>
                                 <th title="收币地址">收币地址</th>
+                                <th>交易号</th>
+                                <th>撤销时间</th>
                                 <th>状态</th>
-                                <th>操作</th>
+                                {{--<th>操作</th>--}}
                             </tr>
                             @forelse($userWithdrawOrder as $key => $item)
                                 <tr>
@@ -63,10 +65,12 @@
                                     </td>
                                     <td title="{{number_format($item->withdraw_amount,8,'.',',') }}">{{ number_format($item->withdraw_amount,8,'.',',') }}</td>
                                     <td title="{{ $item->crypto_wallet_title }}"><strong>{{ $item->crypto_wallet_address }}</strong></td>
+                                    <td>{{ $item->hash ?: '--' }}</td>
+                                    <td>{{ $item->canceled_at ?: '--' }}</td>
                                     <td>
                                         <span class="label label-{{ $orderStatus[$item->withdraw_order_status]['class'] }}">{{ $orderStatus[$item->withdraw_order_status]['name'] }}</span>
                                     </td>
-                                    <td>
+                                    {{--<td>
                                         @if(in_array($item->withdraw_order_status, [\App\Models\Order\UserWithDrawOrder::PROCESSING,\App\Models\Order\UserWithDrawOrder::FAILED]) )
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                     '{{ url("order/withdraw/$item->id") }}','withdraw_order_status',3,
@@ -91,10 +95,10 @@
                                                 '{{ csrf_token() }}');">
                                             <i class="fontello-trash-2" title="删除"></i>
                                         </a>
-                                    </td>
+                                    </td>--}}
                                 </tr>
                             @empty
-                                <tr><td colspan="8" class="text-center">
+                                <tr><td colspan="9" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>

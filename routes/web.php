@@ -52,6 +52,11 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen']], function ()
     Route::patch('portal/banner/upload/{dir}', 'Cms\BannerController@upload');
     Route::get('portal/banner/crop/{dir}', 'Cms\BannerController@crop');
 
+    // 首页Banner上传和裁剪- Wap端
+    Route::post('portal/banner/wap/upload/{dir}', 'Cms\BannerWapController@upload');
+    Route::patch('portal/banner/wap/upload/{dir}', 'Cms\BannerWapController@upload');
+    Route::get('portal/banner/wap/crop/{dir}', 'Cms\BannerWapController@crop');
+
     // 首页Logo上传和裁剪
     Route::post('portal/logo/upload/{dir}', 'Cms\PortalConfController@upload');
     Route::patch('portal/logo/upload/{dir}', 'Cms\PortalConfController@upload');
