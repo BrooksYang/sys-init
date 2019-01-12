@@ -20,7 +20,7 @@ trait MongoLogHelper {
      */
     public function LogInto($data, $type='')
     {
-        //uid /email / type / ip / session / referer / agent  / datatime/ app / level /route / method / parameter
+        //uid /email / type / ip / session / referer / agent  / datetime/ app / level /route / method / parameter
         // [message] / [context] / [extra]
         $infoInit = [
             'uid' => Auth::id(),
@@ -30,7 +30,7 @@ trait MongoLogHelper {
             'session' => \Request::cookie()[strtolower(config('app.name')).'_session'] ?? '',
             'referer' => $this->getHead('referer'),
             'agent' => $this->getHead('user-agent'),
-            'created_at' => gmdate('Y-m-d H:i:s',time()),
+            'datetime' => gmdate('Y-m-d H:i:s',time()),
             'app' => $this->beLongToApp()->name ?? '',
             'route' => \Request::path(),
             'method' => \Request::method(),
