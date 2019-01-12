@@ -2,16 +2,20 @@
 
 namespace App;
 
-use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Model;
+//use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 
-class MongoLog extends Eloquent
+class MongoLog extends Model
 {
     //基本字段信息
-    protected $connection = 'mongodb';
-    protected $collection = 'backend';
+    protected $connection = 'mysql';
+    protected $table = 'backend';
+    //protected $collection = 'backend';
 
     protected $dates = ['datetime'];
-    //uid /email / type / ip / session / refer / agent / datatime/ app / level / route / method / parameter
+    public $timestamps = false;
+
+    //uid /email / type / ip / session / refer / agent / datetime/ app / level / route / method / parameter
     //[message] / [context] / [extra]
     protected $fillable = ['uid','email','type','ip','session','refer','agent','datetime', 'app', 'level',
         'route','method', 'parameter', 'message', 'context', 'extra'];
