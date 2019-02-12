@@ -31,7 +31,7 @@ class CurrencyTypeRequest extends FormRequest
                 'alpha_dash',
             ],
             'subtitled' => 'nullable|max:255',
-            'intro' => 'required|max:500',
+            'intro' => 'required|max:2000',
         ];
     }
 
