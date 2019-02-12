@@ -61,7 +61,7 @@ class SiteConfController extends Controller
     {
         if ($id) {
             $configs = PortalConf::get([
-                'currency_intro','privacy_policy','token_apply_intro','disclaimer','about_us'
+                'currency_intro','rate','privacy_policy','token_apply_intro','disclaimer','about_us'
             ])->first()->toArray();
         }
 
@@ -83,11 +83,12 @@ class SiteConfController extends Controller
         $updateConfig = $request->except(['_token', '_method', 'editFlag']);
 
         Validator::make($request->all(),[
-            'currency_intro'    => 'required|max:5000',
-            'privacy_policy'    => 'required|max:5000',
-            'token_apply_intro' => 'required|max:5000',
-            'disclaimer'        => 'required|max:5000',
-            'about_us'          => 'required|max:5000',
+            'currency_intro'    => 'required',
+            'rate'              => 'required',
+            'privacy_policy'    => 'required',
+            'token_apply_intro' => 'required',
+            'disclaimer'        => 'required',
+            'about_us'          => 'required',
         ])->validate();
 
         $updateConfig = $updateConfig + [ 'updated_at' => gmdate('Y-m-d H:i:s',time())];
