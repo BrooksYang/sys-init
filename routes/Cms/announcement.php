@@ -57,5 +57,8 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
 
     // 门户上币申请
     Route::resource('portal/token/apply', 'Cms\TokenApplyController',['only' => ['index','destroy']]);
+
+    // 站点-cms-声明及法律条款等
+    Route::resource('portal/siteConf', 'Cms\SiteConfController',['only' => ['edit','update']]);
 });
 
