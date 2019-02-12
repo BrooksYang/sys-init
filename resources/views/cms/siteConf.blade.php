@@ -37,6 +37,19 @@
                                 </div>
                                 @endif
 
+                                @if($key == 'rate')
+                                <div class="form-group {{ $errors->has($key) ? 'has-error' : '' }}">
+                                    <div class="col-sm-12">
+                                        <label title="" >平台费率</label>&nbsp;
+                                        <textarea id="questionContent_{{$key}}" name="{{ $key }}" rows="8" cols="150" style="visibility: hidden; display: none;"
+                                                  placeholder="平台费率">{{ $config ?? old($key) }}</textarea>
+                                        @if ($errors->has($key))
+                                            <span class="help-block"><strong>{{ $errors->first($key) }}</strong></span>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endif
+
                                 @if($key == 'privacy_policy')
                                 <div class="form-group {{ $errors->has($key) ? 'has-error' : '' }}">
                                     <div class="col-sm-12">
@@ -119,6 +132,9 @@
             CKEDITOR.replace('questionContent_currency_intro', {
                 height:'150px',
             });
+            CKEDITOR.replace('questionContent_rate', {
+                height:'150px',
+            });
             CKEDITOR.replace('questionContent_privacy_policy', {
                 height:'150px',
             });
@@ -130,7 +146,7 @@
                 height:'150px',
             });
             CKEDITOR.replace('questionContent_about_us', {
-                height:'150px',
+                height:'100px',
             });
         });
 
