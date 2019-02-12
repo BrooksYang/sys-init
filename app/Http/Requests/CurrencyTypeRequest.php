@@ -29,7 +29,9 @@ class CurrencyTypeRequest extends FormRequest
                 'required',
                 'unique:dcuex_currency_type,title,'.$request->currencyTypeMg,
                 'alpha_dash',
-            ]
+            ],
+            'subtitled' => 'nullable|max:255',
+            'intro' => 'required|max:500',
         ];
     }
 
