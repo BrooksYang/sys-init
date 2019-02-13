@@ -161,7 +161,6 @@ class CurrencyTypeInitController extends Controller
      */
     public function upload($dir)
     {
-
         $maxWidth = $maxHeight = 600;
         $this->imgUpload(base64_decode($dir), $maxWidth, $maxHeight);
     }
