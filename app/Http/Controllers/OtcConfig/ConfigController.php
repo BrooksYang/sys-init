@@ -108,7 +108,8 @@ class ConfigController extends Controller
                         return $fail($attribute.' is invalid.');
                     }
                 }
-            ]
+            ],
+            $configKey[2] => 'required|numeric',
         ])->validate();
 
         foreach ($updateConfig as $key => $item) {
@@ -142,6 +143,6 @@ class ConfigController extends Controller
     public function configKey()
     {
 
-        return  ['payment_length', 'order_cancel_frequency'];
+        return  ['payment_length', 'order_cancel_frequency','exchange_rate_usdt_rmb'];
     }
 }
