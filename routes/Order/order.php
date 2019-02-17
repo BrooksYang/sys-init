@@ -25,6 +25,8 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
 
     // OTC用户充值订单
     Route::resource('order/otc/userDeposit', 'Order\UserOtcDepositOrderController', ['only' => ['index','update','destroy']]);
+    // OTC用户快捷充值订单
+    Route::resource('order/otc/quick/userDeposit', 'Order\OtcQuickDepositOrderController', ['only' => ['index']]);
 
     // OTC用户提币订单
     Route::patch('order/otc/withdraw/{withdraw}', 'Order\UserOtcWithdrawOrderController@update')->where('withdraw', '[0-9]+')

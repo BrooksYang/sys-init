@@ -54,6 +54,21 @@
                             </div>
                             @endif
 
+                            @if($key == 'exchange_rate_usdt_rmb')
+                            <br/><br/>
+                            {{-- USDT对人民币汇率 exchange_rate_usdt_rmb --}}
+                            <div class="form-group {{ $errors->has($configKey[2]) ? 'has-error' : '' }}">
+                                <div class="col-sm-12">
+                                    <label>{{ $config->title }}</label>
+                                    <input class="form-control input-sm" type="text" name="{{$configKey[2]}}" value="{{ $config->value ?? old($configKey[1]) }}"
+                                           placeholder="USDT对人民币汇率" required>
+                                    @if ($errors->has($configKey[2]))
+                                        <span class="help-block"><strong>{{ $errors->first($configKey[2]) }}</strong></span>
+                                    @endif
+                                </div>
+                            </div>
+                            @endif
+
                             @if($loop -> last)
                                 {{-- Buttons --}}
                                 <p style="margin-bottom: 50px"></p>

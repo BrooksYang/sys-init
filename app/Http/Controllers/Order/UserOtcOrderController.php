@@ -66,7 +66,7 @@ class UserOtcOrderController extends Controller
                 'currency.currency_title_cn','currency.currency_title_en_abbr',
                 'legal_currency.name','legal_currency.abbr'
             )
-            ->paginate(OTC_ORDER_PAGE_SIZE );;
+            ->paginate(OTC_ORDER_PAGE_SIZE);
 
         return view('order.userOtcOrderIndex',compact('orderStatus', 'orderType','userOtcOrder'));
     }
