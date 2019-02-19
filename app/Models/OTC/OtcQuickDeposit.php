@@ -22,15 +22,17 @@ class OtcQuickDeposit extends Model
 
     const OTC_QUICK_DEPOSITS_PAGE_SIZE = 30;
 
-    // 定义支付状态，1支付中，2支付成功，3支付失败
+    // 定义支付状态，1支付中，2支付成功，3支付失败 4支付过期
     const PROCESSING = 1;
     const SUCCESS = 2;
     const FAILED = 3;
+    const EXPIRED = 4;
 
     const STATUS = [
         self::PROCESSING => ['name' => '支付中',  'class' => 'info'],
         self::SUCCESS    => ['name' => '支付成功', 'class' => 'success'],
         self::FAILED     => ['name' => '支付失败', 'class' => 'warning'],
+        self::EXPIRED    => ['name' => '支付过期', 'class' => 'default'],
     ];
 
 
