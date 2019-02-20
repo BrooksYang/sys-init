@@ -122,10 +122,10 @@
                                                         <span><b>身份证号：</b></span>{{ empty($item->id_number) ? '--' : $item->id_number }}
                                                         <P></P>
                                                         {{--证件开放路由--}}
-                                                        <img id="" src="{{url('')}}/{{ $item->id_image_front }}" style="width:570px;border-radius:20px"
+                                                        <img id="" src="{{ config('app.api_res_url') }}/{{ $item->id_image_front }}" style="width:570px;border-radius:20px"
                                                              onerror="this.src='http://placehold.it/570x420'"/>
                                                         <p></p>
-                                                        <img id="" src="{{url('')}}/{{ $item->id_image_back }}" style="width:570px;border-radius:20px"
+                                                        <img id="" src="{{ config('app.api_res_url') }}/{{ $item->id_image_back }}" style="width:570px;border-radius:20px"
                                                              onerror="this.src='http://placehold.it/570x420'"/>
                                                     </div>
                                                     <div class="modal-footer">
