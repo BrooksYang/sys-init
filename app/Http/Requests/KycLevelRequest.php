@@ -36,7 +36,7 @@ class KycLevelRequest extends FormRequest
                 'numeric',
                 'min:1',
             ],
-            'withdraw_amount_daily' => 'required|numeric|min:1',
+            'withdraw_amount_daily' => 'required|numeric|min:0',
             'description' => 'nullable|max:255',
         ];
     }

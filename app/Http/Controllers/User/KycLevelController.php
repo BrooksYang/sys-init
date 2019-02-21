@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Requests\KycLevelRequest;
 use App\Models\KycLevel;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -19,9 +20,16 @@ class KycLevelController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $search = $request->get('search','');
+
+        $kycLevel = KycLevel::when($search, function ($query) use ($search) {
+                $query->where('name','like',"%$search%");
+            })->orderBy('level','asc')
+            ->paginate(config('app.pageSize'));
+
+        return view('user.kycLevelIndex', compact('kycLevel','search'));
     }
 
     /**
@@ -68,19 +76,27 @@ class KycLevelController extends Controller
      */
     public function edit($id)
     {
-        //
+        $kycLevel = KycLevel::findOrFail($id);
+        $editFlag = true;
+
+        return view('user.kycLevelCreate', compact('kycLevel','editFlag'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  KycLevelRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(KycLevelRequest $request, $id)
     {
-        //
+        $kycLevel = $request->except(['_token', '_method', 'editFlag']);
+        $kycLevel['updated_at'] = gmdate('Y-m-d H:i:s',time());
+
+        $res = KycLevel::updateOrCreate(['id' => $id],$kycLevel);
+
+        return redirect('user/kycLevel/manage');
     }
 
     /**
@@ -91,6 +107,12 @@ class KycLevelController extends Controller
      */
     public function destroy($id)
     {
-        //
+        if (User::where('kyc_level_id', $id)->exists()) {
+            return response()->json(['code' => 100030 ,'error' => '该等级已被使用暂不能删除']);
+        }
+
+        if (KycLevel::destroy($id)) {
+            return response()->json([]);
+        }
     }
 }

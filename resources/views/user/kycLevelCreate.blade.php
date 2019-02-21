@@ -14,7 +14,7 @@
 
                 {{-- Form --}}
                 <div class="box-body">
-                    <form class="form form-horizontal" role="form" method="POST" action="{{ @$editFlag ? url("user/kycLevel/manage/$currencyType->id") : url('user/kycLevel/manage') }}">
+                    <form class="form form-horizontal" role="form" method="POST" action="{{ @$editFlag ? url("user/kycLevel/manage/$kycLevel->id") : url('user/kycLevel/manage') }}">
                         {{ csrf_field() }}
                         {{ @$editFlag ? method_field('PATCH') : '' }}
                         <input type="hidden" name="editFlag" value="{{ @$editFlag }}">
@@ -23,7 +23,7 @@
                         <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
                             <div class="col-sm-12">
                                 <label>KYC等级名称</label>
-                                <input class="form-control input-lg" type="text" name="name" value="{{ $currencyType->name ?? old('name') }}"
+                                <input class="form-control input-lg" type="text" name="name" value="{{ $kycLevel->name ?? old('name') }}"
                                        placeholder="KYC等级名称" required>
                                 @if ($errors->has('name'))
                                     <span class="help-block"><strong>{{ $errors->first('name') }}</strong></span>
@@ -35,7 +35,7 @@
                         <div class="form-group {{ $errors->has('level') ? 'has-error' : '' }}">
                             <div class="col-sm-12">
                                 <label>KYC等级值</label>
-                                <input class="form-control input-lg" type="number" min="1" name="level" value="{{ $currencyType->level ?? old('level') }}"
+                                <input class="form-control input-lg" type="number" min="1" name="level" value="{{ $kycLevel->level ?? old('level') }}"
                                        placeholder="KYC等级值" required>
                                 @if ($errors->has('level'))
                                     <span class="help-block"><strong>{{ $errors->first('level') }}</strong></span>
@@ -47,7 +47,7 @@
                         <div class="form-group {{ $errors->has('withdraw_amount_daily') ? 'has-error' : '' }}">
                             <div class="col-sm-12">
                                 <label>单日可提币上限</label>
-                                <input class="form-control input-lg" type="number" min="0" name="withdraw_amount_daily" value="{{ $currencyType->withdraw_amount_daily ?? old('withdraw_amount_daily') }}"
+                                <input class="form-control input-lg" type="number" min="0" name="withdraw_amount_daily" value="{{ $kycLevel->withdraw_amount_daily ?? old('withdraw_amount_daily') }}"
                                        placeholder="单日可提币上限" required>
                                 @if ($errors->has('withdraw_amount_daily'))
                                     <span class="help-block"><strong>{{ $errors->first('withdraw_amount_daily') }}</strong></span>
@@ -60,7 +60,7 @@
                             <div class="col-sm-12">
                                 <label>等级描述</label>
                                 <textarea id="questionContent" class="form-control" name="description" rows="5"
-                                          placeholder="等级描述信息">{{ $currencyType->description ?? old('description') }}</textarea>
+                                          placeholder="等级描述信息">{{ $kycLevel->description ?? old('description') }}</textarea>
                                 @if ($errors->has('description'))
                                     <span class="help-block"><strong>{{ $errors->first('description') }}</strong></span>
                                 @endif
