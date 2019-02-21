@@ -18,6 +18,8 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     //用户管理
     Route::resource('user/manage', 'User\UserController');
 
+    // 系统用户kyc等级管理
+    Route::resource('user/kycLevel/manage','User\KycLevelController');
 
 });
 
