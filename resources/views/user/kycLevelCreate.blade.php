@@ -24,7 +24,7 @@
                             <div class="col-sm-12">
                                 <label>KYC等级名称</label>
                                 <input class="form-control input-lg" type="text" name="name" value="{{ $currencyType->name ?? old('name') }}"
-                                       placeholder="KYC等级名称">
+                                       placeholder="KYC等级名称" required>
                                 @if ($errors->has('name'))
                                     <span class="help-block"><strong>{{ $errors->first('name') }}</strong></span>
                                 @endif
@@ -36,7 +36,7 @@
                             <div class="col-sm-12">
                                 <label>KYC等级值</label>
                                 <input class="form-control input-lg" type="number" min="1" name="level" value="{{ $currencyType->level ?? old('level') }}"
-                                       placeholder="KYC等级值">
+                                       placeholder="KYC等级值" required>
                                 @if ($errors->has('level'))
                                     <span class="help-block"><strong>{{ $errors->first('level') }}</strong></span>
                                 @endif
@@ -48,7 +48,7 @@
                             <div class="col-sm-12">
                                 <label>单日可提币上限</label>
                                 <input class="form-control input-lg" type="number" min="0" name="withdraw_amount_daily" value="{{ $currencyType->withdraw_amount_daily ?? old('withdraw_amount_daily') }}"
-                                       placeholder="单日可提币上限">
+                                       placeholder="单日可提币上限" required>
                                 @if ($errors->has('withdraw_amount_daily'))
                                     <span class="help-block"><strong>{{ $errors->first('withdraw_amount_daily') }}</strong></span>
                                 @endif

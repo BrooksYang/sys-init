@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Http\Requests\KycLevelRequest;
+use App\Models\KycLevel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -35,12 +37,16 @@ class KycLevelController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  KycLevelRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(KycLevelRequest $request)
     {
-        //
+        $kycLevel = $request->except(['_token','editFlag']);
+
+        $kycLevel = KycLevel::create($kycLevel);
+
+        return redirect('user/kycLevel/manage');
     }
 
     /**
