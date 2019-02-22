@@ -66,7 +66,7 @@
                             <p class="">
                                 @if(in_array(pathinfo($user->passport)['extension'] ?? '',['pdf']))
                                     <a href="{{ config('app.api_res_url') }}/{{ $user->passport }}" target="_blank">护照文件：{{ pathinfo($user->passport)['basename'] }}</a>
-                                @elseif(!$user->passport)
+                                @elseif($user->passport)
                                     <img id="" src="{{ config('app.api_res_url') }}/{{ $user->passport }}" style="width:570px;border-radius:20px"
                                      onerror="this.src='http://placehold.it/570x420'"/>
                                 @else
@@ -80,7 +80,7 @@
                             <p class="">
                                 @if(in_array(pathinfo($user->bill)['extension'] ?? '',['pdf']))
                                     <a href="{{ config('app.api_res_url') }}/{{ $user->bill }}" target="_blank">信用卡电子账单：{{ pathinfo($user->bill)['basename'] }}</a>
-                                @elseif(!$user->bill)
+                                @elseif($user->bill)
                                     <img id="" src="{{ config('app.api_res_url') }}/{{ $user->bill }}" style="width:570px;border-radius:20px"
                                      onerror="this.src='http://placehold.it/570x420'"/>
                                 @else
