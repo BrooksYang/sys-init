@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Models\Country;
+use App\Models\KycLevel;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -79,7 +82,18 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        // 国家信息
+        $country = Country::all()->pluck('name','id')->toArray();
+
+        // 认证等级
+        $kycLevel = KycLevel::all()->pluck('name','id');
+
+        // 认证状态
+        $kycStatus = $this->getUserStatus()['verify_status'];
+
+        return view('user.userKycShow', compact('user','country','kycLevel','kycStatus'));
     }
 
     /**

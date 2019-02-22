@@ -74,6 +74,7 @@
                                 <th>电话</th>
                                 <th>邮箱</th>
                                 <th>身份信息</th>
+                                <th>其它证件</th>
                                 {{--<th>真实姓名</th>
                                 <th>性别</th>
                                 <th>年龄</th>
@@ -94,8 +95,8 @@
                             @forelse($user as $key => $item)
                                 <tr>
                                     <td>{{ ($key + 1) + ($user->currentPage() - 1) * $user->perPage() }}</td>
-                                    <td title="{{ $item->username }}"><strong>{{ empty($item->username) ? '--' : str_limit($item->username,15) }}</strong></td>
-                                    <td title="{{$item->phone}}">{{ $item->phone }}</td>
+                                    <td title="{{ $item->username }}"><strong>{{ str_limit($item->username,15) ?: '--'}}</strong></td>
+                                    <td title="{{$item->phone}}">{{ $item->phone?:'--' }}</td>
                                     <td title="{{ $item->email }}"><strong>{{ str_limit($item->email,15) }}</strong></td>
                                     <td >
                                         <!-- Button trigger modal -->
@@ -122,10 +123,10 @@
                                                         <span><b>身份证号：</b></span>{{ empty($item->id_number) ? '--' : $item->id_number }}
                                                         <P></P>
                                                         {{--证件开放路由--}}
-                                                        <img id="" src="{{url('')}}/{{ $item->id_image_front }}" style="width:570px;border-radius:20px"
+                                                        <img id="" src="{{ config('app.api_res_url') }}/{{ $item->id_image_front }}" style="width:570px;border-radius:20px"
                                                              onerror="this.src='http://placehold.it/570x420'"/>
                                                         <p></p>
-                                                        <img id="" src="{{url('')}}/{{ $item->id_image_back }}" style="width:570px;border-radius:20px"
+                                                        <img id="" src="{{ config('app.api_res_url') }}/{{ $item->id_image_back }}" style="width:570px;border-radius:20px"
                                                              onerror="this.src='http://placehold.it/570x420'"/>
                                                     </div>
                                                     <div class="modal-footer">
@@ -136,7 +137,7 @@
                                             </div>
                                         </div>
                                     </td>
-
+                                    <td title="其它证件信息"><a href="{{ url("user/manage/$item->id") }}" target="_blank">查看</a></td>
                                     <td><span class="label label-{{ $userStatus['email_phone_status'][$item->email_status]['class'] }}">
                                         {{ $userStatus['email_phone_status'][$item->email_status]['name'] }}</span>
                                     </td>
