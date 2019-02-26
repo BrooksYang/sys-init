@@ -63,6 +63,18 @@
                             </p>
                             <hr>
 
+                            {{--手持身份证件信息--}}
+                            *手持身份证件照片：<br/><br>
+                            <p class="">
+                                @if($user->id_image_handheld )
+                                <img id="" src="{{ config('app.api_res_url') }}/{{ $user->id_image_handheld }}" style="width:570px;border-radius:20px"
+                                     onerror="this.src='http://placehold.it/570x420'"/>
+                                @else
+                                    暂无信息
+                                @endif
+                            </p>
+                            <hr>
+
                             {{--护照信息--}}
                             *护照信息：<br/><br>
                             <p class="">
