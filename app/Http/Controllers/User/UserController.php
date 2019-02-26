@@ -87,16 +87,18 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
+        $uri = \Request::get('uri') ?? 'user/mange';
+
         // 国家信息
         $country = Country::all()->pluck('name','id')->toArray();
 
         // 认证等级
-        $kycLevel = KycLevel::all()->pluck('name','id');
+        $kycLevels = KycLevel::all();
 
         // 认证状态
         $kycStatus = $this->getUserStatus()['verify_status'];
 
-        return view('user.userKycShow', compact('user','country','kycLevel','kycStatus'));
+        return view('user.userKycShow', compact('user','uri','country','kycLevels','kycStatus'));
     }
 
     /**

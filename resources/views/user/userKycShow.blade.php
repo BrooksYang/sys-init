@@ -41,8 +41,10 @@
                                 <p class="">
                                     <strong>身份证号：</strong>{{ $user->id_number ?: '暂无' }}&nbsp;&nbsp;&nbsp;&nbsp;
                                     <strong>国家：</strong>{{ $user->country_id ? ($country[$user->country_id] ?? '暂无'):'暂无' }}&nbsp;&nbsp;&nbsp;&nbsp;
+                                </p>
+                                <p class="">
                                     <strong>认证状态：</strong>{{$user->verify_status ? ($kycStatus[$user->verify_status]['name'] ?? '暂无'):'暂无'}}&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <strong>认证等级：</strong>{{ $user->kyc_level_id }}&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <strong>认证等级：</strong>{{ $kycLevels->pluck('name','id')[$user->kyc_level_id] ?? '暂无'}}&nbsp;&nbsp;
                                 </p>
                             </div>
 
@@ -95,18 +97,53 @@
                     <div class="row">
                         <div class="col-xs-12">
                             <div class="pull-right">
-                                @if(in_array($user->verify_status,[1,2,4]))
-                                    <a  class="btn btn-default" style="margin-right: 10px" href="javascript:;" onclick="itemUpdate('{{ $user->id }}',
-                                            '{{ url("user/manage/$user->id") }}','verify_status',3,
-                                            '用户账号为<b><strong> 认证通过 </strong></b> 状态',
-                                            '{{ csrf_token() }}', '认证通过');"> <i class="fontello-ok" title="认证通过"></i>认证通过</a>
-                                @elseif($user->verify_status == 3)
-                                    <a class="btn btn-default" style="margin-right: 10px" href="javascript:;" onclick="itemUpdate('{{ $user->id }}',
-                                            '{{ url("user/manage/$user->id") }}','verify_status',4,
-                                            '用户账号为<b><strong> 认证失败 </strong></b> 状态',
-                                            '{{ csrf_token() }}', '认证失败');"> <i class="fontello-cancel-circled" title="认证失败"></i>认证失败</a>
-                                @endif
-                                <a href="{{ URL::previous() }}" class="btn btn-default">返回</a>
+                                <a href="{{ url('').$uri }}" class="btn btn-default">返回</a>
+
+                                <!-- Button trigger modal -->
+                                <a href="javascript:;"  class="btn btn-default" data-toggle="modal" data-target="#exampleModalLongVerify">
+                                    <i class="fontello-ok" title="认证通过"></i>认证通过
+                                </a>
+                                <!-- Modal -->
+                                <div class="modal fade" id="exampleModalLongVerify" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongVerify" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <form role="form" method="POST" action="{{ url("user/manage/$user->id") }}">
+                                            {{ csrf_field() }}
+                                            {{ method_field('PATCH') }}
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLongVerifyTitle">KYC认证等级</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <label>修改KYC认证等级</label>
+                                                    <input type="hidden" name="field" value="kyc_level_id">
+                                                    <select name="update" id="" style="width: 80%" required>
+                                                        <option value="">请选择认证等级</option>
+                                                        @foreach($kycLevels as $flag=>$kycLevel)
+                                                            <option value="{{ $kycLevel->id }}" {{ $user->kyc_level_id == $kycLevel->id ? 'selected':'' }} >
+                                                                {{ $kycLevel->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @if ($errors->has("kyc_level_id"))
+                                                        <span class="help-block" style="color: #a94442"><strong>{{ $errors->first("kyc_level_id") }}</strong></span>
+                                                    @endif
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                                    <button type="submit" class="btn btn-secondary" >保存</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <a href="javascript:;" class="btn btn-default" onclick="itemUpdate('{{ $user->id }}',
+                                        '{{ url("user/manage/$user->id") }}','verify_status',4,
+                                        '用户账号为<b><strong> 认证失败 </strong></b> 状态',
+                                        '{{ csrf_token() }}', '认证失败');"> <i class="fontello-cancel-circled" title="认证失败"></i>认证失败</a>
                             </div>
                         </div>
                     </div>

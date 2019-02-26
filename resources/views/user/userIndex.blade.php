@@ -138,7 +138,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td title="其它证件信息"><a href="{{ url("user/manage/$item->id") }}" target="_blank">查看</a></td>
+                                    <td title="其它证件信息"><a href="{{ url("user/manage/$item->id") }}?uri={{ Request::getRequestUri() }}">查看</a></td>
                                     <td><span class="label label-{{ $userStatus['email_phone_status'][$item->email_status]['class'] }}">
                                         {{ $userStatus['email_phone_status'][$item->email_status]['name'] }}</span>
                                     </td>
