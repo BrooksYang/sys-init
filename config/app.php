@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Bitgoodex'),
-    'name_cn' => env('APP_NAME_CN', 'Bitgoodex数字资产交易所'),
-    'welcome_msg' => env('APP_WELCOME_MSG', '欢迎进入Bitgoodex数字资产交易所'),
-    'copyright' => env('APP_COPYRIGHT', 'Bitgoodex'),
+    'name' => env('APP_NAME', 'BitUnion'),
+    'name_cn' => env('APP_NAME_CN', 'BitUnion数字资产交易所'),
+    'welcome_msg' => env('APP_WELCOME_MSG', '欢迎进入BitUnion数字资产交易所'),
+    'copyright' => env('APP_COPYRIGHT', 'BitUnion'),
 
     /*
      |--------------------------------------------------------------------------
