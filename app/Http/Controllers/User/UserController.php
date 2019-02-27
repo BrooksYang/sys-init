@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Models\Country;
+use App\Models\KycLevel;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +28,9 @@ class UserController extends Controller
         //用户状态
         $userStatus = $this->getUserStatus();
 
+        // 认证等级
+        $kycLevels = KycLevel::all();
+
         //用户名-电话检索
         $search = trim($request->search,'');
         $filterObj = trim($request->filterObj,'');
@@ -47,7 +53,7 @@ class UserController extends Controller
             })
             ->paginate(USER_LIST_SIZE );
 
-        return view('user.userIndex', compact('userStatus', 'search','user'));
+        return view('user.userIndex', compact('userStatus', 'kycLevels', 'search','user'));
     }
 
     /**
@@ -79,7 +85,20 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        $uri = \Request::get('uri') ?? 'user/mange';
+
+        // 国家信息
+        $country = Country::all()->pluck('name','id')->toArray();
+
+        // 认证等级
+        $kycLevels = KycLevel::all();
+
+        // 认证状态
+        $kycStatus = $this->getUserStatus()['verify_status'];
+
+        return view('user.userKycShow', compact('user','uri','country','kycLevels','kycStatus'));
     }
 
     /**
@@ -108,8 +127,16 @@ class UserController extends Controller
             'updated_at' => gmdate('Y-m-d H:i:s',time()),
         ];
 
-        if ($query->update($user)) {
+        // 更新认证等级和认证状态
+        if ($request->field == 'kyc_level_id') {
+            $verify = ['verify_status' => User::VERIFIED];
+            $user = $user + $verify;
+        }
 
+        if ($query->update($user)) {
+            if ($request->field == 'kyc_level_id') {
+                return back();
+            }
             return response()->json(['code' =>0, 'msg' => '更新成功' ]);
         }
     }
