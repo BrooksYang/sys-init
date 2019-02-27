@@ -74,6 +74,7 @@
                                 <th>电话</th>
                                 <th>邮箱</th>
                                 <th>身份信息</th>
+                                <th>其它证件</th>
                                 {{--<th>真实姓名</th>
                                 <th>性别</th>
                                 <th>年龄</th>
@@ -82,7 +83,8 @@
                                 <th>邮箱状态</th>
                                 <th>手机认证</th>
                                 <th>谷歌认证</th>
-                                <th>审核状态</th>
+                                <th>认证状态</th>
+                                <th>认证等级</th>
                                 <th>用户状态</th>
                                 <th title="是否为测试账户/测试奖励获赠次数">账户</th>
                                 <th>注册时间&nbsp;&nbsp;<a href="{{ Request::path() != 'user/manage/pending' ? url('user/manage') : url('user/manage/pending') }}?orderC=desc">
@@ -94,8 +96,8 @@
                             @forelse($user as $key => $item)
                                 <tr>
                                     <td>{{ ($key + 1) + ($user->currentPage() - 1) * $user->perPage() }}</td>
-                                    <td title="{{ $item->username }}"><strong>{{ empty($item->username) ? '--' : str_limit($item->username,15) }}</strong></td>
-                                    <td title="{{$item->phone}}">{{ $item->phone }}</td>
+                                    <td title="{{ $item->username }}"><strong>{{ str_limit($item->username,15) ?: '--'}}</strong></td>
+                                    <td title="{{$item->phone}}">{{ $item->phone?:'--' }}</td>
                                     <td title="{{ $item->email }}"><strong>{{ str_limit($item->email,15) }}</strong></td>
                                     <td >
                                         <!-- Button trigger modal -->
@@ -136,7 +138,7 @@
                                             </div>
                                         </div>
                                     </td>
-
+                                    <td title="其它证件信息"><a href="{{ url("user/manage/$item->id") }}?uri={{ Request::getRequestUri() }}">查看</a></td>
                                     <td><span class="label label-{{ $userStatus['email_phone_status'][$item->email_status]['class'] }}">
                                         {{ $userStatus['email_phone_status'][$item->email_status]['name'] }}</span>
                                     </td>
@@ -149,6 +151,9 @@
                                     <td><span class="label label-{{ $userStatus['verify_status'][$item->verify_status]['class'] }}">
                                         {{ $userStatus['verify_status'][$item->verify_status]['name'] }}</span>
                                     </td>
+                                    <td>
+                                        {{ $kycLevels->pluck('name','id')[$item->kyc_level_id] ?? '暂无'}}
+                                    </td>
                                     <td><span class="label label-{{ $userStatus['is_valid'][$item->is_valid]['class'] }}">
                                         {{ $userStatus['is_valid'][$item->is_valid]['name'] }}</span>
                                     </td>
@@ -156,17 +161,51 @@
                                     <td>{{ empty($item->created_at)? '--' : $item->created_at}}</td>
 
                                     <td>
-                                        @if(in_array($item->verify_status,[1,2,4]))
-                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
-                                                '{{ url("user/manage/$item->id") }}','verify_status',3,
-                                                '用户账号为<b><strong> 认证通过 </strong></b> 状态',
-                                                '{{ csrf_token() }}', '认证通过');"> <i class="fontello-ok" title="认证通过"></i></a>
-                                        @elseif($item->verify_status == 3)
-                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
-                                                '{{ url("user/manage/$item->id") }}','verify_status',4,
-                                                '用户账号为<b><strong> 认证失败 </strong></b> 状态',
-                                                '{{ csrf_token() }}', '认证失败');"> <i class="fontello-cancel-circled" title="认证失败"></i></a>
-                                        @endif
+                                        <!-- Button trigger modal -->
+                                        <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLongVerify{{$key+1}}">
+                                            <i class="fontello-ok" title="认证通过"></i>
+                                        </a>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="exampleModalLongVerify{{$key+1}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongVerify{{$key+1}}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <form role="form" method="POST" action="{{ url("user/manage/$item->id") }}">
+                                                    {{ csrf_field() }}
+                                                    {{ method_field('PATCH') }}
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLongVerifyTitle{{$key+1}}">KYC认证等级</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <label>修改KYC认证等级</label>
+                                                            <input type="hidden" name="field" value="kyc_level_id">
+                                                            <select name="update" id="" style="width: 80%" required>
+                                                                <option value="">请选择认证等级</option>
+                                                                @foreach($kycLevels as $flag=>$kycLevel)
+                                                                <option value="{{ $kycLevel->id }}" {{ $item->kyc_level_id == $kycLevel->id ? 'selected':'' }} >
+                                                                    {{ $kycLevel->name }} - {{ '(等级值'.$kycLevel->level.')' }}
+                                                                </option>
+                                                                @endforeach
+                                                            </select>
+                                                            @if ($errors->has("kyc_level_id"))
+                                                                <span class="help-block" style="color: #a94442"><strong>{{ $errors->first("kyc_level_id") }}</strong></span>
+                                                            @endif
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                                            <button type="submit" class="btn btn-secondary" >保存</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
+                                            '{{ url("user/manage/$item->id") }}','verify_status',4,
+                                            '用户账号为<b><strong> 认证失败 </strong></b> 状态',
+                                            '{{ csrf_token() }}', '认证失败');"> <i class="fontello-cancel-circled" title="认证失败"></i></a>
+
                                         @if($item->is_valid)
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                 '{{ url("user/manage/$item->id") }}','is_valid',0,

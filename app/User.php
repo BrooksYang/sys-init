@@ -26,4 +26,10 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    // 认证状态，1未认证，2待审核，3已认证，4认证失败
+    const NOT_VERIFY = 1;
+    const UNDER_VERIFY = 2;
+    const VERIFIED = 3;
+    const VERIFY_FAILED = 4;
 }
