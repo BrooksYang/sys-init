@@ -11,9 +11,7 @@
                     <div id="paper-top">
                         <div class="row">
                             <div class="col-lg-12 no-pad">
-                                <a class="navbar-brand logo-text" href="#">
-                                    <img src="{{ url('logo_80.png') }}" alt="" class="" style="width: 90px;margin-top: -7px">
-                                    {{ config('app.name_cn', 'Laravel') }}</a>
+                                <a class="navbar-brand logo-text" href="#">{{ config('app.name_cn', 'Laravel') }}</a>
                             </div>
                         </div>
                     </div>

@@ -58,7 +58,7 @@
     <div class="row">
         <div class="col-lg-12">
             <a class="navbar-brand lockscreen-text text-white" href="#">
-                <img src="{{ url('logo_80.png') }}" alt="" class="" style="width: 120px">
+                <img src="{{ url('logo_80.png') }}" alt="" class="" style="width: 50px">
                 {{ config('app.name_cn', 'Laravel')}}</a>
         </div>
     </div>

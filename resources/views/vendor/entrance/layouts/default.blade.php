@@ -66,9 +66,7 @@
         <div id="paper-top">
             <div class="row">
                 <div class="col-sm-3 no-pad">
-                    <a class="navbar-brand logo-text" href="#">
-                        <img src="{{ url('logo_80.png') }}" alt="" class="" style="height: 36px">
-                        {{ config('app.name_cn', 'Laravel') }}</a>
+                    <a class="navbar-brand logo-text" href="#">{{ config('app.name_cn', 'Laravel') }}</a>
                 </div>
             </div>
         </div>
