@@ -66,7 +66,9 @@
         <div id="paper-top">
             <div class="row">
                 <div class="col-sm-3 no-pad">
-                    <a class="navbar-brand logo-text" href="#">{{ config('app.name_cn', 'Laravel') }}</a>
+                    <a class="navbar-brand logo-text" href="#">
+                        <img src="{{ url('logo_80.png') }}" alt="" class="" style="height: 36px">
+                        {{ config('app.name_cn', 'Laravel') }}</a>
                 </div>
             </div>
         </div>
@@ -100,7 +102,7 @@
                 <a href="javascript:;">
                     {{ config('app.copyright', 'Laravel') }}
                 </a>
-                <img src="{{ asset('logo_80.png') }}" alt="" style="width: 25px">
+                <img src="{{ asset('logo_80.png') }}" alt="" style="width: 46px">
                {{-- Made with
                 <i class="fontello-heart-filled text-red"></i>--}}
             </div>
