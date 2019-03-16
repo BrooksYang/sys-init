@@ -34,7 +34,7 @@
                                 <th>序号</th>
                                 <th>等级名称</th>
                                 <th>等级值</th>
-                                <th>单日可提币上限</th>
+                                {{--<th>单日可提币上限</th>--}}
                                 <th>描述</th>
                                 <th>更新时间</th>
                                 <th>操作</th>
@@ -44,7 +44,7 @@
                                     <td>{{ ($key + 1) + ($kycLevel->currentPage() - 1) * $kycLevel->perPage() }}</td>
                                     <td title="{{ $item->name }}"><strong>{{ str_limit($item->name,15) }}</strong></td>
                                     <td title="{{ $item->level }}"><strong>{{ $item->level }}</strong></td>
-                                    <td>{{ number_format($item->withdraw_amount_daily,8) }}</td>
+                                    {{--<td>{{ number_format($item->withdraw_amount_daily,8) }}</td>--}}
                                     <td>
                                         <!-- Button trigger modal -->
                                         <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLongDesc{{$key}}">
@@ -84,7 +84,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="11" class="text-center">
+                                <tr><td colspan="6" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>

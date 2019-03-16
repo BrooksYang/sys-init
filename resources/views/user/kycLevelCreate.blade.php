@@ -44,7 +44,7 @@
                         </div>
 
                         {{-- withdraw_amount_daily --}}
-                        <div class="form-group {{ $errors->has('withdraw_amount_daily') ? 'has-error' : '' }}">
+                       {{-- <div class="form-group {{ $errors->has('withdraw_amount_daily') ? 'has-error' : '' }}">
                             <div class="col-sm-12">
                                 <label>单日可提币上限</label>
                                 <input class="form-control input-lg" type="number" min="0" name="withdraw_amount_daily" value="{{ $kycLevel->withdraw_amount_daily ?? old('withdraw_amount_daily') }}"
@@ -53,7 +53,7 @@
                                     <span class="help-block"><strong>{{ $errors->first('withdraw_amount_daily') }}</strong></span>
                                 @endif
                             </div>
-                        </div>
+                        </div>--}}
 
                         {{-- Description --}}
                         <div class="form-group {{ $errors->has('description') ? 'has-error' : '' }}">
