@@ -138,10 +138,10 @@ class UserOtcWithdrawOrderController extends Controller
                 $balance->updated_at = gmdate('Y-m-d H:i:s',time());
                 $balance->save();
 
-                $sysWallet->sys_wallet_balance = bcsub($sysWallet->sys_wallet_balance, $order->amount);
-                //$sysWallet->sys_wallet_balance_freeze_amount  = bcsub($sysWallet->sys_wallet_balance_freeze_amount, $order->amount);
+               /* $sysWallet->sys_wallet_balance = bcsub($sysWallet->sys_wallet_balance, $order->amount);
+                $sysWallet->sys_wallet_balance_freeze_amount  = bcsub($sysWallet->sys_wallet_balance_freeze_amount, $order->amount);
                 $sysWallet->updated_at = gmdate('Y-m-d H:i:s',time());
-                $sysWallet->save();
+                $sysWallet->save();*/
             });
         }
 
@@ -159,10 +159,10 @@ class UserOtcWithdrawOrderController extends Controller
                 $balance->updated_at = gmdate('Y-m-d H:i:s',time());
                 $balance->save();
 
-                $sysWallet->sys_wallet_balance = bcadd($sysWallet->sys_wallet_balance, $order->amount);
-                //$sysWallet->sys_wallet_balance_freeze_amount  = bcsub($sysWallet->sys_wallet_balance_freeze_amount, $order->amount);
+               /* $sysWallet->sys_wallet_balance = bcadd($sysWallet->sys_wallet_balance, $order->amount);
+                $sysWallet->sys_wallet_balance_freeze_amount  = bcsub($sysWallet->sys_wallet_balance_freeze_amount, $order->amount);
                 $sysWallet->updated_at = gmdate('Y-m-d H:i:s',time());
-                $sysWallet->save();
+                $sysWallet->save();*/
             });
         }
 
