@@ -24,12 +24,12 @@ class KycLevelController extends Controller
     {
         $search = $request->get('search','');
 
-        $kycLevel = KycLevel::when($search, function ($query) use ($search) {
+        $kycLevels = KycLevel::when($search, function ($query) use ($search) {
                 $query->where('name','like',"%$search%");
             })->orderBy('level','asc')
             ->paginate(config('app.pageSize'));
 
-        return view('user.kycLevelIndex', compact('kycLevel','search'));
+        return view('user.kycLevelIndex', compact('kycLevels','search'));
     }
 
     /**
