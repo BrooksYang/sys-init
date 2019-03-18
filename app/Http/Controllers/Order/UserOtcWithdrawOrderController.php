@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Order;
 
 use App\Models\OTC\OtcBalance;
+use App\Models\OTC\OtcPayPath;
 use App\Models\OTC\OtcWithdraw;
 use App\Models\Wallet\SysWallet;
 use Illuminate\Http\Request;
@@ -42,6 +43,7 @@ class UserOtcWithdrawOrderController extends Controller
             ->join('users as u','withdraw.user_id','u.id') //用户信息
             ->join('dcuex_crypto_currency as currency','withdraw.currency_id','currency.id')  //币种
             ->join('dcuex_user_crypto_wallet as u_wallet','withdraw.wallet_id','u_wallet.id') //用户真实钱包
+            ->join('otc_pay_paths as otc_pay','withdraw.pay_path_id','otc_pay.id') //用户线下收款账户
             ->when($search, function ($query) use ($search){
                 return $query->where('currency.currency_title_cn','like',"%$search%")
                     ->orwhere('currency.currency_title_en_abbr','like',"%$search%")
@@ -59,10 +61,26 @@ class UserOtcWithdrawOrderController extends Controller
             ->select(
                 'withdraw.*', 'u.username', 'u.phone',
                 'currency.currency_title_cn','currency.currency_title_en_abbr',
+                'otc_pay.*',
                 'u_wallet.crypto_wallet_title','u_wallet.crypto_wallet_address')
             ->paginate(USER_OTC_WITHDRAW_ORDER_PAGE_SIZE );
 
         return view('order.userOtcWithdrawOrderIndex', compact('orderStatus', 'userOtcWithdrawOrder'));
+    }
+
+    /**
+     * 交易用户支付账户信息
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getPayUserAccount(Request $request)
+    {
+        $userPayAccount = OtcPayPath::where('user_id', $request->payUserId)
+            ->where('account',$request->payAccount)
+            ->first()->toArray();
+
+        return response()->json($userPayAccount);
+
     }
 
     /**

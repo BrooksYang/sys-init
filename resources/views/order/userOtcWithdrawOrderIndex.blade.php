@@ -1,5 +1,10 @@
 @extends('entrance::layouts.default')
 
+@section('css-part')
+    @parent
+    @include('component.hbfont')
+@endsection
+
 @section('content')
     <div class="row">
         <div class="col-lg-12">
@@ -48,6 +53,10 @@
                                 <th>电话</th>
                                 <th>币种</th>
                                 <th>提币金额</th>
+                                <th>汇率（USDT/RMB）</th>
+                                <th>RMB</th>
+                                <th>支付方式</th>
+                                <th>收款账号</th>
                                 <th title="收币钱包地址">收币地址</th>
                                 <th>状态</th>
                                 <th>创建时间 &nbsp;&nbsp;<a href="{{ url('order/otc/withdraw')}}?orderC=desc">
@@ -65,7 +74,43 @@
                                         <span class="label label-success">{{ str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',15) }}</span>
                                     </td>
                                     <td title="{{number_format($item->amount,8,'.',',') }}">{{ number_format($item->amount,8,'.',',') }}</td>
-                                    <td title="{{ $item->crypto_wallet_title }}"><strong>{{ $item->crypto_wallet_address }}</strong></td>
+                                    <td title="{{number_format($item->rate ?:0,8) }}">{{ number_format($item->rate ?:0,8) }}</td>
+                                    <td title="{{number_format($item->rmb ?:0,8) }}">{{ number_format($item->rmb ?:0,8) }}</td>
+                                    {{--支付方式和账号--}}
+                                    <?php $payType = \App\Models\OTC\OtcPayType::find($item->pay_type_id); ?>
+                                    <td class="hbfont">
+                                        <i class="{{ $payType->icon ?? '' }}" title="{{ $payType->name ?? '--' }}"></i>
+                                    </td>
+                                    <td title="{{ str_limit($item->account ?:'--', 25) }}">
+                                        {{ str_limit($item->account ?:'--', 25) }}
+                                        @if($item->account)
+                                            <!-- Button trigger modal -->
+                                                <a href="javascript:;"  class="ajaxPayAccount" data-toggle="modal" data-target="#exampleModalLongPayAccount{{$key}}" data-pay-user="{{$item->user_id}}" data-pay-account="{{ $item->account }}" data-key="{{$item->id}}" title="开户信息">
+                                                    &nbsp;<i class="fa fa-info-circle"></i>
+                                                </a>
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="exampleModalLongPayAccount{{$key}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongPayAccountTitle{{$key}}" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" >账户信息</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div id="ajaxPayAccountDiv{{$item->id}}"></div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                    </td>
+                                    <td title="{{ $item->crypto_wallet_address }}"><strong>{{ str_limit($item->crypto_wallet_address,25) ?:'--' }}</strong></td>
                                     <td>
                                         <span class="label label-{{ $orderStatus[$item->status]['class'] }}">{{ $orderStatus[$item->status]['name'] }}</span>
                                     </td>
@@ -98,7 +143,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="9" class="text-center">
+                                <tr><td colspan="13" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
@@ -124,5 +169,47 @@
 
 @section('js-part')
     <script>
+        $(function () {
+            // 支付账号-开户行信息
+            $('.ajaxPayAccount').click(function () {
+
+                var key = $(this).attr('data-key');
+                if (!$('#ajaxPayAccountDiv'+key).html().length) {
+
+                    var payUserId = $(this).attr('data-pay-user');
+                    var payAccount = $(this).attr('data-pay-account');
+
+                    $.ajaxSetup({headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}});
+                    $.ajax({
+                        type: "POST",
+                        cache: false,
+                        url: "{{ url('payUser/Account') }}",
+                        data: {"payUserId": payUserId,"payAccount": payAccount},
+                        dataType: "json",
+                        success: function (data) {
+                            //console.log(data[0].payName ?data[0].payName:'暂无');
+                            var payName = data.name ? data.name : '暂无';
+
+                            var payBank = data.bank ? data.bank : '暂无';
+                            var payBankBranch = data.bank_branch ? data.bank_branch : '暂无';
+                            var payBankAddr = data.bank_address ? data.bank_address : '暂无';
+
+                            var payAccountInfo =
+                                `<p>账号持有者姓名：` + payName + `</p>` +
+                                `<p>开户银行：` + payBank + `</p>` +
+                                `<p>支行：` + payBankBranch + `</p>` +
+                                `<p>开户行地址：` + payBankAddr + '</p>';
+
+                            $('#ajaxPayAccountDiv'+key).html(payAccountInfo);
+
+                        },
+                        error: function (data) {
+                            layer.msg('网络错误')
+                        }
+                    });
+                }
+
+            });
+        })
     </script>
 @endsection
