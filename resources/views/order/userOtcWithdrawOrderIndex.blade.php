@@ -77,8 +77,9 @@
                                     <td title="{{number_format($item->rate ?:0,8) }}">{{ number_format($item->rate ?:0,8) }}</td>
                                     <td title="{{number_format($item->rmb ?:0,8) }}">{{ number_format($item->rmb ?:0,8) }}</td>
                                     {{--支付方式和账号--}}
+                                    <?php $payType = \App\Models\OTC\OtcPayType::find($item->pay_type_id); ?>
                                     <td class="hbfont">
-                                        <i class="{{ \App\Models\OTC\OtcPayType::find($item->pay_type_id)->icon ?? '' }}" title="{{ \App\Models\OTC\OtcPayType::find($item->pay_type_id)->name ?? '--' }}"></i>
+                                        <i class="{{ $payType->icon ?? '' }}" title="{{ $payType->name ?? '--' }}"></i>
                                     </td>
                                     <td title="{{ str_limit($item->account ?:'--', 25) }}">
                                         {{ str_limit($item->account ?:'--', 25) }}
@@ -109,7 +110,7 @@
                                                 </div>
                                             @endif
                                     </td>
-                                    <td title="{{ $item->crypto_wallet_title }}"><strong>{{ $item->crypto_wallet_address ?:'--' }}</strong></td>
+                                    <td title="{{ $item->crypto_wallet_address }}"><strong>{{ str_limit($item->crypto_wallet_address,25) ?:'--' }}</strong></td>
                                     <td>
                                         <span class="label label-{{ $orderStatus[$item->status]['class'] }}">{{ $orderStatus[$item->status]['name'] }}</span>
                                     </td>
