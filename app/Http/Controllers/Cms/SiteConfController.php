@@ -91,7 +91,7 @@ class SiteConfController extends Controller
             'about_us'          => 'required',
         ])->validate();
 
-        $updateConfig = $updateConfig + [ 'updated_at' => gmdate('Y-m-d H:i:s',time())];
+        $updateConfig = $updateConfig + [ 'updated_at' => self::carbonNow()];
         PortalConf::where('id',$id)->update($updateConfig);
 
         return redirect("portal/siteConf/$id/edit");

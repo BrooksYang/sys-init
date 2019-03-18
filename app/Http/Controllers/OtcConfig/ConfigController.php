@@ -116,7 +116,7 @@ class ConfigController extends Controller
             if (in_array($key, $configKey)) {
                 DB::table('otc_config')->where('key',$key)->update([
                     'value' => explode('|',$item)[0],
-                    'updated_at' => gmdate('Y-m-d H:i:s',time())
+                    'updated_at' => self::carbonNow()
                 ]);
             }
         }

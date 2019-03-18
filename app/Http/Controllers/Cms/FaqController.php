@@ -91,7 +91,7 @@ class FaqController extends Controller
         $faq = $request->except(['_token', 'type_id', 'editFlag']);
         $typeId = $request->type_id;
         $faq['submitter_id'] = Auth::id();
-        $faq['created_at'] = gmdate('Y-m-d H:i:s',time());
+        $faq['created_at'] = self::carbonNow();
 
         DB::transaction(function () use ($faq, $typeId) {
             $faqId = DB::table('dcuex_faq')->insertGetId($faq);
@@ -160,7 +160,7 @@ class FaqController extends Controller
     {
         $faq = $request->except(['_token','_method', 'type_id','editFlag']);
         $typeId = $request->type_id;
-        $faq['updated_at'] = gmdate('Y-m-d H:i:s',time());
+        $faq['updated_at'] = self::carbonNow();
 
         //获取并整理文档与类型的关联
         $faqToType = $this->sortOutFaqToType($typeId, $id, 'created_at');
@@ -226,7 +226,7 @@ class FaqController extends Controller
             $sortOutFaqToType[] = [
                 'faq_id' => $faqId,
                 'type_id' => $item,
-                'created_at' => gmdate('Y-m-d H:i:s',time())
+                'created_at' => self::carbonNow()
             ];
         }
 
@@ -238,7 +238,7 @@ class FaqController extends Controller
         $query = DB::table('dcuex_faq')->where('id', $faaId);
         $fqq = [
             $request->field => $request->update,
-            'updated_at' => gmdate('Y-m-d H:i:s',time()),
+            'updated_at' => self::carbonNow(),
         ];
 
         if ($query->update($fqq)) {

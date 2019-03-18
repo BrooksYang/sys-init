@@ -85,7 +85,7 @@ class BannerWapController extends Controller
     public function update(Request $request, $id)
     {
         $banner = $request->except(['_token','_method','editFlag','files','x','y','w','h']);
-        $banner['updated_at'] = gmdate('Y-m-d H:i:s',time());
+        $banner['updated_at'] = self::carbonNow();
 
         $fieldName = config('imgCrop.bannerWap.name');
         $dir = config('imgCrop.bannerWap.dir');

@@ -148,17 +148,17 @@ class UserOtcWithdrawOrderController extends Controller
             DB::transaction(function () use ($order,$balance,$sysWallet) {
                 //更新提币订单
                 $order->status = OtcWithdraw::OTC_RELEASED;
-                $order->updated_at = gmdate('Y-m-d H:i:s',time());
+                $order->updated_at = self::carbonNow();
                 $order->save();
 
                 //更新记账钱包余额
                 $balance->frozen = bcsub($balance->frozen, $order->amount);
-                $balance->updated_at = gmdate('Y-m-d H:i:s',time());
+                $balance->updated_at = self::carbonNow();
                 $balance->save();
 
                /* $sysWallet->sys_wallet_balance = bcsub($sysWallet->sys_wallet_balance, $order->amount);
                 $sysWallet->sys_wallet_balance_freeze_amount  = bcsub($sysWallet->sys_wallet_balance_freeze_amount, $order->amount);
-                $sysWallet->updated_at = gmdate('Y-m-d H:i:s',time());
+                $sysWallet->updated_at = self::carbonNow();
                 $sysWallet->save();*/
             });
         }
@@ -168,18 +168,18 @@ class UserOtcWithdrawOrderController extends Controller
             DB::transaction(function () use ($order,$balance,$sysWallet) {
                 //更新提币订单
                 $order->status = OtcWithdraw::OTC_FAILED;
-                $order->updated_at = gmdate('Y-m-d H:i:s',time());
+                $order->updated_at = self::carbonNow();
                 $order->save();
 
                 //更新记账钱包余额
                 $balance->frozen = bcsub($balance->frozen, $order->amount);
                 $balance->available = bcadd($balance->available, $order->amount);
-                $balance->updated_at = gmdate('Y-m-d H:i:s',time());
+                $balance->updated_at = self::carbonNow();
                 $balance->save();
 
                /* $sysWallet->sys_wallet_balance = bcadd($sysWallet->sys_wallet_balance, $order->amount);
                 $sysWallet->sys_wallet_balance_freeze_amount  = bcsub($sysWallet->sys_wallet_balance_freeze_amount, $order->amount);
-                $sysWallet->updated_at = gmdate('Y-m-d H:i:s',time());
+                $sysWallet->updated_at = self::carbonNow();
                 $sysWallet->save();*/
             });
         }
@@ -187,7 +187,7 @@ class UserOtcWithdrawOrderController extends Controller
         // 处理中
         if ($request->update == OtcWithdraw::OTC_PENDING) {
             $order->status = OtcWithdraw::OTC_PENDING;
-            $order->updated_at = gmdate('Y-m-d H:i:s',time());
+            $order->updated_at = self::carbonNow();
             $order->save();
         }
 
