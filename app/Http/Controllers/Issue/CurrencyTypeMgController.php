@@ -52,7 +52,7 @@ class CurrencyTypeMgController extends Controller
     public function store(CurrencyTypeRequest $request)
     {
         $currencyType = $request->except(['_token','editFlag']);
-        $currencyType['created_at'] = gmdate('Y-m-d H:i:s',time());
+        $currencyType['created_at'] = self::carbonNow();
 
         if (DB::table('dcuex_currency_type')->insert($currencyType)) {
 
@@ -101,7 +101,7 @@ class CurrencyTypeMgController extends Controller
     public function update(CurrencyTypeRequest $request, $id)
     {
         $updateCurrencyType = $request->except(['_token', '_method', 'editFlag']);
-        $updateCurrencyType['updated_at'] = gmdate('Y-m-d H:i:s',time());
+        $updateCurrencyType['updated_at'] = self::carbonNow();
         $query = DB::table('dcuex_currency_type')->where('id',$id);
         if($query->first()){
             $query->update($updateCurrencyType);

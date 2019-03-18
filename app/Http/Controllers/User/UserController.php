@@ -124,7 +124,7 @@ class UserController extends Controller
         $query = DB::table('users')->where('id', $id);
         $user = [
             $request->field => $request->update,
-            'updated_at' => gmdate('Y-m-d H:i:s',time()),
+            'updated_at' => self::carbonNow(),
         ];
 
         // 更新认证等级和认证状态

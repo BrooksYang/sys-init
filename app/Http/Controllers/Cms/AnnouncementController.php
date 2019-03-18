@@ -75,7 +75,7 @@ class AnnouncementController extends Controller
     {
         $announcement = $request->except(['_token','editFlag','files','x','y','w','h']);
         $announcement['account_id'] = Auth::id();
-        $announcement['created_at'] = gmdate('Y-m-d H:i:s',time());
+        $announcement['created_at'] = self::carbonNow();
 
         $fieldName = config('imgCrop.announcement.dir');
         if ($request->$fieldName) {
@@ -140,9 +140,9 @@ class AnnouncementController extends Controller
     {
         $announcement = $request->except(['_token','_method','editFlag','files','x','y','w','h']);
         $query = DB::table('dcuex_cms_announcement')->where('id', $id);
-        $request->anno_top == 1 ? $announcement['created_at'] = gmdate('Y-m-d H:i:s',time()) : null;
+        $request->anno_top == 1 ? $announcement['created_at'] = self::carbonNow() : null;
         $announcement['account_id'] = Auth::id();
-        $announcement['updated_at'] = gmdate('Y-m-d H:i:s',time());
+        $announcement['updated_at'] = self::carbonNow();
 
         $fieldName = config('imgCrop.announcement.dir');
         if ($request->$fieldName) {
@@ -186,7 +186,7 @@ class AnnouncementController extends Controller
         $announcement = [
             $request->field => $request->update,
             'account_id' => Auth::id(),
-            'updated_at' => gmdate('Y-m-d H:i:s',time()),
+            'updated_at' => self::carbonNow(),
         ];
 
         //获取需要更新字段和 url参数字段配合使用
@@ -200,7 +200,7 @@ class AnnouncementController extends Controller
         }
 
         //发布并置顶或置顶同步更新创建时间
-        $request->anno_top == 1 ? $announcement['created_at'] = gmdate('Y-m-d H:i:s',time()) : null;
+        $request->anno_top == 1 ? $announcement['created_at'] = self::carbonNow() : null;
 
         if ($query->update($announcement)) {
 

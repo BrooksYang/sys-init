@@ -51,7 +51,7 @@ class LoginController extends Controller
         if (App::environment() == 'production') {
             MongoLog::where('session',\Request::cookie()[str_slug(env('APP_NAME', 'laravel'), '_').'_session'])
                 ->where('type','login')
-                ->update(['context' => 'logout#'.gmdate('Y-m-d H:i:s')]);
+                ->update(['context' => 'logout#'.self::carbonNow()]);
         }
 
         $this->guard()->logout();

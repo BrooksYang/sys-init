@@ -65,7 +65,7 @@ class CurrencyContractToUserController extends Controller
     public function store(CurrencyContractToUserRequest $request)
     {
         $currencyContract = $request->except(['_token', 'symbol', 'quote_currency', 'editFlag']);
-        $currencyContract['created_at'] = gmdate('Y-m-d H:i:s',time());
+        $currencyContract['created_at'] = self::carbonNow();
 
         //获取并处理交易对
         $symbol = $this->sortOutSymbol($request->symbol, $request->currency_id, $request->quote_currency,'created_at');
@@ -130,7 +130,7 @@ class CurrencyContractToUserController extends Controller
         $userCurrencyContract = $request->except(['_token','_method','symbol','quote_currency','editFlag']);
         $currencyId = $request->currency_id;
         $query = DB::table('dcuex_user_currency_contract')->where('id',$id);
-        $userCurrencyContract['updated_at'] = gmdate('Y-m-d H:i:s',time());
+        $userCurrencyContract['updated_at'] = self::carbonNow();
 
         //获取并处理新-旧交易对信息
         $symbol = $this->sortOutSymbol($request->symbol, $currencyId,$request->quote_currency, 'updated_at');
@@ -226,7 +226,7 @@ class CurrencyContractToUserController extends Controller
             foreach ($quoteCurrencyInfo as $flag => $itemQuoteCurrency ) {
                 if (stristr($itemSymbol['symbol'], $itemQuoteCurrency->currency_title_en_abbr)) {
                     $symbol[$key]['quote_currency_id'] = $itemQuoteCurrency->id;
-                    $symbol[$key][$action] = gmdate('Y-m-d H:i:s',time());
+                    $symbol[$key][$action] = self::carbonNow();
                 }
             }
         }
@@ -268,7 +268,7 @@ class CurrencyContractToUserController extends Controller
                 ->update([
                     'maker_fee' => $item['maker_fee'],
                     'taker_fee' => $item['taker_fee'],
-                    'updated_at' => gmdate('Y-m-d H:i:s',time())
+                    'updated_at' => self::carbonNow()
                 ]);
         }
 
@@ -297,11 +297,11 @@ class CurrencyContractToUserController extends Controller
                     $value['change'] = $oldValue->change;
                     $value['price_precision'] = $oldValue->price_precision;
                     $value['amount_precision'] = $oldValue->amount_precision;
-                    $value['updated_at'] = gmdate('Y-m-d H:i:s',time());
+                    $value['updated_at'] = self::carbonNow();
                 }
             }
             if (!isset($value['maker_fee']) || !isset($value['taker_fee'])) {
-                $value['created_at'] = gmdate('Y-m-d H:i:s',time());
+                $value['created_at'] = self::carbonNow();
                 if (isset($value['updated_at'])){ unset($value['updated_at']); }
             }
         }

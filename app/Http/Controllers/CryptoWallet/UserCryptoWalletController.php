@@ -69,7 +69,7 @@ class UserCryptoWalletController extends Controller
     {
         $userCryptoWallet = $request->except(['_token','editFlag']);
         if (!empty($userCryptoWallet)) {
-            $userCryptoWallet['created_at'] = gmdate('Y-m-d H:i:s',time());
+            $userCryptoWallet['created_at'] = self::carbonNow();
             DB::table('dcuex_user_crypto_wallet')->insert($userCryptoWallet);
         }
 
@@ -121,7 +121,7 @@ class UserCryptoWalletController extends Controller
     public function update(UserCryptoWalletRequest $request, $id)
     {
         $userCryptoWallet = $request->except(['_token', '_method', 'editFlag']);
-        $userCryptoWallet['updated_at'] = gmdate('Y-m-d H:i:s',time());
+        $userCryptoWallet['updated_at'] = self::carbonNow();
         $query = DB::table('dcuex_user_crypto_wallet')->where('id',$id);
         if(!empty($userCryptoWallet) && $query->first() ){
             $query->update($userCryptoWallet);

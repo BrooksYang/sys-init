@@ -55,7 +55,7 @@ class LegalCurrencyController extends Controller
     public function store(OtcLegalCurrencyRequest $request)
     {
         $legalCurrency = $request->except(['_token','editFlag']);
-        $legalCurrency['created_at'] = gmdate('Y-m-d H:i:s',time());
+        $legalCurrency['created_at'] = self::carbonNow();
 
         if (DB::table('otc_legal_currencies')->insert($legalCurrency)) {
 
@@ -103,7 +103,7 @@ class LegalCurrencyController extends Controller
     public function update(OtcLegalCurrencyRequest $request, $id)
     {
         $legalCurrency = $request->except(['_token', '_method', 'editFlag']);
-        $legalCurrency['updated_at'] = gmdate('Y-m-d H:i:s',time());
+        $legalCurrency['updated_at'] = self::carbonNow();
 
         $query = DB::table('otc_legal_currencies')->where('id',$id);
         if($query->first()){

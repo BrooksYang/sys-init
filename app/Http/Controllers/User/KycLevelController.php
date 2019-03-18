@@ -92,7 +92,7 @@ class KycLevelController extends Controller
     public function update(KycLevelRequest $request, $id)
     {
         $kycLevel = $request->except(['_token', '_method', 'editFlag']);
-        $kycLevel['updated_at'] = gmdate('Y-m-d H:i:s',time());
+        $kycLevel['updated_at'] = self::carbonNow();
 
         $res = KycLevel::updateOrCreate(['id' => $id],$kycLevel);
 
