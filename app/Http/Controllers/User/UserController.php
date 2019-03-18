@@ -170,6 +170,9 @@ class UserController extends Controller
         $search = trim($request->search,'');
         $orderC = trim($request->orderC,'');
 
+        // 认证等级
+        $kycLevels = KycLevel::all();
+
         $user = DB::table('users as u')
             ->where('verify_status',2)
             ->when($search, function ($query) use ($search){
@@ -184,7 +187,7 @@ class UserController extends Controller
             })
             ->paginate(USER_LIST_SIZE );
 
-        return view('user.userIndex', compact('userStatus', 'search','user'));
+        return view('user.userIndex', compact('userStatus', 'search', 'kycLevels','user'));
     }
 
     /**
