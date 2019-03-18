@@ -64,7 +64,7 @@ class BannerController extends Controller
         ]);
         $banner['location'] = PortalAds::LOCATION_ONE;
         $banner['order'] =  $request->order?:1;
-        $banner['created_at'] = gmdate('Y-m-d H:i:s',time());
+        $banner['created_at'] = self::carbonNow();
 
         $fieldName = config('imgCrop.banner.name');
         $dir = config('imgCrop.banner.dir');
@@ -121,7 +121,7 @@ class BannerController extends Controller
         $banner = $request->except(['_token','_method','editFlag','files','x','y','w','h']);
         $banner['location'] = PortalAds::LOCATION_ONE;
         $banner['order'] =  $request->order?:1;
-        $banner['updated_at'] = gmdate('Y-m-d H:i:s',time());
+        $banner['updated_at'] = self::carbonNow();
 
         $fieldName = config('imgCrop.banner.name');
         $dir = config('imgCrop.banner.dir');

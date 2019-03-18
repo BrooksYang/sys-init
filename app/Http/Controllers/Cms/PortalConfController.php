@@ -51,7 +51,7 @@ class PortalConfController extends Controller
     public function store(PortalConfRequest $request)
     {
         $portalConf = $request->except(['_token','editFlag','files','x','y','w','h']);
-        $portalConf['created_at'] = gmdate('Y-m-d H:i:s',time());
+        $portalConf['created_at'] = self::carbonNow();
 
         $fieldName = config('imgCrop.portalConf.name');
         $dir = config('imgCrop.portalConf.dir');
@@ -106,7 +106,7 @@ class PortalConfController extends Controller
     public function update(PortalConfRequest $request, $id)
     {
         $portalConf = $request->except(['_token','_method','editFlag','files','x','y','w','h']);
-        $portalConf['updated_at'] = gmdate('Y-m-d H:i:s',time());
+        $portalConf['updated_at'] = self::carbonNow();
 
         $fieldName = config('imgCrop.portalConf.name');
         $dir = config('imgCrop.portalConf.dir');

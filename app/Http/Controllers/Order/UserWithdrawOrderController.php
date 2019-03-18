@@ -127,17 +127,17 @@ class UserWithdrawOrderController extends Controller
             DB::transaction(function () use($order, $userWallet, $sysWallet){
                 // 更新提币订单
                 $order->withdraw_order_status = UserWithdrawOrder::RELEASED;
-                $order->updated_at = gmdate('Y-m-d H:i:s',time());
+                $order->updated_at = self::carbonNow();
                 $order->save();
 
                 // 更新用户记账钱包
                 $userWallet->user_wallet_balance_freeze_amount = bcsub($userWallet->user_wallet_balance_freeze_amount, $order->withdraw_amount);
-                $userWallet->updated_at = gmdate('Y-m-d H:i:s',time());
+                $userWallet->updated_at = self::carbonNow();
                 $userWallet->save();
 
                 // 更新系统记账钱包
                 $sysWallet->sys_wallet_balance = bcsub($sysWallet->sys_wallet_balance, $order->withdraw_amount);
-                $sysWallet->updated_at = gmdate('Y-m-d H:i:s',time());
+                $sysWallet->updated_at = self::carbonNow();
                 $sysWallet->save();
             });
         }
@@ -147,18 +147,18 @@ class UserWithdrawOrderController extends Controller
             DB::transaction(function () use($order, $userWallet, $sysWallet){
                 // 更新提币订单
                 $order->withdraw_order_status = UserWithdrawOrder::FAILED;
-                $order->updated_at = gmdate('Y-m-d H:i:s',time());
+                $order->updated_at = self::carbonNow();
                 $order->save();
 
                 // 更新用户记账钱包
                 $userWallet->user_wallet_balance_freeze_amount = bcsub($userWallet->user_wallet_balance_freeze_amount, $order->withdraw_amount);
                 $userWallet->user_wallet_balance = bcadd($userWallet->user_wallet_balance, $order->withdraw_amount);
-                $userWallet->updated_at = gmdate('Y-m-d H:i:s',time());
+                $userWallet->updated_at = self::carbonNow();
                 $userWallet->save();
 
                 // 更新系统记账钱包
                 $sysWallet->sys_wallet_balance = bcadd($sysWallet->sys_wallet_balance, $order->withdraw_amount);
-                $sysWallet->updated_at = gmdate('Y-m-d H:i:s',time());
+                $sysWallet->updated_at = self::carbonNow();
                 $sysWallet->save();
             });
         }
@@ -166,7 +166,7 @@ class UserWithdrawOrderController extends Controller
         // 处理中
         if ($request->update  == UserWithdrawOrder::PROCESSING) {
             $order->withdraw_order_status = UserWithdrawOrder::PROCESSING;
-            $order->updated_at = gmdate('Y-m-d H:i:s',time());
+            $order->updated_at = self::carbonNow();
             $order->save();
         }*/
 

@@ -74,7 +74,7 @@ class SysCryptoWalletController extends Controller
     public function store(SysCryptoWalletReequest $request)
     {
         $userCryptoWallet = $request->except(['_token','editFlag']);
-        $userCryptoWallet['created_at'] = gmdate('Y-m-d H:i:s',time());
+        $userCryptoWallet['created_at'] = self::carbonNow();
 
         if (DB::table('dcuex_sys_crypto_wallet')->insert($userCryptoWallet)) {
 
@@ -124,7 +124,7 @@ class SysCryptoWalletController extends Controller
     public function update(SysCryptoWalletReequest $request, $id)
     {
         $sysCryptoWallet = $request->except(['_token', '_method', 'editFlag']);
-        $sysCryptoWallet['updated_at'] = gmdate('Y-m-d H:i:s',time());
+        $sysCryptoWallet['updated_at'] = self::carbonNow();
         $query = DB::table('dcuex_sys_crypto_wallet')->where('id',$id);
         if($query->first()){
             $query->update($sysCryptoWallet);

@@ -61,7 +61,7 @@ class FaqTypeController extends Controller
             'type_title.unique' => '该文档类型已存在',
         ])->validate();
 
-        $faqType['created_at'] = gmdate('Y-m-d H:i:s',time());
+        $faqType['created_at'] = self::carbonNow();
         if (DB::table('dcuex_faq_type')->insert($faqType)) {
 
             return redirect('faq/type');
@@ -115,7 +115,7 @@ class FaqTypeController extends Controller
             'type_title.unique' => '该文档类型已存在',
         ])->validate();
 
-        $faqType['updated_at'] = gmdate('Y-m-d H:i:s',time());
+        $faqType['updated_at'] = self::carbonNow();
         $query = DB::table('dcuex_faq_type')->where('id',$id);
         if($query->first()){
             $query->update($faqType);

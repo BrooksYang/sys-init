@@ -378,7 +378,7 @@ class HomeController extends Controller
         return DB::table('exchange_orders')
             ->when($statusField, function ($query) use($statusField, $status){
                 return $query->where($statusField, $status);
-            })->where('created_at','like',env('APP_GMDATE', gmdate('Y-m-d')).'%')->count();
+            })->where('created_at','like',env('APP_GMDATE', self::carbonNow()->toDateString()).'%')->count();
     }
 
     /**
@@ -410,7 +410,7 @@ class HomeController extends Controller
         return DB::table('exchange_order_logs')
             ->when($statusField, function ($query) use($statusField, $status){
                 return $query->where($statusField, $status);
-            })->where('created_at','like',env('APP_GMDATE',gmdate('Y-m-d')).'%')->count();
+            })->where('created_at','like',env('APP_GMDATE',self::carbonNow()->toDateString()).'%')->count();
     }
 
     /**
@@ -421,7 +421,7 @@ class HomeController extends Controller
     public function orderAmount()
     {
         $orders = DB::table('exchange_orders')
-            ->where('created_at','like',env('APP_GMDATE',gmdate('Y-m-d')).'%')->get(['field_cash_amount']);
+            ->where('created_at','like',env('APP_GMDATE',self::carbonNow()->toDateString()).'%')->get(['field_cash_amount']);
         $sumAmount = 0;
         foreach ($orders as $order => $amount) {
             $sumAmount += $amount->field_cash_amount;
@@ -478,7 +478,7 @@ class HomeController extends Controller
         $query = DB::table('dcuex_user_deposit_order');
         $depositOrder['order'] = $query->select(DB::raw("count(deposit_order_status) as orderNum"),
             DB::raw("sum(deposit_amount) as deposit_amount"),'deposit_order_status')
-            ->where('created_at', 'like',env('APP_GMDATE', gmdate('Y-m-d')).'%')
+            ->where('created_at', 'like',env('APP_GMDATE', self::carbonNow()->toDateString()).'%')
             ->groupBy('deposit_order_status')->orderBy('deposit_order_status','desc')
             ->get();
 
@@ -501,7 +501,7 @@ class HomeController extends Controller
         $query = DB::table('dcuex_user_withdraw_order');
         $withdrawOrder['order'] = $query->select(DB::raw("count(withdraw_order_status) as orderNum"),
             DB::raw("sum(withdraw_amount) as amount"),'withdraw_order_status as status')
-            ->where('created_at', 'like',env('APP_GMDATE', gmdate('Y-m-d')).'%')
+            ->where('created_at', 'like',env('APP_GMDATE', self::carbonNow()->toDateString()).'%')
             ->groupBy('withdraw_order_status')->orderBy('withdraw_order_status','asc')
             ->get();
 
@@ -528,7 +528,7 @@ class HomeController extends Controller
     public function getExchangeByStatus()
     {
         $orderStatus = DB::table('exchange_orders')->select(DB::raw('count(type) as statusNum'), 'status')
-            ->where('created_at' ,'like', env('APP_GMDATE',gmdate('Y-m-d')).'%')
+            ->where('created_at' ,'like', env('APP_GMDATE',self::carbonNow()->toDateString()).'%')
             ->groupBy('status')->orderBy('status', 'asc')->get();
 
         $status = [1=>'准备提交', 2=>'已提交', 3=>'部分成交',4=>'部分成交撤销',5=>'完全成交', 6=>'已撤销'];
@@ -550,7 +550,7 @@ class HomeController extends Controller
     {
        $orderByType['order'] =  DB::table('exchange_orders')
             ->select(DB::raw('sum(field_amount) as amount'), 'type', DB::raw('sum(field_cash_amount) as cash_amount'))
-            ->where('created_at' ,'like', env('APP_GMDATE',gmdate('Y-m-d')).'%')
+            ->where('created_at' ,'like', env('APP_GMDATE',self::carbonNow()->toDateString()).'%')
             ->groupBy('type')->orderBy('type','asc')->get();
 
        $orderByTypeCount['order'] = [];
@@ -576,7 +576,7 @@ class HomeController extends Controller
     {
         $orderLog['order'] =  DB::table('exchange_order_logs')
             ->select(DB::raw('sum(field_amount) as amount'), 'type', DB::raw('sum(price) as price'))
-            ->where('created_at' ,'like', env('APP_GMDATE',gmdate('Y-m-d')).'%')
+            ->where('created_at' ,'like', env('APP_GMDATE',self::carbonNow()->toDateString()).'%')
             ->groupBy('type')->orderBy('type','asc')->get();
 
         $orderLogCount['order'] = [];
@@ -601,9 +601,9 @@ class HomeController extends Controller
      */
     public function getLastSevenDayUser($day)
     {
-        $time = strtotime('-'.$day.' day', time());
-        $beginTime = gmdate('Y-m-d 00:00:00', $time);
-        $endTime = gmdate('Y-m-d 23:59:59', time());
+        $timeStr = strtotime('-' . $day . ' day');
+        $beginTime = Carbon::parse(Carbon::parse($timeStr)->toDateString())->toDateTimeString();
+        $endTime = Carbon::create(null,null,null,23,59,59);
         return DB::table('users')
             ->where('created_at','>=',$beginTime)->where('created_at', '<=',$endTime)
             ->count();
@@ -619,7 +619,7 @@ class HomeController extends Controller
     {
         $otcOrder['order'] =  DB::table('otc_orders')
             ->select(DB::raw('sum(field_amount) as amount'), 'status', DB::raw('avg(price) as price'))
-            ->where('created_at' ,'like', env('APP_GMDATE',gmdate('Y-m-d')).'%')
+            ->where('created_at' ,'like', env('APP_GMDATE',self::carbonNow()->toDateString()).'%')
             ->groupBy('status')->orderBy('status','asc')->get();
 
         $otcOrderCount['order'] = [];
@@ -646,7 +646,7 @@ class HomeController extends Controller
         $query = DB::table('otc_deposits');
         $otcDepositOrder['order'] = $query->select(DB::raw("count(status) as orderNum"),
             DB::raw("sum(amount) as deposit_amount"),'status as deposit_order_status')
-            ->where('created_at', 'like',env('APP_GMDATE', gmdate('Y-m-d')).'%')
+            ->where('created_at', 'like',env('APP_GMDATE', self::carbonNow()->toDateString()).'%')
             ->groupBy('deposit_order_status')->orderBy('deposit_order_status','desc')
             ->get();
 
@@ -669,7 +669,7 @@ class HomeController extends Controller
         $query = DB::table('otc_withdraws');
         $otcWithdrawOrder['order'] = $query->select(DB::raw("count(status) as orderNum"),
             DB::raw("sum(amount) as amount"),'status')
-            ->where('created_at', 'like',env('APP_GMDATE', gmdate('Y-m-d')).'%')
+            ->where('created_at', 'like',env('APP_GMDATE', self::carbonNow()->toDateString()).'%')
             ->groupBy('status')->orderBy('status','asc')
             ->get();
 
@@ -697,7 +697,7 @@ class HomeController extends Controller
     public function getOtcDepositOrderByS($status)
     {
         $otcDepositOrder = DB::table('otc_deposits')
-            ->where('created_at', 'like',env('APP_GMDATE', gmdate('Y-m-d')).'%')
+            ->where('created_at', 'like',env('APP_GMDATE', self::carbonNow()->toDateString()).'%')
             ->where('status', $status)->get(['amount']);
 
         $grandOtcDepositOrder = 0;
@@ -717,7 +717,7 @@ class HomeController extends Controller
     public function getOtcWithdrawOrderByS($status)
     {
         $otcWithdrawOrder = DB::table('otc_withdraws')
-            ->where('created_at', 'like',env('APP_GMDATE', gmdate('Y-m-d')).'%')
+            ->where('created_at', 'like',env('APP_GMDATE', self::carbonNow()->toDateString()).'%')
             ->where('status', $status)->get(['amount']);
 
         $grandOtcWithdrawOrder = 0;
@@ -741,7 +741,7 @@ class HomeController extends Controller
             ->when($supervisor, function ($query) {
                 return $query->where('supervisor_id', Auth::id());
             })
-            ->where('created_at', 'like',env('APP_GMDATE', gmdate('Y-m-d')).'%')
+            ->where('created_at', 'like',env('APP_GMDATE', self::carbonNow()->toDateString()).'%')
             ->where('ticket_state', $state)->count('id');
     }
 

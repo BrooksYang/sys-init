@@ -55,7 +55,7 @@ class OtcPayTypeController extends Controller
     public function store(OtcPayTypeRequest $request)
     {
         $payType = $request->except(['_token','editFlag']);
-        $payType['created_at'] = gmdate('Y-m-d H:i:s',time());
+        $payType['created_at'] = self::carbonNow();
 
         if (DB::table('otc_pay_types')->insert($payType)) {
 
@@ -103,7 +103,7 @@ class OtcPayTypeController extends Controller
     public function update(OtcPayTypeRequest $request, $id)
     {
         $updatePayType = $request->except(['_token', '_method', 'editFlag']);
-        $updatePayType['updated_at'] = gmdate('Y-m-d H:i:s',time());
+        $updatePayType['updated_at'] = self::carbonNow();
         $query = DB::table('otc_pay_types')->where('id',$id);
 
         if($query->first()){

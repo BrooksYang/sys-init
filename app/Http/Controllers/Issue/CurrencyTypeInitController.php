@@ -66,7 +66,7 @@ class CurrencyTypeInitController extends Controller
         if ($request->hasFile('currency_icon')) {
             $currencyIcon['currency_icon'] = basename($request->currency_icon->store('currencyIcon','public'));
         }
-        $currencyIcon['created_at'] = gmdate('Y-m-d H:i:s',time());
+        $currencyIcon['created_at'] = self::carbonNow();
 
         if (DB::table('dcuex_crypto_currency')->insert($currencyIcon)) {
 
@@ -123,7 +123,7 @@ class CurrencyTypeInitController extends Controller
     {
         $currency = $request->except(['_token','_method','editFlag','x','y','w','h']);
         $query = DB::table('dcuex_crypto_currency')->where('id',$id);
-        $currency['updated_at'] = gmdate('Y-m-d H:i:s',time());
+        $currency['updated_at'] = self::carbonNow();
 
         if ($request->hasFile('currency_icon') && $request->file('currency_icon')->isValid()) {
             $currency['currency_icon'] = basename($request->currency_icon->store('currencyIcon','public'));
