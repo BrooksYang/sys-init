@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -601,7 +602,7 @@ class HomeController extends Controller
      */
     public function getLastSevenDayUser($day)
     {
-        $timeStr = strtotime('-' . $day . ' day');
+        $timeStr = '-' . $day . ' day';
         $beginTime = Carbon::parse(Carbon::parse($timeStr)->toDateString())->toDateTimeString();
         $endTime = Carbon::create(null,null,null,23,59,59);
         return DB::table('users')
