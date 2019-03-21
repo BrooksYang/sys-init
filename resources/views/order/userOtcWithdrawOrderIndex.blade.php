@@ -2,6 +2,7 @@
 
 @section('css-part')
     @parent
+    @include('component.dateTimeStyle')
     @include('component.hbfont')
 @endsection
 
@@ -46,6 +47,23 @@
                 {{-- Table --}}
                 <div class="box-body">
                     <div class="box-body table-responsive no-padding">
+                        {{--搜索筛选-导出--}}
+                       {{-- <form action="{{ url('order/otc/withdraw/exportExcel') }}" class="in-block">
+                            <div class="col-mg-12">
+                                @include('component.dateTimePicker', ['colMdNum'=>4, 'id'=>1, 'label'=>'提现开始时间','name'=>'start_time','placeholder'=>'请选择要导出的提现开始时间'])
+                                @include('component.dateTimePicker', ['colMdNum'=>4, 'id'=>2, 'label'=>'提现结束时间','name'=>'end_time','placeholder'=>'请选择要导出的提现结束时间'])
+                                <div class="col-md-2">
+                                    <label>(未选择日期默认导出全部)</label>
+                                    <div class="form-group">
+                                        <div class="input-group date">
+                                            <button class="btn btn-info pull-right">按日期导出USDT提现记录</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </form>--}}
+
                         <table class="table table-hover table-striped">
                             <tr>
                                 <th>序号</th>
@@ -59,10 +77,8 @@
                                 <th>收款账号</th>
                                 <th title="收币钱包地址">收币地址</th>
                                 <th>状态</th>
-                                <th>创建时间 &nbsp;&nbsp;<a href="{{ url('order/otc/withdraw')}}?orderC=desc">
-                                        <i class="fa fa-sort-amount-desc" style="color:{{ Request::get('orderC') != 'desc' ? !Request::get('orderC') ? '' : 'gray' :'' }}" title="降序"></i></a> &nbsp;
-                                    <a href="{{ url('order/otc/withdraw') }}?orderC=asc">
-                                        <i class="fa fa-sort-amount-asc" style="color:{{ Request::get('orderC') != 'asc' ? 'gray' : '' }}" title="升序"></i></a></th>
+                                <th>创建时间
+                                    @include('component.sort',['url' => url('order/otc/withdraw')])
                                 <th>操作</th>
                             </tr>
                             @forelse($userOtcWithdrawOrder as $key => $item)
@@ -168,8 +184,30 @@
 @endsection
 
 @section('js-part')
+    @include('component.dateTimeScript')
     <script>
         $(function () {
+
+            //日期时间插件
+            $('#datetimepicker1').datetimepicker({
+                language: 'zh'
+            });
+
+            //日期时间插件
+            $('#datetimepicker2').datetimepicker({
+                language: 'zh'
+            });
+
+            /* $("#datetimepicker1").datetimepicker({
+             format: 'yyyy-mm-dd',//显示格式
+             todayHighlight: 1,//今天高亮
+             minView: "month",//设置只显示到月份
+             startView:2,
+             forceParse: 0,
+             showMeridian: 1,
+             autoclose: 1//选择后自动关闭
+             });*/
+
             // 支付账号-开户行信息
             $('.ajaxPayAccount').click(function () {
 
