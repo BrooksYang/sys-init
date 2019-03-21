@@ -13,34 +13,10 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'BitUnion'),
-    'name_cn' => env('APP_NAME_CN', 'BitUnion数字资产交易所'),
-    'welcome_msg' => env('APP_WELCOME_MSG', '欢迎进入BitUnion数字资产交易所'),
-    'copyright' => env('APP_COPYRIGHT', 'BitUnion'),
-
-    /*
-     |--------------------------------------------------------------------------
-     | Statistic Cache Length
-     |--------------------------------------------------------------------------
-     |
-     | TThe minutes of Statistic data cache.
-     |
-     |
-     */
-
-    'cache_length' => env('STATISTIC_CACHE_LENGTH', 10),
-
-    /*
-     |--------------------------------------------------------------------------
-     | Bc-math Scale
-     |--------------------------------------------------------------------------
-     |
-     | TThe scale of bc-math.
-     |
-     |
-     */
-
-    'bcmath_scale' => env('bcmath_scale', 10),
+    'name' => env('APP_NAME', 'BitAU'),
+    'name_cn' => env('APP_NAME_CN', '澳大利亚国家数字加密交易所'),
+    'welcome_msg' => env('APP_WELCOME_MSG', '欢迎进入BitAU澳大利亚国家数字加密交易所'),
+    'copyright' => env('APP_COPYRIGHT', 'BitAU'),
 
     /*
      |--------------------------------------------------------------------------
@@ -226,7 +202,7 @@ return [
     | 交易所API资源访问路径
     |
     */
-    'api_res_url' => env('API_RES_URL','https://api.bitunionex.net'),
+    'api_res_url' => env('API_RES_URL','https://ex-api.workwithme.vip'),
 
     /*
     |--------------------------------------------------------------------------
