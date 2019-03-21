@@ -13,4 +13,13 @@ class OtcPayPath extends Model
     protected  $table = 'otc_pay_paths';
 
     protected  $guarded = [];
+
+    /**
+     * 获取支付信息
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function payType()
+    {
+        return $this->belongsTo(OtcPayType::class, 'pay_type_id');
+    }
 }

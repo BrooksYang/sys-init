@@ -33,6 +33,9 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
         ->middleware('order.otcWithdraw');
     Route::resource('order/otc/withdraw', 'Order\UserOtcWithdrawOrderController', ['only' => ['index','destroy']]);
 
+    // OTC用户提币订单导出
+    Route::get('order/otc/withdraw/exportExcel', 'Order\UserOtcWithdrawOrderController@exportWithDrawExcel');
+
     // OTC-获取订单用户支付账户信息
     Route::post('payUser/Account', 'Order\UserOtcWithdrawOrderController@getPayUserAccount');
 
