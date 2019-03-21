@@ -13,6 +13,14 @@ class OtcWithdraw extends Model
     const OTC_RELEASED = 3;
     const OTC_FAILED   = 4;
 
+    // 状态文本
+    public static $statusTexts = [
+        self::OTC_WAITING  => '等待受理',
+        self::OTC_PENDING  => '处理中',
+        self::OTC_RELEASED => '已发币',
+        self::OTC_FAILED   => '失败',
+    ];
+
     /**
      * OTC提现订单
      *
@@ -27,6 +35,14 @@ class OtcWithdraw extends Model
      */
     protected $guarded = [];
 
+    /**
+     * 获取支付信息
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function payPath()
+    {
+        return $this->belongsTo(OtcPayPath::class, 'pay_path_id');
+    }
 
 
 
