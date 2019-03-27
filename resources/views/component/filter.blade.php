@@ -9,13 +9,13 @@
 <ul role="menu" class="dropdown-menu">
     <li>
         <a href="{{ $url }}">全部
-            {!! in_array( Request::get('filter'), array_keys($filters)) ? '' :'&nbsp;<i class="fa fa-check txt-info"></i>'!!}
+            {!! in_array( Request::get( $filter ?? 'filter'), array_keys($filters)) ? '' :'&nbsp;<i class="fa fa-check txt-info"></i>'!!}
         </a>
     </li>
     @foreach($filters as $key=>$item)
         <li>
-            <a href="{{ $url }}?filter={{$key}}">{{$item['name']}}
-                {!!  Request::get('filter') == $key ? '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
+            <a href="{{ $url }}?{{ $filter ?? 'filter' }}={{$key}}">{{$item['name']}}
+                {!!  Request::get( $filter ?? 'filter') == $key ? '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
             </a>
         </li>
     @endforeach

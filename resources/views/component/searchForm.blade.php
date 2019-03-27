@@ -7,3 +7,9 @@
         <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
     </a>
 </form>
+
+@if($create ?? '')
+    <a href="{{ $url.'/create' }}" title="{{ $title ?? '添加' }}">
+        <span class="box-btn"><i class="fa fa-plus"></i></span>
+    </a>
+@endif
