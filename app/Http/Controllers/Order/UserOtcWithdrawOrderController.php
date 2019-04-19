@@ -7,6 +7,7 @@ use App\Models\OTC\OtcLegalCurrency;
 use App\Models\OTC\OtcPayPath;
 use App\Models\OTC\OtcWithdraw;
 use App\Models\Wallet\SysWallet;
+use App\Traits\GetWeek;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -22,6 +23,8 @@ use Maatwebsite\Excel\Facades\Excel;
  */
 class UserOtcWithdrawOrderController extends Controller
 {
+    use GetWeek;
+
     const USER_OTC_WITHDRAW_ORDER_PAGE_SIZE = 20;
     const EXPORT_PERSIZE =100;
 
@@ -32,6 +35,14 @@ class UserOtcWithdrawOrderController extends Controller
      */
     public function index(Request $request)
     {
+        // 按周浏览导出USDT提现记录
+        if ($request->byWeek == 'withdrawWeekExportExcel') {
+            $weeks = $this->getWeeks(date('Y',time()));
+            krsort($weeks);
+
+            return view('order.userOtcWithdrawWeekIndex',compact('weeks'));
+        }
+
         //订单状态
         $orderStatus = [
             0 => ['name' => '全部',    'class' => ''],
@@ -104,7 +115,10 @@ class UserOtcWithdrawOrderController extends Controller
 
         // 设置下载excel文件的headers
         $columns = [ '用户名','电话','提现时间','提现USDT金额','汇率','折合金额(RMB)', '收款人','收款方式','银行','账号','币种','开户行地址','提现状态','备注'];
-        $fileName = '用户USDT提现记录_'.Carbon::now()->toDateString();
+
+        $timeFlag = ($start ?:'开始').'-'.($end ?:'当前');
+        if (!($start || $end)) { $timeFlag = Carbon::now()->toDateString(); }
+        $fileName = "OTC用户提现记录_".$timeFlag;
 
         // 分批次处理-获取数据总数和设置和计算偏移量
         $num = $this->getExportNum($start, $end);
