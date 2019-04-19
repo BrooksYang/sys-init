@@ -48,7 +48,7 @@
                 <div class="box-body">
                     <div class="box-body table-responsive no-padding">
                         {{--搜索筛选-导出--}}
-                       {{-- <form action="{{ url('order/otc/withdraw/exportExcel') }}" class="in-block">
+                        <form action="{{ url('order/otc/withdraw/exportExcel') }}" class="in-block">
                             <div class="col-mg-12">
                                 @include('component.dateTimePicker', ['colMdNum'=>4, 'id'=>1, 'label'=>'提现开始时间','name'=>'start_time','placeholder'=>'请选择要导出的提现开始时间'])
                                 @include('component.dateTimePicker', ['colMdNum'=>4, 'id'=>2, 'label'=>'提现结束时间','name'=>'end_time','placeholder'=>'请选择要导出的提现结束时间'])
@@ -61,8 +61,17 @@
                                     </div>
 
                                 </div>
+                                <div class="col-md-2">
+                                    <label>(按周导出提现记录)</label>
+                                    <div class="form-group">
+                                        <div class="input-group date">
+                                            <a href="{{ url('order/otc/withdraw') }}?byWeek=withdrawWeekExportExcel"
+                                               class="btn btn-success pull-right">按周导出USDT提现记录</a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </form>--}}
+                        </form>
 
                         <table class="table table-hover table-striped">
                             <tr>
@@ -126,7 +135,7 @@
                                                 </div>
                                             @endif
                                     </td>
-                                    <td title="{{ $item->crypto_wallet_address }}"><strong>{{ str_limit($item->crypto_wallet_address,25) ?:'--' }}</strong></td>
+                                    <td title="{{ $item->crypto_wallet_address }}"><strong>{{ str_limit($item->crypto_wallet_address,15) ?:'--' }}</strong></td>
                                     <td>
                                         <span class="label label-{{ $orderStatus[$item->status]['class'] }}">{{ $orderStatus[$item->status]['name'] }}</span>
                                     </td>
