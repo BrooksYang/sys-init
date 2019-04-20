@@ -23,19 +23,8 @@
                         {{--<a href="{{ url('order/otc/withdraw/create') }}">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>--}}
-                        <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="筛选订单">
-                            <span class="box-btn"><i class="fa fa-filter" title="筛选订单"></i></span>
-                        </a>
-                        <ul role="menu" class="dropdown-menu">
-                        @foreach($orderStatus as $key=>$item)
-                            <li>
-                                <a href="{{ url('order/otc/withdraw') }}?filter={{$key}}">{{$item['name']}}
-                                {!!  Request::get('filter') == $key ? '&nbsp;<i class="fa fa-check txt-info"></i>' :
-                                $key ==0 && ! Request::get('filter') ? '&nbsp;<i class="fa fa-check txt-info"></i>' :'' !!}
-                                </a>
-                            </li>
-                        @endforeach
-                        </ul>
+                        @include('component.filter', ['url'=>url('order/otc/withdraw'), 'filters'=>$orderStatus, 'filter'=>'status','title'=>'筛选状态', 'isInline'=>true])
+                        @include('component.filter', ['url'=>url('order/otc/withdraw'), 'filters'=>$from, 'filter'=>'from','title'=>'筛选来源', 'icon'=>'fontello-menu', 'isInline'=>true])
                     </div>
 
                     {{-- Title --}}
@@ -78,6 +67,7 @@
                                 <th>序号</th>
                                 <th>用户名</th>
                                 <th>电话</th>
+                                <th>来源</th>
                                 <th>币种</th>
                                 <th>提币金额</th>
                                 <th>汇率（USDT/RMB）</th>
@@ -97,6 +87,7 @@
                                     <td>{{ ($key + 1) + ($userOtcWithdrawOrder->currentPage() - 1) * $userOtcWithdrawOrder->perPage() }}</td>
                                     <td title="{{ $item->username }}"><strong>{{ str_limit($item->username,15) }}</strong></td>
                                     <td title="{{$item->phone}}">{{ $item->phone }}</td>
+                                    <td>{{ $from[$item->from]['name'] ?? '--' }}</td>
                                     <td title="{{$item->currency_title_cn.' ('.$item->currency_title_en_abbr.')'}}">
                                         <span class="label label-success">{{ str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',15) }}</span>
                                     </td>
@@ -145,12 +136,7 @@
                                     </td>
                                     <td>{{ $item->created_at ?: '--' }}</td>
                                     <td>
-                                        @if(in_array($item->status, [\App\Models\OTC\OtcWithdraw::OTC_PENDING,\App\Models\OTC\OtcWithdraw::OTC_FAILED]) )
-                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
-                                                    '{{ url("order/otc/withdraw/$item->id") }}','status',3,
-                                                    ' OTC 提币订单为<b><strong> 已发币 </strong></b> 状态',
-                                                    '{{ csrf_token() }}', '已发币' );" title="已发币"> <i class="fontello-ok"></i> </a>
-                                        @elseif(in_array($item->status, [\App\Models\OTC\OtcWithdraw::OTC_WAITING] ))
+                                        @if($item->status != \App\Models\OTC\OtcWithdraw::OTC_RELEASED )
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
                                                     '{{ url("order/otc/withdraw/$item->id") }}','status',2,
                                                     ' OTC 提币订单为<b><strong> 处理中 </strong></b> 状态',
@@ -163,6 +149,8 @@
                                                     '{{ url("order/otc/withdraw/$item->id") }}','status',4,
                                                     ' OTC 提币订单为<b><strong> 失败 </strong></b> 状态',
                                                     '{{ csrf_token() }}', '失败' );" title="失败"> <i class="fontello-reply"></i> </a>
+                                        @else
+                                            '--'
                                         @endif
                                         {{--<a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
                                                 '{{ url("order/otc/withdraw/$item->id") }}',
@@ -172,7 +160,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="{{ config('app.otc_withdraw_currency') ? 13 : 12 }}" class="text-center">
+                                <tr><td colspan="{{ config('app.otc_withdraw_currency') ? 14 : 13 }}" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
