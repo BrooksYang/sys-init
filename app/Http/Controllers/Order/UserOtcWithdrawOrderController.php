@@ -56,11 +56,29 @@ class UserOtcWithdrawOrderController extends Controller
         $search = trim($request->search,'');
         $filter = trim($request->filter,'');
         $orderC = trim($request->orderC,'');
-        $userOtcWithdrawOrder = DB::table('otc_withdraws as withdraw')
+
+        // 是否真实提币-真实提币或提人民币
+        $userOtcWithdrawOrderQuery = DB::table('otc_withdraws as withdraw')
             ->join('users as u','withdraw.user_id','u.id') //用户信息
             ->join('dcuex_crypto_currency as currency','withdraw.currency_id','currency.id')  //币种
-            ->join('dcuex_user_crypto_wallet as u_wallet','withdraw.wallet_id','u_wallet.id') //用户真实钱包
-            ->join('otc_pay_paths as otc_pay','withdraw.pay_path_id','otc_pay.id') //用户线下收款账户
+            ->join('otc_pay_paths as otc_pay','withdraw.pay_path_id','otc_pay.id'); //用户线下收款账户
+
+        $select = [  'withdraw.*', 'u.username', 'u.phone',
+            'currency.currency_title_cn','currency.currency_title_en_abbr',
+            'otc_pay.*'];
+
+        if (config('app.otc_withdraw_currency')) {
+            $userOtcWithdrawOrderQuery = $userOtcWithdrawOrderQuery
+                ->join('dcuex_user_crypto_wallet as u_wallet','withdraw.wallet_id','u_wallet.id'); //用户真实钱包
+
+            $select = [  'withdraw.*', 'u.username', 'u.phone',
+                'currency.currency_title_cn','currency.currency_title_en_abbr',
+                'otc_pay.*',
+                'u_wallet.crypto_wallet_title','u_wallet.crypto_wallet_address'];
+        }
+
+
+        $userOtcWithdrawOrder =$userOtcWithdrawOrderQuery
             ->when($search, function ($query) use ($search){
                 return $query->where('currency.currency_title_cn','like',"%$search%")
                     ->orwhere('currency.currency_title_en_abbr','like',"%$search%")
@@ -75,11 +93,7 @@ class UserOtcWithdrawOrderController extends Controller
             }, function ($query) {
                 return $query->orderBy('withdraw.created_at', 'desc'); //默认创建时间倒序
             })
-            ->select(
-                'withdraw.*', 'u.username', 'u.phone',
-                'currency.currency_title_cn','currency.currency_title_en_abbr',
-                'otc_pay.*',
-                'u_wallet.crypto_wallet_title','u_wallet.crypto_wallet_address')
+            ->select($select)
             ->paginate(self::USER_OTC_WITHDRAW_ORDER_PAGE_SIZE );
 
         return view('order.userOtcWithdrawOrderIndex', compact('orderStatus', 'userOtcWithdrawOrder'));
@@ -225,7 +239,7 @@ class UserOtcWithdrawOrderController extends Controller
      */
     public function getExportNum($start='', $end='')
     {
-        $exportNum = OtcWithdraw::whereIn('status',[OtcWithdraw::OTC_WAITING, OtcWithdraw::OTC_PENDING])
+        $exportNum = OtcWithdraw::whereIn('status',[OtcWithdraw::OTC_WAITING, OtcWithdraw::OTC_PENDING, OtcWithdraw::OTC_RELEASED])
             ->when($start, function ($query) use ($start) {
                 return $query->where('created_at','>=', $start);
             })
@@ -247,7 +261,7 @@ class UserOtcWithdrawOrderController extends Controller
      */
     public static function getUnitExportData($i, $perSize, $start, $end)
     {
-        $export = OtcWithdraw::whereIn('status',[OtcWithdraw::OTC_WAITING, OtcWithdraw::OTC_PENDING])
+        $export = OtcWithdraw::whereIn('status',[OtcWithdraw::OTC_WAITING, OtcWithdraw::OTC_PENDING, OtcWithdraw::OTC_RELEASED])
             ->when($start, function ($query) use ($start) {
                 return $query->where('created_at','>=', $start);
             })

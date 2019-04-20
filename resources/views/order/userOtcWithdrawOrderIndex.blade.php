@@ -84,7 +84,9 @@
                                 <th>RMB</th>
                                 <th>支付方式</th>
                                 <th>收款账号</th>
+                                @if(config('app.otc_withdraw_currency'))
                                 <th title="收币钱包地址">收币地址</th>
+                                @endif
                                 <th>状态</th>
                                 <th>创建时间
                                     @include('component.sort',['url' => url('order/otc/withdraw')])
@@ -135,7 +137,9 @@
                                                 </div>
                                             @endif
                                     </td>
+                                    @if(config('app.otc_withdraw_currency'))
                                     <td title="{{ $item->crypto_wallet_address }}"><strong>{{ str_limit($item->crypto_wallet_address,15) ?:'--' }}</strong></td>
+                                    @endif
                                     <td>
                                         <span class="label label-{{ $orderStatus[$item->status]['class'] }}">{{ $orderStatus[$item->status]['name'] }}</span>
                                     </td>
@@ -168,7 +172,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="13" class="text-center">
+                                <tr><td colspan="{{ config('app.otc_withdraw_currency') ? 13 : 12 }}" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>

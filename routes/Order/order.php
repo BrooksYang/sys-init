@@ -19,8 +19,7 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     Route::resource('order/userDeposit', 'Order\UserDepositOrderController',['only' => ['index','update','destroy']]);
 
     //用户提币订单
-    Route::patch('order/withdraw/{withdraw}', 'Order\UserWithdrawOrderController@update')->where('withdraw', '[0-9]+')
-        ->middleware('order.withdraw');
+    Route::patch('order/withdraw/{withdraw}', 'Order\UserWithdrawOrderController@update')->where('withdraw', '[0-9]+');
     Route::resource('order/withdraw', 'Order\UserWithdrawOrderController', ['only' => ['index','destroy']]);
 
     // OTC用户充值订单
@@ -29,8 +28,7 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     Route::resource('order/otc/quick/userDeposit', 'Order\OtcQuickDepositOrderController', ['only' => ['index']]);
 
     // OTC用户提币订单
-    Route::patch('order/otc/withdraw/{withdraw}', 'Order\UserOtcWithdrawOrderController@update')->where('withdraw', '[0-9]+')
-        ->middleware('order.otcWithdraw');
+    Route::patch('order/otc/withdraw/{withdraw}', 'Order\UserOtcWithdrawOrderController@update')->where('withdraw', '[0-9]+');
     Route::resource('order/otc/withdraw', 'Order\UserOtcWithdrawOrderController', ['only' => ['index','destroy']]);
 
     // OTC用户提币订单导出
