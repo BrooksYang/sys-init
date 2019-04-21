@@ -51,7 +51,7 @@ class LegalCurrencyController extends Controller
             ->select('legal.*')
             ->paginate(config('app.pageSize') );
 
-        return view('OtcLegalCurrency.legalCurrencyIndex', compact('legalCurrency','search', 'type'));
+        return view('otcLegalCurrency.legalCurrencyIndex', compact('legalCurrency','search', 'type'));
     }
 
     /**
@@ -63,7 +63,7 @@ class LegalCurrencyController extends Controller
     {
         $type = self::type();
 
-        return view('OtcLegalCurrency.legalCurrencyCreate', compact('type'));
+        return view('otcLegalCurrency.legalCurrencyCreate', compact('type'));
     }
 
     /**
@@ -110,7 +110,7 @@ class LegalCurrencyController extends Controller
 
         if (empty($legalCurrency)) { return redirect('cms/news'); }
 
-        return view('OtcLegalCurrency.legalCurrencyCreate',[
+        return view('otcLegalCurrency.legalCurrencyCreate',[
             'editFlag' => true,
             'type' =>  $type = self::type(),
             'flag' => $legalCurrency
