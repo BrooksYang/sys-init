@@ -65,17 +65,14 @@ class ConfigController extends Controller
     public function edit($id)
     {
         if ($id) {
-            $configs = DB::table('otc_config')->get()->toArray();
-            foreach ($configs as $key => $item){
-                $configs[$item->key] = $item;
-                unset($configs[$key]);
-            }
+            $configs = \DB::table('otc_config as conf')
+                //->join('auth_admins as ad', 'conf.admin_id', 'ad.id')
+                ->get(['conf.*'])->toArray();
         }
 
         return view('otcConfig.configCreate', [
             'editFlag' => true,
-            'configKey' => $this->configKey(),
-            'configs' => $configs ?? []
+            'configs' => array_chunk($configs,2) ?? []
         ]);
     }
 
@@ -90,35 +87,24 @@ class ConfigController extends Controller
     {
 
         $updateConfig = $request->except(['_token', '_method', 'editFlag']);
-        $configKey = $this->configKey();
 
         Validator::make($request->all(),[
-            $configKey[0] => [
-                'required',
-                function ($attribute, $value, $fail) {
-                    if (!str_contains($value,'|') && !is_numeric(explode('|',$value)[0]) && !explode('|',$value)[0] >=1 ) {
-                        return $fail($attribute.' is invalid.');
-                    }
-                }
-            ],
-            $configKey[1] => [
-                'required',
-                function ($attribute, $value, $fail) {
-                    if (!str_contains($value,'|') && !is_numeric(explode('|',$value)[0]) && !explode('|',$value)[0] >=1 ) {
-                        return $fail($attribute.' is invalid.');
-                    }
-                }
-            ],
-            $configKey[2] => 'required|numeric',
+            'payment_length'            => 'required|numeric|min:0',
+            'order_cancel_frequency'    => 'required|numeric|min:0',
+            'exchange_rate_usdt_rmb'    => 'required|numeric|min:1',
+            'withdraw_fee_percentage'   => 'required|numeric|min:0.00000001',
+        ],[
+            'exchange_rate_usdt_rmb.min'    => '期望一个合法的汇率值',
+            'withdraw_fee_percentage.min'   => '期望一个合法的百分比值'
         ])->validate();
 
         foreach ($updateConfig as $key => $item) {
-            if (in_array($key, $configKey)) {
-                DB::table('otc_config')->where('key',$key)->update([
-                    'value' => explode('|',$item)[0],
-                    'updated_at' => self::carbonNow()
-                ]);
-            }
+
+            \DB::table('otc_config')->where('key',$key)->update([
+                'value' => $item,
+                //'admin_id' => \Auth::id(),
+                'updated_at' => self::carbonNow()
+            ]);
         }
 
         return redirect("otc/config/$id/edit");
@@ -143,6 +129,11 @@ class ConfigController extends Controller
     public function configKey()
     {
 
-        return  ['payment_length', 'order_cancel_frequency','exchange_rate_usdt_rmb'];
+        return  [
+            'payment_length',
+            'order_cancel_frequency',
+            'exchange_rate_usdt_rmb',
+            'withdraw_fee_percentage'
+        ];
     }
 }

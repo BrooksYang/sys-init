@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d977cac9cb8600d3956710f0f7017bea",
+    "content-hash": "d89db8b4ebb29b5634c36199e4f795b0",
     "packages": [
         {
             "name": "brooksyang/entrance",
@@ -4186,6 +4186,7 @@
                 "mock",
                 "xunit"
             ],
+            "abandoned": true,
             "time": "2018-04-11T04:50:36+00:00"
         },
         {
@@ -4848,7 +4849,8 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.1.3"
+        "php": "^7.1.3",
+        "ext-bcmath": "*"
     },
     "platform-dev": []
 }
