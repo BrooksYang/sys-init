@@ -140,7 +140,7 @@
                                     </td>
                                     <td>{{ $item->created_at ?: '--' }}</td>
                                     <td>
-                                        @if($item->status != \App\Models\OTC\OtcWithdraw::OTC_RELEASED )
+                                        @if($item->status == \App\Models\OTC\OtcWithdraw::OTC_WAITING )
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->uid }}',
                                                     '{{ url("order/otc/withdraw/$item->uid") }}','status',2,
                                                     ' OTC 提币订单为<b><strong> 处理中 </strong></b> 状态',
@@ -153,8 +153,17 @@
                                                     '{{ url("order/otc/withdraw/$item->uid") }}','status',4,
                                                     ' OTC 提币订单为<b><strong> 失败 </strong></b> 状态',
                                                     '{{ csrf_token() }}', '失败' );" title="失败"> <i class="fontello-reply"></i> </a>
+                                        @elseif($item->status == \App\Models\OTC\OtcWithdraw::OTC_PENDING)
+                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->uid }}',
+                                                    '{{ url("order/otc/withdraw/$item->uid") }}','status',3,
+                                                    ' OTC 提币订单为<b><strong> 已发币 </strong></b> 状态',
+                                                    '{{ csrf_token() }}', '已发币' );" title="已发币"> <i class="fontello-ok"></i>
+                                            </a><a href="javascript:;" onclick="itemUpdate('{{ $item->uid }}',
+                                                    '{{ url("order/otc/withdraw/$item->uid") }}','status',4,
+                                                    ' OTC 提币订单为<b><strong> 失败 </strong></b> 状态',
+                                                    '{{ csrf_token() }}', '失败' );" title="失败"> <i class="fontello-reply"></i> </a>
                                         @else
-                                            '--'
+                                            {{ '--' }}
                                         @endif
                                         {{--<a href="javascript:;" onclick="itemDelete('{{ $item->uid }}',
                                                 '{{ url("order/otc/withdraw/$item->uid") }}',
