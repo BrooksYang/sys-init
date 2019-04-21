@@ -139,4 +139,42 @@ return [
         'name'  => 'logo'
     ],
 
+    /*
+   |--------------------------------------------------------------------------
+   | Legal Currency-Flag 58*35 国旗  宽度58px -1.657
+   |--------------------------------------------------------------------------
+   |
+   | Legal Currency-Flag cropping related configuration information.
+   | upload 允许的尺寸   preview 预览区的尺寸   crop 裁剪的尺寸..
+   |
+   */
+
+    'flag' => [
+        'upload' => [
+            'max_width'  => 0,
+            'max_height' => 0,
+            'min_width'  => 58,
+            'min_height' => 35,
+        ],
+
+        'preview' => [
+            'upload_width' => 174,
+            'crop_width'   => 116,
+            'crop_height'  => 70,
+        ],
+
+        'crop' => [
+            'width'  => 58,
+            'height' => 35,
+        ],
+
+        'scale' => 0.9,
+
+        'zoom'  => 2,
+
+        'dir'   => 'app/public/flag',
+
+        'name' => 'flag'
+    ],
+
 ];

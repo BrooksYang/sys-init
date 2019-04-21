@@ -134,11 +134,14 @@ class UserOtcWithdrawOrderController extends Controller
         set_time_limit(0);
 
         // 设置下载excel文件的headers
-        $columns = [ '用户名','电话','提现时间','提现USDT金额','汇率','折合金额(RMB)', '收款人','收款方式','银行','账号','币种','开户行地址','提现状态','备注'];
+       /* $columns = [ 'A用户名', 'B电话', 'C提现时间','D来源' 'E提现USDT金额', 'F汇率','G折合金额(RMB)', 'H手续费百分比(USDT)','I手续费金额(USDT)','J实际到帐金额(RMB)',
+            'K收款人','L收款方式','M银行','N账号','O币种','P开户行地址','Q提现状态','R备注'];*/
+        $columns = [ '用户名','电话','提现时间','来源','提现USDT金额','汇率','折合金额(RMB)', '手续费百分比(USDT)','手续费金额(USDT)','实际到帐金额(RMB)',
+            '收款人','收款方式','银行','账号','币种','开户行地址','提现状态','备注'];
 
         $timeFlag = ($start ?:'开始').'-'.($end ?:'当前');
         if (!($start || $end)) { $timeFlag = Carbon::now()->toDateString(); }
-        $fileName = "OTC用户提现记录_".$timeFlag;
+        $fileName = "用户提现记录_".$timeFlag;
 
         // 分批次处理-获取数据总数和设置和计算偏移量
         $num = $this->getExportNum($start, $end);
@@ -162,9 +165,13 @@ class UserOtcWithdrawOrderController extends Controller
                 $rowData[$key][] = $users[$item->user_id]['username'] ?? '';
                 $rowData[$key][] = $users[$item->user_id]['phone'] ?? '';
                 $rowData[$key][] = $item->created_at ?? '';
+                $rowData[$key][] = OtcWithdraw::FROM[$item->from]['name'] ?? '';
                 $rowData[$key][] = $item->amount ?? '';
                 $rowData[$key][] = $item->rate ?? '';
                 $rowData[$key][] = number_format($item->rmb,2,'.','') ?? ''; // 折合金额（RMB）
+                $rowData[$key][] = $item->fee_percentage ?? ''; // 手续费百分比（USDT）
+                $rowData[$key][] = number_format($item->fee,2,'.','') ?? ''; // 手续费（USDT）
+                $rowData[$key][] = number_format(bcsub($item->rmb, bcmul($item->fee, $item->rate)), 2) ?? ''; // 实际到帐金额（RMB）
 
                 $rowData[$key][] = $userPay->name ?? '';
                 $rowData[$key][] = $userPay->payType->name ?? '';
@@ -217,20 +224,24 @@ class UserOtcWithdrawOrderController extends Controller
 
         // 列宽
         $sheet->setWidth(array(
-            'A'     =>  10,
-            'B'     =>  15,
-            'C'     =>  20,
-            'D'     =>  20,
-            'E'     =>  20,
-            'F'     =>  20,
-            'G'     =>  10,
-            'H'     =>  12,
-            'I'     =>  20,
-            'J'     =>  20,
-            'K'     =>  10,
-            'L'     =>  15,
-            'M'     =>  12,
-            'N'     =>  10,
+            'A'   =>  10,
+            'B'   =>  15,
+            'C'   =>  20,
+            'D'   =>  6,
+            'E'   =>  20,
+            'F'   =>  10,
+            'G'   =>  20,
+            'H'   =>  20,
+            'I'   =>  20,
+            'J'   =>  20,
+            'K'   =>  10,
+            'L'   =>  12,
+            'M'   =>  20,
+            'N'   =>  20,
+            'O'   =>  10,
+            'P'   =>  15,
+            'Q'   =>  12,
+            'R'   =>  10,
         ));
 
         return $sheet;

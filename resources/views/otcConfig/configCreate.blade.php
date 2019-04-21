@@ -1,7 +1,7 @@
 @extends('entrance::layouts.default')
 
 @section('css-import')
-    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/entrance/js/range-slider/jquery.range2dslider.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/entrance/js/range-slider/juery.range2dslider.css') }}" />
 @endsection
 
 @section('content')
@@ -11,7 +11,8 @@
                 <div class="box-header">
                     {{-- Title --}}
                     <h3 class="box-title">
-                        <span>{{ @$editFlag ? '编辑普通交易配置' : '普通交易配置' }}</span>
+                        <i class="fontello-doc"></i>
+                        <span>{{  @$editFlag ? '编辑普通交易配置' : '普通交易配置' }}</span>
                     </h3>
                 </div>
 
@@ -22,53 +23,32 @@
                         {{ @$editFlag ? method_field('PATCH') : '' }}
                         <input type="hidden" name="editFlag" value="{{ @$editFlag }}">
 
-                        @forelse($configs as $key => $config)
-                            @if($config->key == $configKey[0])
-                            {{-- 支付时限 payment_length--}}
-                            <div class="form-group {{ $errors->has($configKey[0]) ? 'has-error' : '' }}">
-                                <div class="col-sm-12">
-                                    <label>{{ $config->title }}(分钟)</label>
-                                    <p style="margin-bottom: 30px"></p>
-                                    <input id="slider4" class="form-control input-lg" type="text" name="{{ $configKey[0] }}" value="{{ $config->value ?? old($configKey[0]) }}"
-                                           placeholder="订单支付时限">
-                                    @if ($errors->has($configKey[0]))
-                                        <span class="help-block"><strong>{{ $errors->first($configKey[0]) }}</strong></span>
-                                    @endif
-                                </div>
-                            </div>
-                            <p style="margin-bottom: 100px"></p>
-                            @endif
+                        @forelse($configs as $item)
+                            {{-- 配置项 --}}
+                            <div class="row">
+                                @foreach($item as $key => $config)
+                                    <div class="col-md-{{ count($item)==1 ? 12 : in_array('about_us', array_column($item,'key')) ? 12 :6 }}">
+                                        <div class="form-group {{ $errors->has($config->key)  ? 'has-error' : '' }}">
+                                            <div class="col-sm-12">
+                                                <label title="" >
+                                                    {{  $config->title }}
+                                                </label>&nbsp;
+                                                @if($config->key == 'about_us')
+                                                    <textarea class="form-control" name="{{ $config->key }}" rows="5"
+                                                              placeholder="{{  $config->title }}" required>{{  old($config->key) ?? $config->value }}</textarea>
+                                                @else
+                                                    <input class="form-control input-sm" type="text" name="{{ $config->key }}" value="{{ old($config->key) ?? $config->value }}"
+                                                           placeholder="{{  $config->title }}" required>
+                                                @endif
+                                                @if ($errors->has($config->key))
+                                                    <span class="help-block"><strong>{{ $errors->first($config->key) }}</strong></span>
+                                                @endif
 
-                            @if($config->key ==  $configKey[1])
-                            {{-- 订单取消频次 order_cancel_frequency --}}
-                            <div class="form-group {{ $errors->has($configKey[1]) ? 'has-error' : '' }}">
-                                <div class="col-sm-12">
-                                    <label>{{ $config->title }}</label>
-                                    <p style="margin-bottom: 30px"></p>
-                                    <input id="slider5" class="form-control input-lg" type="text" name="{{$configKey[1]}}" value="{{ $config->value ?? old($configKey[1]) }}"
-                                           placeholder="订单取消频次">
-                                    @if ($errors->has($configKey[1]))
-                                        <span class="help-block"><strong>{{ $errors->first($configKey[1]) }}</strong></span>
-                                    @endif
-                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div>
-                            @endif
-
-                            @if($key == 'exchange_rate_usdt_rmb')
-                            <br/><br/>
-                            {{-- USDT对人民币汇率 exchange_rate_usdt_rmb --}}
-                            <div class="form-group {{ $errors->has($configKey[2]) ? 'has-error' : '' }}">
-                                <div class="col-sm-12">
-                                    <label>{{ $config->title }}</label>
-                                    <input class="form-control input-sm" type="text" name="{{$configKey[2]}}" value="{{ $config->value ?? old($configKey[1]) }}"
-                                           placeholder="USDT对人民币汇率" required>
-                                    @if ($errors->has($configKey[2]))
-                                        <span class="help-block"><strong>{{ $errors->first($configKey[2]) }}</strong></span>
-                                    @endif
-                                </div>
-                            </div>
-                            @endif
-
                             @if($loop -> last)
                                 {{-- Buttons --}}
                                 <p style="margin-bottom: 50px"></p>
@@ -93,43 +73,8 @@
 @endsection
 
 @section('js-part')
-    <script type='text/javascript' src='{{ asset('vendor/entrance/js/range-slider/jquery.range2dslider.js') }}'></script>
     <script>
         $(function () {
-            "use strict";
-            //支付时长配置
-            $('#slider4').range2DSlider({
-                template: 'horizontal',
-                value: [
-                    ['{{ $configs[$configKey[0]]->value ?? 15 }}', 1]
-                ],
-                onlyGridPoint: true,
-                round: true,
-                axis: [
-                    [
-                        @for($i=1; $i<=config('app.otc_payment_length'); $i==1?$i+=4:$i+=5)
-                        {{ $i }},
-                        @endfor
-                    ]
-                ]
-            });
-
-            //订单可取消频次
-            $('#slider5').range2DSlider({
-                template: 'horizontal',
-                value: [
-                    ['{{ $configs[$configKey[1]]->value ?? 3 }}', 1]
-                ],
-                onlyGridPoint: true,
-                round: true,
-                axis: [
-                    [
-                        @for($i=1; $i<=config('app.order_cancel_max_frequency'); $i++)
-                        {{ $i }},
-                        @endfor
-                    ]
-                ]
-            });
 
         })
     </script>

@@ -70,8 +70,10 @@
                                 <th>来源</th>
                                 <th>币种</th>
                                 <th>提币金额</th>
-                                <th>汇率（USDT/RMB）</th>
+                                <th>汇率(RMB)</th>
                                 <th>RMB</th>
+                                <th>手续费比例(%)</th>
+                                <th>手续费</th>
                                 <th>支付方式</th>
                                 <th>收款账号</th>
                                 @if(config('app.otc_withdraw_currency'))
@@ -94,6 +96,8 @@
                                     <td title="{{number_format($item->amount,8,'.',',') }}">{{ number_format($item->amount,8,'.',',') }}</td>
                                     <td title="{{number_format($item->rate ?:0,8) }}">{{ number_format($item->rate ?:0,8) }}</td>
                                     <td title="{{number_format($item->rmb ?:0,8) }}">{{ number_format($item->rmb ?:0,8) }}</td>
+                                    <td title="手续费比例">{{ $item->fee_percentage ?: 0 }}</td>
+                                    <td title="手续费">{{number_format($item->fee ?:0,8) }}</td>
                                     {{--支付方式和账号--}}
                                     <?php $payType = \App\Models\OTC\OtcPayType::find($item->pay_type_id); ?>
                                     <td class="hbfont">
@@ -160,7 +164,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="{{ config('app.otc_withdraw_currency') ? 14 : 13 }}" class="text-center">
+                                <tr><td colspan="{{ config('app.otc_withdraw_currency') ? 16 : 15 }}" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
