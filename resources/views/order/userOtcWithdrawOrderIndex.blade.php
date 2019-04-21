@@ -163,7 +163,7 @@
                                                     ' OTC 提币订单为<b><strong> 失败 </strong></b> 状态',
                                                     '{{ csrf_token() }}', '失败' );" title="失败"> <i class="fontello-reply"></i> </a>
                                         @else
-                                            '--'
+                                            {{ '--' }}
                                         @endif
                                         {{--<a href="javascript:;" onclick="itemDelete('{{ $item->uid }}',
                                                 '{{ url("order/otc/withdraw/$item->uid") }}',
