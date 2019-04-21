@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -24,13 +25,12 @@ trait MongoLogHelper {
         // [message] / [context] / [extra]
         $infoInit = [
             'uid' => Auth::id(),
-            'email' => Auth::user()->email,
-            'type' => $this->getType($type),
+            'email' => Auth::user()->email.'('.(Auth::user()->name ?? '无用户名').')',
             'ip' => \Request::ip(),
             'session' => \Request::cookie()[strtolower(config('app.name')).'_session'] ?? '',
             'referer' => $this->getHead('referer'),
             'agent' => $this->getHead('user-agent'),
-            'datetime' => gmdate('Y-m-d H:i:s',time()),
+            'datetime' => Carbon::now(),
             'app' => $this->beLongToApp()->name ?? '',
             'route' => \Request::path(),
             'method' => \Request::method(),
@@ -44,7 +44,9 @@ trait MongoLogHelper {
         $logResult = \App\MongoLog::insert($info);
 
         //记录返回结果到文件日志
-        info('logRes',[$logResult]);
+        if (!$logResult) {
+            info('logRes',[$logResult]);
+        }
     }
 
     /**

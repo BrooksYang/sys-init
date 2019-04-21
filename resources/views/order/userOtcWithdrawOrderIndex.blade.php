@@ -107,7 +107,7 @@
                                         {{ str_limit($item->account ?:'--', 25) }}
                                         @if($item->account)
                                             <!-- Button trigger modal -->
-                                                <a href="javascript:;"  class="ajaxPayAccount" data-toggle="modal" data-target="#exampleModalLongPayAccount{{$key}}" data-pay-user="{{$item->user_id}}" data-pay-account="{{ $item->account }}" data-key="{{$item->id}}" title="开户信息">
+                                                <a href="javascript:;"  class="ajaxPayAccount" data-toggle="modal" data-target="#exampleModalLongPayAccount{{$key}}" data-pay-user="{{$item->user_id}}" data-pay-account="{{ $item->account }}" data-key="{{$item->uid}}" title="开户信息">
                                                     &nbsp;<i class="fa fa-info-circle"></i>
                                                 </a>
                                                 <!-- Modal -->
@@ -121,7 +121,7 @@
                                                                 </button>
                                                             </div>
                                                             <div class="modal-body">
-                                                                <div id="ajaxPayAccountDiv{{$item->id}}"></div>
+                                                                <div id="ajaxPayAccountDiv{{$item->uid}}"></div>
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
@@ -141,23 +141,23 @@
                                     <td>{{ $item->created_at ?: '--' }}</td>
                                     <td>
                                         @if($item->status != \App\Models\OTC\OtcWithdraw::OTC_RELEASED )
-                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
-                                                    '{{ url("order/otc/withdraw/$item->id") }}','status',2,
+                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->uid }}',
+                                                    '{{ url("order/otc/withdraw/$item->uid") }}','status',2,
                                                     ' OTC 提币订单为<b><strong> 处理中 </strong></b> 状态',
                                                     '{{ csrf_token() }}', '处理中' );" title="处理中"> <i class=" fontello-loop"></i> </a>
-                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
-                                                    '{{ url("order/otc/withdraw/$item->id") }}','status',3,
+                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->uid }}',
+                                                    '{{ url("order/otc/withdraw/$item->uid") }}','status',3,
                                                     ' OTC 提币订单为<b><strong> 已发币 </strong></b> 状态',
                                                     '{{ csrf_token() }}', '已发币' );" title="已发币"> <i class="fontello-ok"></i>
-                                            </a><a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
-                                                    '{{ url("order/otc/withdraw/$item->id") }}','status',4,
+                                            </a><a href="javascript:;" onclick="itemUpdate('{{ $item->uid }}',
+                                                    '{{ url("order/otc/withdraw/$item->uid") }}','status',4,
                                                     ' OTC 提币订单为<b><strong> 失败 </strong></b> 状态',
                                                     '{{ csrf_token() }}', '失败' );" title="失败"> <i class="fontello-reply"></i> </a>
                                         @else
                                             '--'
                                         @endif
-                                        {{--<a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
-                                                '{{ url("order/otc/withdraw/$item->id") }}',
+                                        {{--<a href="javascript:;" onclick="itemDelete('{{ $item->uid }}',
+                                                '{{ url("order/otc/withdraw/$item->uid") }}',
                                                 '{{ csrf_token() }}');">
                                             <i class="fontello-trash-2" title="删除"></i>
                                         </a>--}}
