@@ -433,16 +433,16 @@ class UserOtcWithdrawOrderController extends Controller
 
                 if ($from == OtcWithdraw::EX_WITHDRAW) {
                     //更新ex记账钱包余额
-                    $userWallet->user_wallet_balance_freeze_amount = bcsub($userWallet->user_wallet_balance_freeze_amount, $order->amount);
-                    $userWallet->user_wallet_balance = bcadd($userWallet->user_wallet_balance, $order->amount);
+                    $userWallet->user_wallet_balance_freeze_amount = bcsub($userWallet->user_wallet_balance_freeze_amount, bcadd($order->amount,$order->fee));
+                    $userWallet->user_wallet_balance = bcadd($userWallet->user_wallet_balance, bcadd($order->amount,$order->fee));
                     $userWallet->updated_at = self::carbonNow();
                     $userWallet->save();
                 }
 
                 if ($from == OtcWithdraw::OTC_WITHDRAW) {
                     //更新otc记账钱包余额
-                    $balance->frozen = bcsub($balance->frozen, $order->amount);
-                    $balance->available = bcadd($balance->available, $order->amount);
+                    $balance->frozen = bcsub($balance->frozen, bcadd($order->amount,$order->fee));
+                    $balance->available = bcadd($balance->available, bcadd($order->amount,$order->fee));
                     $balance->updated_at = self::carbonNow();
                     $balance->save();
                 }
