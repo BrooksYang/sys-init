@@ -62,4 +62,9 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen']], function ()
     Route::patch('portal/logo/upload/{dir}', 'Cms\PortalConfController@upload');
     Route::get('portal/logo/crop/{dir}', 'Cms\PortalConfController@crop');
 
+    // 法币国旗图标上传和裁剪
+    Route::post('currency/flag/upload/{dir}', 'OtcLegalCurrency\LegalCurrencyController@upload');
+    Route::patch('currency/flag/upload/{dir}', 'OtcLegalCurrency\LegalCurrencyController@upload');
+    Route::get('currency/flag/crop/{dir}', 'OtcLegalCurrency\LegalCurrencyController@crop');
+
 });
