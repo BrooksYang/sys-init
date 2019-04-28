@@ -91,7 +91,7 @@
                                     <td title="{{$item->phone}}">{{ $item->phone }}</td>
                                     <td>{{ $from[$item->from]['name'] ?? '--' }}</td>
                                     <td title="{{$item->currency_title_cn.' ('.$item->currency_title_en_abbr.')'}}">
-                                        <span class="label label-success">{{ str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',15) }}</span>
+                                        <span class="label label-success">{{ str_limit($item->currency_title_en_abbr ?:'--', 15) }}</span>
                                     </td>
                                     <td title="{{number_format($item->amount,8,'.',',') }}">{{ number_format($item->amount,8,'.',',') }}</td>
                                     <td title="{{number_format($item->rate ?:0,8) }}">{{ number_format($item->rate ?:0,8) }}</td>
