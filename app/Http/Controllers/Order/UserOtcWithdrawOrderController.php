@@ -66,11 +66,13 @@ class UserOtcWithdrawOrderController extends Controller
         $userOtcWithdrawOrderQuery = DB::table('otc_withdraws as withdraw')
             ->join('users as u','withdraw.user_id','u.id') //用户信息
             ->join('dcuex_crypto_currency as currency','withdraw.currency_id','currency.id')  //币种
-            ->join('otc_pay_paths as otc_pay','withdraw.pay_path_id','otc_pay.id'); //用户线下收款账户
+            ->join('otc_pay_paths as otc_pay','withdraw.pay_path_id','otc_pay.id') //用户线下收款账户
+            ->whereNull('otc_pay.deleted_at');
 
         $select = ['withdraw.id as uid',  'withdraw.*', 'u.username', 'u.phone',
             'currency.currency_title_cn','currency.currency_title_en_abbr',
-            'otc_pay.*'];
+            'otc_pay.id','otc_pay.user_id', 'otc_pay.pay_type_id','otc_pay.account', 'otc_pay.name',
+            'otc_pay.qr_code', 'otc_pay.bank','otc_pay.bank_address','otc_pay.remark','otc_pay.is_active'];
 
         if (config('app.otc_withdraw_currency')) {
             $userOtcWithdrawOrderQuery = $userOtcWithdrawOrderQuery
@@ -78,7 +80,8 @@ class UserOtcWithdrawOrderController extends Controller
 
             $select = ['withdraw.id as uid', 'withdraw.*', 'u.username', 'u.phone',
                 'currency.currency_title_cn','currency.currency_title_en_abbr',
-                'otc_pay.*',
+                'otc_pay.id','otc_pay.user_id', 'otc_pay.pay_type_id','otc_pay.account', 'otc_pay.name',
+                'otc_pay.qr_code', 'otc_pay.bank','otc_pay.bank_address','otc_pay.remark','otc_pay.is_active',
                 'u_wallet.crypto_wallet_title','u_wallet.crypto_wallet_address'];
         }
 
