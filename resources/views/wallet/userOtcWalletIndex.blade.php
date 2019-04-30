@@ -11,7 +11,7 @@
                     <div class="pull-right box-tools">
                         <form action="{{ url('otc/user/wallet') }}" class="in-block">
                             <input id="search_input" type="text" class="form-control width-0" placeholder="搜索用户名或币种名称" name="search" value="{{ $search ?? Request::get('search')}}">
-                            <a href="javascript:;" title="搜索用户名或币种名称">
+                            <a href="javascript:;" title="搜索用户或币种名称">
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
                         </form>

@@ -30,6 +30,7 @@ class UserOtcWalletController extends Controller
             ->when($search, function ($query) use ($search){
                 return $query->where('currency.currency_title_cn','like',"%$search%")
                     ->orwhere('currency.currency_title_en_abbr','like',"%$search%")
+                    ->orwhere('u.phone', 'like', "%$search%")
                     ->orwhere('u.username', 'like', "%$search%");
             })
             ->select('u_wallet.*', 'u.username', 'u.email','currency.currency_title_cn','currency.currency_title_en_abbr')
