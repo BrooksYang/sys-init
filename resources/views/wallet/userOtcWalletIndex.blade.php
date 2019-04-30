@@ -11,7 +11,7 @@
                     <div class="pull-right box-tools">
                         <form action="{{ url('otc/user/wallet') }}" class="in-block">
                             <input id="search_input" type="text" class="form-control width-0" placeholder="搜索用户名或币种名称" name="search" value="{{ $search ?? Request::get('search')}}">
-                            <a href="javascript:;" title="搜索用户名或币种名称">
+                            <a href="javascript:;" title="搜索用户或币种名称">
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
                         </form>
@@ -35,6 +35,7 @@
                                 <th>序号</th>
                                 <th>用户名称</th>
                                 <th>邮箱账号</th>
+                                <th>电话</th>
                                 <th>币种</th>
                                 <th>余额</th>
                                 <th>冻结金额</th>
@@ -43,8 +44,9 @@
                             @forelse($userOtcWallet as $key => $item)
                                 <tr>
                                     <td>{{ ($key + 1) + ($userOtcWallet->currentPage() - 1) * $userOtcWallet->perPage() }}</td>
-                                    <td title="{{ $item->username }}"><strong>{{ str_limit($item->username,15) }}</strong></td>
-                                    <td title="{{$item->email}}">{{ str_limit($item->email,15) }}</td>
+                                    <td title="{{ $item->username }}"><strong>{{ str_limit($item->username ?:'--',15) }}</strong></td>
+                                    <td title="{{$item->email}}">{{ str_limit($item->email ?:'--',15) }}</td>
+                                    <td title="{{$item->phone}}">{{ str_limit($item->phone ?:'--',15) }}</td>
                                     <td title="{{$item->currency_title_cn.' ('.$item->currency_title_en_abbr.')'}}">
                                         <span class="label label-success">{{ str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',15) }}</span>
                                     </td>
@@ -62,7 +64,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="7" class="text-center">
+                                <tr><td colspan="8" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
