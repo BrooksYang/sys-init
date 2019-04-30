@@ -31,9 +31,10 @@ class UserOtcWalletController extends Controller
                 return $query->where('currency.currency_title_cn','like',"%$search%")
                     ->orwhere('currency.currency_title_en_abbr','like',"%$search%")
                     ->orwhere('u.phone', 'like', "%$search%")
+                    ->orwhere('u.email', 'like', "%$search%")
                     ->orwhere('u.username', 'like', "%$search%");
             })
-            ->select('u_wallet.*', 'u.username', 'u.email','currency.currency_title_cn','currency.currency_title_en_abbr')
+            ->select('u_wallet.*', 'u.username','u.phone', 'u.email','currency.currency_title_cn','currency.currency_title_en_abbr')
             ->paginate(USER_OTC_WALLET_PAGE_SIZE );;
 
         return view('wallet.userOtcWalletIndex',['userOtcWallet' => $userOtcWallet]);
