@@ -174,7 +174,7 @@ class UserOtcWithdrawOrderController extends Controller
                 $rowData[$key][] = number_format($item->rmb,2,'.','') ?? ''; // 折合金额（RMB）
                 $rowData[$key][] = $item->fee_percentage ?? ''; // 手续费百分比（USDT）
                 $rowData[$key][] = number_format($item->fee,2,'.','') ?? ''; // 手续费（USDT）
-                $rowData[$key][] = number_format(bcsub($item->rmb, bcmul($item->fee, $item->rate)), 2) ?? ''; // 实际到帐金额（RMB）
+                $rowData[$key][] = round(bcsub($item->rmb, bcmul($item->fee, $item->rate)), 2) ?? ''; // 实际到帐金额（RMB）
 
                 $rowData[$key][] = $userPay->name ?? '';
                 $rowData[$key][] = $userPay->payType->name ?? '';
