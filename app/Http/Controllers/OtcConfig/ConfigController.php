@@ -93,6 +93,7 @@ class ConfigController extends Controller
             'order_cancel_frequency'    => 'required|numeric|min:0',
             'exchange_rate_usdt_rmb'    => 'required|numeric|min:1',
             'withdraw_fee_percentage'   => 'required|numeric|min:0.00000001',
+            'withdraw_time'             => 'required|integer|between:1,7',
         ],[
             'exchange_rate_usdt_rmb.min'    => '期望一个合法的汇率值',
             'withdraw_fee_percentage.min'   => '期望一个合法的百分比值'
