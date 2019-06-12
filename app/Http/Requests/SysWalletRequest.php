@@ -26,7 +26,7 @@ class SysWalletRequest extends FormRequest
     {
         return [
             'sys_wallet_currency_id' =>
-                'required|numeric|min:1|unique:dcuex_sys_wallet,sys_wallet_currency_id,'.$request->wallet,
+                'required|numeric|min:1|unique:wallets_balances_system,sys_wallet_currency_id,'.$request->wallet,
             'sys_wallet_balance' =>
                 'required|unumeric|min:1',
             'sys_wallet_balance_freeze_amount' =>

@@ -27,8 +27,8 @@ class CurrencyTypeInitController extends Controller
     public function index(Request $request)
     {
         $search = trim($request->search,'');
-        $query = DB::table('dcuex_crypto_currency as currency')
-            ->join('dcuex_currency_type as type','currency.currency_type_id','=','type.id');
+        $query = DB::table('currencies as currency')
+            ->join('currency_types as type','currency.currency_type_id','=','type.id');
         if ($search) {
             $currency = $query->where('currency.currency_title_cn','like',"%$search")
                 ->orwhere('currency.currency_title_en','like',"%$search")
@@ -49,7 +49,7 @@ class CurrencyTypeInitController extends Controller
      */
     public function create()
     {
-        $currencyType = DB::table('dcuex_currency_type')->get(['id', 'title']);
+        $currencyType = DB::table('currency_types')->get(['id', 'title']);
 
         return view('issue.currencyCreate', ['currencyType' => $currencyType]);
     }
@@ -68,7 +68,7 @@ class CurrencyTypeInitController extends Controller
         }
         $currencyIcon['created_at'] = self::carbonNow();
 
-        if (DB::table('dcuex_crypto_currency')->insert($currencyIcon)) {
+        if (DB::table('currencies')->insert($currencyIcon)) {
 
             return redirect('issuer/currencyTypeInit');
         }
@@ -95,14 +95,14 @@ class CurrencyTypeInitController extends Controller
     {
         $currencyType = $currency = [];
         if ($id) {
-            $currency = DB::table('dcuex_crypto_currency as currency')
-                ->join('dcuex_currency_type as type','currency.currency_type_id','=','type.id')
+            $currency = DB::table('currencies as currency')
+                ->join('currency_types as type','currency.currency_type_id','=','type.id')
                 ->where('currency.id',$id)
                 ->get(['currency.*','type.id as currency_type_id', 'type.title'])
                 ->first();
         }
         if ($currency->currency_type_id) {
-            $currencyType = DB::table('dcuex_currency_type')->get();
+            $currencyType = DB::table('currency_types')->get();
         }
 
         return view('issue.currencyCreate',[
@@ -122,7 +122,7 @@ class CurrencyTypeInitController extends Controller
     public function update(CurrencyInitRequest $request, $id)
     {
         $currency = $request->except(['_token','_method','editFlag','x','y','w','h']);
-        $query = DB::table('dcuex_crypto_currency')->where('id',$id);
+        $query = DB::table('currencies')->where('id',$id);
         $currency['updated_at'] = self::carbonNow();
 
         if ($request->hasFile('currency_icon') && $request->file('currency_icon')->isValid()) {
@@ -148,7 +148,7 @@ class CurrencyTypeInitController extends Controller
     public function destroy($id)
     {
         return response()->json(['code' => 100020 ,'error' => '不能删除系统交易币种']);
-        /*if (DB::table('dcuex_crypto_currency')->where('id', $id)->delete()) {
+        /*if (DB::table('currencies')->where('id', $id)->delete()) {
 
             return response()->json([]);
         }*/

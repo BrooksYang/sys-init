@@ -24,9 +24,9 @@ class UserWalletController extends Controller
     public function index(Request $request)
     {
         $search = trim($request->search,'');
-        $userWallet = DB::table('dcuex_user_wallet as u_wallet')
+        $userWallet = DB::table('wallets_balances as u_wallet')
             ->join('users as u','u_wallet.user_id','u.id')
-            ->join('dcuex_crypto_currency as currency','u_wallet.user_wallet_currency_id','currency.id')
+            ->join('currencies as currency','u_wallet.user_wallet_currency_id','currency.id')
             ->when($search, function ($query) use ($search){
                 return $query->where('currency.currency_title_cn','like',"%$search%")
                     ->orwhere('currency.currency_title_en_abbr','like',"%$search%")
@@ -60,7 +60,7 @@ class UserWalletController extends Controller
     {
         $userWallet = $request->except(['_token','editFlag']);
         if (!empty($userWallet)) {
-            DB::table('dcuex_user_crypto_wallet')->insert($userWallet);
+            DB::table('wallets')->insert($userWallet);
         }
 
         return redirect('user/wallet');
@@ -86,9 +86,9 @@ class UserWalletController extends Controller
     public function edit($id)
     {
         //获取币种信息
-        $currency = DB::table('dcuex_crypto_currency')->get(['id', 'currency_title_cn', 'currency_title_en_abbr']);
+        $currency = DB::table('currencies')->get(['id', 'currency_title_cn', 'currency_title_en_abbr']);
         //获取用户记账钱包信息
-        $userWallet = DB::table('dcuex_user_wallet as u_wallet')
+        $userWallet = DB::table('wallets_balances as u_wallet')
             ->join('users as u','u_wallet.user_id','u.id')
             ->where('u_wallet.id',$id)
             ->select('u_wallet.*', 'u.username', 'u.email')
@@ -111,7 +111,7 @@ class UserWalletController extends Controller
     public function update(UserWalletRequest $request, $id)
     {
         $userWallet = $request->except(['_token', '_method', 'editFlag']);
-        $query = DB::table('dcuex_user_wallet')->where('id',$id);
+        $query = DB::table('wallets_balances')->where('id',$id);
         if(!empty($userWallet) && $query->first()){
             $query->update($userWallet);
         }
@@ -129,7 +129,7 @@ class UserWalletController extends Controller
     {
         return response()->json(['code' => 100060 ,'error' => '不能删除交易用户记账钱包']);
 
-        /*if (DB::table('dcuex_user_wallet')->where('id', $id)->delete()) {
+        /*if (DB::table('wallets_balances')->where('id', $id)->delete()) {
 
             return response()->json([]);
         }*/

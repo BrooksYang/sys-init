@@ -12,7 +12,7 @@ class UserWallet extends Model
      *
      * @var string
      */
-    protected $table = 'dcuex_user_wallet';
+    protected $table = 'wallets_balances';
 
     /**
      * The attributes that are mass assignable.

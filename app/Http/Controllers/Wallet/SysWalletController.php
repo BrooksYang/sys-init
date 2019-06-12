@@ -24,8 +24,8 @@ class SysWalletController extends Controller
     public function index(Request $request)
     {
         $search = trim($request->search,'');
-        $sysWallet = DB::table('dcuex_sys_wallet as s_wallet')
-            ->join('dcuex_crypto_currency as currency','s_wallet.sys_wallet_currency_id','currency.id')
+        $sysWallet = DB::table('wallets_balances_system as s_wallet')
+            ->join('currencies as currency','s_wallet.sys_wallet_currency_id','currency.id')
             ->when($search, function ($query) use ($search){
                 return $query->where('currency.currency_title_cn','like',"%$search%")
                     ->orwhere('currency.currency_title_en_abbr','like',"%$search%");
@@ -56,7 +56,7 @@ class SysWalletController extends Controller
     {
         $sysWallet = $request->except(['_token','editFlag']);
         if (!empty($sysWallet)) {
-            DB::table('dcuex_sys_wallet')->insert($sysWallet);
+            DB::table('wallets_balances_system')->insert($sysWallet);
         }
 
         return redirect('sys/wallet');
@@ -82,9 +82,9 @@ class SysWalletController extends Controller
     public function edit($id)
     {
         ////获取币种信息
-        $currency = DB::table('dcuex_crypto_currency')->get(['id', 'currency_title_cn', 'currency_title_en_abbr']);
+        $currency = DB::table('currencies')->get(['id', 'currency_title_cn', 'currency_title_en_abbr']);
         //获取系統平台记账钱包信息
-        $sysWallet = DB::table('dcuex_sys_wallet as s_wallet')
+        $sysWallet = DB::table('wallets_balances_system as s_wallet')
             ->where('sys_wallet_currency_id',$id)->first();
 
         return view('wallet.sysWalletCreate', [
@@ -104,7 +104,7 @@ class SysWalletController extends Controller
     public function update(SysWalletRequest $request, $id)
     {
         $sysWallet = $request->except(['_token', '_method', 'editFlag']);
-        $query = DB::table('dcuex_sys_wallet')->where('id',$id);
+        $query = DB::table('wallets_balances_system')->where('id',$id);
         if(!empty($sysWallet) && $query->first()){
             $query->update($sysWallet);
         }
@@ -122,7 +122,7 @@ class SysWalletController extends Controller
     {
         return response()->json(['code' => 100060 ,'error' => '不能删除交易用户记账钱包']);
 
-        /*if (DB::table('dcuex_sys_wallet')->where('id', $id)->delete()) {
+        /*if (DB::table('wallets_balances_system')->where('id', $id)->delete()) {
 
             return response()->json([]);
         }*/

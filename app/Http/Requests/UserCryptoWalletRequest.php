@@ -26,11 +26,11 @@ class UserCryptoWalletRequest extends FormRequest
     {
         return [
             'crypto_wallet_currency_id' =>
-                'required|numeric|min:1|unique:dcuex_user_crypto_wallet,withdraw_currency_id,'.$request->cryptoWallet,
+                'required|numeric|min:1|unique:wallets,withdraw_currency_id,'.$request->cryptoWallet,
             'crypto_wallet_title' =>
-                'required|max:255|unique:dcuex_user_crypto_wallet,crypto_wallet_title,'.$request->cryptoWallet,
+                'required|max:255|unique:wallets,crypto_wallet_title,'.$request->cryptoWallet,
             'crypto_wallet_address' =>
-                'required|max:255|unique:dcuex_user_crypto_wallet,crypto_wallet_address,'.$request->cryptoWallet,
+                'required|max:255|unique:wallets,crypto_wallet_address,'.$request->cryptoWallet,
             'crypto_wallet_description' => 'nullable|max:255'
         ];
     }

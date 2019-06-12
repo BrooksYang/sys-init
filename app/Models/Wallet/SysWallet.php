@@ -12,7 +12,7 @@ class SysWallet extends Model
      *
      * @var string
      */
-    protected $table = 'dcuex_sys_wallet';
+    protected $table = 'wallets_balances_system';
 
     /**
      * The attributes that are mass assignable.

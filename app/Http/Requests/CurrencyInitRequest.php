@@ -27,19 +27,19 @@ class CurrencyInitRequest extends FormRequest
         return [
             'currency_title_cn' =>[
                 'required',
-                'unique:dcuex_crypto_currency,currency_title_cn,'.$request->currencyTypeInit,
+                'unique:currencies,currency_title_cn,'.$request->currencyTypeInit,
                 'regex:/^[\x7f-\xff]+$/',
                 'max:100'
             ] ,
             'currency_title_en' =>[
                 'required',
-                'unique:dcuex_crypto_currency,currency_title_en,'.$request->currencyTypeInit,
+                'unique:currencies,currency_title_en,'.$request->currencyTypeInit,
                 'regex:/^[a-z\sA-Z]+$/',   //允许英文字符和空格
                 'max:100'
             ] ,
             'currency_title_en_abbr' => [
                 'required',
-                'unique:dcuex_crypto_currency,currency_title_en_abbr,'.$request->currencyTypeInit,
+                'unique:currencies,currency_title_en_abbr,'.$request->currencyTypeInit,
                 'regex:/^[a-zA-Z]+$/',    //允许英文字符
                 'max:50'
             ],

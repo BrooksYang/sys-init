@@ -26,7 +26,7 @@ class CurrencyContractToUserRequest extends FormRequest
     public function rules(Request $request)
     {
         return [
-            'currency_id' =>'required|numeric|min:1|unique:dcuex_user_currency_contract,currency_id,'.$request->userCurrencyContract,
+            'currency_id' =>'required|numeric|min:1|unique:currency_contracts,currency_id,'.$request->userCurrencyContract,
             //'symbol' => 'required',
             'user_withdraw_daily_amount_limit' =>'required|numeric|min:1',
             'user_withdraw_daily_count_limit' =>'required|numeric|min:1',
