@@ -26,11 +26,11 @@ class SysCryptoWalletReequest extends FormRequest
     {
         return [
             'sys_crypto_wallet_currency_id' =>
-                'required|numeric|max:255|unique:dcuex_sys_crypto_wallet,sys_crypto_wallet_currency_id,'.$request->cryptoWallet,
+                'required|numeric|max:255|unique:wallets_system,sys_crypto_wallet_currency_id,'.$request->cryptoWallet,
             'sys_crypto_wallet_title' =>
-                'required|max:255|unique:dcuex_sys_crypto_wallet,sys_crypto_wallet_title,'.$request->cryptoWallet,
+                'required|max:255|unique:wallets_system,sys_crypto_wallet_title,'.$request->cryptoWallet,
             'sys_crypto_wallet_address' =>
-                'required|max:255|unique:dcuex_sys_crypto_wallet,sys_crypto_wallet_address,'.$request->cryptoWallet,
+                'required|max:255|unique:wallets_system,sys_crypto_wallet_address,'.$request->cryptoWallet,
             'sys_crypto_wallet_description' => 'nullable|max:255'
         ];
     }

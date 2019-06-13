@@ -38,10 +38,10 @@ class UserWithdrawOrderController extends Controller
         //按币种-用户名-电话检索
         $search = trim($request->search,'');
         $filter = trim($request->filter,'');
-        $userWithdrawOrder = DB::table('dcuex_user_withdraw_order as withdraw')
+        $userWithdrawOrder = DB::table('order_withdraws as withdraw')
             ->join('users as u','withdraw.user_id','u.id') //用户信息
-            ->join('dcuex_crypto_currency as currency','withdraw.withdraw_currency_id','currency.id')  //币种
-            ->join('dcuex_user_crypto_wallet as u_wallet','withdraw.withdraw_user_crypto_wallet_id','u_wallet.id') //用户数字钱包
+            ->join('currencies as currency','withdraw.withdraw_currency_id','currency.id')  //币种
+            ->join('wallets as u_wallet','withdraw.withdraw_user_crypto_wallet_id','u_wallet.id') //用户数字钱包
             ->when($search, function ($query) use ($search){
                 return $query->where('currency.currency_title_cn','like',"%$search%")
                     ->orwhere('currency.currency_title_en_abbr','like',"%$search%")
@@ -183,7 +183,7 @@ class UserWithdrawOrderController extends Controller
     {
         return response()->json(['code' => 100070 ,'error' => '不能删除交易用户提币订单']);
 
-        /*if (DB::table('dcuex_user_withdraw_order')->where('id', $id)->delete()) {
+        /*if (DB::table('order_withdraws')->where('id', $id)->delete()) {
 
             return response()->json([]);
         }*/

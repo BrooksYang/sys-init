@@ -39,7 +39,7 @@ class OtcAdController extends Controller
         $orderC = trim($request->orderC,'');
         $otcAd = DB::table('otc_advertisements as otcAd')
             ->join('users as u','otcAd.user_id','u.id') //用户信息
-            ->join('dcuex_crypto_currency as currency','otcAd.currency_id','currency.id')  //币种
+            ->join('currencies as currency','otcAd.currency_id','currency.id')  //币种
             ->join('otc_legal_currencies as legal_currency','otcAd.legal_currency_id','legal_currency.id') //法币
             ->when($search, function ($query) use ($search){
                 return $query->where('currency.currency_title_cn','like',"%$search%")

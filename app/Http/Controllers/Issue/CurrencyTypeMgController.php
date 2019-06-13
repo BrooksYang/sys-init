@@ -24,7 +24,7 @@ class CurrencyTypeMgController extends Controller
     public function index(Request $request)
     {
         $search = trim($request->search,'');
-        $currencyType = DB::table('dcuex_currency_type')
+        $currencyType = DB::table('currency_types')
             ->when($search, function ($query) use ($search){
                 return $query->where('title','like',"%$search%");
             })
@@ -54,7 +54,7 @@ class CurrencyTypeMgController extends Controller
         $currencyType = $request->except(['_token','editFlag']);
         $currencyType['created_at'] = self::carbonNow();
 
-        if (DB::table('dcuex_currency_type')->insert($currencyType)) {
+        if (DB::table('currency_types')->insert($currencyType)) {
 
             return redirect('issuer/currencyTypeMg');
         }
@@ -81,7 +81,7 @@ class CurrencyTypeMgController extends Controller
     {
         $currencyType = [];
         if ($id) {
-            $currencyType = DB::table('dcuex_currency_type')
+            $currencyType = DB::table('currency_types')
                 ->where('id',$id)->first() ;
         }
 
@@ -102,7 +102,7 @@ class CurrencyTypeMgController extends Controller
     {
         $updateCurrencyType = $request->except(['_token', '_method', 'editFlag']);
         $updateCurrencyType['updated_at'] = self::carbonNow();
-        $query = DB::table('dcuex_currency_type')->where('id',$id);
+        $query = DB::table('currency_types')->where('id',$id);
         if($query->first()){
             $query->update($updateCurrencyType);
         }
@@ -119,11 +119,11 @@ class CurrencyTypeMgController extends Controller
     public function destroy($id)
     {
         //该类型是否已被引用
-        if (DB::table('dcuex_crypto_currency')->where('currency_type_id',$id)->first()) {
+        if (DB::table('currencies')->where('currency_type_id',$id)->first()) {
 
             return response()->json(['code' => 100030 ,'error' => '该类型已被代币使用暂不能删除']);
         }
-        if (DB::table('dcuex_currency_type')->where('id', $id)->delete()) {
+        if (DB::table('currency_types')->where('id', $id)->delete()) {
 
             return response()->json([]);
         }

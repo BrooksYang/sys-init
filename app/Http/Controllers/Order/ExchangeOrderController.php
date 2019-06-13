@@ -42,7 +42,7 @@ class ExchangeOrderController extends Controller
         $orderC = trim($request->orderC,'');
         $filterType= trim($request->filterType,'');
         $filterStatus= trim($request->filterStatus,'');
-        $order = DB::table('exchange_orders as order')
+        $order = DB::table('orders as order')
             ->join('users','order.user_id', 'users.id')
             ->when($filterType, function ($query) use ($filterType){
                 return $query->where('order.type', $filterType);

@@ -25,8 +25,8 @@ class CurrencyContractToUserController extends Controller
     public function index(Request $request)
     {
         $search = trim($request->search,'');
-        $query = DB::table('dcuex_user_currency_contract as userCurrency')
-            ->join('dcuex_crypto_currency as currency','userCurrency.currency_id','=','currency.id')
+        $query = DB::table('currency_contracts as userCurrency')
+            ->join('currencies as currency','userCurrency.currency_id','=','currency.id')
             ->select(['userCurrency.*', 'currency.currency_title_cn', 'currency.currency_title_en_abbr']);
 
         if ($search) {
@@ -51,7 +51,7 @@ class CurrencyContractToUserController extends Controller
      */
     public function create()
     {
-        $currency = DB::table('dcuex_crypto_currency')
+        $currency = DB::table('currencies')
             ->get(['id','currency_title_cn', 'currency_title_en','currency_title_en_abbr']);
 
         return view('issue.userCurrencyContractCreate',['currency' => $currency, 'symbolStr' =>'', 'editFlag' =>'']);
@@ -71,8 +71,8 @@ class CurrencyContractToUserController extends Controller
         $symbol = $this->sortOutSymbol($request->symbol, $request->currency_id, $request->quote_currency,'created_at');
 
         DB::transaction(function () use ($symbol, $currencyContract) {
-            DB::table('dcuex_currency_symbol')->insert($symbol);
-            DB::table('dcuex_user_currency_contract')->insert($currencyContract);
+            DB::table('currency_symbols')->insert($symbol);
+            DB::table('currency_contracts')->insert($currencyContract);
         });
 
         return redirect('issuer/userCurrencyContract');
@@ -99,12 +99,12 @@ class CurrencyContractToUserController extends Controller
     {
         $userCurrencyContract = $currency = [];
         if ($id) {
-            $userCurrencyContract = DB::table('dcuex_user_currency_contract as userCurrency')
+            $userCurrencyContract = DB::table('currency_contracts as userCurrency')
                 ->where('userCurrency.id',$id)->first();
         }
         $symbol = [];
         if ($userCurrencyContract->currency_id) {
-            $currency = DB::table('dcuex_crypto_currency')->get(['id','currency_title_cn', 'currency_title_en_abbr']);
+            $currency = DB::table('currencies')->get(['id','currency_title_cn', 'currency_title_en_abbr']);
             //获取交易对信息
             $symbol = $this->getSymbol($userCurrencyContract->currency_id);
         }
@@ -129,13 +129,13 @@ class CurrencyContractToUserController extends Controller
     {
         $userCurrencyContract = $request->except(['_token','_method','symbol','quote_currency','editFlag']);
         $currencyId = $request->currency_id;
-        $query = DB::table('dcuex_user_currency_contract')->where('id',$id);
+        $query = DB::table('currency_contracts')->where('id',$id);
         $userCurrencyContract['updated_at'] = self::carbonNow();
 
         //获取并处理新-旧交易对信息
         $symbol = $this->sortOutSymbol($request->symbol, $currencyId,$request->quote_currency, 'updated_at');
         // TODO 需要-更新和维护除交易对及费率外的其余字段
-        $oldSymbol = DB::table('dcuex_currency_symbol')->where('base_currency_id', $currencyId)
+        $oldSymbol = DB::table('currency_symbols')->where('base_currency_id', $currencyId)
             ->get(['base_currency_id','quote_currency_id','symbol','maker_fee','taker_fee',
                'base_currency','quote_currency', 'last_price', 'last_price_yesterday','change',
                 'price_precision','amount_precision','created_at']);
@@ -143,7 +143,7 @@ class CurrencyContractToUserController extends Controller
 
         DB::transaction(function () use ($query, $userCurrencyContract, $currencyId, $symbol) {
             $query->update($userCurrencyContract);
-            $querySymbol = DB::table('dcuex_currency_symbol');
+            $querySymbol = DB::table('currency_symbols');
             $querySymbol->where('base_currency_id', $currencyId)->delete();
             foreach ($symbol as $key => $itemSymbol) {
                 $querySymbol->insert($itemSymbol);
@@ -162,7 +162,7 @@ class CurrencyContractToUserController extends Controller
     public function destroy($id)
     {
         return response()->json(['code' => 100010 ,'error' => '不能删除交易用户合约']);
-        /*if (DB::table('dcuex_user_currency_contract')->where('id', $id)->delete()) {
+        /*if (DB::table('currency_contracts')->where('id', $id)->delete()) {
 
             return response()->json([]);
         }*/
@@ -177,11 +177,11 @@ class CurrencyContractToUserController extends Controller
      */
     public function getSymbol($currencyId, $sortOUt='')
     {
-         $quoteCurrencyIds = DB::table('dcuex_currency_symbol')
+         $quoteCurrencyIds = DB::table('currency_symbols')
             ->where('base_currency_id', $currencyId)
             ->get(['quote_currency_id'])->toArray();
 
-         $quoteCurrencySymbol =  DB::table('dcuex_crypto_currency')
+         $quoteCurrencySymbol =  DB::table('currencies')
             ->whereIn('id', array_pluck($quoteCurrencyIds,'quote_currency_id'))
             ->get(['currency_title_en_abbr'])->toArray();
 
@@ -217,7 +217,7 @@ class CurrencyContractToUserController extends Controller
             ];
         }
         //获取计价币种信息
-        $quoteCurrencyInfo = DB::table('dcuex_crypto_currency')
+        $quoteCurrencyInfo = DB::table('currencies')
             ->whereIn('currency_title_en_abbr' ,$queryQuoteCurrency)
             ->get(['id','currency_title_en_abbr'])->toArray();
 
@@ -241,8 +241,8 @@ class CurrencyContractToUserController extends Controller
      */
     public function symbolByCurrency()
     {
-        $currencySymbol = DB::table('dcuex_currency_symbol as symbol')
-            ->join('dcuex_crypto_currency as currency','symbol.base_currency_id','currency.id')
+        $currencySymbol = DB::table('currency_symbols as symbol')
+            ->join('currencies as currency','symbol.base_currency_id','currency.id')
             ->get(['symbol.id','base_currency_id', 'symbol','quote_currency_id','maker_fee','taker_fee',
                 'currency_title_en_abbr as abbr']);
         $sortOutSymbol = [];
@@ -264,7 +264,7 @@ class CurrencyContractToUserController extends Controller
         $symbolFee = $request->except('_token');
 
         foreach ($symbolFee['symbolFee'] as $symbolId => $item) {
-            DB::table('dcuex_currency_symbol')->where('id', $symbolId)
+            DB::table('currency_symbols')->where('id', $symbolId)
                 ->update([
                     'maker_fee' => $item['maker_fee'],
                     'taker_fee' => $item['taker_fee'],

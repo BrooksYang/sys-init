@@ -19,7 +19,7 @@ class UserWithdrawOrder extends Model
      *
      * @var string
      */
-    protected $table = 'dcuex_user_withdraw_order';
+    protected $table = 'order_withdraws';
 
     /**
      * The attributes that are mass assignable.

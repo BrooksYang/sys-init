@@ -376,7 +376,7 @@ class HomeController extends Controller
      */
     public function getExchangeOrder($statusField='', $status = '')
     {
-        return DB::table('exchange_orders')
+        return DB::table('orders')
             ->when($statusField, function ($query) use($statusField, $status){
                 return $query->where($statusField, $status);
             })->where('created_at','like',env('APP_GMDATE', self::carbonNow()->toDateString()).'%')->count();
@@ -408,7 +408,7 @@ class HomeController extends Controller
 
     public function getOrderLog($statusField='', $status = '')
     {
-        return DB::table('exchange_order_logs')
+        return DB::table('order_logs')
             ->when($statusField, function ($query) use($statusField, $status){
                 return $query->where($statusField, $status);
             })->where('created_at','like',env('APP_GMDATE',self::carbonNow()->toDateString()).'%')->count();
@@ -421,7 +421,7 @@ class HomeController extends Controller
      */
     public function orderAmount()
     {
-        $orders = DB::table('exchange_orders')
+        $orders = DB::table('orders')
             ->where('created_at','like',env('APP_GMDATE',self::carbonNow()->toDateString()).'%')->get(['field_cash_amount']);
         $sumAmount = 0;
         foreach ($orders as $order => $amount) {
@@ -453,7 +453,7 @@ class HomeController extends Controller
      */
     public function getCurrency()
     {
-        $currency = DB::table('dcuex_crypto_currency')->get([
+        $currency = DB::table('currencies')->get([
             'currency_title_en_abbr','currency_issue_amount','currency_issue_circulation'])->toArray();
 
         $currency['total'] = count($currency);
@@ -476,7 +476,7 @@ class HomeController extends Controller
      */
     public function getDepositOrder()
     {
-        $query = DB::table('dcuex_user_deposit_order');
+        $query = DB::table('order_deposits');
         $depositOrder['order'] = $query->select(DB::raw("count(deposit_order_status) as orderNum"),
             DB::raw("sum(deposit_amount) as deposit_amount"),'deposit_order_status')
             ->where('created_at', 'like',env('APP_GMDATE', self::carbonNow()->toDateString()).'%')
@@ -499,7 +499,7 @@ class HomeController extends Controller
      */
     public function getWithdrawOrder()
     {
-        $query = DB::table('dcuex_user_withdraw_order');
+        $query = DB::table('order_withdraws');
         $withdrawOrder['order'] = $query->select(DB::raw("count(withdraw_order_status) as orderNum"),
             DB::raw("sum(withdraw_amount) as amount"),'withdraw_order_status as status')
             ->where('created_at', 'like',env('APP_GMDATE', self::carbonNow()->toDateString()).'%')
@@ -528,7 +528,7 @@ class HomeController extends Controller
      */
     public function getExchangeByStatus()
     {
-        $orderStatus = DB::table('exchange_orders')->select(DB::raw('count(type) as statusNum'), 'status')
+        $orderStatus = DB::table('orders')->select(DB::raw('count(type) as statusNum'), 'status')
             ->where('created_at' ,'like', env('APP_GMDATE',self::carbonNow()->toDateString()).'%')
             ->groupBy('status')->orderBy('status', 'asc')->get();
 
@@ -549,7 +549,7 @@ class HomeController extends Controller
      */
     public function getExchangeOrderByType()
     {
-       $orderByType['order'] =  DB::table('exchange_orders')
+       $orderByType['order'] =  DB::table('orders')
             ->select(DB::raw('sum(field_amount) as amount'), 'type', DB::raw('sum(field_cash_amount) as cash_amount'))
             ->where('created_at' ,'like', env('APP_GMDATE',self::carbonNow()->toDateString()).'%')
             ->groupBy('type')->orderBy('type','asc')->get();
@@ -575,7 +575,7 @@ class HomeController extends Controller
      */
     public function getExchangeOrderLog()
     {
-        $orderLog['order'] =  DB::table('exchange_order_logs')
+        $orderLog['order'] =  DB::table('order_logs')
             ->select(DB::raw('sum(field_amount) as amount'), 'type', DB::raw('sum(price) as price'))
             ->where('created_at' ,'like', env('APP_GMDATE',self::carbonNow()->toDateString()).'%')
             ->groupBy('type')->orderBy('type','asc')->get();

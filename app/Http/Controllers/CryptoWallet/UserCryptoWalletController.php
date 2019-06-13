@@ -33,9 +33,9 @@ class UserCryptoWalletController extends Controller
         $search = trim($request->search,'');
         $filterType = trim($request->filterType,'');
 
-        $userCryptoWallet = DB::table('dcuex_user_crypto_wallet as u_wallet')
+        $userCryptoWallet = DB::table('wallets as u_wallet')
             ->join('users as u','u_wallet.user_id','u.id')
-            ->join('dcuex_crypto_currency as currency','u_wallet.crypto_wallet_currency_id','currency.id')
+            ->join('currencies as currency','u_wallet.crypto_wallet_currency_id','currency.id')
             ->when($search, function ($query) use ($search){
                 return $query->where('u_wallet.crypto_wallet_title','like',"%$search%")
                     ->orwhere('u.username', 'like', "%$search%");
@@ -70,7 +70,7 @@ class UserCryptoWalletController extends Controller
         $userCryptoWallet = $request->except(['_token','editFlag']);
         if (!empty($userCryptoWallet)) {
             $userCryptoWallet['created_at'] = self::carbonNow();
-            DB::table('dcuex_user_crypto_wallet')->insert($userCryptoWallet);
+            DB::table('wallets')->insert($userCryptoWallet);
         }
 
             return redirect('user/cryptoWallet');
@@ -96,9 +96,9 @@ class UserCryptoWalletController extends Controller
     public function edit($id)
     {
         //获取币种信息
-        $currency = DB::table('dcuex_crypto_currency')->get(['id', 'currency_title_cn', 'currency_title_en_abbr']);
+        $currency = DB::table('currencies')->get(['id', 'currency_title_cn', 'currency_title_en_abbr']);
         //获取用户数字钱包信息
-        $userCryptoWallet = DB::table('dcuex_user_crypto_wallet as u_wallet')
+        $userCryptoWallet = DB::table('wallets as u_wallet')
             ->join('users as u','u_wallet.user_id','u.id')
             ->where('u_wallet.id',$id)
             ->select('u_wallet.*', 'u.username', 'u.email')
@@ -122,7 +122,7 @@ class UserCryptoWalletController extends Controller
     {
         $userCryptoWallet = $request->except(['_token', '_method', 'editFlag']);
         $userCryptoWallet['updated_at'] = self::carbonNow();
-        $query = DB::table('dcuex_user_crypto_wallet')->where('id',$id);
+        $query = DB::table('wallets')->where('id',$id);
         if(!empty($userCryptoWallet) && $query->first() ){
             $query->update($userCryptoWallet);
         }
@@ -140,7 +140,7 @@ class UserCryptoWalletController extends Controller
     {
         return response()->json(['code' => 100050 ,'error' => '不能删除交易用户数字钱包']);
 
-        /*if (DB::table('dcuex_user_crypto_wallet')->where('id', $id)->delete()) {
+        /*if (DB::table('wallets')->where('id', $id)->delete()) {
 
             return response()->json([]);
         }*/

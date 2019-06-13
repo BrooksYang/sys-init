@@ -44,8 +44,8 @@ class UserOtcDepositOrderController extends Controller
         $orderC = trim($request->orderC,'');
         $userOtcDepositOrder = DB::table('otc_deposits as order')
             ->join('users as u','order.user_id','u.id') //用户信息
-            ->join('dcuex_crypto_currency as currency','order.currency_id','currency.id')  //币种
-            ->join('dcuex_sys_crypto_wallet as s_wallet','order.sys_wallet_id','s_wallet.id') //运营方数字钱包
+            ->join('currencies as currency','order.currency_id','currency.id')  //币种
+            ->join('wallets_system as s_wallet','order.sys_wallet_id','s_wallet.id') //运营方数字钱包
             ->when($search, function ($query) use ($search){
                 return $query->where('currency.currency_title_cn','like',"%$search%")
                     ->orwhere('currency.currency_title_en_abbr','like',"%$search%")

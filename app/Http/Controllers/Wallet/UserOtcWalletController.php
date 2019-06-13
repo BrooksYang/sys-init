@@ -26,7 +26,7 @@ class UserOtcWalletController extends Controller
         $search = trim($request->search,'');
         $userOtcWallet = DB::table('otc_balances as u_wallet')
             ->join('users as u','u_wallet.user_id','u.id')
-            ->join('dcuex_crypto_currency as currency','u_wallet.currency_id','currency.id')
+            ->join('currencies as currency','u_wallet.currency_id','currency.id')
             ->when($search, function ($query) use ($search){
                 return $query->where('currency.currency_title_cn','like',"%$search%")
                     ->orwhere('currency.currency_title_en_abbr','like',"%$search%")
@@ -48,7 +48,7 @@ class UserOtcWalletController extends Controller
     public function create()
     {
         //获取币种信息
-       /* $currency = DB::table('dcuex_crypto_currency')->get(['id', 'currency_title_cn', 'currency_title_en_abbr']);
+       /* $currency = DB::table('currencies')->get(['id', 'currency_title_cn', 'currency_title_en_abbr']);
 
         return view('wallet.userOtcWalletCreate',['currency' => $currency]);*/
     }
@@ -63,7 +63,7 @@ class UserOtcWalletController extends Controller
     {
         $userOtcWallet = $request->except(['_token','editFlag']);
         if (!empty($userOtcWallet)) {
-            DB::table('dcuex_user_crypto_wallet')->insert($userOtcWallet);
+            DB::table('wallets')->insert($userOtcWallet);
         }
 
         return redirect('otc/user/wallet');
@@ -89,7 +89,7 @@ class UserOtcWalletController extends Controller
     public function edit($id)
     {
         //获取币种信息
-        $currency = DB::table('dcuex_crypto_currency')->get(['id', 'currency_title_cn', 'currency_title_en_abbr']);
+        $currency = DB::table('currencies')->get(['id', 'currency_title_cn', 'currency_title_en_abbr']);
         //获取用户记账钱包信息
         $userOtcWallet = DB::table('otc_balances as u_wallet')
             ->join('users as u','u_wallet.user_id','u.id')

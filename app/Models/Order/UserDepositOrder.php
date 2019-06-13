@@ -20,7 +20,7 @@ class UserDepositOrder extends Model
      *
      * @var string
      */
-    protected $table = 'dcuex_user_deposit_order';
+    protected $table = 'order_deposits';
 
     /**
      * The attributes that are mass assignable.

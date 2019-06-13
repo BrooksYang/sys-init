@@ -36,8 +36,8 @@ class SysCryptoWalletController extends Controller
         $search = trim($request->search,'');
         $filterType = trim($request->filterType,'');
 
-        $sysCryptoWallet = DB::table('dcuex_sys_crypto_wallet as s_wallet')
-            ->join('dcuex_crypto_currency as currency','s_wallet.sys_crypto_wallet_currency_id','currency.id')
+        $sysCryptoWallet = DB::table('wallets_system as s_wallet')
+            ->join('currencies as currency','s_wallet.sys_crypto_wallet_currency_id','currency.id')
             ->when($search, function ($query) use ($search){
                 return $query->where('s_wallet.sys_crypto_wallet_title','like',"%$search%")
                     ->orwhere('currency.currency_title_cn', 'like', "%$search%")
@@ -76,7 +76,7 @@ class SysCryptoWalletController extends Controller
         $userCryptoWallet = $request->except(['_token','editFlag']);
         $userCryptoWallet['created_at'] = self::carbonNow();
 
-        if (DB::table('dcuex_sys_crypto_wallet')->insert($userCryptoWallet)) {
+        if (DB::table('wallets_system')->insert($userCryptoWallet)) {
 
             return redirect('sys/cryptoWallet');
         }
@@ -104,7 +104,7 @@ class SysCryptoWalletController extends Controller
         //获取币种信息
         $currency = $this->getCurrecy();
         //获取系统平台数字钱包信息
-        $sysCryptoWallet = DB::table('dcuex_sys_crypto_wallet as s_wallet')
+        $sysCryptoWallet = DB::table('wallets_system as s_wallet')
             ->where('s_wallet.id',$id)->first();
 
         return view('cryptoWallet.sysCryptoWalletCreate', [
@@ -125,7 +125,7 @@ class SysCryptoWalletController extends Controller
     {
         $sysCryptoWallet = $request->except(['_token', '_method', 'editFlag']);
         $sysCryptoWallet['updated_at'] = self::carbonNow();
-        $query = DB::table('dcuex_sys_crypto_wallet')->where('id',$id);
+        $query = DB::table('wallets_system')->where('id',$id);
         if($query->first()){
             $query->update($sysCryptoWallet);
         }
@@ -143,7 +143,7 @@ class SysCryptoWalletController extends Controller
     {
         return response()->json(['code' => 100050 ,'error' => '不能删除系统平台数字钱包']);
 
-        /*if (DB::table('dcuex_sys_crypto_wallet')->where('id', $id)->delete()) {
+        /*if (DB::table('wallets_system')->where('id', $id)->delete()) {
 
             return response()->json([]);
         }*/
@@ -155,6 +155,6 @@ class SysCryptoWalletController extends Controller
      */
     private function getCurrecy(){
 
-        return DB::table('dcuex_crypto_currency')->get(['id', 'currency_title_cn', 'currency_title_en_abbr']);
+        return DB::table('currencies')->get(['id', 'currency_title_cn', 'currency_title_en_abbr']);
     }
 }

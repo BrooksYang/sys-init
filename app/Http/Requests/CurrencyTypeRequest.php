@@ -27,7 +27,7 @@ class CurrencyTypeRequest extends FormRequest
         return [
             'title' =>[
                 'required',
-                'unique:dcuex_currency_type,title,'.$request->currencyTypeMg,
+                'unique:currency_types,title,'.$request->currencyTypeMg,
                 'alpha_dash',
             ],
             'subtitled' => 'nullable|max:255',

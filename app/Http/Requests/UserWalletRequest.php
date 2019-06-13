@@ -26,7 +26,7 @@ class UserWalletRequest extends FormRequest
     {
         return [
             'user_wallet_currency_id' =>
-                'required|numeric|min:1|unique:dcuex_user_wallet,user_wallet_currency_id,'.$request->wallet,
+                'required|numeric|min:1|unique:wallets_balances,user_wallet_currency_id,'.$request->wallet,
             'user_wallet_balance' =>
                 'required|unumeric|min:1',
             'user_wallet_balance_freeze_amount' =>

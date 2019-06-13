@@ -42,10 +42,10 @@ class UserDepositOrderController extends Controller
         $search = trim($request->search,'');
         $filter = trim($request->filter,'');
         $orderC = trim($request->orderC,'');
-        $userDepositOrder = DB::table('dcuex_user_deposit_order as order')
+        $userDepositOrder = DB::table('order_deposits as order')
             ->join('users as u','order.user_id','u.id') //用户信息
-            ->join('dcuex_crypto_currency as currency','order.currency_id','currency.id')  //币种
-            ->join('dcuex_sys_crypto_wallet as s_wallet','order.deposit_sys_crypto_wallet_id','s_wallet.id') //运营方数字钱包
+            ->join('currencies as currency','order.currency_id','currency.id')  //币种
+            ->join('wallets_system as s_wallet','order.deposit_sys_crypto_wallet_id','s_wallet.id') //运营方数字钱包
             ->when($search, function ($query) use ($search){
                 return $query->where('currency.currency_title_cn','like',"%$search%")
                     ->orwhere('currency.currency_title_en_abbr','like',"%$search%")
@@ -136,7 +136,7 @@ class UserDepositOrderController extends Controller
     {
         return response()->json(['code' => 100060 ,'error' => '不能删除交易用户充值订单']);
 
-        /*if (DB::table('dcuex_user_deposit_order')->where('id', $id)->delete()) {
+        /*if (DB::table('order_deposits')->where('id', $id)->delete()) {
 
             return response()->json([]);
         }*/
@@ -150,7 +150,7 @@ class UserDepositOrderController extends Controller
      */
     public function checkAction($orderId, $orderStatus)
     {
-        $orderSrcStatus = DB::table('dcuex_user_deposit_order as deposits')
+        $orderSrcStatus = DB::table('order_deposits as deposits')
             ->where('deposits.id', $orderId)->value('deposit_order_status');
 
         $actionStatus = in_array($orderStatus, [
