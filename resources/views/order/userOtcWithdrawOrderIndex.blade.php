@@ -24,56 +24,27 @@
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>--}}
                         @include('component.filter', ['url'=>url('order/otc/withdraw'), 'filters'=>$orderStatus, 'filter'=>'status','title'=>'筛选状态', 'isInline'=>true])
-                        @include('component.filter', ['url'=>url('order/otc/withdraw'), 'filters'=>$from, 'filter'=>'from','title'=>'筛选来源', 'icon'=>'fontello-menu', 'isInline'=>true])
                     </div>
 
                     {{-- Title --}}
                     <h3 class="box-title"><i class="fontello-doc"></i>
-                        <span>OTC 用户提币订单待受理列表</span>
+                        <span>OTC 用户提币订单列表</span>
                     </h3>
                 </div>
 
                 {{-- Table --}}
                 <div class="box-body">
                     <div class="box-body table-responsive no-padding">
-                        {{--搜索筛选-导出--}}
-                        <form action="{{ url('order/otc/withdraw/exportExcel') }}" class="in-block">
-                            <div class="col-mg-12">
-                                @include('component.dateTimePicker', ['colMdNum'=>4, 'id'=>1, 'label'=>'提现开始时间','name'=>'start_time','placeholder'=>'请选择要导出的提现开始时间'])
-                                @include('component.dateTimePicker', ['colMdNum'=>4, 'id'=>2, 'label'=>'提现结束时间','name'=>'end_time','placeholder'=>'请选择要导出的提现结束时间'])
-                                <div class="col-md-2">
-                                    <label>(未选择日期默认导出全部)</label>
-                                    <div class="form-group">
-                                        <div class="input-group date">
-                                            <button class="btn btn-info pull-right">按日期导出USDT提现记录</button>
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div class="col-md-2">
-                                    <label>(按周导出提现记录)</label>
-                                    <div class="form-group">
-                                        <div class="input-group date">
-                                            <a href="{{ url('order/otc/withdraw') }}?byWeek=withdrawWeekExportExcel"
-                                               class="btn btn-success pull-right">按周导出USDT提现记录</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
 
                         <table class="table table-hover table-striped">
                             <tr>
                                 <th>序号</th>
                                 <th>用户名</th>
                                 <th>电话</th>
-                                <th>来源</th>
                                 <th>币种</th>
                                 <th>提币金额</th>
                                 <th>汇率(RMB)</th>
                                 <th>RMB</th>
-                                <th>手续费比例(%)</th>
-                                <th>手续费</th>
                                 <th>支付方式</th>
                                 <th>收款账号</th>
                                 @if(config('app.otc_withdraw_currency'))
@@ -89,15 +60,12 @@
                                     <td>{{ ($key + 1) + ($userOtcWithdrawOrder->currentPage() - 1) * $userOtcWithdrawOrder->perPage() }}</td>
                                     <td title="{{ $item->username }}"><strong>{{ str_limit($item->username,15) }}</strong></td>
                                     <td title="{{$item->phone}}">{{ $item->phone }}</td>
-                                    <td>{{ $from[$item->from]['name'] ?? '--' }}</td>
                                     <td title="{{$item->currency_title_cn.' ('.$item->currency_title_en_abbr.')'}}">
                                         <span class="label label-success">{{ str_limit($item->currency_title_en_abbr ?:'--', 15) }}</span>
                                     </td>
                                     <td title="{{number_format($item->amount,8,'.',',') }}">{{ number_format($item->amount,8,'.',',') }}</td>
                                     <td title="{{number_format($item->rate ?:0,8) }}">{{ number_format($item->rate ?:0,8) }}</td>
                                     <td title="{{number_format($item->rmb ?:0,8) }}">{{ number_format($item->rmb ?:0,8) }}</td>
-                                    <td title="手续费比例">{{ $item->fee_percentage ?: 0 }}</td>
-                                    <td title="手续费">{{number_format($item->fee ?:0,8) }}</td>
                                     {{--支付方式和账号--}}
                                     <?php $payType = \App\Models\OTC\OtcPayType::find($item->pay_type_id); ?>
                                     <td class="hbfont">
@@ -107,11 +75,13 @@
                                         {{ str_limit($item->account ?:'--', 25) }}
                                         @if($item->account)
                                             <!-- Button trigger modal -->
-                                                <a href="javascript:;"  class="ajaxPayAccount" data-toggle="modal" data-target="#exampleModalLongPayAccount{{$key}}" data-pay-user="{{$item->user_id}}" data-pay-account="{{ $item->account }}" data-key="{{$item->uid}}" title="开户信息">
+                                                <a href="javascript:;"  class="ajaxPayAccount" data-toggle="modal" data-target="#exampleModalLongPayAccount{{$key}}"
+                                                   data-pay-user="{{$item->user_id}}" data-pay-account="{{ $item->account }}" data-key="{{$item->uid}}" title="开户信息">
                                                     &nbsp;<i class="fa fa-info-circle"></i>
                                                 </a>
                                                 <!-- Modal -->
-                                                <div class="modal fade" id="exampleModalLongPayAccount{{$key}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongPayAccountTitle{{$key}}" aria-hidden="true">
+                                                <div class="modal fade" id="exampleModalLongPayAccount{{$key}}" tabindex="-1" role="dialog"
+                                                     aria-labelledby="exampleModalLongPayAccountTitle{{$key}}" aria-hidden="true">
                                                     <div class="modal-dialog" role="document">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
@@ -140,40 +110,18 @@
                                     </td>
                                     <td>{{ $item->created_at ?: '--' }}</td>
                                     <td>
-                                        @if($item->status == \App\Models\OTC\OtcWithdraw::OTC_WAITING )
+                                        @if($item->status == \App\Models\OTC\OtcWithdraw::OTC_PENDING)
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->uid }}',
-                                                    '{{ url("order/otc/withdraw/$item->uid") }}','status',2,
-                                                    ' OTC 提币订单为<b><strong> 处理中 </strong></b> 状态',
-                                                    '{{ csrf_token() }}', '处理中' );" title="处理中"> <i class=" fontello-loop"></i> </a>
-                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->uid }}',
-                                                    '{{ url("order/otc/withdraw/$item->uid") }}','status',3,
-                                                    ' OTC 提币订单为<b><strong> 已发币 </strong></b> 状态',
-                                                    '{{ csrf_token() }}', '已发币' );" title="已发币"> <i class="fontello-ok"></i>
-                                            </a><a href="javascript:;" onclick="itemUpdate('{{ $item->uid }}',
-                                                    '{{ url("order/otc/withdraw/$item->uid") }}','status',4,
-                                                    ' OTC 提币订单为<b><strong> 失败 </strong></b> 状态',
-                                                    '{{ csrf_token() }}', '失败' );" title="失败"> <i class="fontello-reply"></i> </a>
-                                        @elseif($item->status == \App\Models\OTC\OtcWithdraw::OTC_PENDING)
-                                            <a href="javascript:;" onclick="itemUpdate('{{ $item->uid }}',
-                                                    '{{ url("order/otc/withdraw/$item->uid") }}','status',3,
-                                                    ' OTC 提币订单为<b><strong> 已发币 </strong></b> 状态',
-                                                    '{{ csrf_token() }}', '已发币' );" title="已发币"> <i class="fontello-ok"></i>
-                                            </a><a href="javascript:;" onclick="itemUpdate('{{ $item->uid }}',
                                                     '{{ url("order/otc/withdraw/$item->uid") }}','status',4,
                                                     ' OTC 提币订单为<b><strong> 失败 </strong></b> 状态',
                                                     '{{ csrf_token() }}', '失败' );" title="失败"> <i class="fontello-reply"></i> </a>
                                         @else
                                             {{ '--' }}
                                         @endif
-                                        {{--<a href="javascript:;" onclick="itemDelete('{{ $item->uid }}',
-                                                '{{ url("order/otc/withdraw/$item->uid") }}',
-                                                '{{ csrf_token() }}');">
-                                            <i class="fontello-trash-2" title="删除"></i>
-                                        </a>--}}
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="{{ config('app.otc_withdraw_currency') ? 16 : 15 }}" class="text-center">
+                                <tr><td colspan="{{ config('app.otc_withdraw_currency') ? 13 : 12 }}" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>

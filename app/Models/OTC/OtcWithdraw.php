@@ -28,14 +28,6 @@ class OtcWithdraw extends Model
         self::OTC_FAILED   => ['name' => '失败',     'class'=>''],
     ];
 
-    // 订单类型 1-交易所提现  2-OTC提现
-    const EX_WITHDRAW  = 1;
-    const OTC_WITHDRAW = 2;
-
-    const FROM = [
-        self::EX_WITHDRAW  => ['name'=>'EX',  'class'=>''],
-        self::OTC_WITHDRAW => ['name'=>'OTC', 'class'=>'']
-    ];
 
     /**
      * OTC提现订单
