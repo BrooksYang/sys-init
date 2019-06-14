@@ -12,7 +12,7 @@ class UserWallet extends Model
      *
      * @var string
      */
-    protected $table = 'wallets_balances';
+    protected $table = 'wallet_balances';
 
     /**
      * The attributes that are mass assignable.
