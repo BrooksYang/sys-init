@@ -53,13 +53,10 @@ class UserOtcWithdrawOrderController extends Controller
             4 => ['name' => '失败',    'class' => 'danger'],
         ];
 
-        // 提现订单来源
-        $from = OtcWithdraw::FROM;
 
         //按币种-用户名-电话检索
         $search = trim($request->search,'');
         $filterStatus = trim($request->status,'');
-        $filterFrom = trim($request->from,'');
         $orderC = trim($request->orderC ?:'desc','');
 
         // 是否真实提币-真实提币或提人民币
@@ -96,16 +93,13 @@ class UserOtcWithdrawOrderController extends Controller
             ->when($filterStatus, function ($query) use ($filterStatus){
                 return $query->where('withdraw.status', $filterStatus);
             })
-            ->when($filterFrom, function ($query) use ($filterFrom){
-                return $query->where('withdraw.from', $filterFrom);
-            })
             ->when($orderC, function ($query) use ($orderC){
                 return $query->orderBy('withdraw.created_at', $orderC);
             })
             ->select($select)
             ->paginate(self::USER_OTC_WITHDRAW_ORDER_PAGE_SIZE );
 
-        return view('order.userOtcWithdrawOrderIndex', compact('orderStatus', 'from', 'userOtcWithdrawOrder'));
+        return view('order.userOtcWithdrawOrderIndex', compact('orderStatus', 'userOtcWithdrawOrder'));
     }
 
     /**
@@ -137,9 +131,9 @@ class UserOtcWithdrawOrderController extends Controller
         set_time_limit(0);
 
         // 设置下载excel文件的headers
-       /* $columns = [ 'A用户名', 'B电话', 'C提现时间','D来源' 'E提现USDT金额', 'F汇率','G折合金额(RMB)', 'H手续费百分比(USDT)','I手续费金额(USDT)','J实际到帐金额(RMB)',
-            'K收款人','L收款方式','M银行','N账号','O币种','P开户行地址','Q提现状态','R备注'];*/
-        $columns = [ '用户名','电话','提现时间','来源','提现USDT金额','汇率','折合金额(RMB)', '手续费百分比(USDT)','手续费金额(USDT)','实际到帐金额(RMB)',
+       /* $columns = [ 'A用户名', 'B电话', 'C提现时间','D提现USDT金额', 'E汇率','F折合金额(RMB)',
+            'G收款人','H收款方式','I银行','J账号','K币种','L开户行地址','M提现状态','N备注'];*/
+        $columns = [ '用户名','电话','提现时间','来源','提现USDT金额','汇率','折合金额(RMB)', '手续费百分比(USDT)','手续费金额(USDT)',
             '收款人','收款方式','银行','账号','币种','开户行地址','提现状态','备注'];
 
         $timeFlag = ($start ?:'开始').'-'.($end ?:'当前');
@@ -168,13 +162,9 @@ class UserOtcWithdrawOrderController extends Controller
                 $rowData[$key][] = $users[$item->user_id]['username'] ?? '';
                 $rowData[$key][] = $users[$item->user_id]['phone'] ?? '';
                 $rowData[$key][] = $item->created_at ?? '';
-                $rowData[$key][] = OtcWithdraw::FROM[$item->from]['name'] ?? '';
                 $rowData[$key][] = $item->amount ?? '';
                 $rowData[$key][] = $item->rate ?? '';
                 $rowData[$key][] = number_format($item->rmb,2,'.','') ?? ''; // 折合金额（RMB）
-                $rowData[$key][] = $item->fee_percentage ?? ''; // 手续费百分比（USDT）
-                $rowData[$key][] = number_format($item->fee,2,'.','') ?? ''; // 手续费（USDT）
-                $rowData[$key][] = round(bcsub($item->rmb, bcmul($item->fee, $item->rate)), 2) ?? ''; // 实际到帐金额（RMB）
 
                 $rowData[$key][] = $userPay->name ?? '';
                 $rowData[$key][] = $userPay->payType->name ?? '';
@@ -230,21 +220,17 @@ class UserOtcWithdrawOrderController extends Controller
             'A'   =>  10,
             'B'   =>  15,
             'C'   =>  20,
-            'D'   =>  6,
-            'E'   =>  20,
-            'F'   =>  10,
+            'D'   =>  20,
+            'E'   =>  10,
+            'F'   =>  20,
             'G'   =>  20,
-            'H'   =>  20,
-            'I'   =>  20,
+            'H'   =>  10,
+            'I'   =>  12,
             'J'   =>  20,
-            'K'   =>  10,
-            'L'   =>  12,
-            'M'   =>  20,
-            'N'   =>  20,
-            'O'   =>  10,
-            'P'   =>  15,
-            'Q'   =>  12,
-            'R'   =>  10,
+            'K'   =>  20,
+            'L'   =>  10,
+            'M'   =>  15,
+            'N'   =>  12,
         ));
 
         return $sheet;
@@ -390,7 +376,6 @@ class UserOtcWithdrawOrderController extends Controller
         $balance = OtcBalance::firstOrNew(['user_id' => $order->user_id, 'currency_id' => $order->currency_id]);
         $userWallet = UserWallet::firstOrNew(['user_id' => $order->user_id, 'user_wallet_currency_id' => $order->currency_id]);
         $sysWallet = SysWallet::where('sys_wallet_currency_id', $order->currency_id)->first();
-        $from =$order->from;
 
         //如核对通过则从交易用户的对应记账钱包中提币
         $jsonArray = ['code' =>0, 'msg' => '更新成功' ];
@@ -398,26 +383,16 @@ class UserOtcWithdrawOrderController extends Controller
 
         // 已发币
         if ($request->update  == OtcWithdraw::OTC_RELEASED) {
-            DB::transaction(function () use ($order,$balance, $userWallet,$from,$sysWallet) {
+            DB::transaction(function () use ($order, $balance, $userWallet, $sysWallet) {
                 //更新提币订单
                 $order->status = OtcWithdraw::OTC_RELEASED;
                 $order->updated_at = self::carbonNow();
                 $order->save();
 
-                if ($from == OtcWithdraw::EX_WITHDRAW) {
-                    //更新ex记账钱包余额
-                    $userWallet->user_wallet_balance_freeze_amount = bcsub($userWallet->user_wallet_balance_freeze_amount, $order->amount);
-                    $userWallet->updated_at = self::carbonNow();
-                    $userWallet->save();
-                }
-
-                if ($from == OtcWithdraw::OTC_WITHDRAW) {
-                    //更新otc记账钱包余额
-                    $balance->frozen = bcsub($balance->frozen, $order->amount);
-                    $balance->updated_at = self::carbonNow();
-                    $balance->save();
-                }
-
+                //更新otc记账钱包余额
+                $balance->frozen = bcsub($balance->frozen, $order->amount);
+                $balance->updated_at = self::carbonNow();
+                $balance->save();
 
                /* $sysWallet->sys_wallet_balance = bcsub($sysWallet->sys_wallet_balance, $order->amount);
                 $sysWallet->sys_wallet_balance_freeze_amount  = bcsub($sysWallet->sys_wallet_balance_freeze_amount, $order->amount);
@@ -428,27 +403,17 @@ class UserOtcWithdrawOrderController extends Controller
 
         // 失败-恢复冻结金额
         if ($request->update  == OtcWithdraw::OTC_FAILED) {
-            DB::transaction(function () use ($order,$balance, $userWallet, $from, $sysWallet) {
+            DB::transaction(function () use ($order, $balance, $userWallet, $sysWallet) {
                 //更新提币订单
                 $order->status = OtcWithdraw::OTC_FAILED;
                 $order->updated_at = self::carbonNow();
                 $order->save();
 
-                if ($from == OtcWithdraw::EX_WITHDRAW) {
-                    //更新ex记账钱包余额
-                    $userWallet->user_wallet_balance_freeze_amount = bcsub($userWallet->user_wallet_balance_freeze_amount, $order->amount);
-                    $userWallet->user_wallet_balance = bcadd($userWallet->user_wallet_balance, $order->amount);
-                    $userWallet->updated_at = self::carbonNow();
-                    $userWallet->save();
-                }
-
-                if ($from == OtcWithdraw::OTC_WITHDRAW) {
-                    //更新otc记账钱包余额
-                    $balance->frozen = bcsub($balance->frozen, $order->amount);
-                    $balance->available = bcadd($balance->available, $order->amount);
-                    $balance->updated_at = self::carbonNow();
-                    $balance->save();
-                }
+                //更新otc记账钱包余额
+                $balance->frozen = bcsub($balance->frozen, $order->amount);
+                $balance->available = bcadd($balance->available, $order->amount);
+                $balance->updated_at = self::carbonNow();
+                $balance->save();
 
                /* $sysWallet->sys_wallet_balance = bcadd($sysWallet->sys_wallet_balance, $order->amount);
                 $sysWallet->sys_wallet_balance_freeze_amount  = bcsub($sysWallet->sys_wallet_balance_freeze_amount, $order->amount);

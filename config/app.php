@@ -51,7 +51,7 @@ return [
      |
      |
      */
-    'otc_withdraw_currency' => env('OTC_WITHDRAW_CURRENCY', false),
+    'otc_withdraw_currency' => env('OTC_WITHDRAW_CURRENCY', true),
 
     /*
     |--------------------------------------------------------------------------
