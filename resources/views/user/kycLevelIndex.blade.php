@@ -10,14 +10,15 @@
                     {{-- Add Button --}}
                     <div class="pull-right box-tools">
                         <form action="{{ url('user/kycLevel/manage') }}" class="in-block">
-                            <input id="search_input" type="text" class="form-control width-0" placeholder="搜索认证等级名称" name="search" value="{{ $search ?? Request::get('search')}}">
+                            <input id="search_input" type="text" class="form-control width-0" placeholder="搜索认证等级名称" name="search"
+                                   value="{{ $search ?? Request::get('search')}}">
                             <a href="javascript:;" title="搜索认证等级名称">
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
                         </form>
-                        <a href="{{ url('user/kycLevel/manage/create') }}" title="添加KYC认证等级">
+                       {{-- <a href="{{ url('user/kycLevel/manage/create') }}" title="添加KYC认证等级">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
-                        </a>
+                        </a>--}}
                     </div>
 
                     {{-- Title --}}
@@ -37,7 +38,7 @@
                                 {{--<th>单日可提币上限</th>--}}
                                 <th>描述</th>
                                 <th>更新时间</th>
-                                <th>操作</th>
+                                {{--<th>操作</th>--}}
                             </tr>
                             @forelse($kycLevel as $key => $item)
                                 <tr>
@@ -72,7 +73,7 @@
                                         </div>
                                     </td>
                                     <td>{{ $item->created_at ? $item->created_at : '--' }}</td>
-                                    <td>
+                                    {{--<td>
                                         <a href="{{ url("user/kycLevel/manage/$item->id/edit") }}">
                                             <i class="fontello-edit" title="编辑"></i>
                                         </a>
@@ -81,14 +82,10 @@
                                                 '{{ csrf_token() }}');">
                                             <i class="fontello-trash-2" title="删除"></i>
                                         </a>
-                                    </td>
+                                    </td>--}}
                                 </tr>
                             @empty
-                                <tr><td colspan="6" class="text-center">
-                                        <div class="noDataValue">
-                                            暂无数据
-                                        </div>
-                                    </td></tr>
+                                @include('component.noData', ['colSpan' => 5])
                             @endforelse
                         </table>
 
