@@ -24,7 +24,7 @@ class UserWalletController extends Controller
     public function index(Request $request)
     {
         $search = trim($request->search,'');
-        $userWallet = DB::table('wallets_balances as u_wallet')
+        $userWallet = DB::table('wallet_balances as u_wallet')
             ->join('users as u','u_wallet.user_id','u.id')
             ->join('currencies as currency','u_wallet.user_wallet_currency_id','currency.id')
             ->when($search, function ($query) use ($search){
@@ -88,7 +88,7 @@ class UserWalletController extends Controller
         //获取币种信息
         $currency = DB::table('currencies')->get(['id', 'currency_title_cn', 'currency_title_en_abbr']);
         //获取用户记账钱包信息
-        $userWallet = DB::table('wallets_balances as u_wallet')
+        $userWallet = DB::table('wallet_balances as u_wallet')
             ->join('users as u','u_wallet.user_id','u.id')
             ->where('u_wallet.id',$id)
             ->select('u_wallet.*', 'u.username', 'u.email')
@@ -111,7 +111,7 @@ class UserWalletController extends Controller
     public function update(UserWalletRequest $request, $id)
     {
         $userWallet = $request->except(['_token', '_method', 'editFlag']);
-        $query = DB::table('wallets_balances')->where('id',$id);
+        $query = DB::table('wallet_balances')->where('id',$id);
         if(!empty($userWallet) && $query->first()){
             $query->update($userWallet);
         }
@@ -129,7 +129,7 @@ class UserWalletController extends Controller
     {
         return response()->json(['code' => 100060 ,'error' => '不能删除交易用户记账钱包']);
 
-        /*if (DB::table('wallets_balances')->where('id', $id)->delete()) {
+        /*if (DB::table('wallet_balances')->where('id', $id)->delete()) {
 
             return response()->json([]);
         }*/

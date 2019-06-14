@@ -76,7 +76,7 @@ class UserWithdrawOrder
     public function checkBalance($withdrawOrder)
     {
         $withdrawOrderInfo = DB::table('order_withdraws as w_order')
-            ->join('wallets_balances as u_wallet', 'w_order.withdraw_currency_id', 'u_wallet.user_wallet_currency_id')
+            ->join('wallet_balances as u_wallet', 'w_order.withdraw_currency_id', 'u_wallet.user_wallet_currency_id')
             ->where('w_order.id', $withdrawOrder)
             ->get(['withdraw_currency_id','withdraw_amount', 'user_wallet_balance', 'user_wallet_balance_freeze_amount'])
             ->first();
