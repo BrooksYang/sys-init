@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Ticket;
 
+use App\Http\Resources\OtcOrderResource;
+use App\Models\OTC\OtcOrder;
+use App\Models\OTC\OtcTicket;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use DB;
 use Auth;
 use Entrance;
-use App\Jobs\SendSms;
 
 class HandlerController extends Controller
 {
@@ -149,9 +151,12 @@ class HandlerController extends Controller
      */
     public function detail($id)
     {
+        $ticket = OtcTicket::with('user')->findOrFail($id);
         $data['ticketStatus'] = $this->ticketStatus;
-        $data['ticket'] = DB::table('otc_ticket')->where('id',$id)->first();
+        $data['ticket'] = $ticket;
         $data['role'] = Entrance::user()->role_id;
+        $data['order'] = $this->orderDetail($ticket->order_id);
+
         $replyMatrix = DB::table('otc_ticket_reply')
                             ->where('ticket_id',$id)
                             ->where('reply_parent_id',0)
@@ -291,6 +296,23 @@ class HandlerController extends Controller
         DB::table('otc_supervisor_state')->where('supervisor_id',$transferFrom)->update(['ticket_amount'=>$transferFromCount]);
 
         return response()->json(['msg'=>'success']);
+    }
+
+    /**
+     * 订单详情
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function orderDetail($id)
+    {
+        // 判断订单是否存在
+        $order = OtcOrder::findOrFail($id);
+
+        // 字段映射
+        $order =  OtcOrderResource::attribute($order);
+
+        return (object)$order;
     }
 
     /**

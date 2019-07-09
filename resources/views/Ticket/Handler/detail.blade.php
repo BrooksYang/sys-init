@@ -16,6 +16,24 @@
     </div>
     <!-- /.box-header -->
     <div class="box-body">
+        <div class="alert alert-info">
+            <button data-dismiss="alert" class="close" type="button">×</button>
+            <span class="entypo-info-circled"></span>
+            <strong>订单信息：</strong>&nbsp;&nbsp;
+            <p><i class="fa fa-user"></i>
+                申诉人：{{  ('用户名'.@$ticket->user->username ?:'--').' | 邮箱 '.(@$ticket->user->email?:'--').' | 电话 '.@$ticket->user->phone ?:'--' }}
+            </p>
+            <P>【订单日期】{{ $order->created_at }}&nbsp;&nbsp;&nbsp;&nbsp;【订单号】{{ $order->id }}</P>
+            <p>【广告类型】{{ $order->type_text }}&nbsp;&nbsp;&nbsp;&nbsp;【币种】{{ $order->currency }}&nbsp;&nbsp;&nbsp;&nbsp;
+                【法币】{{ $order->legal_currency }}
+            </p>
+            <p>【广告用户】{{ $order->from }}</p>
+            <p>【订单用户】{{ $order->to }}</p>
+            <p>【交易数量】{{ $order->field_amount.' '.$order->currency }}&nbsp;&nbsp;&nbsp;&nbsp;【单价】{{ $order->price.' '.$order->legal_currency }}&nbsp;&nbsp;&nbsp;&nbsp;
+                【总价】{{ $order->cash_amount.' '.$order->currency }}
+            </p>
+            <p>【订单状态】{{ $order->status_text }}&nbsp;&nbsp;&nbsp;&nbsp;【申诉状态】{{ $order->appeal_text }}</p>
+        </div>
     	<div class="row">
 	    	<div class="col-md-12">
               <ul class="media-list">
@@ -26,14 +44,14 @@
                     </a>
                   </div>
                   <div class="media-body">
-                    <p class="media-heading"><strong>工单日期：{{ $ticket->created_at }} &nbsp;&nbsp; 
+                    <p class="media-heading">【<strong>工单日期：{{ $ticket->created_at }} &nbsp;&nbsp;
                       状态：                        
                         @if($ticket->ticket_state != null)
                         {{ $ticketStatus[$ticket->ticket_state] }}
                         @else
                         未处理
-                        @endif</strong></p>
-                    <p><strong>{{ $ticket->content}}</strong></p>
+                        @endif</strong>】</p>
+                    <p>内容：<b>{{ $ticket->content}}</b></p>
                     @if($role == config('conf.supervisor_role'))
                     <p> <a href="javascript:;" title="回复工单" onclick="ticketReply('{{ $ticket->id }}')">回复</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#javascript:;" onclick="ticketDel('{{ $ticket->id }}')">删除</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="{{ url('ticket/handler/ticketTransfer').'/'.$ticket->id }}" title="">转移</a></p>
                     @endif
@@ -110,6 +128,9 @@
                         </div>
                      @endif
                     @endforeach
+                    @if(($role == config('conf.supervisor_role')) && ($order->appeal_status==\App\Models\OTC\OtcOrder::APPEALING))
+                    <div class="pull-right"><a href="javascript:viod(0)" class="btn btn-danger">申诉完结</a></div>
+                    @endif
                   </div>
                 </li>
               </ul>
