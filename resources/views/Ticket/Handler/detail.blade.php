@@ -34,8 +34,9 @@
                         未处理
                         @endif</strong></p>
                     <p><strong>{{ $ticket->content}}</strong></p>
+                    @if($role == config('conf.supervisor_role'))
                     <p> <a href="javascript:;" title="回复工单" onclick="ticketReply('{{ $ticket->id }}')">回复</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#javascript:;" onclick="ticketDel('{{ $ticket->id }}')">删除</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="{{ url('ticket/handler/ticketTransfer').'/'.$ticket->id }}" title="">转移</a></p>
-
+                    @endif
                     <div class="row" style="margin-top:20px">
                       <div class="col-md-12">
                             @if($ticket->attachment_1_url != null)

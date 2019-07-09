@@ -151,6 +151,7 @@ class HandlerController extends Controller
     {
         $data['ticketStatus'] = $this->ticketStatus;
         $data['ticket'] = DB::table('otc_ticket')->where('id',$id)->first();
+        $data['role'] = Entrance::user()->role_id;
         $replyMatrix = DB::table('otc_ticket_reply')
                             ->where('ticket_id',$id)
                             ->where('reply_parent_id',0)
