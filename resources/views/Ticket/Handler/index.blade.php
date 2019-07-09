@@ -21,7 +21,9 @@
                       <th>客服</th>
                       <th>分配时间</th>
                       <th>包含附件</th>
+                      @if($role == config('conf.supervisor_role') )
                       <th>操作</th>
+                      @endif
                   </tr>
                   @foreach($tickets as $ticket)
                   <tr id="{{ 'cell_'.$ticket->id }}">
@@ -34,9 +36,9 @@
                         未处理
                         @endif
                       </td>
-                      <td>{{ $ticket->created_at }}</td>
-                      <td><a href="javascript:;" onclick="getSupervisor('{{ $ticket->supervisor_id }}')">查看</a></td>
-                      <td>{{ $ticket->assign_at}}</td>
+                      <td>{{ $ticket->created_at ?:'--' }}</td>
+                      <td><a href="javascript:;"  @if($ticket->ticket_state != 1) onclick="getSupervisor('{{ $ticket->supervisor_id }}')" @endif>查看</a></td>
+                      <td>{{ $ticket->assign_at ?:'--'}}</td>
                       <td>
                         @if($ticket->attachment_1_url != null)
                         <strong class="text-green">是</strong>
@@ -44,11 +46,13 @@
                         <strong class="text-danger">否</strong>
                         @endif
                       </td>
+                      @if($role == config('conf.supervisor_role') )
                       <td>
                         <a href="{{ url('ticket/handler/detail').'/'.$ticket->id }}">处理</a>&nbsp;&nbsp;
                         <a href="{{ url('ticket/handler/ticketTransfer').'/'.$ticket->id }}">转移</a>&nbsp;&nbsp;
                         <a href="#javascript:;" onclick="ticketDel('{{ $ticket->id }}')">删除</a>
                       </td>
+                      @endif
                   </tr>
                   @endforeach
                   </tbody>

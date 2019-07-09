@@ -22,7 +22,7 @@
                 <li class="media">
                   <div class="media-left">
                     <a href="#">
-                      <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('assets/images/customer.jpg') }}" style="width: 64px; height: 64px;">
+                      <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('img/customer.png') }}" style="width: 64px;">
                     </a>
                   </div>
                   <div class="media-body">
@@ -59,7 +59,7 @@
                         <div class="media">
                           <div class="media-left">
                             <a href="javascript:;">
-                              <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('assets/images/supervisor.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
+                              <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('img/supervisor.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
                             </a>
                           </div>
                           <div class="media-body">
@@ -75,7 +75,7 @@
                         <div class="media">
                           <div class="media-left">
                             <a href="javascript:;">
-                              <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('assets/images/supervisor.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
+                              <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('img/supervisor.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
                             </a>
                           </div>
                           <div class="media-body">
@@ -89,9 +89,9 @@
                                 <div class="media-left">
                                   <a href="#">
                                     @if($replyLtwo['reply_type']==1)
-                                    <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('assets/images/customer.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
+                                    <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('img/customer.png') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
                                     @else
-                                    <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('assets/images/supervisor.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
+                                    <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('img/supervisor.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
                                     @endif
                                   </a>
                                 </div>

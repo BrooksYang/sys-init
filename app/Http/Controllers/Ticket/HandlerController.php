@@ -220,7 +220,8 @@ class HandlerController extends Controller
     public function index()
     {
         $data['ticketStatus'] = $this->ticketStatus;
-        
+        $data['role'] = Entrance::user()->role_id;
+
         if(Entrance::user()->role_id == $this->supervisor) {
             $data['tickets'] = DB::table('otc_ticket')
                                 ->where('supervisor_id', Entrance::user()->id)
