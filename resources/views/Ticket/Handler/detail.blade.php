@@ -128,9 +128,14 @@
                         </div>
                      @endif
                     @endforeach
-                    @if(($role == config('conf.supervisor_role')) && ($order->appeal_status==\App\Models\OTC\OtcOrder::APPEALING))
-                    <div class="pull-right"><a href="javascript:viod(0)" class="btn btn-danger">申诉完结</a></div>
-                    @endif
+                    @if(($role == config('conf.supervisor_role')) && ($order->appeal_status==\App\Models\OTC\OtcOrder::APPEALING))--}}
+                        <div class="pull-right">
+                            <a href="javascript:viod(0)" class="btn btn-danger" onclick="itemUpdate('{{ $ticket->id }}',
+                                    '{{ url("ticket/handler/appealEnd/$ticket->id") }}','order_id','{{ $ticket->order_id }}',
+                                    '工单为<b><strong> 完结 </strong></b> 状态',
+                                    '{{ csrf_token() }}','完结工单');">申诉完结</a>
+                        </div>
+                   @endif
                   </div>
                 </li>
               </ul>

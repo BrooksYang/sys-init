@@ -109,4 +109,16 @@ class OtcOrder extends Model
             ->select(['id', 'abbr']);
     }
 
+    /**
+     * 筛选申诉状态
+     *
+     * @param $query
+     * @param $appealStatus
+     * @return mixed
+     */
+    public static function scopeAppealStatus($query, $appealStatus)
+    {
+        return $query->where('appeal_status', $appealStatus);
+    }
+
 }
