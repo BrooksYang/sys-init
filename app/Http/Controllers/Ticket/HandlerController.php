@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Ticket;
 use App\Http\Resources\OtcOrderResource;
 use App\Models\OTC\OtcOrder;
 use App\Models\OTC\OtcTicket;
+use App\Models\OTC\Trade;
 use App\Models\Wallet\Balance;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -350,14 +351,21 @@ class HandlerController extends Controller
 
         // 更新otc订单状态及余额
         // 已支付-未放币 强制出售方放币
-        if ($order->status == OtcOrder::PAID) {
+        if ($request->field == 'release' && $order->status == OtcOrder::PAID) {
             $msg = $this->forceRelease($order);
         }
 
         // 已放币-未收币 强制购买方收币
-        if ($order->status == OtcOrder::RELEASED) {
+        if ($request->field =='receive' && $order->status == OtcOrder::RELEASED) {
             $msg = $this->forceReceive($order);
         }
+
+        // 已支付 - 强制取消订单
+        if ($request->field == 'cancel' && $order->status == OtcOrder::PAID) {
+            $msg = $this->forceCancel($order);
+        }
+
+        // 仅完结申诉订单和工单
 
         // 更新otc订单及工单
         DB::transaction(function () use($orderSrc, $ticket){
@@ -434,6 +442,37 @@ class HandlerController extends Controller
         });
 
         return '已强制收币';
+    }
+
+    /**
+     * 强制取消订单
+     *
+     * @param $order
+     * @return string
+     * @throws \Throwable
+     */
+    public function forceCancel($order)
+    {
+        DB::transaction(function () use ($order) {
+            // 取消订单
+            $order->status = OtcOrder::CANCELED;
+            $order->save();
+
+            // 还原广告进度
+            $trade = Trade::find($order->advertisement_id);
+            $trade->field_amount = bcsub($trade->field_amount, $order->field_amount);
+            $trade->field_order_count --;
+            $trade->field_percentage = bcmul(bcdiv($trade->field_amount, $trade->amount), 100);
+
+            // 若已完成，且撤单，则标记广告为进行中
+            if (round($trade->field_percentage) != 100 && $trade->status == Trade::FINISHED) {
+                $trade->status = Trade::ON_SALE;
+            }
+
+            $trade->save();
+        });
+
+        return '已强制取消订单';
     }
 
     /**

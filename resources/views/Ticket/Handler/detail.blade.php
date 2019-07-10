@@ -1,6 +1,11 @@
 @extends('entrance::layouts.default')
 
 @section('content')
+    <style>
+        .ml-5{
+            margin-left: 5px;
+        }
+    </style>
 
 
 <div class="box">
@@ -20,8 +25,8 @@
             <button data-dismiss="alert" class="close" type="button">×</button>
             <span class="entypo-cancel-circled"></span>
             <strong>
-                操作提示：进行申诉完结操作前请先核对并确认订单信息以及申诉双方所提供相关资料；
-                申诉完结时系统默认自动强制处理【已支付-未放币】或【已放币-未确认】的订单，请慎重操作！
+                操作提示：进行操作前请先仔细核对订单信息、沟通并收集申诉双方所提供相关资料；确认无误后再进行相关操作；
+                操作时系统将自动强制处理【已支付-未放币】或【已放币-未确认】的订单，请慎重操作！
             </strong>
         </div>
         @if($order ?? '')
@@ -140,10 +145,25 @@
                     @endforeach
                     @if((isset($order) && $role == config('conf.supervisor_role')) && ($order->appeal_status==\App\Models\OTC\OtcOrder::APPEALING))
                         <div class="pull-right">
-                            <a href="javascript:viod(0)" class="btn btn-danger" onclick="itemUpdate('{{ $ticket->id }}',
-                                    '{{ url("ticket/handler/appealEnd/$ticket->id") }}','order_id','{{ $ticket->order_id }}',
+                            <a href="javascript:viod(0)" class="btn btn-success" onclick="itemUpdate('{{ $ticket->id }}',
+                                    '{{ url("ticket/handler/appealEnd/$ticket->id") }}','normal','{{ $ticket->order_id }}',
                                     '工单为<b><strong> 完结 </strong></b> 状态',
-                                    '{{ csrf_token() }}','完结工单');">申诉完结</a>
+                                    '{{ csrf_token() }}','完结工单');" title="仅更新申诉进程和工单">申诉完结</a>
+
+                            <a href="javascript:viod(0)" class="btn btn-danger ml-5" onclick="itemUpdate('{{ $ticket->id }}',
+                                    '{{ url("ticket/handler/appealEnd/$ticket->id") }}','release','{{ $ticket->order_id }}',
+                                    '订单为<b><strong> 强制发币 </strong></b> 状态',
+                                    '{{ csrf_token() }}','强制发币 - 请慎重操作！');" title="已支付-未放币">强制发币</a>
+
+                            <a href="javascript:viod(0)" class="btn btn-warning ml-5" onclick="itemUpdate('{{ $ticket->id }}',
+                                    '{{ url("ticket/handler/appealEnd/$ticket->id") }}','receive','{{ $ticket->order_id }}',
+                                    '订单为<b><strong> 强制收币 </strong></b> 状态',
+                                    '{{ csrf_token() }}','强制收币 - 请慎重操作！');" title="已放币-未确认">强制收币</a>
+
+                            <a href="javascript:viod(0)" class="btn btn-default ml-5" onclick="itemUpdate('{{ $ticket->id }}',
+                                    '{{ url("ticket/handler/appealEnd/$ticket->id") }}','cancel','{{ $ticket->order_id }}',
+                                    '订单为<b><strong> 取消 </strong></b> 状态',
+                                    '{{ csrf_token() }}','取消订单 - 请慎重操作！');" title="取消OTC订单">取消订单</a>
                         </div>
                     @endif
                   </div>
