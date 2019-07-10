@@ -16,6 +16,14 @@
     </div>
     <!-- /.box-header -->
     <div class="box-body">
+        <div class="alert alert-warning">
+            <button data-dismiss="alert" class="close" type="button">×</button>
+            <span class="entypo-cancel-circled"></span>
+            <strong>
+                操作提示：进行申诉完结操作前请先核对并确认订单信息以及申诉双方所提供相关资料；
+                申诉完结时系统默认自动强制处理【已支付-未放币】或【已放币-未确认】的订单，请慎重操作！
+            </strong>
+        </div>
         @if($order ?? '')
         <div class="alert alert-info">
             <button data-dismiss="alert" class="close" type="button">×</button>
