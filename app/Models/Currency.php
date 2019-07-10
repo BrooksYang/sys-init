@@ -27,4 +27,14 @@ class Currency extends Model
      * @var array
      */
     protected $guarded = [];
+
+    /**
+     * 获取币种
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public static  function getCurrencies()
+    {
+      return  Currency::all()->pluck('currency_title_en_abbr', 'id');
+    }
 }
