@@ -164,7 +164,11 @@ class HandlerController extends Controller
         $data['ticketStatus'] = $this->ticketStatus;
         $data['ticket'] = $ticket;
         $data['role'] = @Entrance::user()->role_id;
-        $data['order'] = $this->orderDetail($ticket->order_id);
+
+        // 判定工单是否属于申诉工单
+        if ($ticket->order_id) {
+            $data['order'] = $this->orderDetail($ticket->order_id);
+        }
 
         $replyMatrix = DB::table('otc_ticket_reply')
                             ->where('ticket_id',$id)
