@@ -55,6 +55,7 @@
               success : function(data,status){
                     layer.close(ii)
                     var obj = eval(data)
+                    if(obj['code']){ layer.msg(data.msg) }
                     if(obj['msg'] == 'success') {
                       $('#ticket_'+ticket_id).remove();
                     }
