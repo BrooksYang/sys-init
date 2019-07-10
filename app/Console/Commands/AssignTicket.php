@@ -69,9 +69,11 @@ class AssignTicket extends Command
                 ]);
 
                 // 更新otc订单申诉状态
-                $otcOrder = OtcOrder::find($ticket->order_id);
-                $otcOrder->appeal_status = OtcOrder::APPEALING;
-                $otcOrder->save();
+                if ($ticket->order_id) {
+                    $otcOrder = OtcOrder::find($ticket->order_id);
+                    $otcOrder->appeal_status = OtcOrder::APPEALING;
+                    $otcOrder->save();
+                }
             });
 
 

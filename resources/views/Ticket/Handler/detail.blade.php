@@ -128,7 +128,7 @@
                         </div>
                      @endif
                     @endforeach
-                    @if(($role == config('conf.supervisor_role')) && ($order->appeal_status==\App\Models\OTC\OtcOrder::APPEALING))--}}
+                    @if(($role == config('conf.supervisor_role')) && ($order->appeal_status==\App\Models\OTC\OtcOrder::APPEALING))
                         <div class="pull-right">
                             <a href="javascript:viod(0)" class="btn btn-danger" onclick="itemUpdate('{{ $ticket->id }}',
                                     '{{ url("ticket/handler/appealEnd/$ticket->id") }}','order_id','{{ $ticket->order_id }}',
@@ -199,6 +199,7 @@
           success : function(data,status){
                 layer.close(ii)
                 var obj = eval(data)
+                if(obj['code']){ layer.msg(data.msg) }
                 if(obj['msg'] == 'success') {
                   $(location).attr('href', "{{ url('ticket/handler/index') }}")
                 }
@@ -226,6 +227,7 @@
           success : function(data,status){
                 layer.close(ii)
                 var obj = eval(data)
+                if(obj['code']){ layer.msg(data.msg) }
                 if(obj['msg'] == 'success') {
                   $('#reply_cell_'+reply_id).remove();
                   // $(location).attr('href', "{{ url('ticket/handler/index') }}")

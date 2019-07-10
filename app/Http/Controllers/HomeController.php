@@ -66,11 +66,11 @@ class HomeController extends Controller
         });
         //当天 OTC 客服-我的工单数量
         $myTicket = Cache::remember('myTicket', $cacheLength, function () {
-            return $this->getSysTicketByState(6);
+            return $this->getSysTicketByState('', \Auth::id());
         });
         //当天 OTC 客服-我的待处理工单数量
         $myTicketByWaitingFor = Cache::remember('myTicketByWaitingFor', $cacheLength, function () {
-            return $this->getSysTicketByState(6);
+            return $this->getSysTicketByState(2, \Auth::id());
         });
         // OTC 客服-我的工单数量--按处理状态
         $myTicketByStatus = Cache::remember('myTicketByStatus', $cacheLength, function () {
@@ -736,14 +736,15 @@ class HomeController extends Controller
      * @param string $supervisor
      * @return mixed
      */
-    public function getSysTicketByState($state, $supervisor='')
+    public function getSysTicketByState($state='', $supervisor='')
     {
         return DB::table('otc_ticket')
             ->when($supervisor, function ($query) {
-                return $query->where('supervisor_id', Auth::id());
+                return $query->where('supervisor_id', \Auth::id());
             })
-            ->where('created_at', 'like',env('APP_GMDATE', self::carbonNow()->toDateString()).'%')
-            ->where('ticket_state', $state)->count('id');
+            ->when($state, function ($query) use($state){
+                return $query->where('ticket_state', $state);
+            })->count('id');
     }
 
     /**

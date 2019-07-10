@@ -99,6 +99,10 @@ class HandlerController extends Controller
      */
     public function deleteReply($id)
     {
+        if (Entrance::user()->role_id == config('conf.supervisor_role')) {
+            return response()->json(['code'=>403, 'msg'=>'暂无权限']);
+        }
+
         $reply = DB::table('otc_ticket_reply')->where('id',$id)->first();
 
         DB::table('otc_ticket_reply')->where('id',$id)->delete();
@@ -114,6 +118,10 @@ class HandlerController extends Controller
      */
     public function destroy($id)
     {
+        if (Entrance::user()->role_id == config('conf.supervisor_role')) {
+            return response()->json(['code'=>403, 'msg'=>'暂无权限']);
+        }
+
         DB::transaction(function () use($id) {
             DB::table('otc_ticket')->where('id',$id)->delete();
             DB::table('otc_ticket_reply')->where('ticket_id',$id)->delete();
