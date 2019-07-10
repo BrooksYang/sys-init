@@ -10,13 +10,16 @@
 */
 
 
-Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function()
+Route::group(['middleware' => ['web', 'auth:admin', 'entrance', 'lock.screen','mongo.log']], function()
 {
     //交易用户数字钱包
     Route::resource('user/cryptoWallet', 'CryptoWallet\UserCryptoWalletController');
 
     //运营方数字钱包
     Route::resource('sys/cryptoWallet', 'CryptoWallet\SysCryptoWalletController');
+
+    // 数字钱包交易记录
+    Route::resource('wallet/transaction','CryptoWallet\WalletTransactionController');
 
 });
 
