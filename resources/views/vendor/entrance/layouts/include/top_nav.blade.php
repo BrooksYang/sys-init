@@ -30,7 +30,11 @@
         <ul class="nav navbar-nav navbar-right">
             <li>
                 <a data-toggle="dropdown" class="dropdown-toggle text-white" href="#">
-                    <img alt="" class="admin-pic img-circle" src="{{ url('vendor/entrance/img/admin.jpg') }}">
+                    @if(Entrance::user()->role_id == config('conf.supervisor_role'))
+                        <img alt="" class="admin-pic img-circle" src="{{ url('img/supervisor.jpg') }}">
+                    @else
+                        <img alt="" class="admin-pic img-circle" src="{{ url('vendor/entrance/img/admin.jpg') }}">
+                    @endif
                     Hi, {{ Entrance::user()->name }} <b class="caret"></b>
                 </a>
                 <ul style="margin:25px 15px 0 0;" role="menu" class="dropdown-setting dropdown-menu bg-amber">
