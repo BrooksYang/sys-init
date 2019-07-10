@@ -16,26 +16,47 @@
     </div>
     <!-- /.box-header -->
     <div class="box-body">
+        @if($order ?? '')
+        <div class="alert alert-info">
+            <button data-dismiss="alert" class="close" type="button">×</button>
+            <span class="entypo-info-circled"></span>
+            <strong>订单信息：</strong>&nbsp;&nbsp;
+            <p><i class="fa fa-user"></i>
+                申诉人：{{  ('用户名'.@$ticket->user->username ?:'--').' | 邮箱 '.(@$ticket->user->email?:'--').' | 电话 '.@$ticket->user->phone ?:'--' }}
+            </p>
+            <P>【订单日期】{{ $order->created_at }}&nbsp;&nbsp;&nbsp;&nbsp;【订单号】{{ $order->id }}</P>
+            <p>【广告类型】{{ $order->type_text }}&nbsp;&nbsp;&nbsp;&nbsp;【币种】{{ $order->currency }}&nbsp;&nbsp;&nbsp;&nbsp;
+                【法币】{{ $order->legal_currency }}
+            </p>
+            <p>【广告用户】{{ $order->from }}</p>
+            <p>【订单用户】{{ $order->to }}</p>
+            <p>【交易数量】{{ $order->field_amount.' '.$order->currency }}&nbsp;&nbsp;&nbsp;&nbsp;【单价】{{ $order->price.' '.$order->legal_currency }}&nbsp;&nbsp;&nbsp;&nbsp;
+                【总价】{{ $order->cash_amount.' '.$order->currency }}
+            </p>
+            <p>【订单状态】{{ $order->status_text }}&nbsp;&nbsp;&nbsp;&nbsp;【申诉状态】{{ $order->appeal_text }}</p>
+        </div>
+        @endif
     	<div class="row">
 	    	<div class="col-md-12">
               <ul class="media-list">
                 <li class="media">
                   <div class="media-left">
                     <a href="#">
-                      <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('assets/images/customer.jpg') }}" style="width: 64px; height: 64px;">
+                      <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('img/customer.png') }}" style="width: 64px;">
                     </a>
                   </div>
                   <div class="media-body">
-                    <p class="media-heading"><strong>工单日期：{{ $ticket->created_at }} &nbsp;&nbsp; 
+                    <p class="media-heading">【<strong>工单日期：{{ $ticket->created_at }} &nbsp;&nbsp;
                       状态：                        
                         @if($ticket->ticket_state != null)
                         {{ $ticketStatus[$ticket->ticket_state] }}
                         @else
                         未处理
-                        @endif</strong></p>
-                    <p><strong>{{ $ticket->content}}</strong></p>
+                        @endif</strong>】</p>
+                    <p>内容：<b>{{ $ticket->content}}</b></p>
+                    @if($role == config('conf.supervisor_role'))
                     <p> <a href="javascript:;" title="回复工单" onclick="ticketReply('{{ $ticket->id }}')">回复</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#javascript:;" onclick="ticketDel('{{ $ticket->id }}')">删除</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="{{ url('ticket/handler/ticketTransfer').'/'.$ticket->id }}" title="">转移</a></p>
-
+                    @endif
                     <div class="row" style="margin-top:20px">
                       <div class="col-md-12">
                             @if($ticket->attachment_1_url != null)
@@ -59,7 +80,7 @@
                         <div class="media">
                           <div class="media-left">
                             <a href="javascript:;">
-                              <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('assets/images/supervisor.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
+                              <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('img/supervisor.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
                             </a>
                           </div>
                           <div class="media-body">
@@ -75,7 +96,7 @@
                         <div class="media">
                           <div class="media-left">
                             <a href="javascript:;">
-                              <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('assets/images/supervisor.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
+                              <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('img/supervisor.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
                             </a>
                           </div>
                           <div class="media-body">
@@ -89,9 +110,9 @@
                                 <div class="media-left">
                                   <a href="#">
                                     @if($replyLtwo['reply_type']==1)
-                                    <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('assets/images/customer.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
+                                    <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('img/customer.png') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
                                     @else
-                                    <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('assets/images/supervisor.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
+                                    <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('img/supervisor.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
                                     @endif
                                   </a>
                                 </div>
@@ -109,6 +130,14 @@
                         </div>
                      @endif
                     @endforeach
+                    @if((isset($order) && $role == config('conf.supervisor_role')) && ($order->appeal_status==\App\Models\OTC\OtcOrder::APPEALING))
+                        <div class="pull-right">
+                            <a href="javascript:viod(0)" class="btn btn-danger" onclick="itemUpdate('{{ $ticket->id }}',
+                                    '{{ url("ticket/handler/appealEnd/$ticket->id") }}','order_id','{{ $ticket->order_id }}',
+                                    '工单为<b><strong> 完结 </strong></b> 状态',
+                                    '{{ csrf_token() }}','完结工单');">申诉完结</a>
+                        </div>
+                    @endif
                   </div>
                 </li>
               </ul>
@@ -172,6 +201,7 @@
           success : function(data,status){
                 layer.close(ii)
                 var obj = eval(data)
+                if(obj['code']){ layer.msg(data.msg) }
                 if(obj['msg'] == 'success') {
                   $(location).attr('href', "{{ url('ticket/handler/index') }}")
                 }
@@ -199,6 +229,7 @@
           success : function(data,status){
                 layer.close(ii)
                 var obj = eval(data)
+                if(obj['code']){ layer.msg(data.msg) }
                 if(obj['msg'] == 'success') {
                   $('#reply_cell_'+reply_id).remove();
                   // $(location).attr('href', "{{ url('ticket/handler/index') }}")

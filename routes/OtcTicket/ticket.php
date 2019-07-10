@@ -13,7 +13,7 @@
  *  工单客服管理模块
  */
 
-Route::group(['prefix' => 'ticket/supervisor'], function()
+Route::group(['prefix' => 'ticket/supervisor', 'middleware' => ['web', 'auth:admin','entrance', 'lock.screen','mongo.log']], function()
 {
      Route::get('index','Ticket\SupervisorController@index');
      Route::get('create','Ticket\SupervisorController@create');
@@ -29,7 +29,7 @@ Route::group(['prefix' => 'ticket/supervisor'], function()
 /**
  *  工单处理
  */
-Route::group(['prefix' => 'ticket/handler'], function()
+Route::group(['prefix' => 'ticket/handler', 'middleware' => ['web',  'auth:admin','entrance', 'lock.screen','mongo.log']], function()
 {
      Route::get('index','Ticket\HandlerController@index');
      Route::get('task','Ticket\HandlerController@task'); // 我的任务
@@ -42,6 +42,7 @@ Route::group(['prefix' => 'ticket/handler'], function()
      Route::post('transfer','Ticket\HandlerController@transfer'); // 转移工单操作页面
      Route::post('ticketReply','Ticket\HandlerController@ticketReply'); // 回复工单
      Route::post('replyLevelTwo','Ticket\HandlerController@replyLevelTwo'); // 回复工单二级
+     Route::patch('appealEnd/{id}', 'Ticket\HandlerController@appealEnd'); // 申诉完结并强制执行
 
 });
 

@@ -6,10 +6,10 @@ use Closure;
 use Illuminate\Support\Facades\DB;
 
 //订单状态：1 等待受理 2 处理中 3 已发币 4 失败,
-const WAITING_FOR_WITHDRAW = 1;
-const WITHDRAW_PROCESSING = 2;
-const ALREADY_WITHDRAW = 3;
-const WITHDRAW_FAILED =4;
+const WAITING_FOR_WITHDRAWS = 1;
+const WITHDRAW_PROCESSINGS = 2;
+const ALREADY_WITHDRAWS = 3;
+const WITHDRAW_FAILEDS =4;
 
 /**
  * Class UserOtcWithdrawOrder
@@ -36,7 +36,7 @@ class UserOtcWithdrawOrder
             }
         }
 
-        if ($withdrawOrder && $orderStatus == ALREADY_WITHDRAW) {
+        if ($withdrawOrder && $orderStatus == ALREADY_WITHDRAWS) {
             if (!$this->checkBalance($withdrawOrder)) {
 
                 return response()->json(['code'=>200060 ,'msg' => '钱包可用余额不足']);
@@ -58,8 +58,8 @@ class UserOtcWithdrawOrder
         $orderSrcStatus = DB::table('otc_withdraws as w_order')
             ->where('w_order.id', $withdrawOrder)->value('status');
 
-        $actionStatus = in_array($orderStatus, [WAITING_FOR_WITHDRAW,WITHDRAW_PROCESSING,WITHDRAW_FAILED]);
-        if (($orderSrcStatus == ALREADY_WITHDRAW) && $actionStatus) {
+        $actionStatus = in_array($orderStatus, [WAITING_FOR_WITHDRAWS,WITHDRAW_PROCESSINGS,WITHDRAW_FAILEDS]);
+        if (($orderSrcStatus == ALREADY_WITHDRAWS) && $actionStatus) {
             return FALSE;
         }
 

@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Ticket;
 
+use App\Http\Resources\OtcOrderResource;
+use App\Models\OTC\OtcOrder;
+use App\Models\OTC\OtcTicket;
+use App\Models\Wallet\Balance;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use DB;
 use Auth;
 use Entrance;
-use App\Jobs\SendSms;
 
 class HandlerController extends Controller
 {
@@ -96,6 +99,10 @@ class HandlerController extends Controller
      */
     public function deleteReply($id)
     {
+        if (Entrance::user()->role_id == config('conf.supervisor_role')) {
+            return response()->json(['code'=>403, 'msg'=>'暂无权限']);
+        }
+
         $reply = DB::table('otc_ticket_reply')->where('id',$id)->first();
 
         DB::table('otc_ticket_reply')->where('id',$id)->delete();
@@ -111,6 +118,10 @@ class HandlerController extends Controller
      */
     public function destroy($id)
     {
+        if (Entrance::user()->role_id == config('conf.supervisor_role')) {
+            return response()->json(['code'=>403, 'msg'=>'暂无权限']);
+        }
+
         DB::transaction(function () use($id) {
             DB::table('otc_ticket')->where('id',$id)->delete();
             DB::table('otc_ticket_reply')->where('ticket_id',$id)->delete();
@@ -149,8 +160,16 @@ class HandlerController extends Controller
      */
     public function detail($id)
     {
+        $ticket = OtcTicket::with('user')->findOrFail($id);
         $data['ticketStatus'] = $this->ticketStatus;
-        $data['ticket'] = DB::table('otc_ticket')->where('id',$id)->first();
+        $data['ticket'] = $ticket;
+        $data['role'] = @Entrance::user()->role_id;
+
+        // 判定工单是否属于申诉工单
+        if ($ticket->order_id) {
+            $data['order'] = $this->orderDetail($ticket->order_id);
+        }
+
         $replyMatrix = DB::table('otc_ticket_reply')
                             ->where('ticket_id',$id)
                             ->where('reply_parent_id',0)
@@ -220,7 +239,8 @@ class HandlerController extends Controller
     public function index()
     {
         $data['ticketStatus'] = $this->ticketStatus;
-        
+        $data['role'] = Entrance::user()->role_id;
+
         if(Entrance::user()->role_id == $this->supervisor) {
             $data['tickets'] = DB::table('otc_ticket')
                                 ->where('supervisor_id', Entrance::user()->id)
@@ -289,6 +309,131 @@ class HandlerController extends Controller
         DB::table('otc_supervisor_state')->where('supervisor_id',$transferFrom)->update(['ticket_amount'=>$transferFromCount]);
 
         return response()->json(['msg'=>'success']);
+    }
+
+    /**
+     * 订单详情
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function orderDetail($id)
+    {
+        // 判断订单是否存在
+        $order = OtcOrder::findOrFail($id);
+
+        // 字段映射
+        $order =  OtcOrderResource::attribute($order);
+
+        return (object)$order;
+    }
+
+    /**
+     * 申诉完结 - 强制执行放币或收币
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function appealEnd(Request $request)
+    {
+        $ticket = OtcTicket::findOrFail($request->id);
+        $order = OtcOrder::findOrFail($request->update);
+        $orderSrc = $order->replicate();
+
+        // 订单存在且为申诉处理中
+        if ($order->appeal_status != OtcOrder::APPEALING) {
+            abort('400', '非法请求');
+        }
+
+        $msg = '更新成功';
+
+        // 更新otc订单状态及余额
+        // 已支付-未放币 强制出售方放币
+        if ($order->status == OtcOrder::PAID) {
+            $msg = $this->forceRelease($order);
+        }
+
+        // 已放币-未收币 强制购买方收币
+        if ($order->status == OtcOrder::RELEASED) {
+            $msg = $this->forceReceive($order);
+        }
+
+        // 更新otc订单及工单
+        DB::transaction(function () use($orderSrc, $ticket){
+
+            // 更新otc订单的申诉状态
+            $orderSrc->appeal_status = OtcOrder::APPEAL_END;
+            $orderSrc->save();
+
+            // 更新工单状态
+            $ticket->ticket_state = OtcTicket::REPLIED;
+            $ticket->save();
+        });
+
+        return response()->json(['code'=>0, 'msg'=>'申诉完结'.$msg]);
+    }
+
+    /**
+     * 强制放币（出售方）-（放币至冻结金额，确认收币后解冻）
+     *
+     * @param $order
+     * @return mixed
+     * @throws \Throwable
+     */
+    public function forceRelease($order)
+    {
+        DB::transaction(function () use ($order) {
+
+            // 用户购买，则发布者->用户，用户出售，则用户->发布者
+            $buyerId = $order->type == OtcOrder::BUY ? $order->user_id : $order->from_user_id;
+            $sellerId = $order->type == OtcOrder::BUY ? $order->from_user_id : $order->user_id;
+
+            $balanceBuyer = Balance::firstOrNew(['user_id' => $buyerId, 'user_wallet_currency_id' => $order->currency_id]);
+            $balanceSeller = Balance::firstOrNew(['user_id' => $sellerId, 'user_wallet_currency_id' => $order->currency_id]);
+
+            // 购买者增加余额
+            $balanceBuyer->user_wallet_balance_freeze_amount = bcadd($balanceBuyer->user_wallet_balance_freeze_amount, $order->field_amount);
+            $balanceBuyer->save();
+
+            // 出售者减少冻结金额
+            $balanceSeller->user_wallet_balance_freeze_amount = bcsub($balanceSeller->user_wallet_balance_freeze_amount, $order->field_amount);
+            $balanceSeller->save();
+
+            // 标记为已发币
+            $order->status = OtcOrder::RELEASED;
+            $order->save();
+        });
+
+        return '已强制放币';
+    }
+
+    /**
+     * 强制收币（购买方）
+     *
+     * @param $order
+     * @return bool
+     * @throws \Throwable
+     */
+    public function forceReceive($order)
+    {
+        DB::transaction(function () use ($order) {
+
+            // 购买方
+            $buyerId = $order->type == OtcOrder::BUY ? $order->user_id : $order->from_user_id;
+            $balanceBuyer = Balance::firstOrNew(['user_id' => $buyerId, 'user_wallet_currency_id' => $order->currency_id]);
+
+            // 解冻
+            $balanceBuyer->user_wallet_balance_freeze_amount = bcsub($balanceBuyer->user_wallet_balance_freeze_amount, $order->field_amount);
+            $balanceBuyer->user_wallet_balance = bcadd($balanceBuyer->user_wallet_balance, $order->field_amount);
+            $balanceBuyer->save();
+
+            // 标记为已完成
+            $order->status = OtcOrder::RECEIVED;
+            $order->save();
+        });
+
+        return '已强制收币';
     }
 
     /**
