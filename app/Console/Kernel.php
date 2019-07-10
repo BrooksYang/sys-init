@@ -23,7 +23,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        //$schedule->command('backup:run')->daily(); // backup:run --only-db
+        $schedule->command('backup:run')->daily(); // backup:run --only-db
         $schedule->command('otc:assignTicket')->everyMinute(); // 每分钟执行一次工单分配任务
         // $schedule->command('inspire')
         //          ->hourly();
