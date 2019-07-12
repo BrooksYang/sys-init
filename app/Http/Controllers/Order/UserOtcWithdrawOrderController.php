@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Order;
 
-use App\Models\OTC\OtcBalance;
 use App\Models\OTC\OtcLegalCurrency;
 use App\Models\OTC\OtcPayPath;
 use App\Models\OTC\OtcWithdraw;
@@ -366,14 +365,14 @@ class UserOtcWithdrawOrderController extends Controller
     /**
      * 更新提现订单及钱包余额  | 包含OTC提现和交易所提现
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
      */
     public function update(Request $request, $id)
     {
         $order = OtcWithdraw::findOrFail($id);
-        $balance = OtcBalance::firstOrNew(['user_id' => $order->user_id, 'currency_id' => $order->currency_id]);
         $userWallet = UserWallet::firstOrNew(['user_id' => $order->user_id, 'user_wallet_currency_id' => $order->currency_id]);
         $sysWallet = SysWallet::where('sys_wallet_currency_id', $order->currency_id)->first();
 
@@ -383,16 +382,16 @@ class UserOtcWithdrawOrderController extends Controller
 
         // 已发币
         if ($request->update  == OtcWithdraw::OTC_RELEASED) {
-            DB::transaction(function () use ($order, $balance, $userWallet, $sysWallet) {
+            DB::transaction(function () use ($order, $userWallet, $sysWallet) {
                 //更新提币订单
                 $order->status = OtcWithdraw::OTC_RELEASED;
                 $order->updated_at = self::carbonNow();
                 $order->save();
 
-                //更新otc记账钱包余额
-                $balance->frozen = bcsub($balance->frozen, $order->amount);
-                $balance->updated_at = self::carbonNow();
-                $balance->save();
+                //更新用户记账钱包余额
+                $userWallet->user_wallet_balance_freeze_amount = bcsub($userWallet->user_wallet_balance_freeze_amount, $order->amount);
+                $userWallet->updated_at = self::carbonNow();
+                $userWallet->save();
 
                /* $sysWallet->sys_wallet_balance = bcsub($sysWallet->sys_wallet_balance, $order->amount);
                 $sysWallet->sys_wallet_balance_freeze_amount  = bcsub($sysWallet->sys_wallet_balance_freeze_amount, $order->amount);
@@ -403,17 +402,17 @@ class UserOtcWithdrawOrderController extends Controller
 
         // 失败-恢复冻结金额
         if ($request->update  == OtcWithdraw::OTC_FAILED) {
-            DB::transaction(function () use ($order, $balance, $userWallet, $sysWallet) {
+            DB::transaction(function () use ($order, $userWallet, $sysWallet) {
                 //更新提币订单
                 $order->status = OtcWithdraw::OTC_FAILED;
                 $order->updated_at = self::carbonNow();
                 $order->save();
 
-                //更新otc记账钱包余额
-                $balance->frozen = bcsub($balance->frozen, $order->amount);
-                $balance->available = bcadd($balance->available, $order->amount);
-                $balance->updated_at = self::carbonNow();
-                $balance->save();
+                //更新用户记账钱包余额
+                $userWallet->user_wallet_balance_freeze_amount = bcsub($userWallet->user_wallet_balance_freeze_amount, $order->amount);
+                $userWallet->user_wallet_balance = bcadd($userWallet->user_wallet_balance, $order->amount);
+                $userWallet->updated_at = self::carbonNow();
+                $userWallet->save();
 
                /* $sysWallet->sys_wallet_balance = bcadd($sysWallet->sys_wallet_balance, $order->amount);
                 $sysWallet->sys_wallet_balance_freeze_amount  = bcsub($sysWallet->sys_wallet_balance_freeze_amount, $order->amount);
