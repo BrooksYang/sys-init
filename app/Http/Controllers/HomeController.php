@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 const EXCHANGE_ORDER_TYPE = [1=>'市价买', 2=>'市价卖', 3=>'限价买', 4=>'限价卖'];
-const OTC_ORDER_STATUS = [1 => '已下单',2=>'已支付',3=>'待放币',4=>'已放币',5=>'已取消'];
+const OTC_ORDER_STATUS = [1 => '已下单',2=>'已支付',3=>'已发币',4=>'已完成',5=>'已取消'];
 const CACHE_LENGTH = 10;
 
 /**
@@ -218,9 +218,7 @@ class HomeController extends Controller
 
         return compact(
             'otcOrder',
-            'otcDepositOrderStatus',
             'otcWithdrawOrderStatus',
-            'grandOtcDepositOrder',
             'grandOtcWithdrawOrder'
         );
     }

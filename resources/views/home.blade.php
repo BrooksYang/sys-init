@@ -147,7 +147,7 @@
                         </h2>
                         <i class="fontello-money"></i>
                         <h4 class="text-red">{{ number_format($grandOtcWithdrawOrder,3,'.',',') }}</h4>
-                        <h5>OTC 累计成功放币金额</h5>
+                        <h5>OTC 累计成功提币金额</h5>
                         <div style="clear:both;"></div>
                     </div>
                 </div>

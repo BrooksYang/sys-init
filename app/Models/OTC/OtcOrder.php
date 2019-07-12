@@ -35,6 +35,7 @@ class OtcOrder extends Model
     ];
 
     // 定义状态，1已下单，2已支付，3确认收款(已发币)，4确认收币，5已取消
+    // 定义状态，1已下单，2已支付，3已发币，4已完成，5已取消
     const ORDERED = 1;
     const PAID = 2;
     const RELEASED = 3;

@@ -155,11 +155,6 @@
                                     '订单为<b><strong> 强制发币 </strong></b> 状态',
                                     '{{ csrf_token() }}','强制发币 - 请慎重操作！');" title="已支付-未放币">强制发币</a>
 
-                            <a href="javascript:viod(0)" class="btn btn-warning ml-5" onclick="itemUpdate('{{ $ticket->id }}',
-                                    '{{ url("ticket/handler/appealEnd/$ticket->id") }}','receive','{{ $ticket->order_id }}',
-                                    '订单为<b><strong> 强制收币 </strong></b> 状态',
-                                    '{{ csrf_token() }}','强制收币 - 请慎重操作！');" title="已放币-未确认">强制收币</a>
-
                             <a href="javascript:viod(0)" class="btn btn-default ml-5" onclick="itemUpdate('{{ $ticket->id }}',
                                     '{{ url("ticket/handler/appealEnd/$ticket->id") }}','cancel','{{ $ticket->order_id }}',
                                     '订单为<b><strong> 取消 </strong></b> 状态',
