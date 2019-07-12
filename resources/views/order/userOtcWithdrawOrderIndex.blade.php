@@ -53,7 +53,7 @@
                                 <th>状态</th>
                                 <th>创建时间
                                     @include('component.sort',['url' => url('order/otc/withdraw')])
-                                <th>操作</th>
+                                {{--<th>操作</th>--}}
                             </tr>
                             @forelse($userOtcWithdrawOrder as $key => $item)
                                 <tr>
@@ -109,7 +109,7 @@
                                         <span class="label label-{{ $orderStatus[$item->status]['class'] }}">{{ $orderStatus[$item->status]['name'] }}</span>
                                     </td>
                                     <td>{{ $item->created_at ?: '--' }}</td>
-                                    <td>
+                                    {{--<td>
                                         @if($item->status == \App\Models\OTC\OtcWithdraw::OTC_PENDING)
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->uid }}',
                                                     '{{ url("order/otc/withdraw/$item->uid") }}','status',4,
@@ -118,7 +118,7 @@
                                         @else
                                             {{ '--' }}
                                         @endif
-                                    </td>
+                                    </td>--}}
                                 </tr>
                             @empty
                                 <tr><td colspan="{{ config('app.otc_withdraw_currency') ? 13 : 12 }}" class="text-center">

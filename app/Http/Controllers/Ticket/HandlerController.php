@@ -330,7 +330,7 @@ class HandlerController extends Controller
     }
 
     /**
-     * 申诉完结 - 强制执行放币或收币
+     * 申诉完结 - 强制执行放币或取消
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -353,11 +353,6 @@ class HandlerController extends Controller
         // 已支付-未放币 强制出售方放币
         if ($request->field == 'release' && $order->status == OtcOrder::PAID) {
             $msg = $this->forceRelease($order);
-        }
-
-        // 已放币-未收币 强制购买方收币
-        if ($request->field =='receive' && $order->status == OtcOrder::RELEASED) {
-            $msg = $this->forceReceive($order);
         }
 
         // 已支付 - 强制取消订单
@@ -383,7 +378,7 @@ class HandlerController extends Controller
     }
 
     /**
-     * 强制放币（出售方）-（放币至冻结金额，确认收币后解冻）
+     * 强制放币（出售方）-（修改为放币后直接完成交易-不再确认收币）
      *
      * @param $order
      * @return mixed
@@ -401,47 +396,19 @@ class HandlerController extends Controller
             $balanceSeller = Balance::firstOrNew(['user_id' => $sellerId, 'user_wallet_currency_id' => $order->currency_id]);
 
             // 购买者增加余额
-            $balanceBuyer->user_wallet_balance_freeze_amount = bcadd($balanceBuyer->user_wallet_balance_freeze_amount, $order->field_amount);
+            $balanceBuyer->user_wallet_balance = bcadd($balanceBuyer->user_wallet_balance, $order->field_amount);
             $balanceBuyer->save();
 
             // 出售者减少冻结金额
             $balanceSeller->user_wallet_balance_freeze_amount = bcsub($balanceSeller->user_wallet_balance_freeze_amount, $order->field_amount);
             $balanceSeller->save();
 
-            // 标记为已发币
-            $order->status = OtcOrder::RELEASED;
-            $order->save();
-        });
-
-        return '已强制放币';
-    }
-
-    /**
-     * 强制收币（购买方）
-     *
-     * @param $order
-     * @return bool
-     * @throws \Throwable
-     */
-    public function forceReceive($order)
-    {
-        DB::transaction(function () use ($order) {
-
-            // 购买方
-            $buyerId = $order->type == OtcOrder::BUY ? $order->user_id : $order->from_user_id;
-            $balanceBuyer = Balance::firstOrNew(['user_id' => $buyerId, 'user_wallet_currency_id' => $order->currency_id]);
-
-            // 解冻
-            $balanceBuyer->user_wallet_balance_freeze_amount = bcsub($balanceBuyer->user_wallet_balance_freeze_amount, $order->field_amount);
-            $balanceBuyer->user_wallet_balance = bcadd($balanceBuyer->user_wallet_balance, $order->field_amount);
-            $balanceBuyer->save();
-
-            // 标记为已完成
+            // 标记为已发币 - 订单完成
             $order->status = OtcOrder::RECEIVED;
             $order->save();
         });
 
-        return '已强制收币';
+        return '已强制放币';
     }
 
     /**

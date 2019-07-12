@@ -22,11 +22,13 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
 
 /**
  * OTC 记账钱包
+ * 已废弃 - otc_balances已经与 wallet_balances 合并
+ *
  */
 Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function()
 {
-    //交易用户 OTC 记账钱包
-    Route::resource('otc/user/wallet', 'Wallet\UserOtcWalletController',['except' => ['create', 'store', 'update']]);
+    // 交易用户 OTC 记账钱包
+    //Route::resource('otc/user/wallet', 'Wallet\UserOtcWalletController',['except' => ['create', 'store', 'update']]);
 
 
 });
