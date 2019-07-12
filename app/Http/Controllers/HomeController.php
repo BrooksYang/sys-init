@@ -201,23 +201,17 @@ class HomeController extends Controller
      */
     public function otcStatisticItem($cacheLength)
     {
-        //当天 OTC 订单成交数量及价格--按状态
+        // 当天 OTC 订单成交数量及价格--按状态
         $otcOrder = Cache::remember('otcOrder', $cacheLength, function () {
             return $this->getOtcOrder();
         });
-        //当天 OTC 充值订单数量及金额-按处理状态区分
-        $otcDepositOrderStatus = Cache::remember('otcDepositOrderStatus', $cacheLength, function () {
-            return $this->getOtcDepositOrder();
-        });
-        //当天 OTC 提币订单数量及金额-按处理状态区分
+
+        // 当天 OTC 提币订单数量及金额-按处理状态区分
         $otcWithdrawOrderStatus = Cache::remember('otcWithdrawOrderStatus', $cacheLength, function () {
             return $this->getOtcWithdrawOrder();
         });
-        //当天 OTC 累计成功充值金额
-        $grandOtcDepositOrder = Cache::remember('grandOtcDepositOrder', $cacheLength, function () {
-            return $this->getOtcDepositOrderByS(2);
-        });
-        //当天 OTC 累计成功提币金额
+
+        // 当天 OTC 累计成功提币金额
         $grandOtcWithdrawOrder = Cache::remember('grandOtcWithdrawOrder', $cacheLength, function () {
             return $this->getOtcWithdrawOrderByS(3);
         });
@@ -637,28 +631,6 @@ class HomeController extends Controller
         return $otcOrderCount;
     }
 
-    /**
-     * 当天 OTC 充值订单数量及金额-按处理状态区分
-     *
-     * @return mixed
-     */
-    public function getOtcDepositOrder()
-    {
-        $query = DB::table('otc_deposits');
-        $otcDepositOrder['order'] = $query->select(DB::raw("count(status) as orderNum"),
-            DB::raw("sum(amount) as deposit_amount"),'status as deposit_order_status')
-            ->where('created_at', 'like',env('APP_GMDATE', self::carbonNow()->toDateString()).'%')
-            ->groupBy('deposit_order_status')->orderBy('deposit_order_status','desc')
-            ->get();
-
-        $otcDepositOrderCount['order'] = [];
-        foreach ($otcDepositOrder['order'] as $key => $item) {
-            $otcDepositOrderCount['order'][$item->deposit_order_status]= $item;
-        }
-        $otcDepositOrderCount['orderStatus'] = [6=>'退回失败',5=>'已退回',4=>'退回处理中',3=>'失败',2=>'成功',1=>'处理中'];
-
-        return $otcDepositOrderCount;
-    }
 
     /**
      * 当天 OTC 提币订单数量及金额-按处理状态区分
@@ -689,25 +661,6 @@ class HomeController extends Controller
         return $otcWithdrawOrderCount;
     }
 
-    /**
-     * 当天 OTC 累计成功充值金额
-     *
-     * @param $status
-     * @return int|mixed*
-     */
-    public function getOtcDepositOrderByS($status)
-    {
-        $otcDepositOrder = DB::table('otc_deposits')
-            ->where('created_at', 'like',env('APP_GMDATE', self::carbonNow()->toDateString()).'%')
-            ->where('status', $status)->get(['amount']);
-
-        $grandOtcDepositOrder = 0;
-        foreach ($otcDepositOrder as $key => $item){
-            $grandOtcDepositOrder += $item->amount;
-        }
-
-        return $grandOtcDepositOrder;
-    }
 
     /**
      * 当天 OTC 累计成功放币金额

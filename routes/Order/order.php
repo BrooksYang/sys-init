@@ -22,8 +22,8 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     Route::patch('order/withdraw/{withdraw}', 'Order\UserWithdrawOrderController@update')->where('withdraw', '[0-9]+');
     Route::resource('order/withdraw', 'Order\UserWithdrawOrderController', ['only' => ['index','destroy']]);
 
-    // OTC用户充值订单
-    Route::resource('order/otc/userDeposit', 'Order\UserOtcDepositOrderController', ['only' => ['index','update','destroy']]);
+    // OTC用户充值订单 - otc充值废弃
+    //Route::resource('order/otc/userDeposit', 'Order\UserOtcDepositOrderController', ['only' => ['index','update','destroy']]);
     // OTC用户快捷充值订单
     Route::resource('order/otc/quick/userDeposit', 'Order\OtcQuickDepositOrderController', ['only' => ['index']]);
 

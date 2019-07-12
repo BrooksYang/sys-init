@@ -137,26 +137,7 @@
     <!-- OTC 顶部统计区域 -->
     @if(env('APP_OTC_MODULE'))
         <div class="row">
-        <div class="col-lg-6">
-            <div class="box">
-                <!-- /.box-header -->
-                <div class="box-body">
-                    <div class="news-widget">
-                        <h2>
-                            <span class="bg-green">Today</span>
-                        </h2>
-                        <i class="fontello-money"></i>
-                        <h4 class="text-green">{{ number_format($grandOtcDepositOrder,3,'.',',') }}</h4>
-                        <h5>OTC 累计成功充值金额</h5>
-                        <div style="clear:both;"></div>
-                    </div>
-                </div>
-                <!-- /.box-body -->
-            </div>
-            <!-- /.box -->
-        </div>
-
-        <div class="col-lg-6">
+        <div class="col-lg-12">
             <div class="box">
                 <!-- /.box-header -->
                 <div class="box-body">
@@ -266,16 +247,8 @@
                                 <div id="otcOrder" style="width: 100%;height:600px;"></div>
                             </div>
                         </div>
-
                         <hr>
-                        <div class="row">
-                            <div class="col-md-10">
-                                <!-- OTC 充值订单成交数量及价格统计--按状态 -->
-                                <div id="otcDepositOrderStatus" style="width: 100%;height:600px;"></div>
-                            </div>
-                        </div>
 
-                        <hr>
                         <div class="row">
                             <div class="col-md-10">
                                 <!-- OTC 充值订单成交数量及价格统计--按状态 -->
@@ -1046,86 +1019,6 @@
                 ]
             };
             otcOrder.setOption(otcOrderOption);
-        </script>
-
-        {{--OTC 充值订单数量及额度统计-按状态--}}
-        <script>
-            var otcDepositOrderStatus = echarts.init(document.getElementById('otcDepositOrderStatus'));
-            var otcDepositOrderStatusOption = {
-                title: {
-                    text: 'Today OTC充值订单金额',
-                    subtext: '按处理状态分类'
-                },
-                tooltip : {
-                    trigger: 'axis',
-                    axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-                        type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-                    }
-                },
-                legend: {
-                    data: ['订单状态','充值金额']
-                },
-                grid: {
-                    left: '3%',
-                    right: '4%',
-                    bottom: '3%',
-                    containLabel: true
-                },
-                xAxis:  {
-                    type: 'value'
-                },
-                yAxis: {
-                    type: 'category',
-                    data: [
-                        @foreach($otcDepositOrderStatus['orderStatus'] as $key => $v)
-                            '{{$v}}',
-                        @endforeach
-                    ]
-                },
-                series: [
-                    {
-                        name: '订单数量',
-                        type: 'bar',
-                        stack: '总量',
-                        label: {
-                            normal: {
-                                show: false,
-                                position: 'insideRight'
-                            }
-                        },
-                        data: [
-                            @for($i = 6; $i > 0; $i--)
-                            @if(isset($otcDepositOrderStatus['order'][$i]))
-                            {{$otcDepositOrderStatus['order'][$i]->orderNum}},
-                            @else
-                                0,
-                            @endif
-                            @endfor
-                        ]
-                    },
-                    {
-                        name: '充值金额',
-                        type: 'bar',
-                        stack: '总量',
-                        label: {
-                            normal: {
-                                show: false,
-                                position: 'insideRight'
-                            }
-                        },
-                        data: [
-                            @for($i = 6; $i > 0; $i--)
-                            @if(isset($otcDepositOrderStatus['order'][$i]))
-                            {{$otcDepositOrderStatus['order'][$i]->deposit_amount}},
-                            @else
-                                0,
-                            @endif
-                            @endfor
-                        ]
-                    },
-                ]
-            };
-            otcDepositOrderStatus.setOption(otcDepositOrderStatusOption);
         </script>
 
         {{--OTC 提币订单数量及额度统计-按状态--}}
