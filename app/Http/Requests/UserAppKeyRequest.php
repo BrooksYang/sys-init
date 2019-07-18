@@ -28,23 +28,25 @@ class UserAppKeyRequest extends FormRequest
     public function rules(Request $request)
     {
         $userTable = User::getModel()->getTable();
+        $emailRule = $request->phone ? 'nullable' : 'required';
+        $phoneRule = $request->email ? 'nullable' : 'required';
 
         return [
             'country_id' => "required",
             'username' => [
                 "sometimes",
-                "unique:$userTable,username,$request->merchant"
+                "unique:$userTable,username,".$request->user
             ],
             'email' => [
-                "required_without:phone",
+                $emailRule,
                 "email",
                 "max:255",
-                "unique:$userTable,email,$request->merchant"
+                "unique:$userTable,email,".$request->user
             ],
             'phone' => [
-                "required_without:email",
+                $phoneRule,
                 "phone",
-                "unique:$userTable,phone,$request->merchant"
+                "unique:$userTable,phone,".$request->user
             ],
             'id_number' => "sometimes|max:255",
 
@@ -52,7 +54,7 @@ class UserAppKeyRequest extends FormRequest
                 'sometimes',
                  new VerifyIpFormat($request->ip),
             ],
-            'remark' => 'required|max:255',
+            'remark' => 'sometimes|max:255',
         ];
     }
 

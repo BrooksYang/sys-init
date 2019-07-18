@@ -33,6 +33,7 @@
                                 <th>用户</th>
                                 <th>电话</th>
                                 <th>邮箱</th>
+                                <th>账户状态</th>
 
                                 <th>API 访问密钥</th>
                                 <th>API 签名密钥</th>
@@ -42,6 +43,7 @@
                                 <th>创建时间
                                     @include('component.sort', ['url'=>url('user/appKey')])
                                 </th>
+                                <th>操作</th>
                             </tr>
                             @forelse($users as $key => $item)
                                 <tr>
@@ -51,6 +53,11 @@
                                     <td>{{ $item->user->username ?? '--' }}</td>
                                     <td>{{ $item->user->phone ?? '--' }}</td>
                                     <td title="{{ $item->user->email ?? '' }}">{{ str_limit($item->user->email ?? '--',20) }}</td>
+                                    <td>
+                                        <span class="label label-{{ $status[$item->user->is_valid]['class'] }}">
+                                            {{ $status[$item->user->is_valid]['name'] }}</span>
+                                    </td>
+
                                     <td title="{{ $item->access_key ?: '' }}" id="copyAK{{$key}}" data-attr="{{$item->access_key}}">
                                         @include('component.copy', ['eleId'=>'copyAK'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
                                         {{ str_limit($item->access_key ?: '--',25) }}
@@ -63,7 +70,8 @@
                                         @if(json_decode($item->ip,true))
                                             <!-- Button trigger modal -->
                                             @include('component.modalHeader', ['modal'=>'User','title'=>'绑定IP',
-                                                'icon'=>'fa fa-code', 'header'=>($item->user->username ?? '') .'-'. ($item->user->phone ?? ''), 'headerIcon'=>'fontello-user' ])
+                                                'icon'=>'fa fa-code', 'header'=>($item->user->username ?? '') .'-'. ($item->user->phone ?? ''),
+                                                 'headerIcon'=>'fontello-user' ])
                                                 <p><i class="fa fa-info-circle"></i>&nbsp;绑定ip后永久有效，未绑定ip过期时间为90天</p>
                                                 <?php dump(json_decode($item->ip,true)) ?>
                                             @include('component.modalFooter',['form'=>true])
@@ -72,11 +80,32 @@
                                         @endif
                                     </td>
                                     <td>{{ $item->expired_at ?:  ($item->expired_at ?: '永久有效') }}</td>
-                                    <td title="{{ $item->remark ?: '' }}">{{  str_limit($item->remark ?: '--', 20) }}</td>
+                                    <td>
+                                        <!-- Button trigger modal -->
+                                        @include('component.modalHeader', ['modal'=>'Remark','title'=>'备注',
+                                            'header'=>'信息 - '.$item->user->phone ?? $item->user->username, 'headerIcon'=>'fa fa-info-circle'])
+                                        <p style="text-align: center">
+                                            {{ $item->remark ?: '（空）' }}
+                                        </p>
+                                        @include('component.modalFooter',['form'=>false])
+                                    </td>
                                     <td>{{ $item->created_at ?: '--' }}</td>
+                                    <td>
+                                        <a href="{{ url("user/merchant/$item->id/edit") }}">
+                                            <i class="fontello-edit" title="编辑"></i>
+                                        </a>
+
+                                        <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
+                                                '{{ url("change/merchant/status/$item->id") }}','is_valid',2,
+                                                '商户账户为<b><strong> {{ $item->user->is_valid == \App\User::ACTIVE ? '禁用' : '启用'}} </strong></b> 状态',
+                                                '{{ csrf_token() }}', '修改账户状态');">
+                                            <i class="{{ $item->user->is_valid == \App\User::ACTIVE ? 'fontello-lock-filled' : 'fontello-lock-open-filled'}}"
+                                               title="{{ $item->user->is_valid == \App\User::ACTIVE ? "禁用" : "启用"}}"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                             @empty
-                                @include('component.noData',['colSpan'=>11])
+                                @include('component.noData',['colSpan'=>13])
                             @endforelse
                         </table>
 

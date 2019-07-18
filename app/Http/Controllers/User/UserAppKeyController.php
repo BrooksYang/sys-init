@@ -21,6 +21,14 @@ use Illuminate\Support\Str;
  */
 class UserAppKeyController extends Controller
 {
+
+    protected $countries;
+
+    public function __construct()
+    {
+       $this->countries = Country::oldest()->get();
+    }
+
     /**
      * 商户秘钥列表
      *
@@ -66,7 +74,7 @@ class UserAppKeyController extends Controller
      */
     public function create()
     {
-        $countries = Country::oldest()->get();
+        $countries = $this->countries;
 
         return view('user.merchantCreate', compact('countries'));
     }
@@ -85,7 +93,7 @@ class UserAppKeyController extends Controller
             // 生成用户
             $uid = User::insertGetId([
                 'country_id'  => $request->country_id,
-                'username'    => $request->user_name ?: '',
+                'username'    => $request->username ?: '',
                 'phone'       => $request->phone ?: null,
                 'email'       => $request->email ?: null,
                 'id_number'   => $request->id_number ?: null,
@@ -110,7 +118,7 @@ class UserAppKeyController extends Controller
 
         });
 
-        return back();
+        return redirect('user/merchant');
     }
 
     /**
@@ -122,11 +130,12 @@ class UserAppKeyController extends Controller
     public function edit($id)
     {
         $userAppKey = UserAppKey::findOrFail($id);
-        $user = User::findOrFail($userAppKey->user_id);
+        $user = UserAppKey::with('user')->where('user_id', $userAppKey->user_id)->firstOrFail();
 
         return view('user.merchantCreate',[
             'editFlag' => true,
-            'user' => $userAppKey + $user
+            'countries' => $this->countries,
+            'user' => $user
         ]);
     }
 
@@ -147,7 +156,7 @@ class UserAppKeyController extends Controller
 
             // 更新用户信息
             $user->country_id = $request->country_id;
-            $user->username = $request->user_name ?: '';
+            $user->username = $request->username ?: '';
             $user->phone = $request->phone ?: null;
             $user->email = $request->email ?: null;
             $user->id_number = $request->id_number ?: null;
@@ -165,7 +174,7 @@ class UserAppKeyController extends Controller
             $userAppKey->save();
         });
         
-        return back();
+        return redirect('user/merchant');
     }
 
     /**

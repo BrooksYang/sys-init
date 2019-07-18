@@ -27,6 +27,9 @@
                         {{ csrf_field() }}
                         {{ @$editFlag ? method_field('PATCH') : '' }}
                         <input type="hidden" name="editFlag" value="{{ @$editFlag }}">
+                        @if(@$editFlag)
+                        <input type="hidden" name="user" value="{{ $user->user->id }}">
+                        @endif
 
                         {{-- 国家 --}}
                         <div class="row">
@@ -40,7 +43,7 @@
                                                     {{--data-length="{{$country->length}}"--}}
                                                     data-abbr="{{$country->abbr}}"
                                                     @if(@$editFlag)
-                                                        {{ $user->country_id == $country->id ? 'selected' :'' }}
+                                                        {{ $user->user->country_id == $country->id ? 'selected' :'' }}
                                                     @else
                                                        {{ $country->id == 1 ? 'selected' : ''}}
                                                     @endif
@@ -60,7 +63,7 @@
                             <div class="form-group {{ $errors->has('username') ? 'has-error' : '' }}">
                                 <div class="col-sm-12">
                                     <label>用户名</label>
-                                    <input class="form-control input-medium" type="text" name="username" value="{{ $user->username ?? old('username') }}"
+                                    <input class="form-control input-medium" type="text" name="username" value="{{ $user->user->username ?? old('username') }}"
                                            placeholder="请填写用户名">
                                     @if ($errors->has('username'))
                                         <span class="help-block"><strong>{{ $errors->first('username') }}</strong></span>
@@ -73,7 +76,7 @@
                                 <div class="form-group {{ $errors->has('id_number') ? 'has-error' : '' }}">
                                     <div class="col-sm-12">
                                         <label>身份证号</label>
-                                        <input class="form-control input-medium" type="text" name="id_number" value="{{ $user->id_number ?? old('id_number') }}"
+                                        <input class="form-control input-medium" type="text" name="id_number" value="{{ $user->user->id_number ?? old('id_number') }}"
                                                placeholder="请填写身份证号">
                                         @if ($errors->has('id_number'))
                                             <span class="help-block"><strong>{{ $errors->first('id_number') }}</strong></span>
@@ -89,7 +92,7 @@
                             <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
                                 <div class="col-sm-12">
                                     <label>邮箱</label>
-                                    <input class="form-control input-medium" type="text" name="email" value="{{ $user->email ?? old('email') }}"
+                                    <input class="form-control input-medium" type="text" name="email" value="{{ $user->user->email ?? old('email') }}"
                                            placeholder="请填写邮箱">
                                     @if ($errors->has('email'))
                                         <span class="help-block"><strong>{{ $errors->first('email') }}</strong></span>
@@ -102,7 +105,7 @@
                             <div class="form-group {{ $errors->has('phone') ? 'has-error' : '' }}">
                                 <div class="col-sm-12">
                                     <label>电话</label>
-                                    <input class="form-control input-medium" type="text" name="phone" value="{{ $user->phone ?? old('phone') }}"
+                                    <input class="form-control input-medium" type="text" name="phone" value="{{ $user->user->phone ?? old('phone') }}"
                                            placeholder="请填写电话">
                                     @if ($errors->has('phone'))
                                         <span class="help-block"><strong>{{ $errors->first('phone') }}</strong></span>
@@ -112,16 +115,22 @@
                             </div>
                         </div>
 
-                        {{--身份证号--}}
+                        {{--ip--}}
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="form-group {{ $errors->has('id_number') ? 'has-error' : '' }}">
+                                <div class="form-group {{ $errors->has('ip') ? 'has-error' : '' }}">
                                     <div class="col-sm-12">
                                         <label>绑定IP(可选)</label>
-                                        <input class="form-control input-medium" type="text" name="id_number" value="{{ $user->id_number ?? old('id_number') }}"
+                                        <?php
+                                            if(@$editFlag){
+                                                $ip = json_decode($user->ip, true);
+                                                $ip = count($ip) == 1 ? $ip[0] : (count($ip) > 1 ? implode(',', $ip) : null);
+                                            }
+                                        ?>
+                                        <input class="form-control input-medium" type="text" name="ip" value="{{ $ip ?? old('ip') }}"
                                                placeholder="绑定ip后系统生成的key永久有效，未绑定ip过期时间为90天（多个ip使用英文逗号间隔）">
-                                        @if ($errors->has('id_number'))
-                                            <span class="help-block"><strong>{{ $errors->first('id_number') }}</strong></span>
+                                        @if ($errors->has('ip'))
+                                            <span class="help-block"><strong>{{ $errors->first('ip') }}</strong></span>
                                         @endif
                                     </div>
                                 </div>
@@ -147,7 +156,7 @@
                         {{-- Buttons --}}
                         <div class="form-group">
                             <div class="col-sm-12">
-                                <a href="{{ url('user/merchant') }}" class="btn btn-default">返回</a>
+                                <a href="{{ URL::previous() }}" class="btn btn-default">返回</a>
                                 <button type="submit" class="btn btn-default pull-right">确定</button>
                             </div>
                         </div>

@@ -22,7 +22,10 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     Route::resource('user/kycLevel/manage','User\KycLevelController',['only' => ['index']]);
 
     // 商户管理
-    Route::resource('user/merchant', 'User\UserAppKeyController');
+    Route::resource('user/merchant', 'User\UserAppKeyController', ['except' => ['show','destroy']]);
+
+    // 修改商户账户状态
+    Route::patch('change/merchant/status/{id}', 'User\UserAppKeyController@changeAccountStatus');
 
 });
 

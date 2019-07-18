@@ -27,7 +27,20 @@ class UserAppKey extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id')
-            ->select('id','username','phone','email','id_number','country_id');
+            ->select('id','username','phone','email','id_number','country_id','is_valid');
+    }
+
+    /**
+     * 格式化ip
+     *
+     * @param $value
+     * @return string|null
+     */
+    public function getIpAttributes($value)
+    {
+        $ip = json_decode($value, true);
+
+        return count($ip) == 1 ? $ip[0] : (count($ip) > 1 ? implode(',', $ip) : null);
     }
 
 }
