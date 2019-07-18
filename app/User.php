@@ -27,6 +27,16 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    // 状态，0禁用，1正常
+    const FORBIDDEN = 0;
+    const ACTIVE    = 1;
+
+    // 状态文本
+    const STATUS = [
+        self::FORBIDDEN => ['name' => '禁用', 'class' => 'danger'],
+        self::ACTIVE    => ['name' => '启用', 'class' => 'success']
+    ];
+
     // 认证状态，1未认证，2待审核，3已认证，4认证失败
     const NOT_VERIFY = 1;
     const UNDER_VERIFY = 2;
