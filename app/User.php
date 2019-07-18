@@ -42,4 +42,8 @@ class User extends Authenticatable
     const UNDER_VERIFY = 2;
     const VERIFIED = 3;
     const VERIFY_FAILED = 4;
+
+    // 是否为商户，0否，1是
+    const NOT_MERCHANT = 0;
+    const MERCHANT = 1;
 }
