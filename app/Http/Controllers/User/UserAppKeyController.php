@@ -92,6 +92,7 @@ class UserAppKeyController extends Controller
 
             // 生成用户
             $uid = User::insertGetId([
+                'is_merchant' => User::MERCHANT,
                 'country_id'  => $request->country_id,
                 'username'    => $request->username ?: '',
                 'phone'       => $request->phone ?: null,
