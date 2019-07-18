@@ -100,7 +100,7 @@
                 <a href="javascript:;">
                     {{ config('app.copyright', 'Laravel') }}
                 </a>
-                <img src="{{ asset('logo_80.png') }}" alt="" style="width: 27px">
+                <img src="{{ asset('logo_80.png') }}" alt="" style="width: 25px">
                {{-- Made with
                 <i class="fontello-heart-filled text-red"></i>--}}
             </div>
