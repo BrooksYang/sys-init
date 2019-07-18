@@ -44,7 +44,7 @@ class UserOtcOrderController extends Controller
         $userOtcOrder = DB::table('otc_orders as otcOrder')
             ->join('users as u','otcOrder.user_id','u.id') //用户信息
             ->join('currencies as currency','otcOrder.currency_id','currency.id')  //币种
-            ->join('otc_legal_currencies as legal_currency','otcOrder.legal_currency_id','legal_currency.id') //法币
+            ->join('legal_currencies as legal_currency','otcOrder.legal_currency_id','legal_currency.id') //法币
             ->when($search, function ($query) use ($search){
                 return $query->where('currency.currency_title_cn','like',"%$search%")
                     ->orwhere('currency.currency_title_en_abbr','like',"%$search%")

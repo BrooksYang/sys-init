@@ -10,7 +10,7 @@ class OtcLegalCurrency extends Model
      * 系统支持的法币
      * @var string
      */
-    protected $table = 'otc_legal_currencies';
+    protected $table = 'legal_currencies';
 
     protected $guarded = [];
 

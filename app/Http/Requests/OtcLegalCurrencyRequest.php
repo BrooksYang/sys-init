@@ -27,7 +27,7 @@ class OtcLegalCurrencyRequest extends FormRequest
         return [
             'name' => [
                 'required',
-                'unique:otc_legal_currencies,name,'.$request->legalCurrency ,
+                'unique:legal_currencies,name,'.$request->legalCurrency ,
                 'max:255'
             ],
             'abbr' => 'required|alpha|max:255',

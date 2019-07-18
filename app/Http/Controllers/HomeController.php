@@ -491,11 +491,11 @@ class HomeController extends Controller
      */
     public function getWithdrawOrder()
     {
-        $query = DB::table('order_withdraws');
-        $withdrawOrder['order'] = $query->select(DB::raw("count(withdraw_order_status) as orderNum"),
-            DB::raw("sum(withdraw_amount) as amount"),'withdraw_order_status as status')
+        $query = DB::table('otc_withdraws');
+        $withdrawOrder['order'] = $query->select(DB::raw("count(status) as orderNum"),
+            DB::raw("sum(amount) as amount"),'status')
             ->where('created_at', 'like',env('APP_GMDATE', self::carbonNow()->toDateString()).'%')
-            ->groupBy('withdraw_order_status')->orderBy('withdraw_order_status','asc')
+            ->groupBy('status')->orderBy('status','asc')
             ->get();
 
         $withdrawOrderCount['order'] = [];
