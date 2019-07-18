@@ -3,10 +3,15 @@
 namespace App\Http\Controllers\User;
 
 
+use App\Http\Requests\UserAppKeyRequest;
+use App\Models\Country;
 use App\Models\OTC\UserAppKey;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /**
  * 商户密钥管理
@@ -54,4 +59,130 @@ class UserAppKeyController extends Controller
         return view('user.userAppKeyIndex', compact('search','status','users'));
     }
 
+    /**
+     * 商户创建
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function create()
+    {
+        $countries = Country::oldest()->get();
+
+        return view('user.merchantCreate', compact('countries'));
+    }
+
+    /**
+     * 保存商户
+     *
+     * @param UserAppKeyRequest $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Throwable
+     */
+    public function store(UserAppKeyRequest $request)
+    {
+        DB::transaction(function () use ($request){
+
+            // 生成用户
+            $uid = User::insertGetId([
+                'country_id'  => $request->country_id,
+                'username'    => $request->user_name ?: '',
+                'phone'       => $request->phone ?: null,
+                'email'       => $request->email ?: null,
+                'id_number'   => $request->id_number ?: null,
+
+                'nationality' => $request->nationality ?: 'cn',
+                'password'    => bcrypt(config('conf.merchant_pwd')),
+            ]);
+
+            // 绑定ip后系统生成的key永久有效，未绑定ip过期时间为90天
+            $ip = $request->ip ? json_encode(explode(',', $request->ip)) : null;
+            $expiredAt = $ip ? null : Carbon::parse('+90 days')->toDateTimeString();
+
+            // 生成key
+            UserAppKey::create([
+                'user_id'     => $uid,
+                'access_key'  => Str::uuid(),
+                'secret_key'  => Str::uuid(),
+                'ip'          => $ip,
+                'expired_at'  => $expiredAt,
+                'remark'      => $request->remark
+            ]);
+
+        });
+
+        return back();
+    }
+
+    /**
+     * 编辑商户
+     * 
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function edit($id)
+    {
+        $userAppKey = UserAppKey::findOrFail($id);
+        $user = User::findOrFail($userAppKey->user_id);
+
+        return view('user.merchantCreate',[
+            'editFlag' => true,
+            'user' => $userAppKey + $user
+        ]);
+    }
+
+    /**
+     * 更新用户及相关appKey信息
+     * 
+     * @param UserAppKeyRequest $request
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Throwable
+     */
+    public function update(UserAppKeyRequest $request, $id)
+    {
+        $userAppKey = UserAppKey::findOrFail($id);
+        $user = User::findOrFail($userAppKey->user_id);
+
+        DB::transaction(function () use ($user, $userAppKey, $request){
+
+            // 更新用户信息
+            $user->country_id = $request->country_id;
+            $user->username = $request->user_name ?: '';
+            $user->phone = $request->phone ?: null;
+            $user->email = $request->email ?: null;
+            $user->id_number = $request->id_number ?: null;
+            $user->nationality = $request->nationality ?: 'cn';
+            $user->save();
+
+            // 绑定ip后系统生成的key永久有效，未绑定ip过期时间为90天
+            $ip = $request->ip ? json_encode(explode(',', $request->ip)) : null;
+            $expiredAt = $ip ? null : Carbon::parse('+90 days')->toDateTimeString();
+
+            // 更新appKey相关信息
+            $userAppKey->ip = $ip;
+            $userAppKey->expired_at = $expiredAt;
+            $userAppKey->remark = $request->remark;
+            $userAppKey->save();
+        });
+        
+        return back();
+    }
+
+    /**
+     * 修改用户账户状态
+     *
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function changeAccountStatus(Request $request,$id)
+    {
+        $userAppKey = UserAppKey::findOrFail($id);
+        $user = User::findOrFail($userAppKey->user_id);
+
+        $user->is_valid = $user->is_valid == User::ACTIVE ? User::FORBIDDEN : User::ACTIVE;
+        $user->save();
+
+        return response()->json(['code' =>0, 'msg' => '更新成功']);
+    }
 }

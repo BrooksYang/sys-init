@@ -1,0 +1,76 @@
+<?php
+
+namespace App\Http\Requests;
+
+use App\Rules\VerifyIpFormat;
+use App\User;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
+
+class UserAppKeyRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @param $request
+     * @return array
+     */
+    public function rules(Request $request)
+    {
+        $userTable = User::getModel()->getTable();
+
+        return [
+            'country_id' => "required",
+            'username' => [
+                "sometimes",
+                "unique:$userTable,username,$request->merchant"
+            ],
+            'email' => [
+                "required_without:phone",
+                "email",
+                "max:255",
+                "unique:$userTable,email,$request->merchant"
+            ],
+            'phone' => [
+                "required_without:email",
+                "phone",
+                "unique:$userTable,phone,$request->merchant"
+            ],
+            'id_number' => "sometimes|max:255",
+
+            'ip' => [
+                'sometimes',
+                 new VerifyIpFormat($request->ip),
+            ],
+            'remark' => 'required|max:255',
+        ];
+    }
+
+    /**
+     * Get the validation messages that apply to the request.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'country_id.required' => '请选择国家',
+            'username.unique'     => '用户名已存在',
+            'email.required_without'  => '请填写邮箱或电话',
+            'phone.required_without'  => '请填写邮箱或电话',
+            'email.unique'  => '邮箱已存在',
+            'phone.unique'  => '电话已存在',
+            'remark.max'    => '备注最多包含255个字符',
+        ];
+    }
+}

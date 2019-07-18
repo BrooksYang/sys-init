@@ -27,7 +27,7 @@ class UserAppKey extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id')
-            ->select('id','username','phone','email','id_number');
+            ->select('id','username','phone','email','id_number','country_id');
     }
 
 }
