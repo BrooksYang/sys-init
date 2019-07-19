@@ -19,13 +19,13 @@ class WalletTransaction extends Model
     protected $guarded = [];
     
 
-    // 类型，1充值，2提现
+    // 类型，1充值，2提币
     const DEPOSIT  = 1;
     const WITHDRAW = 2;
 
     const TYPE = [
         self::DEPOSIT  => ['name'=>'充值', 'class'=>''],
-        self::WITHDRAW => ['name'=>'提现', 'class'=>'']
+        self::WITHDRAW => ['name'=>'提币', 'class'=>'']
     ];
 
     // 状态，1处理中，2成功，3失败
