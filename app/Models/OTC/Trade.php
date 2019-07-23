@@ -33,10 +33,11 @@ class Trade extends Model
     const BUY = 1;
     const SELL = 2;
 
-    // 状态，1进行中，2已完成，3已下架
+    // 状态，1进行中，2已完成，3已下架，4已撤销
     const ON_SALE = 1;
     const FINISHED = 2;
     const OFF = 3;
+    const CANCELLED = 4;
 
     // 是否需要高级认证，0不需要，1需要
     const NEED_ADVANCED_AUTH = 1;
