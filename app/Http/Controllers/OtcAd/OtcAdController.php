@@ -26,11 +26,13 @@ class OtcAdController extends Controller
             1 => ['name' => '卖单', 'class' => 'info'],
             2 => ['name' => '买单', 'class' => 'primary']
         ];
+
+        // 1进行中，2已完成，3已下架，4已撤销',
         $status = [
             1 =>  ['name' => '进行中',  'class' => 'info'],
             2 =>  ['name' => '已完成',  'class' => 'success'],
-            3 =>  ['name' => '已下架',  'class' => 'default'],
-
+            3 =>  ['name' => '已下架',  'class' => 'danger'],
+            4 =>  ['name' => '已撤销',  'class' => 'default'],
         ];
 
         //按币种-用户名-电话检索
