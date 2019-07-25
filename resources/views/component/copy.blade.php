@@ -13,7 +13,7 @@
         @elseif($eleType == 'value')
             var Url2=document.getElementById("{{ $eleId ?? ''}}").value;
         @elseif($eleType == 'attr')
-            var Url2=document.getElementById("{{ $eleId ?? ''}}").getAttribute("{{ $attr }}");
+            var Url2=document.getElementById("{{ $eleId ?? ''}}").getAttribute("{{ $attr ?? 'data-attr' }}");
         @endif
 
         var oInput = document.createElement('input');
