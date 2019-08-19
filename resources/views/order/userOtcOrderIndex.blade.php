@@ -10,7 +10,7 @@
                     {{-- Filter and Add Button --}}
                     <div class="pull-right box-tools">
                         <form action="{{ url('order/otc') }}" class="in-block">
-                            <input id="search_input" type="text" class="form-control width-0" placeholder="搜索币种或用户名或电话" name="search" value="{{ $search ?? Request::get('search')}}">
+                            <input id="search_input" type="text" class="form-control width-0" placeholder="搜索用户名或电话或订单" name="search" value="{{ $search ?? Request::get('search')}}">
                             <a href="javascript:;" title="搜索币种或用户名或电话">
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
@@ -58,6 +58,9 @@
                                 <th>数量</th>
                                 <th>总价</th>
                                 <th>状态</th>
+                                <th>申诉</th>
+                                <th>商户订单</th>
+                                <th>回调地址</th>
                                 <th>创建时间 &nbsp;&nbsp;<a href="{{ url('order/otc')}}?orderC=desc">
                                         <i class="fa fa-sort-amount-desc" style="color:{{ Request::get('orderC') != 'desc' ? !Request::get('orderC') ? '' : 'gray' :'' }}" title="降序"></i></a> &nbsp;
                                     <a href="{{ url('order/otc') }}?orderC=asc">
@@ -79,9 +82,14 @@
                                     <td title="{{ $item->name }}">{{ $item->abbr }}</td>
                                     <td title="{{number_format($item->field_amount,8,'.',',') }}">{{ number_format($item->field_amount,8,'.',',') }}</td>
                                     <td title="{{number_format($item->cash_amount,8,'.',',') }}">{{ number_format($item->cash_amount,8,'.',',') }}</td>
-                                    <td>
-                                        <span class="label label-{{ $orderStatus[$item->status]['class'] }}">{{ $orderStatus[$item->status]['name'] }}</span>
+                                    <td><span class="label label-{{ $orderStatus[$item->status]['class'] ??''}}">
+                                            {{ $orderStatus[$item->status]['name'] ?? '--'}}</span>
                                     </td>
+                                    <td><span class="{{ $item->appeal_status ? "label label-".$appealStatus[$item->appeal_status]['class'] : '' }}">
+                                            {{ $appealStatus[$item->appeal_status]['name'] ?? '--'}}</span>
+                                    </td>
+                                    <td>{{ $item->merchant_order_id ?:'--'}}</td>
+                                    <td title="{{ $item->merchant_callback }}">{{ str_limit($item->merchant_callback ?:'--', 20) }}</td>
                                     <td>{{ $item->created_at ?: '--' }}</td>
                                     <td>
                                        {{-- <a data-toggle="dropdown" class="dropdown-toggle" type="button">
@@ -108,7 +116,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="11" class="text-center">
+                                <tr><td colspan="14" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
