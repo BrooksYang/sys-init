@@ -37,7 +37,14 @@ class UserOtcOrderController extends Controller
             5 => ['name' => '已取消', 'class' => 'default']
         ];
 
-        //按币种-用户名-电话检索
+        // 申诉状态，1已申诉，2申诉处理中，3申诉完结
+        $appealStatus = [
+            1 => ['name' => '已申诉', 'class' => 'danger'],
+            2 => ['name' => '处理中', 'class' => 'warning'],
+            3 => ['name' => '已完结', 'class' => 'default'],
+        ];
+
+        //按币种-用户名-电话-商户订单id检索
         $search = trim($request->search,'');
         $filterStatus = trim($request->filterStatus,'');
         $orderC = trim($request->orderC,'');
@@ -51,7 +58,8 @@ class UserOtcOrderController extends Controller
                     ->orwhere('legal_currency.name','like',"%$search%")
                     ->orwhere('legal_currency.abbr','like',"%$search%")
                     ->orwhere('u.username', 'like', "%$search%")
-                    ->orwhere('u.phone', 'like', "%$search%");
+                    ->orwhere('u.phone', 'like', "%$search%")
+                    ->orwhere('otcOrder.merchant_order_id', 'like', "%$search%");
             })
             ->when($filterStatus, function ($query) use ($filterStatus){
                 return $query->where('otcOrder.status', $filterStatus);
@@ -68,7 +76,7 @@ class UserOtcOrderController extends Controller
             )
             ->paginate(OTC_ORDER_PAGE_SIZE);
 
-        return view('order.userOtcOrderIndex',compact('orderStatus', 'orderType','userOtcOrder'));
+        return view('order.userOtcOrderIndex',compact('orderStatus', 'appealStatus', 'orderType','userOtcOrder'));
     }
 
     /**
