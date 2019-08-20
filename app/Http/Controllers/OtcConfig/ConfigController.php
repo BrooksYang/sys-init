@@ -79,9 +79,10 @@ class ConfigController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function update(Request $request, $id)
     {
@@ -91,7 +92,6 @@ class ConfigController extends Controller
         Validator::make($request->all(),[
             'payment_length'            => 'required|numeric|min:0',
             'order_cancel_frequency'    => 'required|numeric|min:0',
-            'exchange_rate_usdt_rmb'    => 'required|numeric|min:1',
             'withdraw_fee_percentage'   => 'required|numeric|min:0.00000001',
             'withdraw_time'             => 'required|integer|between:1,7',
         ],[
