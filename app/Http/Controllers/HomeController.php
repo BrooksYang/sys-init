@@ -705,13 +705,15 @@ class HomeController extends Controller
     /**
      *  OTC 累计成功充值/提币数额 - 默认USDT
      *
+     * @param $type
      * @param $currency
      * @param $status
      * @return int|mixed
      */
-    public function getOtcTransactions($currency = Currency::USDT, $status = WalletTransaction::SUCCESS)
+    public function getOtcTransactions($type, $currency = Currency::USDT, $status = WalletTransaction::SUCCESS)
     {
         $getOtcTransactions = DB::table('wallet_transactions')
+            ->where('type', $type)
             ->where('currency_id', $currency)
             ->where('status', $status)
             ->get(['amount']);
