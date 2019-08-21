@@ -7,49 +7,75 @@
             <div class="box">
                 <div class="box-header">
 
-                    {{-- Filter and Add Button --}}
-                    <div class="pull-right box-tools">
-                        <form action="{{ url('order/otc') }}" class="in-block">
-                            <input id="search_input" type="text" class="form-control width-0" placeholder="搜索用户名或电话或订单" name="search" value="{{ $search ?? Request::get('search')}}">
-                            <a href="javascript:;" title="搜索用户名或电话或商户订单">
-                                <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
-                            </a>
-                        </form>
-                        {{--<a href="{{ url('order/otc/create') }}">
-                            <span class="box-btn"><i class="fa fa-plus"></i></span>
-                        </a>--}}
-                        <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="筛选订单">
-                            <span class="box-btn"><i class="fa fa-filter" title="筛选订单"></i></span>
-                        </a>
-                        <ul role="menu" class="dropdown-menu">
-                            <li>
-                                <a href="{{ url('order/otc') }}">全部
-                                    {!! in_array( Request::get('filterStatus'),array_keys($orderStatus)) ? '' :'&nbsp;<i class="fa fa-check txt-info"></i>'!!}
-                                </a>
-                            </li>
-                        @foreach($orderStatus as $key=>$item)
-                            <li>
-                                <a href="{{ url('order/otc') }}?filterStatus={{$key}}">{{$item['name']}}
-                                {!!  Request::get('filterStatus') == $key ? '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
-                                </a>
-                            </li>
-                        @endforeach
-                        </ul>
-                    </div>
-
                     {{-- Title --}}
                     <h3 class="box-title"><i class="fontello-doc"></i>
                         <span>用户 OTC 交易订单列表</span>
                     </h3>
+
+                    {{-- Filter and Search  Button --}}
+                    <div class="pull-right box-tools">
+                        @include('component.conditionSearch', ['url'=>url('order/otc')])
+                    </div>
                 </div>
 
                 {{-- Table --}}
                 <div class="box-body">
+                    {{--多条件搜索--}}
+                    <form action="{{ url('order/otc')}}" id="searchForm">
+                        <div class="row" style="margin-bottom:10px;">
+                            {{--类型--}}
+                            <div class="col-sm-1">
+                                <select class="flter-status form-control input-sm" id="filterType" name="filterType">
+                                    @foreach($orderType as $key => $item)
+                                        <option value="{{$key}}" {{ Request::get('filterType')==$key
+                                            ? 'selected' : (!Request::get('filterType') && $item['name']=='买单' ? 'selected':'')}}>{{ $item['name'] }} </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            {{--用户名或电话或邮箱--}}
+                            <div class="col-sm-4">
+                                <input class="form-control input-sm"  placeholder="搜索用户名或邮箱或电话" name="searchUser" id="searchUser" type="text"
+                                       value="{{ Request::get('searchUser')?? '' }}"/>
+                            </div>
+                            {{--OTC订单--}}
+                            <div class="col-sm-3">
+                                <input class="form-control input-sm"  placeholder="OTC订单号" name="searchOtc" id="searchOtc" type="text"
+                                       value="{{ Request::get('searchOtc')?? '' }}"/>
+                            </div>
+                            {{--商户订单--}}
+                            <div class="col-sm-3">
+                                <input class="form-control input-sm"  placeholder="商户订单号" name="searchMerchant" id="searchMerchant" type="text"
+                                       value="{{ Request::get('searchMerchant') ?? '' }}" />
+                            </div>
+                            {{--币种--}}
+                            <div class="col-sm-1">
+                                <select class="flter-status form-control input-sm" id="searchCurrency" name="searchCurrency">
+                                    @foreach($currencies as $key => $item)
+                                        <option value="{{$key}}" {{ Request::get('searchCurrency')==$key
+                                            ? 'selected' : (!Request::get('searchCurrency') && $item=='USDT' ? 'selected':'')}}>{{ $item }} </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom:10px;">
+                            {{--订单状态--}}
+                            <div class="col-sm-4">
+                                <select class="flter-status form-control input-sm" id="filterStatus" name="filterStatus">
+                                    <option value="">请选择订单状态</option>
+                                    @foreach($orderStatus as $key => $item)
+                                        <option value="{{$key}}" {{ Request::get('filterStatus')==$key ? 'selected' :''}}>{{ $item['name'] }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @include('component.dateTimePicker', ['colMdNum'=>4, 'id'=>1, 'label'=>'','name'=>'start','placeholder'=>'请选择开始时间'])
+                            @include('component.dateTimePicker', ['colMdNum'=>4, 'id'=>2, 'label'=>'','name'=>'end','placeholder'=>'请选择结束时间'])
+                        </div>
+                    </form>
                     <div class="box-body table-responsive no-padding">
                         <table class="table table-hover table-striped">
                             <tr>
                                 <th>序号</th>
-                                <th>订单</th>
+                                <th>OTC订单</th>
                                 <th>用户名</th>
                                 {{--<th>广告用户</th>--}}
                                 <th>类型</th>
@@ -79,7 +105,7 @@
                                         <span class="label label-{{ $orderType[$item->type]['class'] }}">{{ $orderType[$item->type]['name'] }}</span>
                                     </td>
                                     <td title="{{$item->currency_title_cn.' ('.$item->currency_title_en_abbr.')'}}">
-                                        <span class="label label-success">{{ str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',15) }}</span>
+                                        <span class="">{{ str_limit($item->currency_title_en_abbr,15) }}</span>
                                     </td>
                                     <td title="{{number_format($item->price,8,'.',',') }}">{{ number_format($item->price,8,'.',',') }}</td>
                                     <td title="{{ $item->name }}">{{ $item->abbr }}</td>
@@ -130,6 +156,15 @@
                         {{-- Paginaton --}}
                         <div class="row">
                             <div class="col-xs-12">
+                                @if($search)
+                                    <hr>
+                                    <div class="pull-left">
+                                        {{--交易总数量，交易总价--}}
+                                        总计： <b>{{ $userOtcOrder->total() }}</b>&nbsp;单<br>
+                                        交易总数量： <b>{{ $statistics['totalFieldAmount'] ?: 0 }}</b> |
+                                        交易总价： <b>{{ $statistics['totalCashAmount'] ?: 0 }}</b>
+                                    </div>
+                                @endif
                                 <div class="pull-right">
                                     {{ $userOtcOrder->appends(Request::except('page'))->links() }}
                                 </div>
@@ -145,5 +180,49 @@
 
 @section('js-part')
     <script>
+        $(function () {
+            //日期时间插件
+            $('#datetimepicker1').datetimepicker({
+                language: 'zh'
+            });
+
+            //日期时间插件
+            $('#datetimepicker2').datetimepicker({
+                language: 'zh'
+            });
+
+            //按钮搜索
+            $('#conditionSearch').click(function () {
+                var uri = implodeUri();
+                $(this).attr('href', uri);
+            });
+
+            // 回车搜索
+            $("#searchForm").bind("keypress",function(e){
+                // 兼容FF和IE和Opera
+                var theEvent = e || window.event;
+                var code = theEvent.keyCode || theEvent.which || theEvent.charCode;
+                if (code == 13) {
+                    console.log('{{ Request::url() }}');
+                    e.preventDefault();
+                    //回车执行查询
+                    var uri = implodeUri();
+                    window.location.href = '{{ Request::url() }}'+uri;
+                }
+            });
+
+            // 整理uri searchTeam
+            function implodeUri() {
+                var uri = '?searchUser='+$('#searchUser').val()
+                    +'&searchOtc='+$('#searchOtc').val()
+                    +'&searchMerchant='+$('#searchMerchant').val()
+                    +'&searchCurrency='+$('#searchCurrency').val()
+                    +'&filterStatus='+$('#filterStatus').val()
+                    +'&start='+$('#start').val()
+                    +'&end='+$('#end').val();
+
+                return uri;
+            }
+        })
     </script>
 @endsection

@@ -14,11 +14,11 @@
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="{{ asset('vendor/entrance/css/bootstrap.css') }}">
     <!-- Bootstrap theme -->
-<!--  <link rel="stylesheet" href="{{ asset('vendor/entrance') }}/css/bootstrap-theme.min.css"> -->
+    <!--  <link rel="stylesheet" href="{{ asset('vendor/entrance') }}/css/bootstrap-theme.min.css"> -->
 
     <!-- Custom styles for this template -->
     {{--Layout Full width--}}
-    {{-- <link rel="stylesheet" href="{{ asset('vendor/entrance/css/theme-nopadding.css') }}">--}}
+   {{-- <link rel="stylesheet" href="{{ asset('vendor/entrance/css/theme-nopadding.css') }}">--}}
     <link rel="stylesheet" href="{{ asset('vendor/entrance/css/theme.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/entrance/css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/entrance/css/style.css') }}">
@@ -28,6 +28,11 @@
     <link rel="stylesheet" href="{{ asset('vendor/entrance/css/responsive.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/entrance/js/tip/tooltipster.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/entrance/js/vegas/jquery.vegas.css') }}" />
+
+    <link rel="stylesheet" href="{{ asset('vendor/entrance/js/timepicker/bootstrap-timepicker.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/entrance/js/datepicker/datepicker.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/entrance/js/datepicker/clockface.css') }}">
+
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/entrance/js/number-progress-bar/number-pb.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/entrance/js/layer/skin/default/layer.css') }}">
     <!-- pace loader -->
@@ -56,114 +61,121 @@
 
 <body role="document">
 
-<div id="preloader">
-    <div id="status">&nbsp;</div>
-</div>
+    <div id="preloader">
+        <div id="status">&nbsp;</div>
+    </div>
 
-@include('entrance::layouts.include.top_nav')
-<!-- Container -->
-<div class="container-fluid paper-wrap bevel tlbr">
-    <div id="paper-top">
-        <div class="row">
-            <div class="col-sm-3 no-pad">
-                <a class="navbar-brand logo-text" href="#">{{ config('app.name_cn', 'Laravel') }}</a>
+    @include('entrance::layouts.include.top_nav')
+    <!-- Container -->
+    <div class="container-fluid paper-wrap bevel tlbr">
+        <div id="paper-top">
+            <div class="row">
+                <div class="col-sm-3 no-pad">
+                    <a class="navbar-brand logo-text" href="#">{{ config('app.name_cn', 'Laravel') }}</a>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- SIDE MENU -->
+        <!-- SIDE MENU -->
 
-    <div class="wrap-sidebar-content">
+        <div class="wrap-sidebar-content">
 
-    @include('entrance::layouts.include.side_menu')
-    @include('entrance::layouts.include.breadcrumb')
+            @include('entrance::layouts.include.side_menu')
+            @include('entrance::layouts.include.breadcrumb')
 
-    <!-- CONTENT -->
-        <div class="wrap-fluid" id="paper-bg">
-            @section('content')
+            <!-- CONTENT -->
+            <div class="wrap-fluid" id="paper-bg">
+                @section('content')
 
-            @show
+                @show
+            </div>
+            <!-- #/paper bg -->
         </div>
-        <!-- #/paper bg -->
-    </div>
-    <!-- ./wrap-sidebar-content -->
+        <!-- ./wrap-sidebar-content -->
 
-    <!-- / END OF CONTENT -->
+        <!-- / END OF CONTENT -->
 
-    <!-- FOOTER -->
-    <div id="footer">
-        <div class="devider-footer-left"></div>
-        <div class="time">
-            <p id="spanDate"></p>
-            <p id="clock"></p>
+        <!-- FOOTER -->
+        <div id="footer">
+            <div class="devider-footer-left"></div>
+            <div class="time">
+                <p id="spanDate"></p>
+                <p id="clock"></p>
+            </div>
+            <div class="copyright">Copyright &copy; 2018
+                <a href="javascript:;">
+                    {{ config('app.copyright', 'Laravel') }}
+                </a>
+                <img src="{{ asset('logo_80.png') }}" alt="" style="width: 25px">
+               {{-- Made with
+                <i class="fontello-heart-filled text-red"></i>--}}
+            </div>
+            <div class="devider-footer"></div>
+            {{--<ul>
+                <li><i class="fa fa-facebook-square"></i>
+                </li>
+                <li><i class="fa fa-twitter-square"></i>
+                </li>
+                <li><i class="fa fa-instagram"></i>
+                </li>
+            </ul>--}}
         </div>
-        <div class="copyright">Copyright &copy; 2018
-            <a href="javascript:;">
-                {{ config('app.copyright', 'Laravel') }}
-            </a>
-            <img src="{{ asset('logo_80.png') }}" alt="" style="width: 27px">
-            {{-- Made with
-             <i class="fontello-heart-filled text-red"></i>--}}
-        </div>
-        <div class="devider-footer"></div>
-        {{--<ul>
-            <li><i class="fa fa-facebook-square"></i>
-            </li>
-            <li><i class="fa fa-twitter-square"></i>
-            </li>
-            <li><i class="fa fa-instagram"></i>
-            </li>
-        </ul>--}}
+        <!-- / FOOTER -->
     </div>
-    <!-- / FOOTER -->
-</div>
-<!-- Container -->
+    <!-- Container -->
 
-<!--
-================================================== -->
-<!-- Main jQuery Plugins -->
-<script type='text/javascript' src="{{ asset('vendor/entrance/js/jquery.js') }}"></script>
+    <!--
+    ================================================== -->
+    <!-- Main jQuery Plugins -->
+    <script type='text/javascript' src="{{ asset('vendor/entrance/js/jquery.js') }}"></script>
 
-<script type='text/javascript' src="{{ asset('vendor/entrance/js/bootstrap.js') }}"></script>
-<script type='text/javascript' src="{{ asset('vendor/entrance/js/date.js') }}"></script>
-<script type='text/javascript' src="{{ asset('vendor/entrance/js/slimscroll/jquery.slimscroll.js') }}"></script>
-<script type='text/javascript' src="{{ asset('vendor/entrance/js/jquery.nicescroll.min.js') }}"></script>
-<script type='text/javascript' src="{{ asset('vendor/entrance/js/sliding-menu.js') }}"></script>
-<script type='text/javascript' src="{{ asset('vendor/entrance/js/scriptbreaker-multiple-accordion-1.js') }}"></script>
-<script type='text/javascript' src="{{ asset('vendor/entrance/js/tip/jquery.tooltipster.min.js') }}"></script>
-<script type='text/javascript' src="{{ asset('vendor/entrance/js/donut-chart/jquery.drawDoughnutChart.js') }}"></script>
-<script type='text/javascript' src="{{ asset('vendor/entrance/js/tab/jquery.newsTicker.js') }}"></script>
-<script type='text/javascript' src="{{ asset('vendor/entrance/js/tab/app.ticker.js') }}"></script>
-<script type='text/javascript' src="{{ asset('vendor/entrance/js/app.js') }}"></script>
+    <script type='text/javascript' src="{{ asset('vendor/entrance/js/bootstrap.js') }}"></script>
+    <script type='text/javascript' src="{{ asset('vendor/entrance/js/date.js') }}"></script>
+    <script type='text/javascript' src="{{ asset('vendor/entrance/js/slimscroll/jquery.slimscroll.js') }}"></script>
+    <script type='text/javascript' src="{{ asset('vendor/entrance/js/jquery.nicescroll.min.js') }}"></script>
+    <script type='text/javascript' src="{{ asset('vendor/entrance/js/sliding-menu.js') }}"></script>
+    <script type='text/javascript' src="{{ asset('vendor/entrance/js/scriptbreaker-multiple-accordion-1.js') }}"></script>
+    <script type='text/javascript' src="{{ asset('vendor/entrance/js/tip/jquery.tooltipster.min.js') }}"></script>
+    <script type='text/javascript' src="{{ asset('vendor/entrance/js/donut-chart/jquery.drawDoughnutChart.js') }}"></script>
+    <script type='text/javascript' src="{{ asset('vendor/entrance/js/tab/jquery.newsTicker.js') }}"></script>
+    <script type='text/javascript' src="{{ asset('vendor/entrance/js/tab/app.ticker.js') }}"></script>
+    <script type='text/javascript' src="{{ asset('vendor/entrance/js/app.js') }}"></script>
 
 
-<script type='text/javascript' src="{{ asset('vendor/entrance/js/vegas/jquery.vegas.js') }}"></script>
-<script type='text/javascript' src="{{ asset('vendor/entrance/js/image-background.js') }}"></script>
-<script type="text/javascript" src="{{ asset('vendor/entrance/js/jquery.tabSlideOut.v1.3.js') }}"></script>
-<script type="text/javascript" src="{{ asset('vendor/entrance/js/bg-changer.js') }}"></script>
+    <script type='text/javascript' src="{{ asset('vendor/entrance/js/vegas/jquery.vegas.js') }}"></script>
+    <script type='text/javascript' src="{{ asset('vendor/entrance/js/image-background.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/entrance/js/jquery.tabSlideOut.v1.3.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/entrance/js/bg-changer.js') }}"></script>
 
-<script type='text/javascript' src="{{ asset('vendor/entrance/js/number-progress-bar/jquery.velocity.min.js') }}"></script>
-<script type='text/javascript' src="{{ asset('vendor/entrance/js/number-progress-bar/number-pb.js') }}"></script>
-<script src="{{ asset('vendor/entrance/js/loader/loader.js') }}" type="text/javascript"></script>
-<script src="{{ asset('vendor/entrance/js/loader/demo.js') }}" type="text/javascript"></script>
-<script type="text/javascript" src="{{ asset('vendor/entrance/js/skycons/skycons.js') }}"></script>
-<script type="text/javascript" src="{{ asset('vendor/entrance/js/layer/layer.js') }}"></script>
-<script type="text/javascript" src="{{ asset('vendor/entrance/js/bootbox.min.js') }}"></script>
-<!-- Page script -->
+    <script type="text/javascript" src="{{ asset('vendor/entrance/js/inputMask/jquery.maskedinput.js') }}"></script>
 
-<!-- TAB SLIDER -->
+    <script type="text/javascript" src="{{ asset('vendor/entrance/js/timepicker/bootstrap-timepicker.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/entrance/js/datepicker/bootstrap-datepicker.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/entrance/js/datepicker/clockface.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/entrance/js/datepicker/bootstrap-datetimepicker.js') }}"></script>
 
-{{-- custom Js--}}
-<script src="{{ asset('vendor/entrance/js/custom.js') }}"></script>
+    <script type='text/javascript' src="{{ asset('vendor/entrance/js/number-progress-bar/jquery.velocity.min.js') }}"></script>
+    <script type='text/javascript' src="{{ asset('vendor/entrance/js/number-progress-bar/number-pb.js') }}"></script>
+    <script src="{{ asset('vendor/entrance/js/loader/loader.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('vendor/entrance/js/loader/demo.js') }}" type="text/javascript"></script>
+    <script type="text/javascript" src="{{ asset('vendor/entrance/js/skycons/skycons.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/entrance/js/layer/layer.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/entrance/js/bootbox.min.js') }}"></script>
+    <!-- Page script -->
 
-<script>
-    $(function () {
-        //        搜索框
-        $('#search-span').click(function () {
-            $('#search_input').toggleClass('searchHideInput')
+    <!-- TAB SLIDER -->
+
+    {{-- custom Js--}}
+    <script src="{{ asset('vendor/entrance/js/custom.js') }}"></script>
+
+    <script>
+        $(function () {
+            //        搜索框
+            $('#search-span').click(function () {
+                $('#search_input').toggleClass('searchHideInput')
+            })
         })
-    })
-</script>
-<script>
+    </script>
+    <script>
     //Weather Icons
     (function($) {
         "use strict";
@@ -250,10 +262,10 @@
         // start
         basicLoop();
     });
-</script>
+    </script>
 
-@section('js-part')
+    @section('js-part')
 
-@show
+    @show
 </body>
 </html>

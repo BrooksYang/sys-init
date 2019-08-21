@@ -129,7 +129,7 @@ return [
         'please_upload_image'=>'请上传图片',
         'edit_again'=>'验证失败请重新编辑',
         'enter_or_click' => '点击或按回车键搜索',
-        'clean_search' => '清空搜索项',
+        'clean_search' => '清空',
 
     ]
 
