@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Currency;
+use App\Models\OTC\OtcOrder;
+use App\Models\Wallet\WalletTransaction;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -211,15 +214,31 @@ class HomeController extends Controller
             return $this->getOtcWithdrawOrder();
         });
 
-        // 当天 OTC 累计成功提币金额
+        // 当天 OTC 累计成功提现金额
         $grandOtcWithdrawOrder = Cache::remember('grandOtcWithdrawOrder', $cacheLength, function () {
             return $this->getOtcWithdrawOrderByS(3);
+        });
+
+        //  OTC 累计成功充值数额 - 默认USDT
+        $otcDepositAmount = Cache::remember('otcDepositAmount', $cacheLength, function () {
+            return $this->getOtcTransactions(WalletTransaction::DEPOSIT);
+        });
+
+        //  OTC 累计成功提币数额 - 默认USDT
+        $otcWithdrawAmount = Cache::remember('otcWithdrawAmount', $cacheLength, function () {
+            return $this->getOtcTransactions(WalletTransaction::WITHDRAW);
+        });
+
+        //  OTC 累计成交数额 - 默认USDT 买入
+        $otcTotal = Cache::remember('otcTotal', $cacheLength, function () {
+            return $this->otcOrderTotal();
         });
 
         return compact(
             'otcOrder',
             'otcWithdrawOrderStatus',
-            'grandOtcWithdrawOrder'
+            'grandOtcWithdrawOrder',
+            'otcDepositAmount','otcWithdrawAmount','otcTotal'
         );
     }
     
@@ -661,16 +680,19 @@ class HomeController extends Controller
 
 
     /**
-     * 当天 OTC 累计成功放币金额
+     *  OTC 累计提现金额 - 默认USDT
      *
      * @param $status
+     * @param $currency
      * @return int|mixed
      */
-    public function getOtcWithdrawOrderByS($status)
+    public function getOtcWithdrawOrderByS($status, $currency = Currency::USDT)
     {
         $otcWithdrawOrder = DB::table('otc_withdraws')
-            ->where('created_at', 'like',env('APP_GMDATE', self::carbonNow()->toDateString()).'%')
-            ->where('status', $status)->get(['amount']);
+            //->where('created_at', 'like',env('APP_GMDATE', self::carbonNow()->toDateString()).'%')
+            ->where('currency_id', $currency)
+            ->where('status', $status)
+            ->get(['amount']);
 
         $grandOtcWithdrawOrder = 0;
         foreach ($otcWithdrawOrder as $key => $item){
@@ -678,6 +700,48 @@ class HomeController extends Controller
         }
 
         return $grandOtcWithdrawOrder;
+    }
+
+    /**
+     *  OTC 累计成功充值/提币数额 - 默认USDT
+     *
+     * @param $currency
+     * @param $status
+     * @return int|mixed
+     */
+    public function getOtcTransactions($currency = Currency::USDT, $status = WalletTransaction::SUCCESS)
+    {
+        $getOtcTransactions = DB::table('wallet_transactions')
+            ->where('currency_id', $currency)
+            ->where('status', $status)
+            ->get(['amount']);
+
+        $transactions = 0;
+        foreach ($getOtcTransactions as $key => $item){
+            $transactions += $item->amount;
+        }
+
+        return $transactions;
+    }
+
+    /**
+     * OTC 订单交易统计 - 默认USDT
+     *
+     * @param int $type
+     * @param int $currency
+     * @param int $status
+     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|object|null
+     */
+    public function otcOrderTotal($type = OtcOrder::BUY, $currency = Currency::USDT, $status = OtcOrder::RECEIVED)
+    {
+        $otcOrder =  DB::table('otc_orders')
+            ->select(DB::raw('sum(field_amount) as field_amount'))
+            ->where('type', $type)
+            ->where('currency_id', $currency)
+            ->where('status', $status)
+            ->first();
+
+        return $otcOrder;
     }
 
     /**
