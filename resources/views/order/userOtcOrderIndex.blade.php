@@ -156,6 +156,15 @@
                         {{-- Paginaton --}}
                         <div class="row">
                             <div class="col-xs-12">
+                                @if($search)
+                                    <hr>
+                                    <div class="pull-left">
+                                        {{--交易总数量，交易总价--}}
+                                        总计： <b>{{ $userOtcOrder->total() }}</b>&nbsp;单<br>
+                                        交易总数量： <b>{{ $statistics['totalFieldAmount'] ?: 0 }}</b> |
+                                        交易总价： <b>{{ $statistics['totalCashAmount'] ?: 0 }}</b>
+                                    </div>
+                                @endif
                                 <div class="pull-right">
                                     {{ $userOtcOrder->appends(Request::except('page'))->links() }}
                                 </div>

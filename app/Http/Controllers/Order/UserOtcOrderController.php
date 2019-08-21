@@ -20,6 +20,7 @@ class UserOtcOrderController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param $request
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
@@ -58,6 +59,8 @@ class UserOtcOrderController extends Controller
         $end = trim($request->end,'');
         $orderC = trim($request->orderC ?: 'desc','');
 
+        $search = $searchUser || $searchOtc || $searchMerchant || $start || $end;
+
         $userOtcOrder = DB::table('otc_orders as otcOrder')
             ->join('users as u','otcOrder.user_id','u.id') //用户信息
             ->join('currencies as currency','otcOrder.currency_id','currency.id')  //币种
@@ -95,7 +98,28 @@ class UserOtcOrderController extends Controller
             )
             ->paginate(OTC_ORDER_PAGE_SIZE);
 
-        return view('order.userOtcOrderIndex',compact('orderStatus', 'appealStatus', 'currencies','orderType','userOtcOrder'));
+        $statistics = $this->sum($userOtcOrder);
+
+        return view('order.userOtcOrderIndex',compact('orderStatus', 'appealStatus', 'currencies','orderType',
+            'userOtcOrder','statistics','search'));
+    }
+
+    /**
+     * 搜索统计
+     *
+     * @param $otcOrder
+     * @return array
+     */
+    public function sum($otcOrder)
+    {
+        $totalFieldAmount = $totalCashAmount = 0;
+
+        foreach ($otcOrder ?? [] as $key => $item){
+            $totalFieldAmount += bcadd($totalFieldAmount, $item->field_amount);
+            $totalCashAmount += bcadd($totalCashAmount, $item->cash_amount);
+        }
+
+        return compact('totalFieldAmount','totalCashAmount');
     }
 
     /**
