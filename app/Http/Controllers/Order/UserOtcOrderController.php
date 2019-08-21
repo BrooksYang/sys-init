@@ -70,7 +70,7 @@ class UserOtcOrderController extends Controller
                 return $query->orderBy('otcOrder.created_at', 'desc'); //默认创建时间倒序
             })
             ->select(
-                'otcOrder.*', 'u.username', 'u.phone',
+                'otcOrder.*', 'u.username', 'u.phone','u.email',
                 'currency.currency_title_cn','currency.currency_title_en_abbr',
                 'legal_currency.name','legal_currency.abbr'
             )

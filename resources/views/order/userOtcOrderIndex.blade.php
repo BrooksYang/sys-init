@@ -70,7 +70,8 @@
                             @forelse($userOtcOrder as $key => $item)
                                 <tr>
                                     <td>{{ ($key + 1) + ($userOtcOrder->currentPage() - 1) * $userOtcOrder->perPage() }}</td>
-                                    <td title="电话：{{$item->phone}}"><strong>{{ str_limit($item->username,15) }}</strong></td>
+                                    <td title="电话：{{$item->phone ?: $item->email}}">
+                                        <strong>{{ str_limit($item->username ? $item->username : ($item->phone ? $item->phone :$item->email),15) }}</strong></td>
                                    {{-- <td title="{{ $item->from_username }} 电话：{{$item->from_user_phone}}"><strong>{{ str_limit($item->from_username,15) }}</strong></td>--}}
                                     <td>
                                         <span class="label label-{{ $orderType[$item->type]['class'] }}">{{ $orderType[$item->type]['name'] }}</span>
