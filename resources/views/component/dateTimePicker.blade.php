@@ -6,7 +6,7 @@
     @endif
     <div class="form-group {{ $errors->has($name) ? 'has-error' : '' }}">
         <div id="datetimepicker{{$id}}" class="input-group date">
-            <input class="form-control input-sm" name="{{ $name }}" size="16" type="text" value="{{ Request::get($name)? Request::get($name): old($name)??'' }}"
+            <input class="form-control input-sm" id="{{$name}}" name="{{ $name }}" size="16" type="text" value="{{ Request::get($name)? Request::get($name): old($name)??'' }}"
                    placeholder="{{ $placeholder ?? '请选择时间' }}" data-format="{{ $dataFormat ?? 'yyyy-MM-dd hh:mm:ss' }}"  >
             <span class="input-group-addon add-on">
             <i style="font-style:normal;" data-time-icon="entypo-clock" data-date-icon="entypo-calendar"> </i></span>

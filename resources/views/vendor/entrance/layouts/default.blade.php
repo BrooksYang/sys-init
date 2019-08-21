@@ -28,6 +28,11 @@
     <link rel="stylesheet" href="{{ asset('vendor/entrance/css/responsive.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/entrance/js/tip/tooltipster.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/entrance/js/vegas/jquery.vegas.css') }}" />
+
+    <link rel="stylesheet" href="{{ asset('vendor/entrance/js/timepicker/bootstrap-timepicker.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/entrance/js/datepicker/datepicker.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/entrance/js/datepicker/clockface.css') }}">
+
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/entrance/js/number-progress-bar/number-pb.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/entrance/js/layer/skin/default/layer.css') }}">
     <!-- pace loader -->
@@ -140,6 +145,13 @@
     <script type='text/javascript' src="{{ asset('vendor/entrance/js/image-background.js') }}"></script>
     <script type="text/javascript" src="{{ asset('vendor/entrance/js/jquery.tabSlideOut.v1.3.js') }}"></script>
     <script type="text/javascript" src="{{ asset('vendor/entrance/js/bg-changer.js') }}"></script>
+
+    <script type="text/javascript" src="{{ asset('vendor/entrance/js/inputMask/jquery.maskedinput.js') }}"></script>
+
+    <script type="text/javascript" src="{{ asset('vendor/entrance/js/timepicker/bootstrap-timepicker.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/entrance/js/datepicker/bootstrap-datepicker.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/entrance/js/datepicker/clockface.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/entrance/js/datepicker/bootstrap-datetimepicker.js') }}"></script>
 
     <script type='text/javascript' src="{{ asset('vendor/entrance/js/number-progress-bar/jquery.velocity.min.js') }}"></script>
     <script type='text/javascript' src="{{ asset('vendor/entrance/js/number-progress-bar/number-pb.js') }}"></script>

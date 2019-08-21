@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Order;
 
+use App\Models\Currency;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -44,30 +45,48 @@ class UserOtcOrderController extends Controller
             3 => ['name' => '已完结', 'class' => 'default'],
         ];
 
+        // 币种
+        $currencies = Currency::getCurrencies();
+
         //按币种-用户名-电话-商户订单id检索
-        $search = trim($request->search,'');
+        $searchUser = trim($request->searchUser,'');
+        $searchOtc = trim($request->searchOtc,'');
+        $searchMerchant = trim($request->searchMerchant,'');
+        $searchCurrency = trim($request->searchCurrency,'');
         $filterStatus = trim($request->filterStatus,'');
-        $orderC = trim($request->orderC,'');
+        $start = trim($request->start,'');
+        $end = trim($request->end,'');
+        $orderC = trim($request->orderC ?: 'desc','');
+
         $userOtcOrder = DB::table('otc_orders as otcOrder')
             ->join('users as u','otcOrder.user_id','u.id') //用户信息
             ->join('currencies as currency','otcOrder.currency_id','currency.id')  //币种
             ->join('legal_currencies as legal_currency','otcOrder.legal_currency_id','legal_currency.id') //法币
-            ->when($search, function ($query) use ($search){
-                return $query->where('currency.currency_title_cn','like',"%$search%")
-                    ->orwhere('currency.currency_title_en_abbr','like',"%$search%")
-                    ->orwhere('legal_currency.name','like',"%$search%")
-                    ->orwhere('legal_currency.abbr','like',"%$search%")
-                    ->orwhere('u.username', 'like', "%$search%")
-                    ->orwhere('u.phone', 'like', "%$search%")
-                    ->orwhere('otcOrder.merchant_order_id', 'like', "%$search%");
+            ->when($searchUser, function ($query) use ($searchUser){
+                return $query->where('u.username', 'like', "%$searchUser%")
+                    ->orwhere('u.phone', 'like', "%$searchUser%")
+                    ->orwhere('u.email', 'like', "%$searchUser%");
+            })
+            ->when($searchOtc, function ($query) use ($searchOtc){
+                return $query->where('otcOrder.id',  'like', "%$searchOtc%");
+            })
+            ->when($searchMerchant, function ($query) use ($searchMerchant){
+                return $query->where('otcOrder.merchant_order_id', 'like', "%$searchMerchant%");
+            })
+            ->when($searchCurrency, function ($query) use ($searchCurrency){
+                return $query->where('otcOrder.currency_id', $searchCurrency);
+            })
+            ->when($start, function ($query) use ($start){
+                return $query->where('otcOrder.created_at', '>=', $start);
+            })
+            ->when($end, function ($query) use ($end){
+                return $query->where('otcOrder.created_at', '<=', $end);
             })
             ->when($filterStatus, function ($query) use ($filterStatus){
                 return $query->where('otcOrder.status', $filterStatus);
             })
             ->when($orderC, function ($query) use ($orderC){
                 return $query->orderBy('otcOrder.created_at', $orderC);
-            }, function ($query) {
-                return $query->orderBy('otcOrder.created_at', 'desc'); //默认创建时间倒序
             })
             ->select(
                 'otcOrder.*', 'u.username', 'u.phone','u.email',
@@ -76,7 +95,7 @@ class UserOtcOrderController extends Controller
             )
             ->paginate(OTC_ORDER_PAGE_SIZE);
 
-        return view('order.userOtcOrderIndex',compact('orderStatus', 'appealStatus', 'orderType','userOtcOrder'));
+        return view('order.userOtcOrderIndex',compact('orderStatus', 'appealStatus', 'currencies','orderType','userOtcOrder'));
     }
 
     /**
