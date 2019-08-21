@@ -137,25 +137,82 @@
     <!-- OTC 顶部统计区域 -->
     @if(env('APP_OTC_MODULE'))
         <div class="row">
-        <div class="col-lg-12">
-            <div class="box">
-                <!-- /.box-header -->
-                <div class="box-body">
-                    <div class="news-widget">
-                        <h2>
-                            <span class="bg-red">Today</span>
-                        </h2>
-                        <i class="fontello-money"></i>
-                        <h4 class="text-red">{{ number_format($grandOtcWithdrawOrder,3,'.',',') }}</h4>
-                        <h5>OTC 累计成功提币金额</h5>
-                        <div style="clear:both;"></div>
+            <div class="col-lg-6">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="news-widget">
+                            <h2>
+                                <span class="bg-green">Current</span>
+                            </h2>
+                            <i class="fa fa-dollar"></i>
+                            <h4 class="text-green">{{ number_format($otcDepositAmount, 2) }}</h4>
+                            <h5>OTC 累计充值数额({{ config('conf.currency_usdt') }})</h5>
+                            <div style="clear:both;"></div>
+                        </div>
                     </div>
+                    <!-- /.box-body -->
                 </div>
-                <!-- /.box-body -->
+                <!-- /.box -->
             </div>
-            <!-- /.box -->
+            <div class="col-lg-6">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="news-widget">
+                            <h2>
+                                <span class="bg-red">Current</span>
+                            </h2>
+                            <i class="fa fa-dollar"></i>
+                            <h4 class="text-red">{{ number_format($otcWithdrawAmount, 2) }}</h4>
+                            <h5>OTC 累计提币数额({{ config('conf.currency_usdt') }})</h5>
+                            <div style="clear:both;"></div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
         </div>
-    </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="news-widget">
+                            <h2>
+                                <span class="bg-aqua">Current</span>
+                            </h2>
+                            <i class="fa fa-dollar"></i>
+                            <h4 class="text-aqua">{{ number_format($otcTotal->field_amount, 2) }}</h4>
+                            <h5>OTC 累计买入交易数量({{ config('conf.currency_usdt') }})</h5>
+                            <div style="clear:both;"></div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <div class="col-lg-6">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="news-widget">
+                            <h2>
+                                <span class="bg-yellow">Current</span>
+                            </h2>
+                            <i class="fontello-money"></i>
+                            <h4 class="text-yellow">{{ number_format($grandOtcWithdrawOrder, 2) }}</h4>
+                            <h5>OTC 累计提现数额({{ config('conf.currency_usdt') }})</h5>
+                            <div style="clear:both;"></div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
     @endif
     <!-- END --OTC 顶部统计区域 -->
 
