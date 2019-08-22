@@ -200,6 +200,26 @@
                     <div class="box-body">
                         <div class="news-widget">
                             <h2>
+                                <span class="bg-blue">Current</span>
+                            </h2>
+                            <i class="fa fa-btc"></i>
+                            <h4 class="text-blue">{{ number_format($otcSysRecharge, 2) }}</h4>
+                            <h5>OTC 系统待充值数量({{ config('conf.currency_usdt') }})</h5>
+                            <div style="clear:both;"></div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="news-widget">
+                            <h2>
                                 <span class="bg-yellow">Current</span>
                             </h2>
                             <i class="fontello-money"></i>
@@ -213,6 +233,7 @@
                 <!-- /.box -->
             </div>
         </div>
+
     @endif
     <!-- END --OTC 顶部统计区域 -->
 
