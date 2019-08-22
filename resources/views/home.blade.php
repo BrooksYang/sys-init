@@ -200,11 +200,11 @@
                     <div class="box-body">
                         <div class="news-widget">
                             <h2>
-                                <span class="bg-blue">Current</span>
+                                <span class="bg-yellow">Current</span>
                             </h2>
                             <i class="fa fa-btc"></i>
-                            <h4 class="text-blue">{{ number_format($otcSysRecharge, 2) }}</h4>
-                            <h5>OTC 系统待充值数量({{ config('conf.currency_usdt') }})</h5>
+                            <h4 class="text-yellow">{{ number_format($otcSysToBeWithdraw, 2) }}</h4>
+                            <h5>OTC 系统待提币数量({{ config('conf.currency_usdt') }})</h5>
                             <div style="clear:both;"></div>
                         </div>
                     </div>
@@ -220,10 +220,10 @@
                     <div class="box-body">
                         <div class="news-widget">
                             <h2>
-                                <span class="bg-yellow">Current</span>
+                                <span class="bg-aqua">Current</span>
                             </h2>
                             <i class="fontello-money"></i>
-                            <h4 class="text-yellow">{{ number_format($grandOtcWithdrawOrder, 2) }}</h4>
+                            <h4 class="text-aqua">{{ number_format($grandOtcWithdrawOrder, 2) }}</h4>
                             <h5>OTC 累计提现数额({{ config('conf.currency_usdt') }})</h5>
                             <div style="clear:both;"></div>
                         </div>
