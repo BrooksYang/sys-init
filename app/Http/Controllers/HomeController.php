@@ -234,11 +234,14 @@ class HomeController extends Controller
             return $this->otcOrderTotal();
         });
 
+        // OTC 系统待充值数额 - 默认USDT
+        $otcSysRecharge = bcsub($otcTotal->field_amount, $otcWithdrawAmount);
+
         return compact(
             'otcOrder',
             'otcWithdrawOrderStatus',
             'grandOtcWithdrawOrder',
-            'otcDepositAmount','otcWithdrawAmount','otcTotal'
+            'otcDepositAmount','otcWithdrawAmount','otcTotal','otcSysRecharge'
         );
     }
     
@@ -720,7 +723,7 @@ class HomeController extends Controller
 
         $transactions = 0;
         foreach ($getOtcTransactions as $key => $item){
-            $transactions += $item->amount;
+            $transactions = bcadd($transactions, $item->amount, config('app.bcmath_scale'));
         }
 
         return $transactions;
