@@ -115,8 +115,8 @@ class UserOtcOrderController extends Controller
         $totalFieldAmount = $totalCashAmount = 0;
 
         foreach ($otcOrder ?? [] as $key => $item){
-            $totalFieldAmount += bcadd($totalFieldAmount, $item->field_amount);
-            $totalCashAmount += bcadd($totalCashAmount, $item->cash_amount);
+            $totalFieldAmount = bcadd($totalFieldAmount, $item->field_amount);
+            $totalCashAmount = bcadd($totalCashAmount, $item->cash_amount);
         }
 
         return compact('totalFieldAmount','totalCashAmount');
