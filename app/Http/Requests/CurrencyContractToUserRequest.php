@@ -28,11 +28,11 @@ class CurrencyContractToUserRequest extends FormRequest
         return [
             'currency_id' =>'required|numeric|min:1|unique:currency_contracts,currency_id,'.$request->userCurrencyContract,
             //'symbol' => 'required',
-            'user_withdraw_daily_amount_limit' =>'required|numeric|min:1',
-            'user_withdraw_daily_count_limit' =>'required|numeric|min:1',
-            'user_withdraw_fee_rate' =>'required|numeric|min:0.000000001',
-            'user_deposit_minimum_amount' =>'required|numeric|min:1',
-            'user_sell_daily_limit' =>'required|numeric|min:1',
+            'user_withdraw_daily_amount_limit' =>'required|numeric|min:0',
+            'user_withdraw_daily_count_limit' =>'required|numeric|min:0',
+            'user_withdraw_fee_rate' =>'required|numeric|min:0',
+            'user_deposit_minimum_amount' =>'required|numeric|min:0',
+            'user_sell_daily_limit' =>'required|numeric|min:0',
             'user_deposit_warning' =>'required|max:255',
             'user_withdraw_warning' =>'required|max:255',
 
