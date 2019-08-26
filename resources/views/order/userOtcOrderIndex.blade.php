@@ -166,7 +166,8 @@
                                         {{--交易总数量，交易总价--}}
                                         总计： <b>{{ $userOtcOrder->total() }}</b>&nbsp;单<br>
                                         交易总数量： <b>{{ number_format($statistics['totalFieldAmount'] ?: 0, 8)}}</b> |
-                                        交易总价： <b>{{ number_format($statistics['totalCashAmount'] ?: 0, 8) }}</b>
+                                        交易总价： <b>{{ number_format($statistics['totalCashAmount'] ?: 0, 8) }}</b> |
+                                        交易手续费：<b>{{ number_format($statistics['totalFee'] ?: 0, 8) }}</b>
                                     </div>
                                 @endif
                                 <div class="pull-right">
