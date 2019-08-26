@@ -363,11 +363,11 @@ class HandlerController extends Controller
         // 仅完结申诉订单和工单
 
         // 更新otc订单及工单
-        DB::transaction(function () use($orderSrc, $ticket){
+        DB::transaction(function () use($order, $ticket){
 
             // 更新otc订单的申诉状态
-            $orderSrc->appeal_status = OtcOrder::APPEAL_END;
-            $orderSrc->save();
+            $order->appeal_status = OtcOrder::APPEAL_END;
+            $order->save();
 
             // 更新工单状态
             $ticket->ticket_state = OtcTicket::REPLIED;
