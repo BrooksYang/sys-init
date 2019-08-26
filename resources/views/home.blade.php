@@ -224,7 +224,7 @@
                             </h2>
                             <i class="fa fa-dollar"></i>
                             <h4 class="text-green">{{ number_format($otcTotal->fee, 2) }}</h4>
-                            <h5>OTC 累计手续费数量({{ config('conf.currency_usdt') }})</h5>
+                            <h5>OTC  &nbsp;累计交易手续费 ({{ config('conf.currency_usdt') }})</h5>
                             <div style="clear:both;"></div>
                         </div>
                     </div>
