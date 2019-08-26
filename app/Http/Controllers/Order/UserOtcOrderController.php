@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Order;
 use App\Models\Currency;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 
 const OTC_ORDER_PAGE_SIZE = 20;
@@ -96,12 +98,33 @@ class UserOtcOrderController extends Controller
                 'currency.currency_title_cn','currency.currency_title_en_abbr',
                 'legal_currency.name','legal_currency.abbr'
             )
-            ->paginate(OTC_ORDER_PAGE_SIZE);
+            ->get();
 
         $statistics = $this->sum($userOtcOrder);
+        $userOtcOrder = self::selfPage($userOtcOrder, 2);
 
         return view('order.userOtcOrderIndex',compact('orderStatus', 'appealStatus', 'currencies','orderType',
             'userOtcOrder','statistics','search'));
+    }
+
+
+    /**
+     * 自定义分页
+     *
+     * @param $items
+     * @param $perPage
+     * @return LengthAwarePaginator
+     */
+    public static function selfPage($items, $perPage)
+    {
+        $pageStart = request('page', 1);
+        $offSet    = ($pageStart * $perPage) - $perPage;
+        // $itemsForCurrentPage = array_slice($items, $offSet, $perPage, TRUE);
+        $itemsForCurrentPage = $items->slice($offSet, $perPage);
+        return new LengthAwarePaginator( $itemsForCurrentPage, $items->count(), $perPage,
+            Paginator::resolveCurrentPage(),
+            ['path' => Paginator::resolveCurrentPath()]
+        );
     }
 
     /**
