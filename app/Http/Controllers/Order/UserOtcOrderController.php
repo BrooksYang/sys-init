@@ -98,7 +98,7 @@ class UserOtcOrderController extends Controller
                 'currency.currency_title_cn','currency.currency_title_en_abbr',
                 'legal_currency.name','legal_currency.abbr'
             )
-            ->get();
+            ->paginate(OTC_ORDER_PAGE_SIZE);
 
         $statistics = $this->sum($userOtcOrder);
         $userOtcOrder = self::selfPage($userOtcOrder, OTC_ORDER_PAGE_SIZE);
@@ -135,14 +135,15 @@ class UserOtcOrderController extends Controller
      */
     public function sum($otcOrder)
     {
-        $totalFieldAmount = $totalCashAmount = 0;
+        list($totalFieldAmount, $totalCashAmount, $totalFee)= [0, 0, 0];
 
         foreach ($otcOrder ?? [] as $key => $item){
             $totalFieldAmount = bcadd($totalFieldAmount, $item->field_amount);
             $totalCashAmount = bcadd($totalCashAmount, $item->cash_amount);
+            $totalFee = bcadd($totalFee, $item->fee);
         }
 
-        return compact('totalFieldAmount','totalCashAmount');
+        return compact('totalFieldAmount','totalCashAmount','totalFee');
     }
 
     /**
