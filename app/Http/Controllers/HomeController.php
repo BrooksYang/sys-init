@@ -740,7 +740,7 @@ class HomeController extends Controller
     public function otcOrderTotal($type = OtcOrder::BUY, $currency = Currency::USDT, $status = OtcOrder::RECEIVED)
     {
         $otcOrder =  DB::table('otc_orders')
-            ->select(DB::raw('sum(field_amount) as field_amount'))
+            ->select(DB::raw('sum(field_amount) as field_amount'),DB::raw('sum(fee) as fee'))
             ->where('type', $type)
             ->where('currency_id', $currency)
             ->where('status', $status)
