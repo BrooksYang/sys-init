@@ -9,7 +9,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 
-const OTC_ORDER_PAGE_SIZE = 20;
+const OTC_ORDER_PAGE_SIZE = 30;
 const OTC_ORDER_STATUS_TRANSFER_OUT =4;
 
 /**
@@ -101,7 +101,7 @@ class UserOtcOrderController extends Controller
             ->get();
 
         $statistics = $this->sum($userOtcOrder);
-        $userOtcOrder = self::selfPage($userOtcOrder, 2);
+        $userOtcOrder = self::selfPage($userOtcOrder, OTC_ORDER_PAGE_SIZE);
 
         return view('order.userOtcOrderIndex',compact('orderStatus', 'appealStatus', 'currencies','orderType',
             'userOtcOrder','statistics','search'));
