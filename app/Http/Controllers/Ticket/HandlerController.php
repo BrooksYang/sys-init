@@ -340,7 +340,6 @@ class HandlerController extends Controller
     {
         $ticket = OtcTicket::findOrFail($request->id);
         $order = OtcOrder::findOrFail($request->update);
-        $orderSrc = $order->replicate();
 
         // 订单存在且为申诉处理中
         if ($order->appeal_status != OtcOrder::APPEALING) {
