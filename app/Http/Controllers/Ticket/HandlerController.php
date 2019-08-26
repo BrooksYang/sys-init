@@ -394,8 +394,8 @@ class HandlerController extends Controller
             $balanceBuyer = Balance::firstOrNew(['user_id' => $buyerId, 'user_wallet_currency_id' => $order->currency_id]);
             $balanceSeller = Balance::firstOrNew(['user_id' => $sellerId, 'user_wallet_currency_id' => $order->currency_id]);
 
-            // 购买者增加余额
-            $balanceBuyer->user_wallet_balance = bcadd($balanceBuyer->user_wallet_balance, $order->field_amount);
+            // 购买者增加余额 -（该余额为实际到账金额）
+            $balanceBuyer->user_wallet_balance = bcadd($balanceBuyer->user_wallet_balance, $order->final_amount);
             $balanceBuyer->save();
 
             // 出售者减少冻结金额
@@ -425,7 +425,7 @@ class HandlerController extends Controller
             $order->save();
 
             // 还原广告进度
-            $trade = Trade::find($order->advertisement_id);
+            $trade = Trade::lockForUpdate()->find($order->advertisement_id);
             $trade->field_amount = bcsub($trade->field_amount, $order->field_amount);
             $trade->field_order_count --;
             $trade->field_percentage = bcmul(bcdiv($trade->field_amount, $trade->amount), 100);

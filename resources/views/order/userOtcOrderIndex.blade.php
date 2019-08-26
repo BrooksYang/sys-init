@@ -84,6 +84,8 @@
                                 <th>法币</th>
                                 <th>数量</th>
                                 <th>总价</th>
+                                <th>手续费</th>
+                                <th>实际到账</th>
                                 <th>状态</th>
                                 <th>申诉</th>
                                 <th>商户订单</th>
@@ -109,8 +111,10 @@
                                     </td>
                                     <td title="{{number_format($item->price,8,'.',',') }}">{{ number_format($item->price,8,'.',',') }}</td>
                                     <td title="{{ $item->name }}">{{ $item->abbr }}</td>
-                                    <td title="{{number_format($item->field_amount,8,'.',',') }}">{{ number_format($item->field_amount,8,'.',',') }}</td>
-                                    <td title="{{number_format($item->cash_amount,8,'.',',') }}">{{ number_format($item->cash_amount,8,'.',',') }}</td>
+                                    <td title="{{number_format($item->field_amount, 8) }}">{{ number_format($item->field_amount, 8) }}</td>
+                                    <td title="{{number_format($item->cash_amount, 8) }}">{{ number_format($item->cash_amount, 8) }}</td>
+                                    <td title="{{number_format($item->fee, 8) }}">{{ number_format($item->fee, 8) }}</td>
+                                    <td title="{{number_format($item->final_amount, 8) }}">{{ number_format($item->final_amount, 8) }}</td>
                                     <td><span class="label label-{{ $orderStatus[$item->status]['class'] ??''}}">
                                             {{ $orderStatus[$item->status]['name'] ?? '--'}}</span>
                                     </td>
@@ -145,7 +149,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="15" class="text-center">
+                                <tr><td colspan="17" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
