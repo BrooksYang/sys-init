@@ -202,7 +202,7 @@
                             <h2>
                                 <span class="bg-yellow">Current</span>
                             </h2>
-                            <i class="fa fa-btc"></i>
+                            <i class="fa fa-dollar"></i>
                             <h4 class="text-yellow">{{ number_format($otcSysToBeWithdraw, 2) }}</h4>
                             <h5>OTC 系统待提币数量({{ config('conf.currency_usdt') }})</h5>
                             <div style="clear:both;"></div>
@@ -214,17 +214,35 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-6">
                 <div class="box">
                     <!-- /.box-header -->
                     <div class="box-body">
                         <div class="news-widget">
                             <h2>
-                                <span class="bg-aqua">Current</span>
+                                <span class="bg-green">Current</span>
+                            </h2>
+                            <i class="fa fa-dollar"></i>
+                            <h4 class="text-green">{{ number_format($otcTotal->fee, 2) }}</h4>
+                            <h5>OTC 系统手续费数量({{ config('conf.currency_usdt') }})</h5>
+                            <div style="clear:both;"></div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <div class="col-lg-6">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="news-widget">
+                            <h2>
+                                <span class="bg-danger">Current</span>
                             </h2>
                             <i class="fontello-money"></i>
-                            <h4 class="text-aqua">{{ number_format($grandOtcWithdrawOrder, 2) }}</h4>
-                            <h5>OTC 累计提现数额({{ config('conf.currency_usdt') }})</h5>
+                            <h4 class="text-danger">{{ number_format($grandOtcWithdrawOrder, 2) }}</h4>
+                            <h5>OTC 累计提现数额</h5>
                             <div style="clear:both;"></div>
                         </div>
                     </div>
