@@ -84,7 +84,7 @@
                                 <th>法币</th>
                                 <th>数量</th>
                                 <th>总价</th>
-                                <th>手续费</th>
+                                <th>手续费({{ config('conf.currency_usdt') }})</th>
                                 <th>实际到账</th>
                                 <th>状态</th>
                                 <th>申诉</th>
@@ -167,7 +167,7 @@
                                         总计： <b>{{ $userOtcOrder->total() }}</b>&nbsp;单<br>
                                         交易总数量： <b>{{ number_format($statistics['totalFieldAmount'] ?: 0, 8)}}</b> |
                                         交易总价： <b>{{ number_format($statistics['totalCashAmount'] ?: 0, 8) }}</b> |
-                                        交易手续费：<b>{{ number_format($statistics['totalFee'] ?: 0, 8) }}</b>
+                                        交易手续费：<b>{{ number_format($statistics['totalFee'] ?: 0, 8) }} {{ config('conf.currency_usdt') }}</b>
                                     </div>
                                 @endif
                                 <div class="pull-right">
