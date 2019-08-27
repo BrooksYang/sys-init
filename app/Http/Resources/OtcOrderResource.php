@@ -37,6 +37,7 @@ class OtcOrderResource
             'appeal_status'  => $order->appeal_status,
             'appeal_text'    => OtcOrder::$appealText[$order->appeal_status ?: 0],
             'appeal_content' => $order->content,
+            'merchant_order' => $order->merchant_order_id,
             'created_at'     => $order->created_at->toDateTimeString(),
         ];
     }
