@@ -86,6 +86,7 @@
                                 <th>序号</th>
                                 <th>OTC订单</th>
                                 <th>用户名</th>
+                                <th>备注</th>
                                 {{--<th>广告用户</th>--}}
                                 <th>类型</th>
                                 <th>币种</th>
@@ -112,6 +113,7 @@
                                     <td title="电话：{{$item->phone ?: $item->email}}">
                                         <strong>{{ str_limit($item->username ? $item->username : ($item->phone ? $item->phone :$item->email),15) }}</strong></td>
                                    {{-- <td title="{{ $item->from_username }} 电话：{{$item->from_user_phone}}"><strong>{{ str_limit($item->from_username,15) }}</strong></td>--}}
+                                    <td title="{{$item->remark}}">{{ str_limit($item->remark ?: '--', 8) }}</td>
                                     <td>
                                         <span class="label label-{{ $orderType[$item->type]['class'] }}">{{ $orderType[$item->type]['name'] }}</span>
                                     </td>
@@ -158,7 +160,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="16" class="text-center">
+                                <tr><td colspan="17" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
