@@ -57,11 +57,12 @@ class UserOtcOrderController extends Controller
         $searchMerchant = trim($request->searchMerchant,'');
         $searchCurrency = trim($request->searchCurrency,'');
         $filterStatus = trim($request->filterStatus,'');
+        $filterAppeal = trim($request->filterAppeal,'');
         $start = trim($request->start,'');
         $end = trim($request->end,'');
         $orderC = trim($request->orderC ?: 'desc','');
 
-        $search = $searchUser || $searchOtc || $searchMerchant || $filterStatus|| $start || $end;
+        $search = $searchUser || $searchOtc || $searchMerchant || $filterStatus|| $filterAppeal ||  $start || $end;
 
         $userOtcOrder = DB::table('otc_orders as otcOrder')
             ->join('users as u','otcOrder.user_id','u.id') //用户信息
@@ -89,6 +90,9 @@ class UserOtcOrderController extends Controller
             })
             ->when($filterStatus, function ($query) use ($filterStatus){
                 return $query->where('otcOrder.status', $filterStatus);
+            })
+            ->when($filterAppeal, function ($query) use ($filterAppeal){
+                return $query->where('otcOrder.appeal_status', $filterAppeal);
             })
             ->when($orderC, function ($query) use ($orderC){
                 return $query->orderBy('otcOrder.created_at', $orderC);
