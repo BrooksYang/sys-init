@@ -48,8 +48,8 @@
             </p>
             <p>【广告用户】{{ $order->from }}</p>
             <p>【订单用户】{{ $order->to }}&nbsp;&nbsp;&nbsp;&nbsp;【备注】{{ $order->remark ?: '--' }}&nbsp;</p>
-            <p>【交易数量】{{ $order->field_amount.' '.$order->currency }}&nbsp;&nbsp;&nbsp;&nbsp;【单价】{{ $order->price.' '.$order->legal_currency }}&nbsp;&nbsp;&nbsp;&nbsp;
-                【总价】{{ $order->cash_amount.' '.$order->currency }}
+            <p>【交易数量】{{ number_format($order->field_amount, 8).' '.$order->currency }}&nbsp;&nbsp;&nbsp;&nbsp;【单价】{{ number_format($order->price, 8).' '.$order->legal_currency }}&nbsp;&nbsp;&nbsp;&nbsp;
+                【总价】{{ number_format($order->cash_amount, 8).' '.$order->currency }}
             </p>
             <p>【订单状态】{{ $order->status_text }}&nbsp;&nbsp;&nbsp;&nbsp;【申诉状态】{{ $order->appeal_text }}</p>
         </div>
