@@ -61,7 +61,7 @@ class UserOtcOrderController extends Controller
         $end = trim($request->end,'');
         $orderC = trim($request->orderC ?: 'desc','');
 
-        $search = $searchUser || $searchOtc || $searchMerchant || $start || $end;
+        $search = $searchUser || $searchOtc || $searchMerchant || $filterStatus|| $start || $end;
 
         $userOtcOrder = DB::table('otc_orders as otcOrder')
             ->join('users as u','otcOrder.user_id','u.id') //用户信息
