@@ -229,7 +229,7 @@ class HomeController extends Controller
             return $this->getOtcTransactions(WalletTransaction::WITHDRAW);
         });
 
-        //  OTC 累计成交数额 - 默认USDT 买入
+        //  OTC 累计成交数额及手续费 - 默认USDT 买入
         $otcTotal = Cache::remember('otcTotal', $cacheLength, function () {
             return $this->otcOrderTotal();
         });
