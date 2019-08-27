@@ -14,8 +14,10 @@
               <table class="table table-hover table-striped">
                   <tbody>
                   <tr>
+                      <th>序号</th>
                       <th>工单编号</th>
-                      <th></th>
+                      <th>OTC订单</th>
+                      <th>工单摘要</th>
                       <th>当前状态</th>
                       <th>创建日期</th>
                       <th>客服</th>
@@ -25,13 +27,15 @@
                       <th>操作</th>
                       @endif
                   </tr>
-                  @foreach($tickets as $ticket)
+                  @forelse($tickets as $key=>$ticket)
                   <tr id="{{ 'cell_'.$ticket->id }}">
+                      <td>{{ ($key + 1) + ($tickets->currentPage() - 1) * $tickets->perPage() }}</td>
                       <td>{{ $ticket->id }}</td>
+                      <td>#{{ $ticket->order_id }}</td>
                       <td><a href="{{ url('ticket/handler/detail').'/'.$ticket->id }}"><?= mb_substr($ticket->content,0,10) ?> ..</a></td>
                       <td>
                         @if($ticket->ticket_state != null)
-                        {{ $ticketStatus[$ticket->ticket_state] }}
+                        <span class="label label-{{$status[$ticket->ticket_state]['class']}}">{{ $ticketStatus[$ticket->ticket_state] }}</span>
                         @else
                         未处理
                         @endif
@@ -54,7 +58,13 @@
                       </td>
                       @endif
                   </tr>
-                  @endforeach
+                  @empty
+                      <tr><td colspan="{{ $role == config('conf.supervisor_role') ? 10 : 9 }}" class="text-center">
+                              <div class="noDataValue">
+                                  暂无数据
+                              </div>
+                          </td></tr>
+                  @endforelse
                   </tbody>
             </table>
 

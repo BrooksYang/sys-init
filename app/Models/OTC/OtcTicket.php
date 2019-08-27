@@ -31,6 +31,15 @@ class OtcTicket extends Model
     const PROCESSING = 5;
     const PENDING    = 6;
 
+    const STATUS = [
+        1 => ['name' => '未分配', 'class' => 'info'],
+        2 => ['name' => '已分配', 'class' => 'primary'],
+        3 => ['name' => '已回复', 'class' => 'default'],
+        4 => ['name' => '已关闭', 'class' => 'danger'],
+        5 => ['name' => '处理中', 'class' => 'info'],
+        6 => ['name' => '待处理', 'class' => 'waring']
+    ];
+
     /**
      * 关联用户
      *
