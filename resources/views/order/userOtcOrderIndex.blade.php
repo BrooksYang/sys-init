@@ -89,12 +89,12 @@
                                 <th>状态</th>
                                 <th>申诉</th>
                                 <th>商户订单</th>
-                                <th>回调地址</th>
+                                <th>回调</th>
                                 <th>创建时间 &nbsp;&nbsp;<a href="{{ url('order/otc')}}?orderC=desc">
                                         <i class="fa fa-sort-amount-desc" style="color:{{ Request::get('orderC') != 'desc' ? !Request::get('orderC') ? '' : 'gray' :'' }}" title="降序"></i></a> &nbsp;
                                     <a href="{{ url('order/otc') }}?orderC=asc">
                                         <i class="fa fa-sort-amount-asc" style="color:{{ Request::get('orderC') != 'asc' ? 'gray' : '' }}" title="升序"></i></a></th>
-                                <th>操作</th>
+                                {{--<th>操作</th>--}}
                             </tr>
                             @forelse($userOtcOrder as $key => $item)
                                 <tr>
@@ -122,7 +122,7 @@
                                             {{ $appealStatus[$item->appeal_status]['name'] ?? '--'}}</span>
                                     </td>
                                     <td>{{ $item->merchant_order_id ?:'--'}}</td>
-                                    <td title="{{ $item->merchant_callback }}">{{ str_limit($item->merchant_callback ?:'--', 20) }}</td>
+                                    <td title="{{ $item->merchant_callback }}"><i class="fontello-globe-1"></i></td>
                                     <td>{{ $item->created_at ?: '--' }}</td>
                                     <td>
                                        {{-- <a data-toggle="dropdown" class="dropdown-toggle" type="button">
@@ -141,15 +141,15 @@
                                                 </li>
                                             @endforeach
                                         </ul>--}}
-                                        <a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
+                                       {{-- <a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
                                                 '{{ url("order/otc/$item->id") }}',
                                                 '{{ csrf_token() }}');">
                                             <i class="fontello-trash-2" title="删除"></i>
-                                        </a>
+                                        </a>--}}
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="17" class="text-center">
+                                <tr><td colspan="16" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
