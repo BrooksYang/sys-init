@@ -442,6 +442,61 @@ class HandlerController extends Controller
     }
 
     /**
+     * 强制恢复广告方的错误放币
+     *
+     * @param $order
+     * @throws \Throwable
+     */
+    public function forceRecover($order)
+    {
+        DB::transaction(function () use($order) {
+
+            /**
+             * ***************************
+             * 处理订单及广告
+             * ***************************
+             */
+            // 取消订单
+            $order->status = OtcOrder::CANCELED;
+            $order->save();
+
+            // 还原广告进度
+            $trade = Trade::lockForUpdate()->find($order->advertisement_id);
+            $trade->field_amount = bcsub($trade->field_amount, $order->field_amount);
+            $trade->field_order_count --;
+            $trade->field_percentage = bcmul(bcdiv($trade->field_amount, $trade->amount), 100);
+
+            // 若已完成，且撤单，则标记广告为进行中
+            if (round($trade->field_percentage) != 100 && $trade->status == Trade::FINISHED) {
+                $trade->status = Trade::ON_SALE;
+            }
+
+            $trade->save();
+
+            /**
+             * ***************************
+             * 处理广告方及用户钱包余额
+             * ***************************
+             */
+            // 用户购买，则发布者->用户，用户出售，则用户->发布者
+            $buyerId = $order->type == OtcOrder::BUY ? $order->user_id : $order->from_user_id;
+            $sellerId = $order->type == OtcOrder::BUY ? $order->from_user_id : $order->user_id;
+
+            $balanceBuyer = Balance::firstOrNew(['user_id' => $buyerId, 'user_wallet_currency_id' => $order->currency_id]);
+            $balanceSeller = Balance::firstOrNew(['user_id' => $sellerId, 'user_wallet_currency_id' => $order->currency_id]);
+
+            // 恢复广告方钱包冻结余额（所恢复数额为订单交易数额）
+            $balanceSeller->user_wallet_balance_freeze_amount = bcadd($balanceSeller->user_wallet_balance_freeze_amount, $order->field_amount);
+            $balanceSeller->save();
+
+            // 扣除商户钱包可用余额(所扣数额为实际到账金额)
+            $balanceBuyer->user_wallet_balance = bcsub($balanceBuyer->user_wallet_balance, $order->final_amount);
+            $balanceBuyer->save();
+
+        });
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
