@@ -6,7 +6,9 @@ use App\Http\Resources\OtcOrderResource;
 use App\Models\OTC\OtcOrder;
 use App\Models\OTC\OtcTicket;
 use App\Models\OTC\Trade;
+use App\Models\OTC\UserAppKey;
 use App\Models\Wallet\Balance;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use DB;
@@ -349,14 +351,19 @@ class HandlerController extends Controller
         $msg = '更新成功';
 
         // 更新otc订单状态及余额
-        // 已支付-未放币 强制出售方放币
+        // 已支付-未放币 - 强制出售方放币
         if ($request->field == 'release' && $order->status == OtcOrder::PAID) {
             $msg = $this->forceRelease($order);
         }
 
-        // 已支付 - 强制取消订单
+        // 已支付-未收到付款 - 强制取消订单
         if ($request->field == 'cancel' && $order->status == OtcOrder::PAID) {
             $msg = $this->forceCancel($order);
+        }
+
+        // 未付款-已放币完成交易 - 强制恢复广告方的"错误"放币
+        if ($request->field == 'recover' && $order->status == OtcOrder::RECEIVED) {
+            $msg = $this->forceRecover($order);
         }
 
         // 仅完结申诉订单和工单
@@ -390,6 +397,13 @@ class HandlerController extends Controller
             // 用户购买，则发布者->用户，用户出售，则用户->发布者
             $buyerId = $order->type == OtcOrder::BUY ? $order->user_id : $order->from_user_id;
             $sellerId = $order->type == OtcOrder::BUY ? $order->from_user_id : $order->user_id;
+
+            // 是否为商户下用户(商户下用户需更新商户钱包)
+            $isMerchantUser = User::whereNotNull('access_key')->find($buyerId);
+            if ($isMerchantUser) {
+                $merchant = UserAppKey::where('access_key', $isMerchantUser->access_key)->firstOrFail();
+                $buyerId = $merchant->user_id;
+            }
 
             $balanceBuyer = Balance::firstOrNew(['user_id' => $buyerId, 'user_wallet_currency_id' => $order->currency_id]);
             $balanceSeller = Balance::firstOrNew(['user_id' => $sellerId, 'user_wallet_currency_id' => $order->currency_id]);
@@ -442,9 +456,10 @@ class HandlerController extends Controller
     }
 
     /**
-     * 强制恢复广告方的错误放币
+     * 强制恢复广告方的"错误"放币
      *
      * @param $order
+     * @return string
      * @throws \Throwable
      */
     public function forceRecover($order)
@@ -482,6 +497,13 @@ class HandlerController extends Controller
             $buyerId = $order->type == OtcOrder::BUY ? $order->user_id : $order->from_user_id;
             $sellerId = $order->type == OtcOrder::BUY ? $order->from_user_id : $order->user_id;
 
+            // 是否为商户下用户(商户下用户需更新商户钱包)
+            $isMerchantUser = User::whereNotNull('access_key')->find($buyerId);
+            if ($isMerchantUser) {
+                $merchant = UserAppKey::where('access_key', $isMerchantUser->access_key)->firstOrFail();
+                $buyerId = $merchant->user_id;
+            }
+
             $balanceBuyer = Balance::firstOrNew(['user_id' => $buyerId, 'user_wallet_currency_id' => $order->currency_id]);
             $balanceSeller = Balance::firstOrNew(['user_id' => $sellerId, 'user_wallet_currency_id' => $order->currency_id]);
 
@@ -492,8 +514,9 @@ class HandlerController extends Controller
             // 扣除商户钱包可用余额(所扣数额为实际到账金额)
             $balanceBuyer->user_wallet_balance = bcsub($balanceBuyer->user_wallet_balance, $order->final_amount);
             $balanceBuyer->save();
-
         });
+
+        return '已强制恢复完成交易的订单';
     }
 
     /**

@@ -59,11 +59,20 @@
                         </div>
                         <div class="row" style="margin-bottom:10px;">
                             {{--订单状态--}}
-                            <div class="col-sm-4">
+                            <div class="col-sm-2">
                                 <select class="flter-status form-control input-sm" id="filterStatus" name="filterStatus">
                                     <option value="">请选择订单状态</option>
                                     @foreach($orderStatus as $key => $item)
                                         <option value="{{$key}}" {{ Request::get('filterStatus')==$key ? 'selected' :''}}>{{ $item['name'] }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            {{--申诉状态--}}
+                            <div class="col-sm-2">
+                                <select class="flter-status form-control input-sm" id="filterAppeal" name="filterAppeal">
+                                    <option value="">请选择申诉状态</option>
+                                    @foreach($appealStatus as $key => $item)
+                                        <option value="{{$key}}" {{ Request::get('filterAppeal')==$key ? 'selected' :''}}>{{ $item['name'] }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -223,6 +232,7 @@
                     +'&searchMerchant='+$('#searchMerchant').val()
                     +'&searchCurrency='+$('#searchCurrency').val()
                     +'&filterStatus='+$('#filterStatus').val()
+                    +'&filterAppeal='+$('#filterAppeal').val()
                     +'&start='+$('#start').val()
                     +'&end='+$('#end').val();
 
