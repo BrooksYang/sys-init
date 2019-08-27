@@ -46,7 +46,7 @@
                 【法币】{{ $order->legal_currency }}
             </p>
             <p>【广告用户】{{ $order->from }}</p>
-            <p>【订单用户】{{ $order->to }}</p>
+            <p>【订单用户】{{ $order->to }}&nbsp;&nbsp;&nbsp;&nbsp;【备注】{{ $order->remark }}&nbsp;</p>
             <p>【交易数量】{{ $order->field_amount.' '.$order->currency }}&nbsp;&nbsp;&nbsp;&nbsp;【单价】{{ $order->price.' '.$order->legal_currency }}&nbsp;&nbsp;&nbsp;&nbsp;
                 【总价】{{ $order->cash_amount.' '.$order->currency }}
             </p>
