@@ -16,6 +16,7 @@
                   <tbody id="tasks">
                   <tr>
                       <th>工单编号</th>
+                      <th>OTC订单</th>
                       <th>内容</th>
                       <th>当前状态</th>
                       <th>创建日期</th>
@@ -85,9 +86,9 @@
                   var ticket = document.createElement("tr")
                   ticket.id = "ticket_"+data.task[i]['id']
                   if(data.task[i]['ticket_state']==6)
-                    $("#ticket_"+data.task[i]['id']).html("<td>"+data.task[i]['id']+"<td><a href='{{ url('ticket/handler/detail').'/' }}"+data.task[i]['id']+"'>"+data.task[i]['content'].substr(0,20)+"<strong class='text-danger'> (有新回复) </strong></a></td>"+"<td>"+ticketState[data.task[i]['ticket_state']-1]+"</td>"+"<td>"+data.task[i]['created_at']+"</td>"+"<td>"+data.task[i]['assign_at']+"</td>"+"<td><a href='javascript:;' onclick='"+data.task[i]['id']+"'>删除</a></td>")
+                    $("#ticket_"+data.task[i]['id']).html("<td>"+data.task[i]['id']+"</td>"+"<td>#"+data.task[i]['order_id']+"</td>"+"<td><a href='{{ url('ticket/handler/detail').'/' }}"+data.task[i]['id']+"'>"+data.task[i]['content'].substr(0,20)+"<strong class='text-danger'> (有新回复) </strong></a></td>"+"<td>"+ticketState[data.task[i]['ticket_state']-1]+"</td>"+"<td>"+data.task[i]['created_at']+"</td>"+"<td>"+data.task[i]['assign_at']+"</td>"+"<td><a href='javascript:;' onclick='"+data.task[i]['id']+"'>删除</a></td>")
                   else
-                    $("#ticket_"+data.task[i]['id']).html("<td>"+data.task[i]['id']+"<td><a href='{{ url('ticket/handler/detail').'/' }}"+data.task[i]['id']+"'>"+data.task[i]['content'].substr(0,20)+"</a></td>"+"<td>"+ticketState[data.task[i]['ticket_state']-1]+"</td>"+"<td>"+data.task[i]['created_at']+"</td>"+"<td>"+data.task[i]['assign_at']+"</td>"+"<td><a href='javascript:;' onclick='ticketDel("+data.task[i]['id']+")'>删除</a></td>")
+                    $("#ticket_"+data.task[i]['id']).html("<td>"+data.task[i]['id']+"</td>"+"<td>#"+data.task[i]['order_id']+"</td>"+"<td><a href='{{ url('ticket/handler/detail').'/' }}"+data.task[i]['id']+"'>"+data.task[i]['content'].substr(0,20)+"</a></td>"+"<td>"+ticketState[data.task[i]['ticket_state']-1]+"</td>"+"<td>"+data.task[i]['created_at']+"</td>"+"<td>"+data.task[i]['assign_at']+"</td>"+"<td><a href='javascript:;' onclick='ticketDel("+data.task[i]['id']+")'>删除</a></td>")
 
                   tasks.appendChild(ticket);  
                 }

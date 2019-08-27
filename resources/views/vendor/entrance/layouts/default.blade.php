@@ -38,7 +38,13 @@
     <!-- pace loader -->
     <script src="{{ asset('vendor/entrance/js/pace/pace.js') }}"></script>
     <link href="{{ asset('vendor/entrance/js/pace/themes/orange/pace-theme-flash.css') }}" rel="stylesheet" />
-
+    <style>
+        @media screen and (max-width: 1600px) {
+            .table-responsive {
+                overflow-x: auto;
+            }
+        }
+    </style>
 
     @section('css-import')
 

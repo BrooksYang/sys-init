@@ -37,7 +37,11 @@
             <p><i class="fa fa-user"></i>
                 申诉人：{{  ('用户名'.@$ticket->user->username ?:'--').' | 邮箱 '.(@$ticket->user->email?:'--').' | 电话 '.@$ticket->user->phone ?:'--' }}
             </p>
-            <P>【订单日期】{{ $order->created_at }}&nbsp;&nbsp;&nbsp;&nbsp;【订单号】{{ $order->id }}</P>
+            <p>【订单号】#{{ $order->id }}</p>
+            <P>【订单日期】{{ $order->created_at }}&nbsp;&nbsp;&nbsp;&nbsp;
+                {{--{{ \Carbon\Carbon::parse($order->created_at)->addHour(8)->toDateTimeString() }}--}}
+                {{ \Carbon\Carbon::parse($order->created_at)->addHour(8)->diffForHumans() }}
+            </P>
             <p>【广告类型】{{ $order->type_text }}&nbsp;&nbsp;&nbsp;&nbsp;【币种】{{ $order->currency }}&nbsp;&nbsp;&nbsp;&nbsp;
                 【法币】{{ $order->legal_currency }}
             </p>

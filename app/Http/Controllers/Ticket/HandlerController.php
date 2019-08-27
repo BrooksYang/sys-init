@@ -43,6 +43,7 @@ class HandlerController extends Controller
      */
     public function task()
     {
+        $data['status'] = OtcTicket::STATUS;
         $data['ticketStatus'] = json_encode($this->ticketStatus);
 
         return view('Ticket.Handler.task',$data);
@@ -241,6 +242,7 @@ class HandlerController extends Controller
      */
     public function index()
     {
+        $data['status'] = OtcTicket::STATUS;
         $data['ticketStatus'] = $this->ticketStatus;
         $data['role'] = Entrance::user()->role_id;
 
