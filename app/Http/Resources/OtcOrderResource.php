@@ -28,6 +28,7 @@ class OtcOrderResource
             'from_user_id'   => $order->from_user_id,
             'to'             => (@$order->user->username ?:'--').' | '.(@$order->user->email?:'--').' | '.(@$order->user->phone ?:'--'),
             'remark'         => $order->remark,
+            'card_number'    => $order->card_number,
             'user_id'        => $order->user_id,
             'field_amount'   => $order->field_amount,
             'cash_amount'    => $order->cash_amount,
