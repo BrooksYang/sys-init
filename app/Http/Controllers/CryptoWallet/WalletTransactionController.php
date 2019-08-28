@@ -63,7 +63,6 @@ class WalletTransactionController extends Controller
         if ($search) {
             $statistics = $transDetails;
             $statistics = $this->statistics($statistics->get(['amount','type'])->groupBy('type'));
-            dump($statistics);
         }
 
         $transDetails = $transDetails->paginate(config('app.pageSize'));
