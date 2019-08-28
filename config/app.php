@@ -14,9 +14,9 @@ return [
     */
 
     'name' => env('APP_NAME', 'BitAU'),
-    'name_cn' => env('APP_NAME_CN', '澳大利亚国家数字加密交易所'),
-    'welcome_msg' => env('APP_WELCOME_MSG', '欢迎进入BitAU澳大利亚国家数字加密交易所'),
-    'copyright' => env('APP_COPYRIGHT', 'BitAU'),
+    'name_cn' => env('APP_NAME_CN', '神经元数字交易所'),
+    'welcome_msg' => env('APP_WELCOME_MSG', '欢迎进入NeuContract神经元数字加密交易所'),
+    'copyright' => env('APP_COPYRIGHT', 'NeuContractEx'),
 
     /*
      |--------------------------------------------------------------------------
