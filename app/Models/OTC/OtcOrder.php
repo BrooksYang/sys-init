@@ -122,4 +122,40 @@ class OtcOrder extends Model
         return $query->where('appeal_status', $appealStatus);
     }
 
+    /**
+     * 筛选状态
+     *
+     * @param $query
+     * @param $status
+     * @return mixed
+     */
+    public function scopeStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    /**
+     * 筛选类型
+     *
+     * @param $query
+     * @param $type
+     * @return mixed
+     */
+    public function scopeType($query, $type)
+    {
+        return $query->where('type', $type);
+    }
+
+    /**
+     * 筛选币种
+     *
+     * @param $query
+     * @param $currency
+     * @return mixed
+     */
+    public function scopeCurrency($query, $currency)
+    {
+        return $query->where('currency_id', $currency);
+    }
+
 }

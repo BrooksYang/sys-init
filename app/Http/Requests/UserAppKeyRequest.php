@@ -45,7 +45,7 @@ class UserAppKeyRequest extends FormRequest
             ],
             'phone' => [
                 $phoneRule,
-                "phone",
+                //"phone",
                 "unique:$userTable,phone,".$request->user
             ],
             'id_number' => "sometimes|max:255",

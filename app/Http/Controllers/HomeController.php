@@ -237,6 +237,15 @@ class HomeController extends Controller
         // OTC 系统待提币数额 - 默认USDT
         $otcSysToBeWithdraw = bcsub($otcTotal->field_amount, $otcWithdrawAmount);
 
+        // OTC OTC订单买入或卖出及手续费统计 - 默认USDT otcOrderOfDay
+        $otcBuyOfDay = Cache::remember('otcBuyOfDay', $cacheLength, function () {
+            return $this->otcOrderOfDay(OtcOrder::BUY);
+        });
+
+        $otcSellOfDay = Cache::remember('otcSellOfDay', $cacheLength, function () {
+            return $this->otcOrderOfDay(OtcOrder::SELL);
+        });
+
         return compact(
             'otcOrder',
             'otcWithdrawOrderStatus',
@@ -747,6 +756,24 @@ class HomeController extends Controller
             ->first();
 
         return $otcOrder;
+    }
+
+    /**
+     * OTC订单买入或卖出及手续费统计 - 默认USDT
+     *
+     * @param $type
+     * @return mixed
+     */
+    public function otcOrderOfDay($type)
+    {
+        $otcOrderOfDay = OtcOrder::type($type)
+            ->currency(Currency::USDT)
+            ->status(OtcOrder::RECEIVED)
+            ->select(\DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as time,sum(field_amount) as amount,sum(fee) as fee"))
+            ->groupBy('time')
+            ->get();
+
+        return $otcOrderOfDay;
     }
 
     /**
