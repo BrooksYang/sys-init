@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'YuanLianTongZheng'),
-    'name_cn' => env('APP_NAME_CN', '源联通证数字资产交易所'),
-    'welcome_msg' => env('APP_WELCOME_MSG', '欢迎进入源联通证数字资产交易所'),
-    'copyright' => env('APP_COPYRIGHT', '源联通证'),
+    'name' => env('APP_NAME', 'BitAU'),
+    'name_cn' => env('APP_NAME_CN', '神经元数字交易所'),
+    'welcome_msg' => env('APP_WELCOME_MSG', '欢迎进入NeuContract'),
+    'copyright' => env('APP_COPYRIGHT', 'NeuContractEx'),
 
     /*
      |--------------------------------------------------------------------------
@@ -213,7 +213,7 @@ return [
     | 交易所API资源访问路径
     |
     */
-    'api_res_url' => env('API_RES_URL','https://api.url.net'),
+    'api_res_url' => env('API_RES_URL','https://ex-api.workwithme.vip'),
 
     /*
     |--------------------------------------------------------------------------
