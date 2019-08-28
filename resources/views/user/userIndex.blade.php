@@ -70,6 +70,7 @@
                         <table class="table table-hover table-striped">
                             <tr>
                                 <th>序号</th>
+                                <th>UID</th>
                                 <th>用户名</th>
                                 <th>电话</th>
                                 <th>邮箱</th>
@@ -96,6 +97,7 @@
                             @forelse($user as $key => $item)
                                 <tr>
                                     <td>{{ ($key + 1) + ($user->currentPage() - 1) * $user->perPage() }}</td>
+                                    <td>#{{ $item->id }}</td>
                                     <td title="{{ $item->username }}"><strong>{{ str_limit($item->username,15) ?: '--'}}</strong></td>
                                     <td title="{{$item->phone}}">{{ $item->phone?:'--' }}</td>
                                     <td title="{{ $item->email }}"><strong>{{ str_limit($item->email,15) }}</strong></td>
@@ -123,13 +125,16 @@
                                                         <p></p>
                                                         <span><b>身份证号：</b></span>{{ empty($item->id_number) ? '--' : $item->id_number }}
                                                         <P></P>
+                                                        <div style="height: 55px"></div>
                                                         {{--证件开放路由--}}
                                                         <img id="" src="{{ config('app.api_res_url') }}/{{ $item->id_image_front }}" style="width:570px;border-radius:20px"
-                                                             onerror="this.src='http://placehold.it/570x420'"/>
+                                                             onerror="this.src='http://placehold.it/570x420'" onclick="rotate(this)"/>
                                                         <p></p>
+                                                        <div style="height: 75px"></div>
                                                         <img id="" src="{{ config('app.api_res_url') }}/{{ $item->id_image_back }}" style="width:570px;border-radius:20px"
-                                                             onerror="this.src='http://placehold.it/570x420'"/>
+                                                             onerror="this.src='http://placehold.it/570x420'" onclick="rotate(this)"/>
                                                     </div>
+                                                    <div style="height: 55px"></div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
 
@@ -138,7 +143,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td title="其它证件信息"><a href="{{ url("user/manage/$item->id") }}?uri={{ Request::getRequestUri() }}">查看</a></td>
+                                    <td title="其它证件信息"><a href="{{ url("user/manage/$item->id") }}?uri={{ Request::getRequestUri() }}">详情</a></td>
                                     <td><span class="label label-{{ $userStatus['email_phone_status'][$item->email_status]['class'] }}">
                                         {{ $userStatus['email_phone_status'][$item->email_status]['name'] }}</span>
                                     </td>
@@ -225,7 +230,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="12" class="text-center">
+                                <tr><td colspan="16" class="text-center">
                                     <div class="noDataValue">
                                         暂无数据
                                     </div>
