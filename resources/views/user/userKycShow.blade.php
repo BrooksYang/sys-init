@@ -47,19 +47,21 @@
                                     <strong>认证等级：</strong>{{ $kycLevels->pluck('name','id')[$user->kyc_level_id] ?? '暂无'}}&nbsp;&nbsp;
                                 </p>
                             </div>
+                            <div style="height: 20px"></div>
 
                             {{--身份证件信息--}}
                             *身份证件信息：<br/><br>
+                            <div style="height: 50px"></div>
                             <p class="">
                                 @if($user->id_image_front ?? $user->id_image_back )
                                 <div class="row">
                                     <div class="col-md-6">
                                         <img id="" src="{{ config('app.api_res_url') }}/{{ $user->id_image_front }}" style="width:570px;border-radius:20px"
-                                             onerror="this.src='http://placehold.it/570x420'"/>
+                                             onerror="this.src='http://placehold.it/570x420'" onclick="rotate(this)"/>
                                     </div>
                                     <div class="col-md-6">
                                         <img id="" src="{{ config('app.api_res_url') }}/{{ $user->id_image_back }}" style="width:570px;border-radius:20px"
-                                             onerror="this.src='http://placehold.it/570x420'"/>
+                                             onerror="this.src='http://placehold.it/570x420'" onclick="rotate(this)"/>
                                     </div>
                                 </div>
 
@@ -70,42 +72,48 @@
                                     暂无信息
                                 @endif
                             </p>
+                            <div style="height: 20px"></div>
                             <hr>
 
                             {{--手持身份证件信息--}}
                             *手持身份证件照片：<br/><br>
+                            <div style="height: 55px"></div>
                             <p class="">
                                 @if($user->id_image_handheld )
                                 <img id="" src="{{ config('app.api_res_url') }}/{{ $user->id_image_handheld }}" style="width:570px;border-radius:20px"
-                                     onerror="this.src='http://placehold.it/570x420'"/>
+                                     onerror="this.src='http://placehold.it/570x420'" onclick="rotate(this)"/>
                                 @else
                                     暂无信息
                                 @endif
                             </p>
+                            <div style="height: 20px"></div>
                             <hr>
 
                             {{--护照信息--}}
                             *护照信息：<br/><br>
+                            <div style="height: 55px"></div>
                             <p class="">
                                 @if(in_array(pathinfo($user->passport)['extension'] ?? '',['pdf']))
                                     <a href="{{ config('app.api_res_url') }}/{{ $user->passport }}" target="_blank">{{ pathinfo($user->passport)['basename'] }}</a>
                                 @elseif($user->passport)
                                     <img id="" src="{{ config('app.api_res_url') }}/{{ $user->passport }}" style="width:570px;border-radius:20px"
-                                     onerror="this.src='http://placehold.it/570x420'"/>
+                                     onerror="this.src='http://placehold.it/570x420'" onclick="rotate(this)"/>
                                 @else
                                     暂无信息
                                 @endif
                             </p>
+                            <div style="height: 20px"></div>
                             <hr>
 
                             {{--信用卡电子账单--}}
                             *信用卡电子账单：<br><br>
+                            <div style="height: 55px"></div>
                             <p class="">
                                 @if(in_array(pathinfo($user->bill)['extension'] ?? '',['pdf']))
                                     <a href="{{ config('app.api_res_url') }}/{{ $user->bill }}" target="_blank">{{ pathinfo($user->bill)['basename'] }}</a>
                                 @elseif($user->bill)
                                     <img id="" src="{{ config('app.api_res_url') }}/{{ $user->bill }}" style="width:570px;border-radius:20px"
-                                     onerror="this.src='http://placehold.it/570x420'"/>
+                                     onerror="this.src='http://placehold.it/570x420'" onclick="rotate(this)"/>
                                 @else
                                     暂无信息
                                 @endif
