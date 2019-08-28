@@ -185,7 +185,7 @@
                                 <span class="bg-aqua">Current</span>
                             </h2>
                             <i class="fa fa-dollar"></i>
-                            <h4 class="text-aqua">{{ number_format($otcTotal->field_amount, 2) }}</h4>
+                            <h4 class="text-aqua">{{ number_format($otcBuyTotal->field_amount, 2) }}</h4>
                             <h5>OTC 累计买入交易数量({{ config('conf.currency_usdt') }})</h5>
                             <div style="clear:both;"></div>
                         </div>
@@ -203,8 +203,8 @@
                                 <span class="bg-yellow">Current</span>
                             </h2>
                             <i class="fa fa-dollar"></i>
-                            <h4 class="text-yellow">{{ number_format($otcSysToBeWithdraw, 2) }}</h4>
-                            <h5>OTC 系统待提币数量({{ config('conf.currency_usdt') }})</h5>
+                            <h4 class="text-yellow">{{ number_format($otcSellTotal->field_amount, 2) }}</h4>
+                            <h5>OTC 累计卖出交易数量({{ config('conf.currency_usdt') }})</h5>
                             <div style="clear:both;"></div>
                         </div>
                     </div>
@@ -223,7 +223,7 @@
                                 <span class="bg-green">Current</span>
                             </h2>
                             <i class="fa fa-dollar"></i>
-                            <h4 class="text-green">{{ number_format($otcTotal->fee, 2) }}</h4>
+                            <h4 class="text-green">{{ number_format(bcadd($otcBuyTotal->fee, $otcSellTotal->fee,8), 2) }}</h4>
                             <h5>OTC  &nbsp;累计交易手续费 ({{ config('conf.currency_usdt') }})</h5>
                             <div style="clear:both;"></div>
                         </div>

@@ -229,19 +229,22 @@ class HomeController extends Controller
             return $this->getOtcTransactions(WalletTransaction::WITHDRAW);
         });
 
-        //  OTC 累计成交数额及手续费 - 默认USDT 买入
-        $otcTotal = Cache::remember('otcTotal', $cacheLength, function () {
+        //  OTC 累计买入成交数额及手续费 - 默认USDT 买入
+        $otcBuyTotal = Cache::remember('otcBuyTotal', $cacheLength, function () {
             return $this->otcOrderTotal();
         });
 
-        // OTC 系统待提币数额 - 默认USDT
-        $otcSysToBeWithdraw = bcsub($otcTotal->field_amount, $otcWithdrawAmount);
+        //  OTC 累计卖出成交数额及手续费 - USDT 卖出
+        $otcSellTotal = Cache::remember('otcSellTotal', $cacheLength, function () {
+            return $this->otcOrderTotal(OtcOrder::SELL);
+        });
 
-        // OTC OTC订单买入或卖出及手续费统计 - 默认USDT otcOrderOfDay
+        // OTC 订单买入及手续费统计 - 默认USDT
         $otcBuyOfDay = Cache::remember('otcBuyOfDay', $cacheLength, function () {
             return $this->otcOrderOfDay(OtcOrder::BUY);
         });
 
+        //OTC 订单卖出及手续费统计 - 默认USDT
         $otcSellOfDay = Cache::remember('otcSellOfDay', $cacheLength, function () {
             return $this->otcOrderOfDay(OtcOrder::SELL);
         });
@@ -250,7 +253,7 @@ class HomeController extends Controller
             'otcOrder',
             'otcWithdrawOrderStatus',
             'grandOtcWithdrawOrder',
-            'otcDepositAmount','otcWithdrawAmount','otcTotal','otcSysToBeWithdraw','otcBuyOfDay','otcSellOfDay'
+            'otcDepositAmount','otcWithdrawAmount','otcTotal', 'otcBuyTotal', 'otcSellTotal','otcBuyOfDay','otcSellOfDay'
         );
     }
     
