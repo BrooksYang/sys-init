@@ -25,6 +25,8 @@ class HandlerController extends Controller
 
     public function __construct()
     {
+        bcscale(config('app.bcmath_scale'));
+
         $this->supervisor = 3;  // 定义工单客服的ROLE ID
         $this->admin = 1; // 定义超管的 ROLE ID
         $this->ticketStatus = [
