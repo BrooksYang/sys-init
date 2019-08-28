@@ -250,7 +250,7 @@ class HomeController extends Controller
             'otcOrder',
             'otcWithdrawOrderStatus',
             'grandOtcWithdrawOrder',
-            'otcDepositAmount','otcWithdrawAmount','otcTotal','otcSysToBeWithdraw'
+            'otcDepositAmount','otcWithdrawAmount','otcTotal','otcSysToBeWithdraw','otcBuyOfDay','otcSellOfDay'
         );
     }
     
