@@ -139,6 +139,8 @@ class UserOtcOrderController extends Controller
      */
     public function sum($otcOrder)
     {
+        bcscale(config('app.bcmath_scale'));
+
         list($totalFieldAmount, $totalCashAmount, $totalFee)= [0, 0, 0];
 
         foreach ($otcOrder ?? [] as $key => $item){
