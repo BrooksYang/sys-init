@@ -22,15 +22,18 @@ class UserWalletRequest extends FormRequest
      *
      * @return array
      */
-    public function rules(Request $request)
+    public function rules()
     {
         return [
-            'user_wallet_currency_id' =>
+            'action'  => 'required|in:add,sub',
+            'balance' => 'required|in:available,frozen',
+            'amount'  => 'required|numeric|min:0',
+           /* 'user_wallet_currency_id' =>
                 'required|numeric|min:1|unique:wallet_balances,user_wallet_currency_id,'.$request->wallet,
             'user_wallet_balance' =>
                 'required|unumeric|min:1',
             'user_wallet_balance_freeze_amount' =>
-                'nullable|unumeric|min:1',
+                'nullable|unumeric|min:1',*/
         ];
     }
 
@@ -41,7 +44,7 @@ class UserWalletRequest extends FormRequest
     public function messages()
     {
         return [
-            'user_wallet_currency_id' => '该币种的记账钱包已存在', //交易用户
+            //'user_wallet_currency_id' => '该币种的记账钱包已存在', //交易用户
         ];
     }
 }

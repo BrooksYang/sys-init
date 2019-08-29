@@ -56,7 +56,8 @@
                                     <td title="{{number_format($item->lost,10,'.',',')}}">{{ number_format($item->lost,10,'.',',') }}</td>
                                     <td>
                                         <a href="{{ url("user/wallet/$item->id/edit") }}">
-                                            <i class="fontello-edit" title="编辑"></i>
+                                            {{--<i class="fontello-edit" title="编辑"></i>--}}
+                                            <i class=" fontello-eye" title="查看"></i>
                                         </a>
                                         <a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
                                                 '{{ url("user/wallet/$item->id") }}',

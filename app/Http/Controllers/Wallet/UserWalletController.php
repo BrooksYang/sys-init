@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Wallet;
 
 use App\Http\Requests\UserWalletRequest;
+use App\Models\Wallet\Balance;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -104,19 +105,22 @@ class UserWalletController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param UserWalletRequest $request
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(UserWalletRequest $request, $id)
     {
-        $userWallet = $request->except(['_token', '_method', 'editFlag']);
-        $query = DB::table('wallet_balances')->where('id',$id);
-        if(!empty($userWallet) && $query->first()){
-            $query->update($userWallet);
-        }
+        bcscale(config('app.bcmath_scale'));
 
-        return redirect('user/wallet');
+        $action = $request->action == 'add' ? 'bcadd' : 'bcsub';
+        $field = $request->balance == 'available' ? 'user_wallet_balance' : 'user_wallet_balance_freeze_amount';
+
+        $balance = Balance::findOrFail($id);
+        $balance->$field = $action($balance->$field, $request->amount);
+        $balance->save();
+
+        return back();
     }
 
     /**

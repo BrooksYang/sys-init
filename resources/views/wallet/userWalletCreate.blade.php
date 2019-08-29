@@ -8,8 +8,84 @@
                 <div class="box-header">
                     {{-- Title --}}
                     <h3 class="box-title">
+                        <i class="fontello-doc"></i>
                         <span>{{ @$editFlag ? '编辑交易用户记账钱包' : '添加交易用户记账钱包' }}</span>
                     </h3>
+
+                    <div class="pull-right box-tools">
+                        <!-- Button trigger modal -->
+                        <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalEdit" title="编辑用户记账钱包">
+                            <i class="fontello-edit"></i> 编辑
+                        </a>
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModalEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalEditTitle"
+                             aria-hidden="true" width="auto">
+                            <div class="modal-dialog" role="document" width="auto">
+                                <div class="modal-content" width="auto">
+                                    <form action="{{ url('user/wallet').'/'.$userWallet->id }}" role="form" method="POST" >
+                                            {{ csrf_field() }}
+                                            {{  method_field('PATCH')}}
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalEditTitle"><i class="fontello-edit"></i>编辑用户记账钱包</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="col-md-6">
+                                                            <label>操作</label>
+                                                            <div class="radio">
+                                                                <label >
+                                                                    <input type="radio" name="action" value='add' checked>增加
+                                                                </label>&nbsp;&nbsp;&nbsp;
+                                                                <label >
+                                                                    <input type="radio" name="action" value='sub'>扣除
+                                                                    @if ($errors->has('action'))
+                                                                        <p class="help-block" style="color: red;"><strong>{{ $errors->first('action') }}</strong></p>
+                                                                    @endif
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            <label>余额</label>
+                                                            <div class="radio">
+                                                                <label >
+                                                                    <input type="radio" name="balance" value='available' checked>可用余额
+                                                                </label>&nbsp;&nbsp;&nbsp;
+                                                                <label >
+                                                                    <input type="radio" name="balance" value='frozen'>冻结余额
+                                                                    @if ($errors->has('balance'))
+                                                                        <p class="help-block" style="color: red;"><strong>{{ $errors->first('balance') }}</strong></p>
+                                                                    @endif
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-12">
+                                                            <br>
+                                                            <label>填写修改数额</label>
+                                                            <input class="form-control input-lg" type="text" name="amount"
+                                                                   value="{{ $item->amount ?? old('amount') }}"  placeholder="请填写数额">
+                                                            @if ($errors->has('amount'))
+                                                                <p class="" style="color: red;"><strong>{{ $errors->first('amount') }}</strong></p>
+                                                            @endif
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                                <button type="submit" class="btn btn-secondary">确定</button>
+                                            </div>
+                                        </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {{-- Form --}}
@@ -120,5 +196,6 @@
 
 @section('js-part')
     <script>
+        if('{{$errors->first()}}'){ layer.msg('验证失败') }
     </script>
 @endsection
