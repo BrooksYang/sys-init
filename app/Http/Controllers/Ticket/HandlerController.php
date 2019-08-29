@@ -336,7 +336,7 @@ class HandlerController extends Controller
     }
 
     /**
-     * 申诉完结 - 强制执行放币或取消
+     * 申诉处理 - 强制执行放币-取消-恢复等操作
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -354,26 +354,26 @@ class HandlerController extends Controller
 
         $msg = '更新成功';
 
-        // 更新otc订单状态及余额
-        // 已支付-未放币 - 强制出售方放币
-        if ($request->field == 'release' && $order->status == OtcOrder::PAID) {
-            $msg = $this->forceRelease($order);
-        }
-
-        // 已支付-未收到付款 - 强制取消订单
-        if ($request->field == 'cancel' && $order->status == OtcOrder::PAID) {
-            $msg = $this->forceCancel($order);
-        }
-
-        // 未付款-已放币完成交易 - 强制恢复广告方的"错误"放币
-        if ($request->field == 'recover' && $order->status == OtcOrder::RECEIVED) {
-            $msg = $this->forceRecover($order);
-        }
-
-        // 仅完结申诉订单和工单
-
         // 更新otc订单及工单
-        DB::transaction(function () use($order, $ticket){
+        DB::transaction(function () use($request, $order, $ticket){
+
+            // 更新otc订单状态及余额
+            // 已支付或取消-未放币 - 强制出售方放币
+            if ($request->field == 'release' && ($order->status == OtcOrder::PAID || $order->status == OtcOrder::CANCELED)) {
+                $msg = $this->forceRelease($order);
+            }
+
+            // 已支付-未收到付款 - 强制取消订单
+            if ($request->field == 'cancel' && $order->status == OtcOrder::PAID) {
+                $msg = $this->forceCancel($order);
+            }
+
+            // 未付款-已放币完成交易 - 强制恢复广告方的"错误"放币
+            if ($request->field == 'recover' && $order->status == OtcOrder::RECEIVED) {
+                $msg = $this->forceRecover($order);
+            }
+
+            // 仅完结申诉订单和工单
 
             // 更新otc订单的申诉状态
             $order->appeal_status = OtcOrder::APPEAL_END;
@@ -440,11 +440,39 @@ class HandlerController extends Controller
     public function forceCancel($order)
     {
         DB::transaction(function () use ($order) {
+
+            bcscale(config('app.bcmath_scale'));
+
+            /**
+             * ***************************************
+             * 币商买单，用户卖，则需解冻用户相应金额
+             * ***************************************
+             */
+
+            if ($order->type == OtcOrder::SELL) {
+                // 获取用户及所属商户
+                $seller = User::find($order->user_id);
+                $merchant = @$seller->merchantAppKey->user;
+                $seller = $merchant ?: $seller;
+                $balance = Balance::where('user_id', $seller->id)
+                    ->where('user_wallet_currency_id', $order->currency_id)
+                    ->lockForUpdate()
+                    ->first();
+                $balance->user_wallet_balance_freeze_amount = bcsub($balance->user_wallet_balance_freeze_amount, $order->field_amount);
+                $balance->user_wallet_balance = bcadd($balance->user_wallet_balance, $order->field_amount);
+                $balance->save();
+            }
+
+
+            /**
+             * ***************************************
+             * 币商卖单，用户买，则需解冻广告方相应金额
+             * ***************************************
+             */
+
             // 取消订单
             $order->status = OtcOrder::CANCELED;
             $order->save();
-
-            bcscale(config('app.bcmath_scale'));
 
             // 还原广告进度
             $trade = Trade::lockForUpdate()->find($order->advertisement_id);
