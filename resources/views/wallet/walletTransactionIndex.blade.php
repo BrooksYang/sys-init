@@ -93,9 +93,17 @@
                                     <td><span class="label label-success">{{ str_limit(@$item->currency->currency_title_en_abbr,15) }}</span></td>
                                     <td>{{ $item->amount}}</td>
                                     <td>{{ $item->fee }}</td>
-                                    <td title="{{ $item->from }}"><strong>{{ str_limit($item->from ?: '--',20) }}</strong></td>
-                                    <td title="{{ $item->to }}"><strong>{{ str_limit($item->to ?: '--',20) }}</strong></td>
-                                    <td title="{{ $item->hash }}"><strong><a href="https://etherscan.io/tx/{{$item->hash}}" target="_blank">
+                                    <td title="{{ $item->from }}" id="copyFrom{{$key}}" data-attr="{{$item->from}}">
+                                        @include('component.copy', ['eleId'=>'copyFrom'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
+                                        <strong>{{ str_limit($item->from ?: '--',20) }}</strong>
+                                    </td>
+                                    <td title="{{ $item->to }}" id="copyTo{{$key}}" data-attr="{{$item->to}}">
+                                        @include('component.copy', ['eleId'=>'copyTo'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
+                                        <strong>{{ str_limit($item->to ?: '--',20) }}</strong>
+                                    </td>
+                                    <td title="{{ $item->hash }}" id="copyHash{{$key}}" data-attr="{{$item->hash}}">
+                                        @include('component.copy', ['eleId'=>'copyHash'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
+                                        <strong><a href="https://etherscan.io/tx/{{$item->hash}}" target="_blank">
                                             {{ str_limit($item->hash ?: '--',15) }}</a></strong>
                                     </td>
                                     <td>{{ $item->neu_txid }}</td>

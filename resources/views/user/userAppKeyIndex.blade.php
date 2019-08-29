@@ -62,7 +62,7 @@
                                         @include('component.copy', ['eleId'=>'copyAK'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
                                         {{ str_limit($item->access_key ?: '--',25) }}
                                     </td>
-                                    <td title="{{ $item->secret_key ?: '' }}"id="copySK{{$key}}" data-attr="{{$item->secret_key}}">
+                                    <td title="{{ $item->secret_key ?: '' }}" id="copySK{{$key}}" data-attr="{{$item->secret_key}}">
                                         @include('component.copy', ['eleId'=>'copySK'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
                                         {{ str_limit($item->secret_key ?: '--',25) }}
                                     </td>
