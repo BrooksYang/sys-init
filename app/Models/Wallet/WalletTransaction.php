@@ -89,6 +89,18 @@ class WalletTransaction extends Model
     }
 
     /**
+     * 筛选币种
+     *
+     * @param $query
+     * @param $currency
+     * @return mixed
+     */
+    public function scopeCurrency($query, $currency)
+    {
+        return $query->where('currency_id', $currency);
+    }
+
+    /**
      * 格式化金额
      *
      * @param $value
