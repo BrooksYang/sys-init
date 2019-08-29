@@ -29,10 +29,10 @@ class WalletTransaction extends Model
     ];
 
     // 状态，1处理中，2成功，3失败, 4撤销
-    const PENDING   = 1;
-    const SUCCESS   = 2;
-    const FAILED    = 3;
-    const CANCELED  = 4;
+    const PENDING  = 1;
+    const SUCCESS  = 2;
+    const FAILED   = 3;
+    const CANCELED = 4;
 
     const STATUS = [
       self::PENDING  => ['name'=>'处理中', 'class'=>'info'],

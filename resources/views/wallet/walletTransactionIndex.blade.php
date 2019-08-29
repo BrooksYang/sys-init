@@ -94,16 +94,22 @@
                                     <td>{{ $item->amount}}</td>
                                     <td>{{ $item->fee }}</td>
                                     <td title="{{ $item->from }}" id="copyFrom{{$key}}" data-attr="{{$item->from}}">
-                                        @include('component.copy', ['eleId'=>'copyFrom'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
+                                        @if($item->from)
+                                            @include('component.copy', ['eleId'=>'copyFrom'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
+                                        @endif
                                         <strong>{{ str_limit($item->from ?: '--',20) }}</strong>
                                     </td>
                                     <td title="{{ $item->to }}" id="copyTo{{$key}}" data-attr="{{$item->to}}">
-                                        @include('component.copy', ['eleId'=>'copyTo'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
+                                        @if($item->to)
+                                            @include('component.copy', ['eleId'=>'copyTo'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
+                                        @endif
                                         <strong>{{ str_limit($item->to ?: '--',20) }}</strong>
                                     </td>
                                     <td title="{{ $item->hash }}" id="copyHash{{$key}}" data-attr="{{$item->hash}}">
-                                        @include('component.copy', ['eleId'=>'copyHash'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
-                                        <strong><a href="https://etherscan.io/tx/{{$item->hash}}" target="_blank">
+                                        @if($item->hash)
+                                            @include('component.copy', ['eleId'=>'copyHash'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
+                                        @endif
+                                        <strong><a {{ $item->hash ? 'href="https://etherscan.io/tx/$item->hash" target="_blank"' : '####' }}>
                                             {{ str_limit($item->hash ?: '--',15) }}</a></strong>
                                     </td>
                                     <td>{{ $item->neu_txid }}</td>
