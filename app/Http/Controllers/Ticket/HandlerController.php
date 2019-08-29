@@ -412,6 +412,8 @@ class HandlerController extends Controller
             $balanceBuyer = Balance::firstOrNew(['user_id' => $buyerId, 'user_wallet_currency_id' => $order->currency_id]);
             $balanceSeller = Balance::firstOrNew(['user_id' => $sellerId, 'user_wallet_currency_id' => $order->currency_id]);
 
+            bcscale(config('app.bcmath_scale'));
+
             // 购买者增加余额 -（该余额为实际到账金额）
             $balanceBuyer->user_wallet_balance = bcadd($balanceBuyer->user_wallet_balance, $order->final_amount);
             $balanceBuyer->save();
@@ -441,6 +443,8 @@ class HandlerController extends Controller
             // 取消订单
             $order->status = OtcOrder::CANCELED;
             $order->save();
+
+            bcscale(config('app.bcmath_scale'));
 
             // 还原广告进度
             $trade = Trade::lockForUpdate()->find($order->advertisement_id);
@@ -478,6 +482,8 @@ class HandlerController extends Controller
             // 取消订单
             $order->status = OtcOrder::CANCELED;
             $order->save();
+
+            bcscale(config('app.bcmath_scale'));
 
             // 还原广告进度
             $trade = Trade::lockForUpdate()->find($order->advertisement_id);

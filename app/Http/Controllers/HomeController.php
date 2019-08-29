@@ -22,6 +22,15 @@ const CACHE_LENGTH = 10;
  */
 class HomeController extends Controller
 {
+    /**
+     * 设置计算精度
+     * HomeController constructor.
+     */
+    public function __construct()
+    {
+        bcscale(config('app.bcmath_scale'));
+    }
+
     public function index()
     {
         $cacheLength = intval(config('app.cache_length'));
@@ -249,11 +258,28 @@ class HomeController extends Controller
             return $this->otcOrderOfDay(OtcOrder::SELL);
         });
 
+        // 钱包交易手续费-充值  - 默认USDT
+        $transFeeDeposit = Cache::remember('walletTransFeeDeposit', $cacheLength, function () {
+            return $this->walletTransFee(WalletTransaction::DEPOSIT);
+        });
+
+        // 钱包交易手续费-提币 - 默认USDT
+        $transFeeWithdraw = Cache::remember('walletTransFeeWithDraw', $cacheLength, function () {
+            return $this->walletTransFee(WalletTransaction::WITHDRAW);
+        });
+
+        // OTC 平台累计交易手续费 - 收益（USDT）
+        $otcOrderFee = bcadd($otcBuyTotal->fee, $otcSellTotal->fee);
+        $walletFee = bcadd($transFeeDeposit, $transFeeWithdraw);
+        $otcFeeTotal = bcadd($otcOrderFee, $walletFee);
+
+
         return compact(
             'otcOrder',
             'otcWithdrawOrderStatus',
             'grandOtcWithdrawOrder',
-            'otcDepositAmount','otcWithdrawAmount','otcTotal', 'otcBuyTotal', 'otcSellTotal','otcBuyOfDay','otcSellOfDay'
+            'otcDepositAmount','otcWithdrawAmount','otcTotal', 'otcBuyTotal', 'otcSellTotal','otcBuyOfDay','otcSellOfDay',
+            'transFeeDeposit', 'transFeeWithdraw', 'otcFeeTotal'
         );
     }
     
@@ -765,18 +791,36 @@ class HomeController extends Controller
      * OTC订单买入或卖出及手续费统计 - 默认USDT
      *
      * @param $type
+     * @param $currency
      * @return mixed
      */
-    public function otcOrderOfDay($type)
+    public function otcOrderOfDay($type, $currency = Currency::USDT)
     {
         $otcOrderOfDay = OtcOrder::type($type)
-            ->currency(Currency::USDT)
+            ->currency($currency)
             ->status(OtcOrder::RECEIVED)
             ->select(\DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as time,sum(field_amount) as amount,sum(fee) as fee"))
             ->groupBy('time')
             ->get();
 
         return $otcOrderOfDay;
+    }
+
+    /**
+     * 钱包交易手续费
+     *
+     * @param $type
+     * @param $currency
+     * @return mixed
+     */
+    public function walletTransFee($type, $currency = Currency::USDT)
+    {
+        $walletTransFee = WalletTransaction::type($type)
+            ->currency($currency)
+            ->status(WalletTransaction::SUCCESS)
+            ->sum('fee');
+
+        return $walletTransFee;
     }
 
     /**
