@@ -360,16 +360,19 @@ class HandlerController extends Controller
             // 更新otc订单状态及余额
             // 已支付或取消-未放币 - 强制出售方放币
             if ($request->field == 'release' && ($order->status == OtcOrder::PAID || $order->status == OtcOrder::CANCELED)) {
+                $remark = '[订单原状态_'.OtcOrder::$statusTexts[$order->status].']'.' - '.'强制放币';
                 $msg = $this->forceRelease($order);
             }
 
             // 已支付-未收到付款 - 强制取消订单
             if ($request->field == 'cancel' && $order->status == OtcOrder::PAID) {
+                $remark = '[订单原状态_'.OtcOrder::$statusTexts[$order->status].']'.' - '.'取消订单';
                 $msg = $this->forceCancel($order);
             }
 
             // 未付款-已放币完成交易 - 强制恢复广告方的"错误"放币
             if ($request->field == 'recover' && $order->status == OtcOrder::RECEIVED) {
+                $remark = '[订单原状态_'.OtcOrder::$statusTexts[$order->status].']'.' - '.'强制恢复';
                 $msg = $this->forceRecover($order);
             }
 
@@ -381,6 +384,7 @@ class HandlerController extends Controller
 
             // 更新工单状态
             $ticket->ticket_state = OtcTicket::REPLIED;
+            $ticket->remark = $remark;
             $ticket->save();
         });
 
