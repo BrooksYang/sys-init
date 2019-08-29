@@ -28,15 +28,17 @@ class WalletTransaction extends Model
         self::WITHDRAW => ['name'=>'提币', 'class'=>'']
     ];
 
-    // 状态，1处理中，2成功，3失败
-    const PENDING = 1;
-    const SUCCESS = 2;
-    const FAILED  = 3;
-    
+    // 状态，1处理中，2成功，3失败, 4撤销
+    const PENDING   = 1;
+    const SUCCESS   = 2;
+    const FAILED    = 3;
+    const CANCELED  = 4;
+
     const STATUS = [
-      self::PENDING => ['name'=>'处理中', 'class'=>'info'], 
-      self::SUCCESS => ['name'=>'成功', 'class'=>'success'], 
-      self::FAILED  => ['name'=>'失败', 'class'=>'default'],
+      self::PENDING  => ['name'=>'处理中', 'class'=>'info'],
+      self::SUCCESS  => ['name'=>'成功', 'class'=>'success'],
+      self::FAILED   => ['name'=>'失败', 'class'=>'default'],
+      self::CANCELED => ['name'=>'撤销', 'class'=>'waring'],
     ];
     
 
