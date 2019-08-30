@@ -35,7 +35,7 @@
             <span class="entypo-info-circled"></span>
             <strong>订单信息：</strong>&nbsp;&nbsp;
             <p><i class="fa fa-user"></i>
-                申诉人：{{  ('用户名'.@$ticket->user->username ?:'--').' | 邮箱 '.(@$ticket->user->email?:'--').' | 电话 '.@$ticket->user->phone ?:'--' }}
+                申诉人：{{  ('用户名 '.@$ticket->user->username ?:'--').' | 邮箱 '.(@$ticket->user->email?:'--').' | 电话 '.@$ticket->user->phone ?:'--' }}
             </p>
             <p>【订单号】#{{ $order->id }}</p>
             <p>【商户订单】{{ $order->merchant_order ?:'--' }}</p>
