@@ -372,7 +372,7 @@ class HandlerController extends Controller
 
             // 更新otc订单状态及余额
             // 已支付或取消-未放币 - 强制出售方放币
-            if ($request->field == 'release' && ($order->status == OtcOrder::PAID || $order->status == OtcOrder::CANCELED)) {
+            if ($request->field == 'release' && $order->status == OtcOrder::PAID) {
                 $remark = $orcStatus.' - '.'强制放币';
                 $msg = $this->forceRelease($order);
             }
@@ -418,7 +418,7 @@ class HandlerController extends Controller
             bcscale(config('app.bcmath_scale'));
 
             // 订单原为已取消状态-增加广告已交易数量
-            if ($order->status == OtcOrder::CANCELED) {
+           /* if ($order->status == OtcOrder::CANCELED) {
                 // 更新广告进度
                 $trade = Trade::lockForUpdate()->find($order->advertisement_id);
                 $trade->field_amount = bcadd($trade->field_amount, $order->field_amount);
@@ -429,7 +429,7 @@ class HandlerController extends Controller
                 if (round($trade->field_percentage) != 100 && $trade->status == Trade::FINISHED) {
                     $trade->status = Trade::ON_SALE;
                 }
-            }
+            }*/
 
             // 用户购买，则发布者->用户，用户出售，则用户->发布者
             $buyerId = $order->type == OtcOrder::BUY ? $order->user_id : $order->from_user_id;
