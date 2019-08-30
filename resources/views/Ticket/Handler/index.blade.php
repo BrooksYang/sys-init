@@ -6,6 +6,12 @@
         <h3 class="box-title"><i class="fontello-doc"></i>
             <span>全部工单</span>
         </h3>
+        {{-- Filter and Add Button --}}
+        <div class="pull-right box-tools">
+            @include('component.searchForm', ['url'=>url('ticket/handler/index'), 'placeholder'=>'订单号','placeholderRole'=>'订单号'])
+        </div>
+
+
     </div>
     <!-- /.box-header -->
     <div class="box-body">

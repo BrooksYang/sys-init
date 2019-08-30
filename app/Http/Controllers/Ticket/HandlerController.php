@@ -240,22 +240,32 @@ class HandlerController extends Controller
     /**
      * 全部工单，用于管理员对工单的管理分配.
      *
+     * @param $request
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->search;
         $data['status'] = OtcTicket::STATUS;
+        $data['search'] = $search;
         $data['ticketStatus'] = $this->ticketStatus;
         $data['role'] = Entrance::user()->role_id;
 
         if(Entrance::user()->role_id == $this->supervisor) {
             $data['tickets'] = DB::table('otc_ticket')
+                                ->when($search, function ($query) use ($search){
+                                    return $query->where('order_id', $search);
+                                })
                                 ->where('supervisor_id', Entrance::user()->id)
                                 ->orderByDesc('created_at')
                                 ->paginate('30');
 
         } elseif(Entrance::user()->role_id == $this->admin) {
-            $data['tickets'] = DB::table('otc_ticket')->orderByDesc('created_at')->paginate('30');
+            $data['tickets'] = DB::table('otc_ticket')
+                ->when($search, function ($query) use ($search){
+                    return $query->where('order_id', $search);
+                })
+                ->orderByDesc('created_at')->paginate('30');
         }
         
 
@@ -413,10 +423,8 @@ class HandlerController extends Controller
                 $buyerId = $merchant->user_id;
             }
 
-            $balanceBuyer = Balance::firstOrNew(['user_id' => $buyerId, 'user_wallet_currency_id' => $order->currency_id]);
-            $balanceSeller = Balance::firstOrNew(['user_id' => $sellerId, 'user_wallet_currency_id' => $order->currency_id]);
-
-            bcscale(config('app.bcmath_scale'));
+            $balanceBuyer = Balance::lockForUpdate()->firstOrNew(['user_id' => $buyerId, 'user_wallet_currency_id' => $order->currency_id]);
+            $balanceSeller = Balance::lockForUpdate()->firstOrNew(['user_id' => $sellerId, 'user_wallet_currency_id' => $order->currency_id]);
 
             // 购买者增加余额 -（该余额为实际到账金额）
             $balanceBuyer->user_wallet_balance = bcadd($balanceBuyer->user_wallet_balance, $order->final_amount);
