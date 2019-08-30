@@ -73,7 +73,7 @@
                         {{ $ticketStatus[$ticket->ticket_state] }}
                         @else
                         未处理
-                        @endif</strong>】</p>
+                        @endif</strong>】&nbsp;【操作备注：{{$ticket->remark ?:'--'}}】</p>
                     <p>内容：<b>{{ $ticket->content}}</b></p>
                     @if($role == config('conf.supervisor_role'))
                     <p> <a href="javascript:;" title="回复工单" onclick="ticketReply('{{ $ticket->id }}')">回复</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#javascript:;" onclick="ticketDel('{{ $ticket->id }}')">删除</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="{{ url('ticket/handler/ticketTransfer').'/'.$ticket->id }}" title="">转移</a></p>
