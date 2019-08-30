@@ -53,6 +53,8 @@ class UserOtcOrderController extends Controller
 
         //按币种-用户名-电话-商户订单id检索
         $searchUser = trim($request->searchUser,'');
+        $searchRemark = trim($request->searchRemark,'');
+        $searchCardNumber = trim($request->searchCardNumber,'');
         $searchOtc = trim($request->searchOtc,'');
         $searchMerchant = trim($request->searchMerchant,'');
         $searchCurrency = trim($request->searchCurrency,'');
@@ -75,6 +77,12 @@ class UserOtcOrderController extends Controller
             })
             ->when($searchOtc, function ($query) use ($searchOtc){
                 return $query->where('otcOrder.id',  'like', "%$searchOtc%");
+            })
+            ->when($searchRemark, function ($query) use ($searchRemark){
+                return $query->where('otcOrder.remark',  'like', "%$searchRemark%");
+            })
+            ->when($searchCardNumber, function ($query) use ($searchCardNumber){
+                return $query->where('otcOrder.card_number',  'like', "%$searchCardNumber%");
             })
             ->when($searchMerchant, function ($query) use ($searchMerchant){
                 return $query->where('otcOrder.merchant_order_id', 'like', "%$searchMerchant%");

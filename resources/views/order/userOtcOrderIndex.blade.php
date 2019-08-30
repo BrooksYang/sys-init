@@ -33,17 +33,27 @@
                                 </select>
                             </div>
                             {{--用户名或电话或邮箱--}}
-                            <div class="col-sm-4">
+                            <div class="col-sm-3">
                                 <input class="form-control input-sm"  placeholder="搜索用户名或邮箱或电话" name="searchUser" id="searchUser" type="text"
                                        value="{{ Request::get('searchUser')?? '' }}"/>
                             </div>
+                            {{--备注--}}
+                            <div class="col-sm-2">
+                                <input class="form-control input-sm"  placeholder="备注" name="searchRemark" id="searchRemark" type="text"
+                                       value="{{ Request::get('searchRemark')?? '' }}"/>
+                            </div>
+                            {{--付款卡号--}}
+                            <div class="col-sm-1">
+                                <input class="form-control input-sm"  placeholder="付款卡号" name="searchCardNumber" id="searchCardNumber" type="text"
+                                       value="{{ Request::get('searchCardNumber')?? '' }}"/>
+                            </div>
                             {{--OTC订单--}}
-                            <div class="col-sm-3">
+                            <div class="col-sm-2">
                                 <input class="form-control input-sm"  placeholder="OTC订单号" name="searchOtc" id="searchOtc" type="text"
                                        value="{{ Request::get('searchOtc')?? '' }}"/>
                             </div>
                             {{--商户订单--}}
-                            <div class="col-sm-3">
+                            <div class="col-sm-2">
                                 <input class="form-control input-sm"  placeholder="商户订单号" name="searchMerchant" id="searchMerchant" type="text"
                                        value="{{ Request::get('searchMerchant') ?? '' }}" />
                             </div>
@@ -232,6 +242,8 @@
             // 整理uri searchTeam
             function implodeUri() {
                 var uri = '?searchUser='+$('#searchUser').val()
+                    +'&searchRemark='+$('#searchRemark').val()
+                    +'&searchCardNumber='+$('#searchCardNumber').val()
                     +'&searchOtc='+$('#searchOtc').val()
                     +'&searchMerchant='+$('#searchMerchant').val()
                     +'&searchCurrency='+$('#searchCurrency').val()
