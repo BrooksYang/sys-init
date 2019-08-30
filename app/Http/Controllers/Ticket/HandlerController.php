@@ -412,16 +412,30 @@ class HandlerController extends Controller
     {
         DB::transaction(function () use ($order) {
 
+            bcscale(config('app.bcmath_scale'));
+
+            // 订单原为已取消状态-增加广告已交易数量
+            if ($order->status == OtcOrder::CANCELED) {
+                // 更新广告进度
+                $trade = Trade::lockForUpdate()->find($order->advertisement_id);
+                $trade->field_amount = bcadd($trade->field_amount, $order->field_amount);
+                $trade->field_order_count ++;
+                $trade->field_percentage = bcmul(bcdiv($trade->field_amount, $trade->amount), 100);
+
+                // 若已完成，且撤单，则标记广告为进行中
+                if (round($trade->field_percentage) != 100 && $trade->status == Trade::FINISHED) {
+                    $trade->status = Trade::ON_SALE;
+                }
+            }
+
             // 用户购买，则发布者->用户，用户出售，则用户->发布者
             $buyerId = $order->type == OtcOrder::BUY ? $order->user_id : $order->from_user_id;
             $sellerId = $order->type == OtcOrder::BUY ? $order->from_user_id : $order->user_id;
 
             // 是否为商户下用户(商户下用户需更新商户钱包)
-            $isMerchantUser = User::whereNotNull('access_key')->find($buyerId);
-            if ($isMerchantUser) {
-                $merchant = UserAppKey::where('access_key', $isMerchantUser->access_key)->firstOrFail();
-                $buyerId = $merchant->user_id;
-            }
+            $buyer = User::find($buyerId);
+            $merchant = @$buyer->merchantAppKey->user;
+            $buyerId = $merchant->id ?? $buyer->id;
 
             $balanceBuyer = Balance::lockForUpdate()->firstOrNew(['user_id' => $buyerId, 'user_wallet_currency_id' => $order->currency_id]);
             $balanceSeller = Balance::lockForUpdate()->firstOrNew(['user_id' => $sellerId, 'user_wallet_currency_id' => $order->currency_id]);
@@ -462,11 +476,13 @@ class HandlerController extends Controller
              */
 
             if ($order->type == OtcOrder::SELL) {
-                // 获取用户及所属商户
+
+                // 是否为商户下用户(商户下用户需更新商户钱包)
                 $seller = User::find($order->user_id);
                 $merchant = @$seller->merchantAppKey->user;
-                $seller = $merchant ?: $seller;
-                $balance = Balance::where('user_id', $seller->id)
+                $sellerId = $merchant->id ?? $seller->id;
+
+                $balance = Balance::where('user_id', $sellerId)
                     ->where('user_wallet_currency_id', $order->currency_id)
                     ->lockForUpdate()
                     ->first();
@@ -514,6 +530,8 @@ class HandlerController extends Controller
     {
         DB::transaction(function () use($order) {
 
+            bcscale(config('app.bcmath_scale'));
+
             /**
              * ***************************
              * 处理订单及广告
@@ -522,8 +540,6 @@ class HandlerController extends Controller
             // 取消订单
             $order->status = OtcOrder::CANCELED;
             $order->save();
-
-            bcscale(config('app.bcmath_scale'));
 
             // 还原广告进度
             $trade = Trade::lockForUpdate()->find($order->advertisement_id);
@@ -548,11 +564,9 @@ class HandlerController extends Controller
             $sellerId = $order->type == OtcOrder::BUY ? $order->from_user_id : $order->user_id;
 
             // 是否为商户下用户(商户下用户需更新商户钱包)
-            $isMerchantUser = User::whereNotNull('access_key')->find($buyerId);
-            if ($isMerchantUser) {
-                $merchant = UserAppKey::where('access_key', $isMerchantUser->access_key)->firstOrFail();
-                $buyerId = $merchant->user_id;
-            }
+            $buyer = User::find($buyerId);
+            $merchant = @$buyer->merchantAppKey->user;
+            $buyerId = $merchant->id ?? $buyer->id;
 
             $balanceBuyer = Balance::firstOrNew(['user_id' => $buyerId, 'user_wallet_currency_id' => $order->currency_id]);
             $balanceSeller = Balance::firstOrNew(['user_id' => $sellerId, 'user_wallet_currency_id' => $order->currency_id]);

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\OTC\UserAppKey;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -46,4 +47,14 @@ class User extends Authenticatable
     // 是否为商户，0否，1是
     const NOT_MERCHANT = 0;
     const MERCHANT = 1;
+
+    /**
+     * 关联所属商户
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function merchantAppKey()
+    {
+        return $this->belongsTo(UserAppKey::class, 'access_key', 'access_key');
+    }
 }
