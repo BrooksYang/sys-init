@@ -38,7 +38,7 @@ class WalletTransaction extends Model
       self::PENDING  => ['name'=>'处理中', 'class'=>'info'],
       self::SUCCESS  => ['name'=>'成功', 'class'=>'success'],
       self::FAILED   => ['name'=>'失败', 'class'=>'default'],
-      self::CANCELED => ['name'=>'撤销', 'class'=>'waring'],
+      self::CANCELED => ['name'=>'撤销', 'class'=>'warning'],
     ];
     
 

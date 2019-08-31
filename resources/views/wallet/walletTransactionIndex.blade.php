@@ -67,6 +67,7 @@
                         <table class="table table-hover table-striped">
                             <tr>
                                 <th>序号</th>
+                                <th>UID</th>
                                 <th>用户名</th>
                                 <th>联系方式</th>
                                 <th>币种</th>
@@ -86,6 +87,7 @@
                             @forelse($transDetails as $key => $item)
                                 <tr>
                                     <td>{{ ($key + 1) + ($transDetails->currentPage() - 1) * $transDetails->perPage() }}</td>
+                                    <td>{{ $item->user_id }}</td>
                                     <td title="{{ @$item->user->username }}"><strong>{{ str_limit(@$item->user->username ?:'--',11) }}</strong></td>
                                     <td title="{{@$item->user->email ?:@$item->user->phone}}">
                                         {{ str_limit(@$item->user->phone ?:@$item->user->email ,13) }}
@@ -149,7 +151,7 @@
                                     <td>{{ $item->created_at ?: '--' }}</td>
                                 </tr>
                             @empty
-                                @include('component.noData', ['colSpan'=>14])
+                                @include('component.noData', ['colSpan'=>15])
                             @endforelse
                         </table>
 
