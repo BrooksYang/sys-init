@@ -33,6 +33,7 @@
                         <table class="table table-hover table-striped">
                             <tr>
                                 <th>序号</th>
+                                <th>UID</th>
                                 <th>用户名称</th>
                                 <th>邮箱账号</th>
                                 <th>电话</th>
@@ -45,6 +46,7 @@
                             @forelse($userWallet as $key => $item)
                                 <tr>
                                     <td>{{ ($key + 1) + ($userWallet->currentPage() - 1) * $userWallet->perPage() }}</td>
+                                    <td>{{ $item->user_id ?: '--'}}</td>
                                     <td title="{{ $item->username }}"><strong>{{ str_limit($item->username ?:'--',15) }}</strong></td>
                                     <td title="{{$item->email}}">{{ str_limit($item->email ?:'--',20) }}</td>
                                     <td title="{{$item->phone}}">{{ str_limit($item->phone ?:'--',15) }}</td>
@@ -67,7 +69,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="9" class="text-center">
+                                <tr><td colspan="10" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
