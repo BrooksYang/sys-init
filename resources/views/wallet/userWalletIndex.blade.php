@@ -46,7 +46,7 @@
                             @forelse($userWallet as $key => $item)
                                 <tr>
                                     <td>{{ ($key + 1) + ($userWallet->currentPage() - 1) * $userWallet->perPage() }}</td>
-                                    <td>{{ $item->user_id ?: '--'}}</td>
+                                    <td>#{{ $item->user_id ?: '--'}}</td>
                                     <td title="{{ $item->username }}"><strong>{{ str_limit($item->username ?:'--',15) }}</strong></td>
                                     <td title="{{$item->email}}">{{ str_limit($item->email ?:'--',20) }}</td>
                                     <td title="{{$item->phone}}">{{ str_limit($item->phone ?:'--',15) }}</td>

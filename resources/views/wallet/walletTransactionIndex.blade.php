@@ -87,7 +87,7 @@
                             @forelse($transDetails as $key => $item)
                                 <tr>
                                     <td>{{ ($key + 1) + ($transDetails->currentPage() - 1) * $transDetails->perPage() }}</td>
-                                    <td>{{ $item->user_id ?: '--' }}</td>
+                                    <td>#{{ $item->user_id ?: '--' }}</td>
                                     <td title="{{ @$item->user->username }}"><strong>{{ str_limit(@$item->user->username ?:'--',11) }}</strong></td>
                                     <td title="{{@$item->user->email ?:@$item->user->phone}}">
                                         {{ str_limit(@$item->user->phone ?:@$item->user->email ,13) }}
