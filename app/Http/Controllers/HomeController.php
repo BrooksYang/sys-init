@@ -314,8 +314,8 @@ class HomeController extends Controller
 
         foreach ($times as $time) {
             $sysIncome[$time]['otc_buy_fee'] = $otcBuy[$time] ?? 0;
-            $sysIncome[$time]['deposit_fee'] = $transFeeDeposit[$time] ?? 0;
-            $sysIncome[$time]['total'] = bcadd($otcBuy[$time] ?? 0,  $transFeeDeposit[$time] ?? 0);
+            $sysIncome[$time]['deposit_fee'] = $deposit[$time] ?? 0;
+            $sysIncome[$time]['total'] = bcadd($otcBuy[$time] ?? 0,  $deposit[$time] ?? 0);
         }
 
         return $sysIncome;
