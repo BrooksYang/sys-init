@@ -325,6 +325,14 @@
                         <hr>
                         <div class="row">
                             <div class="col-md-10">
+                                <!-- OTC平台各手续费统计 - 默认USDT -->
+                                <div id="otcSysIncomeOfDay" style="width: 100%;height:600px;"></div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-10">
                                 <!-- OTC订单买入及手续费统计 - 默认USDT -->
                                 <div id="otcBuyOfDay" style="width: 100%;height:600px;"></div>
                             </div>
@@ -335,6 +343,14 @@
                             <div class="col-md-10">
                                 <!-- OTC订单卖出及手续费统计 - 默认USDT -->
                                 <div id="otcSellOfDay" style="width: 100%;height:600px;"></div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <!-- OTC充值及手续费统计 - 默认USDT -->
+                                <div id="transFeeDepositOfDay" style="width: 100%;height:600px;"></div>
                             </div>
                         </div>
                     @endif
@@ -615,12 +631,111 @@
         userVerifyStatus.setOption(userVerifyStatusOption);
     </script>
 
+    {{--OTC平台收益统计 - 默认USDT--}}
+    <script>
+        var otcSysIncomeOfDay = echarts.init(document.getElementById('otcSysIncomeOfDay'));
+        var otcSysIncomeOfDayOption = {
+            title : {
+                text: 'OTC 平台收益',
+                subtext: 'USDT',
+            },
+            tooltip : {
+                trigger: 'axis',
+                axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            toolbox: {
+                show : true,
+                feature : {
+                    dataView : {show: true, readOnly: false},
+                    magicType : {show: true, type: ['line', 'bar']},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
+            calculable : true,
+            legend: {
+                data:['订单手续费','充值手续费','总收益']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis : [
+                {
+                    type : 'category',
+                    data : [@foreach($otcSysIncomeOfDay as $incomeKey=>$incomeItem) '{{date('n/d', strtotime($incomeKey))}}', @endforeach]
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+                {
+                    name:'订单手续费',
+                    type:'bar',
+                    data:[@foreach($otcSysIncomeOfDay as $incomeKey=>$incomeItem) {{round($incomeItem['otc_buy_fee'], 2)}}, @endforeach],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                {
+                    name:'充值手续费',
+                    type:'bar',
+                    stack: '广告',
+                    data:[@foreach($otcSysIncomeOfDay as $incomeKey=>$incomeItem) {{round($incomeItem['deposit_fee'], 2)}}, @endforeach],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                {
+                    name:'总收益',
+                    type:'bar',
+                    data:[@foreach($otcSysIncomeOfDay as $incomeKey=>$incomeItem) {{round($incomeItem['total'], 2)}}, @endforeach],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                }
+            ]
+        };
+        otcSysIncomeOfDay.setOption(otcSysIncomeOfDayOption);
+    </script>
+
     {{--OTC订单买入及手续费统计 - 默认USDT--}}
     <script>
         var otcBuyOfDay = echarts.init(document.getElementById('otcBuyOfDay'));
         var otcBuyOfDayOption = {
             title : {
-                text: 'OTC订单买入及手续费',
+                text: 'OTC 订单买入及手续费',
                 subtext: 'USDT',
             },
             tooltip : {
@@ -693,7 +808,7 @@
         var otcSellOfDay = echarts.init(document.getElementById('otcSellOfDay'));
         var otcSellOfDayOption = {
             title : {
-                text: 'OTC订单卖出及手续费',
+                text: 'OTC 订单卖出及手续费',
                 subtext: 'USDT',
             },
             tooltip : {
@@ -759,6 +874,79 @@
             ]
         };
         otcSellOfDay.setOption(otcSellOfDayOption);
+    </script>
+
+    {{--OTC充值及手续费统计 - 默认USDT--}}
+    <script>
+        var transFeeDepositOfDay = echarts.init(document.getElementById('transFeeDepositOfDay'));
+        var transFeeDepositOfDayOption = {
+            title : {
+                text: 'OTC 充值及手续费',
+                subtext: 'USDT',
+            },
+            tooltip : {
+                trigger: 'axis'
+            },
+            legend: {
+                data:['充值量','手续费']
+            },
+            toolbox: {
+                show : true,
+                feature : {
+                    dataView : {show: true, readOnly: false},
+                    magicType : {show: true, type: ['line', 'bar']},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
+            calculable : true,
+            xAxis : [
+                {
+                    type : 'category',
+                    data : [@foreach($transFeeDepositOfDay as $sellKey=>$sellItem) '{{date('n/d',strtotime($sellItem->time))}}', @endforeach]
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+                {
+                    name:'充值量',
+                    type:'bar',
+                    data:[@foreach($transFeeDepositOfDay as $key=>$item) {{round($item->amount, 2)}}, @endforeach],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                {
+                    name:'手续费',
+                    type:'bar',
+                    data:[@foreach($transFeeDepositOfDay as $key=>$item) {{round($item->fee, 2)}}, @endforeach],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                }
+            ]
+        };
+        transFeeDepositOfDay.setOption(transFeeDepositOfDayOption);
     </script>
 
     {{--币种信息统计--}}
