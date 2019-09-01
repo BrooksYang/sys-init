@@ -373,16 +373,18 @@ class UserOtcWithdrawOrderController extends Controller
     public function update(Request $request, $id)
     {
         $order = OtcWithdraw::findOrFail($id);
-        $userWallet = UserWallet::firstOrNew(['user_id' => $order->user_id, 'user_wallet_currency_id' => $order->currency_id]);
-        $sysWallet = SysWallet::where('sys_wallet_currency_id', $order->currency_id)->first();
 
         //如核对通过则从交易用户的对应记账钱包中提币
         $jsonArray = ['code' =>0, 'msg' => '更新成功' ];
         bcscale(config('app.bcmath_scale'));
 
         // 已发币
-        if ($request->update  == OtcWithdraw::OTC_RELEASED) {
-            DB::transaction(function () use ($order, $userWallet, $sysWallet) {
+        DB::transaction(function () use ($order, $request) {
+            $userWallet = UserWallet::lockForUpdate()->firstOrCreate(['user_id' => $order->user_id, 'user_wallet_currency_id' => $order->currency_id]);
+            $sysWallet = SysWallet::lockForUpdate()->where('sys_wallet_currency_id', $order->currency_id)->first();
+
+            if ($request->update  == OtcWithdraw::OTC_RELEASED) {
+
                 //更新提币订单
                 $order->status = OtcWithdraw::OTC_RELEASED;
                 $order->updated_at = self::carbonNow();
@@ -397,12 +399,10 @@ class UserOtcWithdrawOrderController extends Controller
                 $sysWallet->sys_wallet_balance_freeze_amount  = bcsub($sysWallet->sys_wallet_balance_freeze_amount, $order->amount);
                 $sysWallet->updated_at = self::carbonNow();
                 $sysWallet->save();*/
-            });
-        }
+            }
 
-        // 失败-恢复冻结金额
-        if ($request->update  == OtcWithdraw::OTC_FAILED) {
-            DB::transaction(function () use ($order, $userWallet, $sysWallet) {
+            // 失败-恢复冻结金额
+            if ($request->update  == OtcWithdraw::OTC_FAILED) {
                 //更新提币订单
                 $order->status = OtcWithdraw::OTC_FAILED;
                 $order->updated_at = self::carbonNow();
@@ -418,15 +418,15 @@ class UserOtcWithdrawOrderController extends Controller
                 $sysWallet->sys_wallet_balance_freeze_amount  = bcsub($sysWallet->sys_wallet_balance_freeze_amount, $order->amount);
                 $sysWallet->updated_at = self::carbonNow();
                 $sysWallet->save();*/
-            });
-        }
+            }
 
-        // 处理中
-        if ($request->update == OtcWithdraw::OTC_PENDING) {
-            $order->status = OtcWithdraw::OTC_PENDING;
-            $order->updated_at = self::carbonNow();
-            $order->save();
-        }
+            // 处理中
+            if ($request->update == OtcWithdraw::OTC_PENDING) {
+                $order->status = OtcWithdraw::OTC_PENDING;
+                $order->updated_at = self::carbonNow();
+                $order->save();
+            }
+        });
 
         return response()->json($jsonArray);
     }

@@ -31,10 +31,10 @@ class HandlerController extends Controller
         $this->admin = 1; // 定义超管的 ROLE ID
         $this->ticketStatus = [
             1 => '未分配',
-            2 => '已分配', 
-            3 => '已回复', 
-            4 => '已关闭', 
-            5 => '正在处理', 
+            2 => '已分配',
+            3 => '已回复',
+            4 => '已关闭',
+            5 => '正在处理',
             6 => '等待处理'
         ];  // 工单状态字典
     }
@@ -57,7 +57,7 @@ class HandlerController extends Controller
      */
     public function getTask()
     {
-        
+
         if(Entrance::user()->role_id == $this->supervisor) {
             $task = DB::table('otc_ticket')
                                 ->where('supervisor_id', Entrance::user()->id)
@@ -79,7 +79,7 @@ class HandlerController extends Controller
      * @return [type]           [description]
      */
     public function replyLevelTwo(Request $request)
-    {        
+    {
 
         $reply = [
             'ticket_id'=>$request->input('ticket_id'),
@@ -91,10 +91,10 @@ class HandlerController extends Controller
             'updated_at'=>\Carbon\Carbon::now(),
         ];
         DB::table('otc_ticket_reply')->insert($reply);
-        DB::table('otc_ticket')->where('id',$request->input('ticket_id'))->update(['ticket_state'=>3]);        
-        
+        DB::table('otc_ticket')->where('id',$request->input('ticket_id'))->update(['ticket_state'=>3]);
 
-        return response()->json(['msg'=>'success']);  
+
+        return response()->json(['msg'=>'success']);
 
     }
 
@@ -114,7 +114,7 @@ class HandlerController extends Controller
         DB::table('otc_ticket_reply')->where('id',$id)->delete();
         DB::table('otc_ticket')->where('id',$reply->ticket_id)->update(['ticket_state'=>3]);
 
-        return response()->json(['msg'=>'success']); 
+        return response()->json(['msg'=>'success']);
     }
 
     /**
@@ -267,7 +267,7 @@ class HandlerController extends Controller
                 })
                 ->orderByDesc('created_at')->paginate('30');
         }
-        
+
 
 
 
@@ -279,7 +279,7 @@ class HandlerController extends Controller
      * @param  [type] $supervisorId [description]
      * @return [type]               [description]
      */
-    public function supervisor($supervisorId) 
+    public function supervisor($supervisorId)
     {
         $supervisor = DB::table('auth_admins')->where('id',$supervisorId)->first();
 
@@ -423,10 +423,10 @@ class HandlerController extends Controller
                 $trade = Trade::lockForUpdate()->find($order->advertisement_id);
                 $trade->field_amount = bcadd($trade->field_amount, $order->field_amount);
                 $trade->field_order_count ++;
-                $trade->field_percentage = bcmul(bcdiv($trade->field_amount, $trade->amount), 100);
+                $trade->field_percentage = floor($trade->field_amount / $trade->amount * 10000) / 100;;
 
                 // 若已完成，且撤单，则标记广告为进行中
-                if (round($trade->field_percentage) != 100 && $trade->status == Trade::FINISHED) {
+                if ($trade->status == Trade::FINISHED) {
                     $trade->status = Trade::ON_SALE;
                 }
             }*/
@@ -509,10 +509,10 @@ class HandlerController extends Controller
             $trade = Trade::lockForUpdate()->find($order->advertisement_id);
             $trade->field_amount = bcsub($trade->field_amount, $order->field_amount);
             $trade->field_order_count --;
-            $trade->field_percentage = bcmul(bcdiv($trade->field_amount, $trade->amount), 100);
+            $trade->field_percentage = floor($trade->field_amount / $trade->amount * 10000) / 100;;
 
             // 若已完成，且撤单，则标记广告为进行中
-            if (round($trade->field_percentage) != 100 && $trade->status == Trade::FINISHED) {
+            if ($trade->status == Trade::FINISHED) {
                 $trade->status = Trade::ON_SALE;
             }
 
@@ -548,10 +548,10 @@ class HandlerController extends Controller
             $trade = Trade::lockForUpdate()->find($order->advertisement_id);
             $trade->field_amount = bcsub($trade->field_amount, $order->field_amount);
             $trade->field_order_count --;
-            $trade->field_percentage = bcmul(bcdiv($trade->field_amount, $trade->amount), 100);
+            $trade->field_percentage = floor($trade->field_amount / $trade->amount * 10000) / 100;;
 
             // 若已完成，且撤单，则标记广告为进行中
-            if (round($trade->field_percentage) != 100 && $trade->status == Trade::FINISHED) {
+            if ($trade->status == Trade::FINISHED) {
                 $trade->status = Trade::ON_SALE;
             }
 
@@ -571,8 +571,8 @@ class HandlerController extends Controller
             $merchant = @$buyer->merchantAppKey->user;
             $buyerId = $merchant->id ?? $buyer->id;
 
-            $balanceBuyer = Balance::firstOrNew(['user_id' => $buyerId, 'user_wallet_currency_id' => $order->currency_id]);
-            $balanceSeller = Balance::firstOrNew(['user_id' => $sellerId, 'user_wallet_currency_id' => $order->currency_id]);
+            $balanceBuyer = Balance::lockForUpdate()->firstOrCreate(['user_id' => $buyerId, 'user_wallet_currency_id' => $order->currency_id]);
+            $balanceSeller = Balance::lockForUpdate()->firstOrCreate(['user_id' => $sellerId, 'user_wallet_currency_id' => $order->currency_id]);
 
             // 恢复广告方钱包冻结余额（所恢复数额为订单交易数额）
             $balanceSeller->user_wallet_balance_freeze_amount = bcadd($balanceSeller->user_wallet_balance_freeze_amount, $order->field_amount);
