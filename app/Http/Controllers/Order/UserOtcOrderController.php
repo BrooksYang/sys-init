@@ -53,6 +53,7 @@ class UserOtcOrderController extends Controller
 
         //按币种-用户名-电话-商户订单id检索
         $searchUser = trim($request->searchUser,'');
+        $searchFromUser = trim($request->searchFromUser,'');
         $searchRemark = trim($request->searchRemark,'');
         $searchCardNumber = trim($request->searchCardNumber,'');
         $searchOtc = trim($request->searchOtc,'');
@@ -69,12 +70,18 @@ class UserOtcOrderController extends Controller
 
         $userOtcOrder = DB::table('otc_orders as otcOrder')
             ->join('users as u','otcOrder.user_id','u.id') //用户信息
+            ->join('users as fu','otcOrder.from_user_id','fu.id') //用户信息
             ->join('currencies as currency','otcOrder.currency_id','currency.id')  //币种
             ->join('legal_currencies as legal_currency','otcOrder.legal_currency_id','legal_currency.id') //法币
             ->when($searchUser, function ($query) use ($searchUser){
                 return $query->where('u.username', 'like', "%$searchUser%")
                     ->orwhere('u.phone', 'like', "%$searchUser%")
                     ->orwhere('u.email', 'like', "%$searchUser%");
+            })
+            ->when($searchFromUser, function ($query) use ($searchFromUser){
+                return $query->where('fu.username', 'like', "%$searchFromUser%")
+                    ->orwhere('fu.phone', 'like', "%$searchFromUser%")
+                    ->orwhere('fu.email', 'like', "%$searchFromUser%");
             })
             ->when($searchOtc, function ($query) use ($searchOtc){
                 return $query->where('otcOrder.id',  'like', "%$searchOtc%");
@@ -110,7 +117,7 @@ class UserOtcOrderController extends Controller
                 return $query->orderBy('otcOrder.created_at', $orderC);
             })
             ->select(
-                'otcOrder.*', 'u.username', 'u.phone','u.email',
+                'otcOrder.*', 'u.username', 'u.phone','u.email','fu.username as f_username','fu.phone as f_phone',
                 'currency.currency_title_cn','currency.currency_title_en_abbr',
                 'legal_currency.name','legal_currency.abbr'
             )

@@ -33,12 +33,12 @@
                                 </select>
                             </div>
                             {{--用户名或电话或邮箱--}}
-                            <div class="col-sm-3">
+                            <div class="col-sm-2">
                                 <input class="form-control input-sm"  placeholder="搜索用户名或邮箱或电话" name="searchUser" id="searchUser" type="text"
                                        value="{{ Request::get('searchUser')?? '' }}"/>
                             </div>
                             {{--备注--}}
-                            <div class="col-sm-2">
+                            <div class="col-sm-1">
                                 <input class="form-control input-sm"  placeholder="备注" name="searchRemark" id="searchRemark" type="text"
                                        value="{{ Request::get('searchRemark')?? '' }}"/>
                             </div>
@@ -56,6 +56,11 @@
                             <div class="col-sm-2">
                                 <input class="form-control input-sm"  placeholder="商户订单号" name="searchMerchant" id="searchMerchant" type="text"
                                        value="{{ Request::get('searchMerchant') ?? '' }}" />
+                            </div>
+                            {{--广告上名称或电话--}}
+                            <div class="col-sm-2">
+                                <input class="form-control input-sm"  placeholder="搜索广告商名称或电话" name="searchFromUser" id="searchFromUser" type="text"
+                                       value="{{ Request::get('searchFromUser')?? '' }}"/>
                             </div>
                             {{--币种--}}
                             <div class="col-sm-1">
@@ -111,6 +116,7 @@
                                 <th>申诉</th>
                                 <th>商户订单</th>
                                 <th>回调</th>
+                                <th>广告商</th>
                                 <th>创建时间 &nbsp;&nbsp;<a href="{{ url('order/otc')}}?orderC=desc">
                                         <i class="fa fa-sort-amount-desc" style="color:{{ Request::get('orderC') != 'desc' ? !Request::get('orderC') ? '' : 'gray' :'' }}" title="降序"></i></a> &nbsp;
                                     <a href="{{ url('order/otc') }}?orderC=asc">
@@ -146,6 +152,9 @@
                                     </td>
                                     <td>{{ $item->merchant_order_id ?:'--'}}</td>
                                     <td title="{{ $item->merchant_callback }}"><i class="fontello-globe-1"></i></td>
+                                    <td title="广告-{{ $item->advertisement_id }} | 广告商-{{ $item->from_user_id }} | 电话-{{ $item->f_phone }}">
+                                        {{ str_limit($item->f_username ?: $item->f_phone,11) }}
+                                    </td>
                                     <td>{{ $item->created_at ?: '--' }}</td>
                                     <td>
                                        {{-- <a data-toggle="dropdown" class="dropdown-toggle" type="button">
@@ -172,7 +181,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="18" class="text-center">
+                                <tr><td colspan="19" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
@@ -242,6 +251,7 @@
             // 整理uri searchTeam
             function implodeUri() {
                 var uri = '?searchUser='+$('#searchUser').val()
+                    +'&searchFromUser='+$('#searchFromUser').val()
                     +'&searchRemark='+$('#searchRemark').val()
                     +'&searchCardNumber='+$('#searchCardNumber').val()
                     +'&searchOtc='+$('#searchOtc').val()
