@@ -247,6 +247,7 @@
                     +'&searchOtc='+$('#searchOtc').val()
                     +'&searchMerchant='+$('#searchMerchant').val()
                     +'&searchCurrency='+$('#searchCurrency').val()
+                    +'&filterType='+$('#filterType').val()
                     +'&filterStatus='+$('#filterStatus').val()
                     +'&filterAppeal='+$('#filterAppeal').val()
                     +'&start='+$('#start').val()

@@ -58,6 +58,7 @@ class UserOtcOrderController extends Controller
         $searchOtc = trim($request->searchOtc,'');
         $searchMerchant = trim($request->searchMerchant,'');
         $searchCurrency = trim($request->searchCurrency,'');
+        $filterType = trim($request->filterType,'');
         $filterStatus = trim($request->filterStatus,'');
         $filterAppeal = trim($request->filterAppeal,'');
         $start = trim($request->start,'');
@@ -95,6 +96,9 @@ class UserOtcOrderController extends Controller
             })
             ->when($end, function ($query) use ($end){
                 return $query->where('otcOrder.created_at', '<=', $end);
+            })
+            ->when($filterType, function ($query) use ($filterType){
+                return $query->where('otcOrder.type', $filterType);
             })
             ->when($filterStatus, function ($query) use ($filterStatus){
                 return $query->where('otcOrder.status', $filterStatus);
