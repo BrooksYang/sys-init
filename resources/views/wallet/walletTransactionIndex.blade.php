@@ -111,8 +111,8 @@
                                         @if($item->hash)
                                             @include('component.copy', ['eleId'=>'copyHash'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
                                         @endif
-                                        <strong><a {{ $item->hash ? 'href="https://etherscan.io/tx/$item->hash" target="_blank"' : '####' }}>
-                                            {{ str_limit($item->hash ?: '--',15) }}</a></strong>
+                                        <strong><a {!! $item->hash ? 'href="https://etherscan.io/tx/'.$item->hash.'"'.' target="_blank"' : '####' !!}>
+                                                {{ str_limit($item->hash ?: '--',15) }}</a></strong>
                                     </td>
                                     <td>{{ $item->neu_txid }}</td>
                                     {{--备注--}}
