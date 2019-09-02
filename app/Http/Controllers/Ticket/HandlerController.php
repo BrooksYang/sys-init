@@ -397,11 +397,11 @@ class HandlerController extends Controller
 
             // 更新工单状态
             $ticket->ticket_state = OtcTicket::REPLIED;
-            $ticket->remark = $remark;
+            $ticket->remark = $remark.' - '."[说明：{$request->info}]";
             $ticket->save();
         });
 
-        return response()->json(['code'=>0, 'msg'=>'申诉完结'.$msg]);
+        return back();
     }
 
     /**
