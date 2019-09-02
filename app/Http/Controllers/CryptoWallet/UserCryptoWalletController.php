@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\CryptoWallet;
 
 use App\Http\Requests\UserCryptoWalletRequest;
+use App\Models\Wallet\Wallet;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
-const USER_CRYPTO_WALLET_PAGE_SIZE = 20;
+const USER_CRYPTO_WALLET_PAGE_SIZE = 30;
 
 /**
  * Class UserCryptoWalletController
@@ -24,17 +25,13 @@ class UserCryptoWalletController extends Controller
      */
     public function index(Request $request)
     {
-        $type = [
-            0 => ['name' => '全部',   'class' => ''],
-            1 => ['name' => '普通',   'class' => ''],
-            2 => ['name' => '主钱包', 'class' => '']
-        ];
+        $type = Wallet::TYPE;
 
         $search = trim($request->search,'');
         $filterType = trim($request->filterType,'');
 
         $userCryptoWallet = DB::table('wallets as u_wallet')
-            ->join('users as u','u_wallet.user_id','u.id')
+            ->leftJoin('users as u','u_wallet.user_id','u.id')
             ->join('currencies as currency','u_wallet.crypto_wallet_currency_id','currency.id')
             ->when($search, function ($query) use ($search){
                 return $query->where('u_wallet.crypto_wallet_title','like',"%$search%")
@@ -44,6 +41,7 @@ class UserCryptoWalletController extends Controller
                 return $query->where('u_wallet.type', $filterType);
             })
             ->select('u_wallet.*', 'u.username', 'u.email','currency.currency_title_cn','currency.currency_title_en_abbr')
+            ->latest()
             ->paginate(USER_CRYPTO_WALLET_PAGE_SIZE );;
 
         return view('cryptoWallet.userCryptoWalletIndex', compact('userCryptoWallet', 'type'));
