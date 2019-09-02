@@ -158,15 +158,15 @@
                                     '工单为<b><strong> 完结 </strong></b> 状态',
                                     '{{ csrf_token() }}','完结工单');" title="仅更新申诉进程和工单">申诉完结</a>
 
-                            <a href="javascript:viod(0)" class="btn btn-danger ml-5" onclick="itemUpdate('{{ $ticket->id }}',
+                            <a href="javascript:viod(0)" class="btn btn-danger ml-5" {{--onclick="itemUpdate('{{ $ticket->id }}',
                                     '{{ url("ticket/handler/appealEnd/$ticket->id") }}','release','{{ $ticket->order_id }}',
                                     '订单为<b><strong> 强制发币 </strong></b> 状态',
-                                    '{{ csrf_token() }}','强制发币 - 请慎重操作！');" title="已支付-未放币">强制发币</a>
+                                    '{{ csrf_token() }}','强制发币 - 请慎重操作！');"--}} title="已支付-未放币" disabled>强制发币</a>
 
-                            <a href="javascript:viod(0)" class="btn btn-info ml-5" onclick="itemUpdate('{{ $ticket->id }}',
+                            <a href="javascript:viod(0)" class="btn btn-info ml-5" {{--onclick="itemUpdate('{{ $ticket->id }}',
                                     '{{ url("ticket/handler/appealEnd/$ticket->id") }}','recover','{{ $ticket->order_id }}',
                                     '订单为<b><strong> 强制恢复 </strong></b> 状态',
-                                    '{{ csrf_token() }}','强制恢复 - 请慎重操作！');" title="未付款-已放币完成交易 - 强制恢复广告方的放币">强制恢复</a>
+                                    '{{ csrf_token() }}','强制恢复 - 请慎重操作！');"--}} title="未付款-已放币完成交易 - 强制恢复广告方的放币" disabled>强制恢复</a>
 
                             <a href="javascript:viod(0)" class="btn btn-default ml-5" onclick="itemUpdate('{{ $ticket->id }}',
                                     '{{ url("ticket/handler/appealEnd/$ticket->id") }}','cancel','{{ $ticket->order_id }}',
