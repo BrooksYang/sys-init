@@ -9,7 +9,7 @@
 
                     {{-- Filter and Add Button --}}
                     <div class="pull-right" style="margin: 20px 20px;">
-                        @include('component.conditionSearch', ['url'=>url('wallet/transaction')])
+                        @include('component.conditionSearch', ['url'=>url('sys/income?type=deposit')])
 
                         {{--添加提币申请--}}
                         <!-- Button trigger modal -->
@@ -93,7 +93,13 @@
                         </button>
                         <ul role="menu" class="dropdown-menu">
                             @foreach($incomeType as $key=>$item)
-                                <li><a href="{{ $item['url'] }}">{{ $item['name'] }}</a></li>
+                                <li><a href="{{ $item['url'] }}">{{ $item['name'] }}
+                                        @if ($key==1 && !Request::get('type'))
+                                            &nbsp;<i class="fa fa-check txt-info"></i>
+                                        @elseif($key==2 && Request::get('type')=='deposit')
+                                            &nbsp;<i class="fa fa-check txt-info"></i>
+                                        @endif
+                                    </a></li>
                             @endforeach
                         </ul>
                     </div>
@@ -106,7 +112,7 @@
 
                 {{-- Table --}}
                 <div class="box-body">
-                    <form action="{{ url('wallet/transaction')}}" id="searchForm">
+                    <form action="{{ url('sys/income?type=deposit')}}" id="searchForm">
                         <div class="row" style="margin-bottom:10px;">
                             {{--搜索--}}
                             {{--用户基本信息--}}
@@ -175,7 +181,7 @@
                                 <th>类型</th>
                                 <th>状态</th>
                                 <th>创建时间
-                                    @include('component.sort', ['url'=>'wallet/transaction'])
+                                    @include('component.sort', ['url'=>'sys/income?type=deposit'])
                                 </th>
                             </tr>
                             @forelse($transDetails as $key => $item)

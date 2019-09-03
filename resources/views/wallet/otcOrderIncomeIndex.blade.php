@@ -20,8 +20,14 @@
                             收益类型<span class="caret"></span>
                         </button>
                         <ul role="menu" class="dropdown-menu">
-                            @foreach($incomeType as $key=>$type)
-                                <li><a href="{{ $type['url'] }}">{{ $type['name'] }}</a></li>
+                            @foreach($incomeType as $key=>$item)
+                                <li><a href="{{ $item['url'] }}">{{ $item['name'] }}
+                                        @if ($key==1 && !Request::get('type'))
+                                            &nbsp;<i class="fa fa-check txt-info"></i>
+                                        @elseif($key==2 && Request::get('type')=='deposit')
+                                            &nbsp;<i class="fa fa-check txt-info"></i>
+                                        @endif
+                                    </a></li>
                             @endforeach
                         </ul>
                     </div>
