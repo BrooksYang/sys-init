@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\CryptoWallet;
 
 use App\Models\Currency;
+use App\Models\Wallet\WalletExternal;
 use App\Models\Wallet\WalletTransaction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -33,6 +34,7 @@ class WalletTransactionController extends Controller
         $status = WalletTransaction::STATUS;
         $type = WalletTransaction::TYPE;
         $currencies = Currency::getCurrencies();
+        $external = WalletExternal::getAddr();
 
         $transDetails = WalletTransaction::with(['user','currency'])
             ->when($search, function ($query) use ($search){
@@ -67,7 +69,8 @@ class WalletTransactionController extends Controller
 
         $transDetails = $transDetails->paginate(config('app.pageSize'));
 
-        return view('wallet.walletTransactionIndex', compact('status','type','currencies','transDetails','search','statistics'));
+        return view('wallet.walletTransactionIndex', compact('status','type','currencies','transDetails',
+            'search','statistics','external'));
     }
 
 

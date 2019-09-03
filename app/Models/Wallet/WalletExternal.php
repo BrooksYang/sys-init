@@ -68,6 +68,16 @@ class WalletExternal extends Model
     }
 
     /**
+     * 获取外部提币地址
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getAddr()
+    {
+        return self::get(['id','address', 'desc']);
+    }
+
+    /**
      * 是否存在已激活的提币地址
      *
      * @param $uid
