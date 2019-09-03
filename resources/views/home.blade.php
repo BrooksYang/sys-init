@@ -263,7 +263,7 @@
                             </h2>
                             <i class="fontello-money"></i>
                             <h4 class="text-green">{{ number_format($otcFeeTotal, 2) }}</h4>
-                            <h5>OTC 平台累计收益({{ config('conf.currency_usdt') }})</h5>
+                            <h5>OTC 平台累计收益({{ config('conf.currency_usdt') }})&nbsp;&nbsp;{{number_format($otcFeeRmbTotal,2)}}(RMB)</h5>
                             <div style="clear:both;"></div>
                         </div>
                     </div>

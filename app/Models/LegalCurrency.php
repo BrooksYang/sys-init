@@ -19,4 +19,14 @@ class LegalCurrency extends Model
      * @var array
      */
     protected $guarded = [];
+
+    /**
+     * 获取人民币对 usdt 汇率
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public static function rmbRate()
+    {
+        return self::where('abbr', 'RMB')->value('rate');
+    }
 }

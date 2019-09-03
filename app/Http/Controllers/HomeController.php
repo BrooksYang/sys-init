@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Currency;
+use App\Models\LegalCurrency;
 use App\Models\OTC\OtcOrder;
 use App\Models\Wallet\WalletTransaction;
 use Carbon\Carbon;
@@ -282,6 +283,7 @@ class HomeController extends Controller
         $otcOrderFee = bcadd($otcBuyTotal->fee, $otcSellTotal->fee);
         $walletFee = bcadd($transFeeDeposit, $transFeeWithdraw);
         $otcFeeTotal = bcadd($otcOrderFee, $walletFee);
+        $otcFeeRmbTotal = bcmul($otcFeeTotal, LegalCurrency::rmbRate() ?: 0);
 
 
         return compact(
@@ -289,7 +291,7 @@ class HomeController extends Controller
             'otcWithdrawOrderStatus',
             'grandOtcWithdrawOrder',
             'otcDepositAmount','otcWithdrawAmount','otcTotal', 'otcBuyTotal', 'otcSellTotal','otcBuyOfDay','otcSellOfDay',
-            'transFeeDepositOfDay','transFeeDeposit', 'transFeeWithdraw', 'otcSysIncomeOfDay','otcFeeTotal'
+            'transFeeDepositOfDay','transFeeDeposit', 'transFeeWithdraw', 'otcSysIncomeOfDay','otcFeeTotal','otcFeeRmbTotal'
         );
     }
 
