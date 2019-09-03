@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Wallet;
 
+use App\Http\Requests\OtcSysWithdrawRequest;
 use App\Http\Requests\WalletExternalRequest;
+use App\Models\Currency;
 use App\Models\Wallet\WalletExternal;
+use App\Models\Wallet\WalletTransaction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -32,6 +35,8 @@ class OtcSysWithdrawAddrController extends Controller
         $status = WalletExternal::STATUS;
         $type = WalletExternal::TYPE;
 
+        $currencies = Currency::getCurrencies();
+
         $external = WalletExternal::with(['user'])
             ->when($search, function ($query) use ($search){
                 return $query->whereHas('user', function ($query) use ($search) {
@@ -51,7 +56,7 @@ class OtcSysWithdrawAddrController extends Controller
             })
             ->paginate(config('app.pageSize'));
 
-        return view('wallet.walletExternalIndex', compact('status','type','external'));
+        return view('wallet.walletExternalIndex', compact('currencies','status','type','external'));
     }
 
 
@@ -139,5 +144,12 @@ class OtcSysWithdrawAddrController extends Controller
         $external->delete();
 
         return response()->json([]);
+    }
+
+    // 提币申请
+    public function withdraw(OtcSysWithdrawRequest $request)
+    {
+
+
     }
 }

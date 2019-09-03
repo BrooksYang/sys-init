@@ -45,6 +45,9 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     // 更新外部提币地址状态 - 启用或停用
     Route::patch('otc/sys/withdrawAddr/toggle/{id}', 'Wallet\OtcSysWithdrawAddrController@toggle');
 
+    // 添加提币申请 - 发起提币
+    Route::post('otc/sys/withdraw', 'Wallet\OtcSysWithdrawAddrController@withdraw');
+
 });
 
 

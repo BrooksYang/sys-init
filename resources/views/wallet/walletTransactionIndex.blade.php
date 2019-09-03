@@ -10,6 +10,84 @@
                     {{-- Filter and Add Button --}}
                     <div class="pull-right box-tools">
                         @include('component.conditionSearch', ['url'=>url('wallet/transaction')])
+
+                        {{--添加提币申请--}}
+                        <!-- Button trigger modal -->
+                        <a href="javascript:void(0);" style="color: #fff;" class="btn btn-danger" data-toggle="modal" data-target="#exampleModalLong">
+                            <i class="fontello-export-outline" title="提币申请"></i>&nbsp;提币申请
+                        </a>
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+                             aria-hidden="true" width="auto">
+                            <div class="modal-dialog" role="document" width="auto">
+                                <div class="modal-content" width="auto">
+                                    <form action="{{ url('otc/sys/withdrawAddr') }}" method="post" role="form">
+                                        {{ csrf_field() }}
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLongTitle">添加提币申请</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <div class="col-sm-12">
+                                                            <label>请选择币种类型</label>
+                                                            <select class="filter-status form-control input-sm" id="currency" name="currency">
+                                                                <option value="">请选择币种</option>
+                                                                @foreach($currencies as $key => $currency)
+                                                                    <option value="{{$key}}" {{ $key== \App\Models\Currency::USDT ? 'selected' :''}}>{{ $currency }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                            @if ($errors->has('currency'))
+                                                                <p style="color: red;margin-left: 20px;"><strong>{{ $errors->first('currency') }}</strong></p>
+                                                            @endif
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <label>填写转出地址</label>
+                                                            <input class="form-control input-lg" type="text" name="from" value="{{ old('from') ?? '' }}"
+                                                                   placeholder="请填写转出地址" required>
+                                                            @if ($errors->has('from'))
+                                                                <e class="help-block" style="color: red;"><strong>{{ $errors->first('from') }}</strong></e>
+                                                            @endif
+                                                        </div>
+
+                                                        <div class="col-md-12">
+                                                            <label>填写转入目标地址</label>
+                                                            <input class="form-control input-lg" type="text" name="to" value="{{ old('to') ?? '' }}"
+                                                                   placeholder="请填写转入目标地址" required>
+                                                            @if ($errors->has('to'))
+                                                                <e class="help-block" style="color: red;"><strong>{{ $errors->first('to') }}</strong></e>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <div class="col-md-12">
+                                                            <label>填写金额</label>
+                                                            <input class="form-control input-lg" type="text" name="amount"
+                                                                   value="{{ old('amount') ?? '' }}"
+                                                                   placeholder="请填写金额">
+                                                            @if ($errors->has('amount'))
+                                                                <e class="help-block" style="color: red;"><strong>{{ $errors->first('amount') }}</strong></e>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                            <button type="submit" class="btn btn-secondary">确定</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- Title --}}
