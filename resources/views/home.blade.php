@@ -259,10 +259,10 @@
                     <div class="box-body">
                         <div class="news-widget">
                             <h2>
-                                <span class="bg-green">Current</span>
+                                <span class="bg-aqua">Current</span>
                             </h2>
                             <i class="fontello-money"></i>
-                            <h4 class="text-green">{{ number_format($otcFeeTotal, 2) }}</h4>
+                            <h4 class="text-aqua">{{ number_format($otcFeeTotal, 2) }}</h4>
                             <h5>OTC 平台累计收益({{ config('conf.currency_usdt') }})&nbsp;&nbsp;{{number_format($otcFeeRmbTotal,2)}}(RMB)</h5>
                             <div style="clear:both;"></div>
                         </div>
@@ -272,6 +272,27 @@
                 <!-- /.box -->
             </div>
             <div class="col-lg-6">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="news-widget">
+                            <h2>
+                                <span class="bg-green">Current</span>
+                            </h2>
+                            <i class="fontello-money"></i>
+                            <h4 class="text-green">{{ number_format($otcSysIncomeCurrent, 2) }}</h4>
+                            <h5>OTC 当前收益({{ config('conf.currency_usdt') }})&nbsp;&nbsp;{{number_format($otcSysIncomeCurrentRmb,2)}}(RMB)</h5>
+                            <div style="clear:both;"></div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
                 <div class="box">
                     <!-- /.box-header -->
                     <div class="box-body">

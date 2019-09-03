@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Currency;
 use App\Models\LegalCurrency;
 use App\Models\OTC\OtcOrder;
+use App\Models\Wallet\WalletExternal;
 use App\Models\Wallet\WalletTransaction;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -279,11 +280,22 @@ class HomeController extends Controller
             return $this->sysFeeIncome($otcBuyOfDay, $transFeeDepositOfDay);
         });
 
+        // OTC 平台累计提币（外部地址）
+        $otcSysWithdraw = Cache::remember('otcSysWithdraw', $cacheLength, function () {
+            return $this->otcSysIncomeWithdraw();
+        });
+
         // OTC 平台累计交易手续费 - 收益（USDT）
         $otcOrderFee = bcadd($otcBuyTotal->fee, $otcSellTotal->fee);
         $walletFee = bcadd($transFeeDeposit, $transFeeWithdraw);
         $otcFeeTotal = bcadd($otcOrderFee, $walletFee);
         $otcFeeRmbTotal = bcmul($otcFeeTotal, LegalCurrency::rmbRate() ?: 0);
+
+        // OTC 平台当前收益 默认USDT
+        $otcSysIncomeCurrent = Cache::remember('otcSysIncomeCurrent', $cacheLength, function () use ($otcFeeTotal, $otcSysWithdraw) {
+            return bcsub($otcFeeTotal, $otcSysWithdraw);
+        });
+        $otcSysIncomeCurrentRmb = bcmul($otcSysIncomeCurrent, LegalCurrency::rmbRate() ?: 0);
 
 
         return compact(
@@ -291,7 +303,8 @@ class HomeController extends Controller
             'otcWithdrawOrderStatus',
             'grandOtcWithdrawOrder',
             'otcDepositAmount','otcWithdrawAmount','otcTotal', 'otcBuyTotal', 'otcSellTotal','otcBuyOfDay','otcSellOfDay',
-            'transFeeDepositOfDay','transFeeDeposit', 'transFeeWithdraw', 'otcSysIncomeOfDay','otcFeeTotal','otcFeeRmbTotal'
+            'transFeeDepositOfDay','transFeeDeposit', 'transFeeWithdraw', 'otcSysIncomeOfDay','otcFeeTotal','otcFeeRmbTotal',
+            'otcSysIncomeCurrent','otcSysIncomeCurrentRmb'
         );
     }
 
@@ -321,6 +334,17 @@ class HomeController extends Controller
         }
 
         return $sysIncome;
+    }
+
+    /**
+     * OTC 运营方累计提币
+     *
+     * @param int $type
+     * @return mixed
+     */
+    public function otcSysIncomeWithdraw($type = WalletExternal::WITHDRAW_ADDR)
+    {
+         return WalletExternal::type($type)->sum('amount');
     }
     
     /**
