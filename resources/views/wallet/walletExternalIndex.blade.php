@@ -150,6 +150,20 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <div class="col-md-12">
+                                                            <label>备注</label>
+                                                            <input class="form-control input-lg" type="text" name="remark"
+                                                                   value="{{ old('remark') ?? '' }}"
+                                                                   placeholder="建议填写备注及说明信息" required>
+                                                            @if ($errors->has('remark'))
+                                                                <e class="help-block" style="color: red;"><strong>{{ $errors->first('remark') }}</strong></e>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">

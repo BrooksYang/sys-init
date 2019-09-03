@@ -27,6 +27,7 @@ class OtcSysWithdrawRequest extends FormRequest
             'currency_id' => 'required',
             'amount' => 'required|numeric',
             'to' => 'required',
+            'remark' => 'nullable|max:500',
         ];
     }
 }
