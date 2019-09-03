@@ -108,15 +108,15 @@
                                                         <div class="form-group">
                                                             <div class="col-sm-12">
                                                                 <label>请选择币种类型</label>
-                                                                <select class="filter-status form-control input-sm" id="currency" name="currency">
+                                                                <select class="filter-status form-control input-sm" id="currency_id" name="currency_id">
                                                                     <option value="">请选择币种</option>
                                                                     @foreach($currencies as $key => $currency)
                                                                         <option value="{{$key}}"
                                                                                 {{ $key== \App\Models\Currency::USDT ? 'selected' :''}}>{{ $currency }}</option>
                                                                     @endforeach
                                                                 </select>
-                                                                @if ($errors->has('currency'))
-                                                                    <p style="color: red;margin-left: 20px;"><strong>{{ $errors->first('currency') }}</strong></p>
+                                                                @if ($errors->has('currency_id'))
+                                                                    <p style="color: red;margin-left: 20px;"><strong>{{ $errors->first('currency_id') }}</strong></p>
                                                                 @endif
                                                             </div>
 

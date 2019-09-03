@@ -149,7 +149,7 @@ class OtcSysWithdrawAddrController extends Controller
     // 提币申请
     public function withdraw(OtcSysWithdrawRequest $request)
     {
-
+        dd($request->all());
 
     }
 }
