@@ -1,6 +1,6 @@
 
 <!-- Button trigger modal -->
-<a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModal{{$modal}}{{$key ?? $keyNew}}" title="{{ $title ?? '' }}">
+<a href="####"  class="" data-toggle="modal" data-target="#exampleModal{{$modal}}{{$key ?? $keyNew}}" title="{{ $title ?? '' }}">
     @if( $icon ?? '') <i class="{{ $icon }}"></i> @else 查看 @endif
 </a>
 <!-- Modal -->

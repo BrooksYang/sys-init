@@ -30,6 +30,20 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     // 交易用户 OTC 记账钱包
     //Route::resource('otc/user/wallet', 'Wallet\UserOtcWalletController',['except' => ['create', 'store', 'update']]);
 
+});
+
+
+/**
+ * OTC 运营方收益管理
+ *
+ */
+Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function()
+{
+    // OTC 运营方提币地址管理（外部地址）
+    Route::resource('otc/sys/withdrawAddr', 'Wallet\OtcSysWithdrawAddrController',['except' => ['create','edit','show']]);
+
+    // 更新外部提币地址状态 - 启用或停用
+    Route::patch('otc/sys/withdrawAddr/toggle/{id}', 'Wallet\OtcSysWithdrawAddrController@toggle');
 
 });
 
