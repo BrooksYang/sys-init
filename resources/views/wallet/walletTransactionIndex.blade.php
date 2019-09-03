@@ -50,7 +50,7 @@
 
                                                         <div class="col-md-12">
                                                             <label>请选择转入目标地址</label>
-                                                            <select class="filter-status form-control input-sm" id="to" name="to">
+                                                            <select class="filter-status form-control input-sm" id="to" name="to" required>
                                                                 <option value="">请选择转入目标地址</option>
                                                                 @foreach($external as $key => $item)
                                                                     <option value="{{$item->address }}"
