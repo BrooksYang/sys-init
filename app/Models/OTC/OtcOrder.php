@@ -96,7 +96,7 @@ class OtcOrder extends Model
     public function currency()
     {
         return $this->belongsTo(Currency::class, 'currency_id')
-            ->select(['id', 'currency_title_en_abbr as abbr']);
+            ->select(['id', 'currency_title_en_abbr as abbr','currency_title_cn']);
     }
 
     /**
@@ -107,7 +107,7 @@ class OtcOrder extends Model
     public function legalCurrency()
     {
         return $this->belongsTo(LegalCurrency::class, 'legal_currency_id')
-            ->select(['id', 'abbr']);
+            ->select(['id', 'abbr','name']);
     }
 
     /**

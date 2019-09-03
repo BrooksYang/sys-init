@@ -48,8 +48,8 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     // 添加提币申请 - 发起提币
     Route::post('otc/sys/withdraw', 'Wallet\OtcSysWithdrawAddrController@withdraw');
 
-    // 收益列表及详情
-    Route::resource('otc/sys/income', 'Wallet\OtcSysIncomeController', ['only'=>['index']]);
+    // OTC 收益列表
+    Route::get('otc/sys/income', 'Wallet\OtcSysIncomeController@index');
 });
 
 

@@ -101,6 +101,30 @@ class WalletTransaction extends Model
     }
 
     /**
+     * 筛选转账地址
+     *
+     * @param $query
+     * @param $from
+     * @return mixed
+     */
+    public function scopeFrom($query, $from)
+    {
+        return $query->where('from','like', $from);
+    }
+
+    /**
+     * 筛选收款地址
+     *
+     * @param $query
+     * @param $to
+     * @return mixed
+     */
+    public function scopeTo($query, $to)
+    {
+        return $query->where('to','like', $to);
+    }
+
+    /**
      * 格式化金额
      *
      * @param $value
