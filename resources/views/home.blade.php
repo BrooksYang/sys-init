@@ -283,7 +283,7 @@
                             </h2>
                             <i class="fontello-money"></i>
                             <h4 class="text-green">{{ number_format($otcSysIncomeCurrent, 2) }}</h4>
-                            <h5>OTC 当前收益({{ config('conf.currency_usdt') }})&nbsp;&nbsp;
+                            <h5>OTC 收益余额({{ config('conf.currency_usdt') }})&nbsp;&nbsp;
                                 <span style="color: #32526E !important;">{{number_format($otcSysIncomeCurrentRmb,2)}}</span>(RMB)
                             </h5>
                             <div style="clear:both;"></div>
