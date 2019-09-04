@@ -174,6 +174,8 @@ class OtcSysWithdrawAddrController extends Controller
             'remark'      => '提币-'.$request->remark,
         ]);
 
-        return redirect('wallet/transaction?filterType=2');
+        $param = 'filterCurrency='.Currency::USDT.'&filterType='.WalletTransaction::WITHDRAW;
+
+        return redirect("wallet/transaction?{$param}");
     }
 }
