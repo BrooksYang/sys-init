@@ -41,6 +41,7 @@ class OtcOrderQuick extends Model
 
     // 申诉状态文本
     const APPEAL_STATUS = [
+        self::NOT_APPEAL => ['name' => '无申诉', 'class' => 'default'],
         self::APPEALED   => ['name' => '已申诉', 'class' => 'danger'],
         self::APPEALING  => ['name' => '处理中', 'class' => 'warning'],
         self::APPEAL_END => ['name' => '已完结', 'class' => 'default'],
