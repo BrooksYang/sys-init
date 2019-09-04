@@ -154,7 +154,10 @@ class OtcSysWithdrawAddrController extends Controller
      */
     public function withdraw(OtcSysWithdrawRequest $request)
     {
-        dd($request->all()); // TODO 暂未处理
+         // TODO 运营方提币开关配置
+        if (!config('conf.enable_sys_withdraw')) {
+            return back()->withInput()->withErrors(['amount' => '系统暂未开启对外提币']);
+        }
 
         // 判定可提币数量
         if ($request->amount > WalletExternal::available()) {
