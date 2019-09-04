@@ -26,9 +26,13 @@ class WalletTransactionController extends Controller
     {
         // 搜索用户或钱包地址
         $search = trim($request->search,'');
+        $from = trim($request->from,'');
+        $to = trim($request->to,'');
         $filterCurrency = trim($request->filterCurrency,'');
         $filterStatus = trim($request->filterStatus,'');
         $filterType = trim($request->filterType,'');
+        $start = trim($request->start,'');
+        $end = trim($request->end,'');
         $orderC = trim($request->orderC,'') ?: 'desc';
 
         $status = WalletTransaction::STATUS;
@@ -41,10 +45,14 @@ class WalletTransactionController extends Controller
                 return $query->whereHas('user', function ($query) use ($search) {
                         $query->where('username', 'like', "%$search%")
                             ->orwhere('email', 'like', "%$search%")
-                            ->orwhere('phone', 'like', "%$search%")
-                            ->orwhere('from', 'like', "%$search%")
-                            ->orwhere('to', 'like', "%$search%");
+                            ->orwhere('phone', 'like', "%$search%");
                 });
+            })
+            ->when($from, function ($query) use ($from){
+                return $query->from($from);
+            })
+            ->when($to, function ($query) use ($to){
+                return $query->to($to);
             })
             ->when($filterCurrency, function ($query) use ($filterCurrency){
                 return $query->whereHas('currency', function ($query) use ($filterCurrency) {
@@ -56,6 +64,12 @@ class WalletTransactionController extends Controller
             })
             ->when($filterType, function ($query) use ($filterType){
                 return $query->type($filterType);
+            })
+            ->when($start, function ($query) use ($start){
+                return $query->where('created_at', '>=', $start);
+            })
+            ->when($end, function ($query) use ($end){
+                return $query->where('created_at', '<=', $end);
             })
             ->when($orderC, function ($query) use ($orderC){
                 return $query->orderBy('created_at', $orderC);

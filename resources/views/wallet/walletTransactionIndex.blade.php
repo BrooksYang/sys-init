@@ -115,27 +115,31 @@
                         <div class="row" style="margin-bottom:10px;">
                             {{--搜索--}}
                             {{--用户基本信息--}}
-                            <div class="col-sm-6">
-                                <input class="form-control input-sm"  placeholder="请输入用户名、电话、转账地址"
+                            <div class="col-sm-4">
+                                <input class="form-control input-sm"  placeholder="请输入用户名、电话或邮箱信息"
                                        name="search" id="search" type="text" value="{{ Request::get('search')?? '' }}"/>
                             </div>
 
+                            {{--转账地址--}}
+                            <div class="col-sm-4">
+                                <input class="form-control input-sm"  placeholder="请输入转账地址"
+                                       name="searchFrom" id="searchFrom" type="text" value="{{ Request::get('searchFrom')?? '' }}"/>
+                            </div>
+
+                            {{--收款地址--}}
+                            <div class="col-sm-4">
+                                <input class="form-control input-sm"  placeholder="请输入收款地址"
+                                       name="searchTo" id="searchTo" type="text" value="{{ Request::get('searchTo')?? '' }}"/>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             {{--币种--}}
                             <div class="col-sm-2">
                                 <select class="filter-status form-control input-sm" id="filterCurrency" name="filterCurrency">
                                     <option value="">请选择币种</option>
                                     @foreach($currencies as $key => $currency)
                                         <option value="{{$key}}" {{ Request::get('filterCurrency')==$key ? 'selected' :''}}>{{ $currency }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            {{--交易记录类型--}}
-                            <div class="col-sm-2">
-                                <select class="filter-status form-control input-sm" id="filterType" name="filterType">
-                                    <option value="">请选择类型</option>
-                                    @foreach($type as $key => $itemType)
-                                        <option value="{{$key}}" {{ Request::get('filterType')==$key ? 'selected' :''}}>{{ $itemType['name'] }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -150,6 +154,18 @@
                                     @endforeach
                                 </select>
                             </div>
+
+                            {{--交易记录类型--}}
+                            <div class="col-sm-2">
+                                <select class="filter-status form-control input-sm" id="filterType" name="filterType">
+                                    <option value="">请选择类型</option>
+                                    @foreach($type as $key => $itemType)
+                                        <option value="{{$key}}" {{ Request::get('filterType')==$key ? 'selected' :''}}>{{ $itemType['name'] }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @include('component.dateTimePicker', ['colMdNum'=>3, 'id'=>1, 'label'=>'','name'=>'start','placeholder'=>'请选择开始时间'])
+                            @include('component.dateTimePicker', ['colMdNum'=>3, 'id'=>2, 'label'=>'','name'=>'end','placeholder'=>'请选择结束时间'])
                         </div>
 
                     </form>
@@ -167,7 +183,7 @@
                                 <th>转账地址</th>
                                 <th>收款地址</th>
                                 <th>交易号</th>
-                                <th>NeuTxid</th>
+                                <th title="结算平台交易记录ID">NeuTxid</th>
                                 <th>备注</th>
                                 <th>类型</th>
                                 <th>状态</th>
@@ -205,13 +221,12 @@
                                         <strong><a {!! $item->hash ? 'href="https://etherscan.io/tx/'.$item->hash.'"'.' target="_blank"' : '####' !!}>
                                                 {{ str_limit($item->hash ?: '--',15) }}</a></strong>
                                     </td>
-                                    <td>{{ $item->neu_txid }}</td>
+                                    <td title="结算平台交易记录ID">{{ $item->neu_txid ?:'--' }}</td>
                                     {{--备注--}}
                                     <td>
                                         <!-- Button trigger modal -->
-                                        <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLong{{$key}}">
-                                            查看
-                                        </a>
+                                        <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLong{{$key}}"
+                                           title="{{$item->remark ?: '暂无'}}">查看</a>
                                         <!-- Modal -->
                                         <div class="modal fade" id="exampleModalLong{{$key}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle{{$key}}" aria-hidden="true" width="auto">
                                             <div class="modal-dialog" role="document" width="auto">
@@ -219,7 +234,7 @@
                                                     <div class="modal-header">
                                                         <h5 class="modal-title" id="exampleModalLongTitle{{$key}}">
                                                             {!!  '<i class="fontello-user-1"></i>'.@$item->user->username.'&nbsp;&nbsp;
-                                                            <i class="fontello-phone"></i>'.@$item->user->phone ?:@$item->user->email  !!}</h5>
+                                                            <i class="fontello-phone"></i>'.@$item->user->phone ?:@$item->user->email ?:'--'  !!}</h5>
                                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
@@ -277,6 +292,16 @@
 
             if('{{ $errors->first()}}'){ layer.msg('{{ $errors->first()}}'); }
 
+            //日期时间插件
+            $('#datetimepicker1').datetimepicker({
+                language: 'zh'
+            });
+
+            //日期时间插件
+            $('#datetimepicker2').datetimepicker({
+                language: 'zh'
+            });
+
             //按钮搜索
             $('#conditionSearch').click(function () {
                 var uri = implodeUri();
@@ -300,9 +325,13 @@
             // 整理uri
             function implodeUri() {
                 var uri = '?search='+$('#search').val()
+                    +'&from='+$('#searchFrom').val()
+                    +'&to='+$('#searchTo').val()
                     +'&filterCurrency='+$('#filterCurrency').val()
                     +'&filterType='+$('#filterType').val()
-                    +'&filterStatus='+$('#filterStatus').val();
+                    +'&filterStatus='+$('#filterStatus').val()
+                    +'&start='+$('#start').val()
+                    +'&end='+$('#end').val();
 
                 return uri;
             }
