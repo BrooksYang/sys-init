@@ -2,6 +2,8 @@
 
 namespace App\Models\Wallet;
 
+use App\Models\Currency;
+use App\Models\OTC\OtcOrder;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -90,5 +92,54 @@ class WalletExternal extends Model
             ->status(WalletExternal::ENABLE)->exists() ?: false;
 
         return $exists;
+    }
+
+    /**
+     * OTC 可提数额
+     *
+     * @return string
+     */
+    public static function available()
+    {
+        bcscale(config('app.bcmath_scale'));
+
+        $orderBuyFee = self::otcOrderTotal();
+        $depositFee = self::walletTransFee();
+
+        return bcadd($orderBuyFee, $depositFee);
+    }
+
+    /**
+     * OTC 订单交易手续费 - 默认买入-USDT
+     *
+     * @param int $type
+     * @param int $currency
+     * @return mixed
+     */
+    public static function otcOrderTotal($type = OtcOrder::BUY, $currency = Currency::USDT)
+    {
+        $orderFee =  OtcOrder::type($type)
+            ->currency($currency)
+            ->status(OtcOrder::RECEIVED)
+            ->sum('fee');
+
+        return $orderFee;
+    }
+
+    /**
+     * OTC 钱包交易手续费 - 默认充值-USDT
+     *
+     * @param $type
+     * @param $currency
+     * @return mixed
+     */
+    public static function walletTransFee($type = WalletTransaction::DEPOSIT,  $currency = Currency::USDT)
+    {
+        $walletTransFee = WalletTransaction::type($type)
+            ->currency($currency)
+            ->status(WalletTransaction::SUCCESS)
+            ->sum('fee');
+
+        return $walletTransFee;
     }
 }

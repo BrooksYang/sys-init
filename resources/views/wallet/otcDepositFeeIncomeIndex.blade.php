@@ -53,7 +53,7 @@
                                                             <select class="filter-status form-control input-sm" id="to" name="to" required>
                                                                 <option value="">请选择转入目标地址</option>
                                                                 @foreach($external as $key => $item)
-                                                                    <option value="{{$item->address }}"
+                                                                    <option value="{{$item->address }}" {{ old('to') == $item->address ? 'selected' : ''}}
                                                                             title="{{ str_limit($item->desc,15) }}">{{ $item->address }}</option>
                                                                 @endforeach
                                                             </select>
@@ -298,6 +298,8 @@
 @section('js-part')
     <script>
         $(function(){
+
+            if('{{ $errors->first()}}'){ layer.msg('{{ $errors->first()}}'); }
 
             //日期时间插件
             $('#datetimepicker1').datetimepicker({

@@ -53,7 +53,7 @@
                                                             <select class="filter-status form-control input-sm" id="to" name="to" required>
                                                                 <option value="">请选择转入目标地址</option>
                                                                 @foreach($external as $key => $item)
-                                                                    <option value="{{$item->address }}"
+                                                                    <option value="{{$item->address }}" {{ old('to') == $item->address ? 'selected' : ''}}
                                                                             title="{{ str_limit($item->desc,15) }}">{{ $item->address }}</option>
                                                                 @endforeach
                                                             </select>
@@ -178,10 +178,10 @@
                             @forelse($transDetails as $key => $item)
                                 <tr>
                                     <td>{{ ($key + 1) + ($transDetails->currentPage() - 1) * $transDetails->perPage() }}</td>
-                                    <td>#{{ $item->user_id ?: '--' }}</td>
+                                    <td>{{ $item->user_id ? '#':'' }}{{ $item->user_id ?: '--' }}</td>
                                     <td title="{{ @$item->user->username }}"><strong>{{ str_limit(@$item->user->username ?:'--',11) }}</strong></td>
-                                    <td title="{{@$item->user->email ?:@$item->user->phone}}">
-                                        {{ str_limit(@$item->user->phone ?:@$item->user->email ,13) }}
+                                    <td title="{{@$item->user->email ?:(@$item->user->phone ?:'--')}}">
+                                        {{ str_limit(@$item->user->phone ?:@$item->user->email ?:'--' ,13) }}
                                     </td>
                                     <td><span class="label label-success">{{ str_limit(@$item->currency->currency_title_en_abbr,15) }}</span></td>
                                     <td>{{ $item->amount}}</td>
@@ -274,6 +274,8 @@
 @section('js-part')
     <script>
         $(function(){
+
+            if('{{ $errors->first()}}'){ layer.msg('{{ $errors->first()}}'); }
 
             //按钮搜索
             $('#conditionSearch').click(function () {

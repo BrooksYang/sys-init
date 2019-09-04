@@ -146,10 +146,31 @@ class OtcSysWithdrawAddrController extends Controller
         return response()->json([]);
     }
 
-    // 提币申请
+    /**
+     * 发起提币申请
+     *
+     * @param OtcSysWithdrawRequest $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function withdraw(OtcSysWithdrawRequest $request)
     {
-        dd($request->all());
+        dd($request->all()); // TODO 暂未处理
 
+        // 判定可提币数量
+        if ($request->amount > WalletExternal::available()) {
+            return back()->withInput()->withErrors(['amount' => '可提数额不足']);
+        }
+
+        // 发起提币
+        WalletTransaction::create([
+            'user_id'     => 0,
+            'currency_id' => $request->currency_id,
+            'type'        => WalletTransaction::WITHDRAW,
+            'amount'      => $request->amount,
+            'to'          => $request->to,
+            'remark'      => '提币-'.$request->remark,
+        ]);
+
+        return redirect('wallet/transaction?filterType=2');
     }
 }
