@@ -38,11 +38,12 @@
                 申诉人：{{  ('用户名 '.@$ticket->user->username ?:'--').' | 邮箱 '.(@$ticket->user->email?:'--').' | 电话 '.@$ticket->user->phone ?:'--' }}
             </p>
             <p>【订单号】#{{ $order->id }}</p>
-            <p>【商户订单】{{ $order->merchant_order ?:'--' }}</p>
+            <p>【商户订单】{{ @$order->merchant_order ?: @$order->merchant_order_id ?:'--' }}</p>
             <P>【订单日期】{{ $order->created_at }}&nbsp;&nbsp;&nbsp;&nbsp;
                 {{--{{ \Carbon\Carbon::parse($order->created_at)->addHour(8)->toDateTimeString() }}--}}
                 {{ \Carbon\Carbon::parse($order->created_at)->addHour(8)->diffForHumans() }}
             </P>
+            @if($ticket->order_type == \App\Models\OTC\OtcTicket::OTC_COMMON)
             <p>【广告类型】{{ $order->type_text }}&nbsp;&nbsp;&nbsp;&nbsp;【币种】{{ $order->currency }}&nbsp;&nbsp;&nbsp;&nbsp;
                 【法币】{{ $order->legal_currency }}
             </p>
@@ -54,6 +55,68 @@
                 【单价】{{ number_format($order->price, 8).' '.$order->legal_currency }}&nbsp;&nbsp;&nbsp;&nbsp;
                 【总价】{{ number_format($order->cash_amount, 8).' '.$order->legal_currency }}
             </p>
+            @elseif($ticket->order_type == \App\Models\OTC\OtcTicket::OTC_QUICK)
+                <p>【发布者】{{ $order->owner_phone }}</p>
+                <p>【发布数量】{{ $order->merchant_amount }}&nbsp;&nbsp;&nbsp;
+                    【商户结算数量】{{ $order->merchant_final_amount }}&nbsp;&nbsp;&nbsp;
+                    【发布汇率】{{ $order->merchant_rate }}&nbsp;&nbsp;&nbsp;
+                    【总价】{{ $order->cash_amount }}&nbsp;&nbsp;&nbsp;
+                </p>
+
+                <br>
+                <p>【币商用户】{{ $order->user }}&nbsp;&nbsp;&nbsp;&nbsp;
+                    【备注】{{ $order->remark ?: '--' }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    【付款卡号】{{ $order->card_number ?: '--' }}
+                </p>
+                <p>【付款凭证】
+                   <!-- Button trigger modal -->
+                    <a href="####"  class="" data-toggle="modal" data-target="#exampleModalLong">
+                        <i class="fontello-ticket"></i> 查看
+                    </a>
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true" width="auto">
+                        <div class="modal-dialog" role="document" width="auto">
+                            <div class="modal-content" width="auto">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle"><i class="fontello-user-1"></i>付款凭证</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <span><b>【订单号】</b></span>#{{ $order->id }}
+                                    <p></p>
+                                    <span><b>【商户订单】</b></span>{{ $order->merchant_order_id ?:'--'}}
+                                    <span><b>【交易数量】</b></span>{{ $order->field_amount ?:'--'}}
+                                    <span><b>【交易总价】</b></span>{{ $order->cash_amount ?:'--'}}
+                                    <p></p>
+                                    <span><b>【备注】</b></span>{{ $order->remark ?:'--'}}
+                                    <span><b>【用户】</b></span>{{ str_limit($order->owner_phone ?:'--', 11) }}
+                                    <div style="height: 20px"></div>
+                                    {{--凭证开放路由--}}
+                                    <img id="" src="{{ config('app.api_res_url') }}/{{ $order->payment_url }}" style="width:370px;border-radius:20px"
+                                         onerror="this.src='http://placehold.it/370x802'" onclick="rotate(this)"/>
+                                    <p></p>
+                                </div>
+                                <div style="height: 55px"></div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </p>
+                <p>【交易数量】{{ $order->field_amount }}&nbsp;&nbsp;&nbsp;&nbsp;
+                    【币商单价】{{ $order->price }}&nbsp;&nbsp;&nbsp;&nbsp;
+                    【平台当前汇率 - HuoBi】{{ $order->rate }}&nbsp;&nbsp;&nbsp;
+                    【平台汇率】{{ $order->rate_sys }}&nbsp;&nbsp;&nbsp;
+                </p>
+                <p>【总收益】{{ $order->income_total }}&nbsp;&nbsp;&nbsp;&nbsp;
+                    【平台收益】{{$order->income_sys }}&nbsp;&nbsp;&nbsp;
+                    【商户收益】{{$order->income_merchant }}&nbsp;&nbsp;&nbsp;
+                    【币商收益】{{$order->income_user }}
+                </p>
+            @endif
             <p>【订单状态】{{ $order->status_text }}&nbsp;&nbsp;&nbsp;&nbsp;【申诉状态】{{ $order->appeal_text }}</p>
         </div>
         @endif
@@ -159,7 +222,7 @@
                                     '{{ csrf_token() }}','完结工单');" title="仅更新申诉进程和工单">申诉完结</a>--}}
 
                             <!-- Button trigger modal -->
-                            <a href="javascript:;"  class="btn btn-success" data-toggle="modal" data-target="#exampleModalEnd" title="取消OTC订单">
+                            <a href="javascript:;"  class="btn btn-success" data-toggle="modal" data-target="#exampleModalEnd" title="申诉完结">
                                 申诉完结
                             </a>
                             <!-- Modal -->
@@ -189,8 +252,9 @@
                                                             <input type="hidden" name="id" value="{{ $ticket->id }}" >
                                                             <input type="hidden" name="field" value="normal" >
                                                             <input type="hidden" name="update" value="{{ $ticket->order_id }}" >
+                                                            <input type="hidden" name="orderType" value="{{ $ticket->order_type }}" >
                                                             <input class="form-control input-lg" type="text" name="info"
-                                                                   value="{{ $item->info ?? old('info') }}"  placeholder="请填写操所说明" required>
+                                                                   value="{{ old('info') }}"  placeholder="请填写操所说明" required>
                                                             @if ($errors->has('info'))
                                                                 <p class="" style="color: red;"><strong>{{ $errors->first('info') }}</strong></p>
                                                             @endif
@@ -253,8 +317,9 @@
                                                             <input type="hidden" name="id" value="{{ $ticket->id }}" >
                                                             <input type="hidden" name="field" value="cancel" >
                                                             <input type="hidden" name="update" value="{{ $ticket->order_id }}" >
+                                                            <input type="hidden" name="orderType" value="{{ $ticket->order_type }}" >
                                                             <input class="form-control input-lg" type="text" name="info"
-                                                                   value="{{ $item->info ?? old('info') }}"  placeholder="请填写操所说明" required>
+                                                                   value="{{ old('info') }}"  placeholder="请填写操所说明" required>
                                                             @if ($errors->has('info'))
                                                                 <p class="" style="color: red;"><strong>{{ $errors->first('info') }}</strong></p>
                                                             @endif

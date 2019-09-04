@@ -17,6 +17,7 @@
                   <tr>
                       <th>工单编号</th>
                       <th>OTC订单</th>
+                      <th>类型</th>
                       <th>内容</th>
                       <th>当前状态</th>
                       <th>创建日期</th>
@@ -70,6 +71,8 @@
 
     $(document).ready(function($) {
        var ticketState = ['未分配','已分配','已回复','已关闭','正在处理','等待处理']
+       var ticketType  = ['--','普通OTC','快捷抢单']
+       var typeColor   = ['--','#666666','#a94442']
 
         /* START OF ETH 交易订单实时数据 */
         setInterval(function(){
@@ -86,9 +89,9 @@
                   var ticket = document.createElement("tr")
                   ticket.id = "ticket_"+data.task[i]['id']
                   if(data.task[i]['ticket_state']==6)
-                    $("#ticket_"+data.task[i]['id']).html("<td>"+data.task[i]['id']+"</td>"+"<td>#"+data.task[i]['order_id']+"</td>"+"<td><a href='{{ url('ticket/handler/detail').'/' }}"+data.task[i]['id']+"'>"+data.task[i]['content'].substr(0,20)+"<strong class='text-danger'> (有新回复) </strong></a></td>"+"<td>"+ticketState[data.task[i]['ticket_state']-1]+"</td>"+"<td>"+data.task[i]['created_at']+"</td>"+"<td>"+data.task[i]['assign_at']+"</td>"+"<td><a href='javascript:;' onclick='"+data.task[i]['id']+"'>删除</a></td>")
+                    $("#ticket_"+data.task[i]['id']).html("<td>"+data.task[i]['id']+"</td>"+"<td>#"+data.task[i]['order_id']+"</td>"+"<td style='color:"+typeColor[data.task[i]['order_type']]+"'>"+ticketType[data.task[i]['order_type']]+"</td>"+"<td><a href='{{ url('ticket/handler/detail').'/' }}"+data.task[i]['id']+"'>"+data.task[i]['content'].substr(0,20)+"<strong class='text-danger'> (有新回复) </strong></a></td>"+"<td>"+ticketState[data.task[i]['ticket_state']-1]+"</td>"+"<td>"+data.task[i]['created_at']+"</td>"+"<td>"+data.task[i]['assign_at']+"</td>"+"<td><a href='javascript:;' onclick='"+data.task[i]['id']+"'>删除</a></td>")
                   else
-                    $("#ticket_"+data.task[i]['id']).html("<td>"+data.task[i]['id']+"</td>"+"<td>#"+data.task[i]['order_id']+"</td>"+"<td><a href='{{ url('ticket/handler/detail').'/' }}"+data.task[i]['id']+"'>"+data.task[i]['content'].substr(0,20)+"</a></td>"+"<td>"+ticketState[data.task[i]['ticket_state']-1]+"</td>"+"<td>"+data.task[i]['created_at']+"</td>"+"<td>"+data.task[i]['assign_at']+"</td>"+"<td><a href='javascript:;' onclick='ticketDel("+data.task[i]['id']+")'>删除</a></td>")
+                    $("#ticket_"+data.task[i]['id']).html("<td>"+data.task[i]['id']+"</td>"+"<td>#"+data.task[i]['order_id']+"</td>"+"<td style='color:"+typeColor[data.task[i]['order_type']]+"'>"+ticketType[data.task[i]['order_type']]+"</td>"+"<td><a href='{{ url('ticket/handler/detail').'/' }}"+data.task[i]['id']+"'>"+data.task[i]['content'].substr(0,20)+"</a></td>"+"<td>"+ticketState[data.task[i]['ticket_state']-1]+"</td>"+"<td>"+data.task[i]['created_at']+"</td>"+"<td>"+data.task[i]['assign_at']+"</td>"+"<td><a href='javascript:;' onclick='ticketDel("+data.task[i]['id']+")'>删除</a></td>")
 
                   tasks.appendChild(ticket);  
                 }

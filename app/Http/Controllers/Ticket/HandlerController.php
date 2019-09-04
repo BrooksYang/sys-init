@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Ticket;
 
 use App\Http\Resources\OtcOrderResource;
 use App\Models\OTC\OtcOrder;
+use App\Models\OTC\OtcOrderQuick;
 use App\Models\OTC\OtcTicket;
 use App\Models\OTC\Trade;
 use App\Models\OTC\UserAppKey;
@@ -46,6 +47,7 @@ class HandlerController extends Controller
     public function task()
     {
         $data['status'] = OtcTicket::STATUS;
+        $data['type'] = OtcTicket::TYPE;
         $data['ticketStatus'] = json_encode($this->ticketStatus);
 
         return view('Ticket.Handler.task',$data);
@@ -173,7 +175,7 @@ class HandlerController extends Controller
 
         // 判定工单是否属于申诉工单
         if ($ticket->order_id) {
-            $data['order'] = $this->orderDetail($ticket->order_id);
+            $data['order'] = $this->orderDetail($ticket->order_type, $ticket->order_id);
         }
 
         $replyMatrix = DB::table('otc_ticket_reply')
@@ -247,6 +249,7 @@ class HandlerController extends Controller
     {
         $search = $request->search;
         $data['status'] = OtcTicket::STATUS;
+        $data['type'] = OtcTicket::TYPE;
         $data['search'] = $search;
         $data['ticketStatus'] = $this->ticketStatus;
         $data['role'] = Entrance::user()->role_id;
@@ -331,18 +334,24 @@ class HandlerController extends Controller
     /**
      * 订单详情
      *
+     * @param $type
      * @param $id
      * @return mixed
      */
-    public function orderDetail($id)
+    public function orderDetail($type, $id)
     {
         // 判断订单是否存在
-        $order = OtcOrder::findOrFail($id);
+        if ($type == OtcTicket::OTC_COMMON) {
+            $order = OtcOrder::findOrFail($id);
+            $orderRes =  OtcOrderResource::attribute($order);
+        }
 
-        // 字段映射
-        $order =  OtcOrderResource::attribute($order);
+        if ($type == OtcTicket::OTC_QUICK) {
+            $order = OtcOrderQuick::findOrFail($id);
+            $orderRes =  OtcOrderResource::otcQuick($order);
+        }
 
-        return (object)$order;
+        return (object)($orderRes ?? []);
     }
 
     /**
@@ -355,7 +364,16 @@ class HandlerController extends Controller
     public function appealEnd(Request $request)
     {
         $ticket = OtcTicket::findOrFail($request->id);
-        $order = OtcOrder::findOrFail($request->update);
+
+        //  普通OTC
+        if ($request->orderType == OtcTicket::OTC_COMMON) {
+            $order = OtcOrder::findOrFail($request->update);
+        }
+
+        // 快捷抢单
+        if ($request->orderType == OtcTicket::OTC_COMMON) {
+            $order = OtcOrderQuick::findOrFail($request->update);
+        }
 
         // 订单存在且为申诉处理中
         if ($order->appeal_status != OtcOrder::APPEALING) {
@@ -370,29 +388,54 @@ class HandlerController extends Controller
             $orcStatus = '[订单原状态_'.OtcOrder::$statusTexts[$order->status].']';
             $remark = $orcStatus.' - '.'申诉完结';
 
-            // 更新otc订单状态及余额
-            // 已支付或取消-未放币 - 强制出售方放币
-            if ($request->field == 'release' && $order->status == OtcOrder::PAID) {
-                $remark = $orcStatus.' - '.'强制放币';
-                $msg = $this->forceRelease($order);
+            // 更新otc订单状态及余额 - 普通OTC
+            if ($request->orderType == OtcTicket::OTC_COMMON) {
+                // 已支付或取消-未放币 - 强制出售方放币
+                if ($request->field == 'release' && $order->status == OtcOrder::PAID) {
+                    $remark = $orcStatus.' - '.'强制放币';
+                    $msg = $this->forceRelease($order);
+                }
+
+                // 已支付-未收到付款 - 强制取消订单
+                if ($request->field == 'cancel' && $order->status == OtcOrder::PAID) {
+                    $remark = $orcStatus.' - '.'取消订单';
+                    $msg = $this->forceCancel($order);
+                }
+
+                // 未付款-已放币完成交易 - 强制恢复广告方的"错误"放币
+                if ($request->field == 'recover' && $order->status == OtcOrder::RECEIVED) {
+                    $remark = $orcStatus.' - '.'强制恢复';
+                    $msg = $this->forceRecover($order);
+                }
             }
 
-            // 已支付-未收到付款 - 强制取消订单
-            if ($request->field == 'cancel' && $order->status == OtcOrder::PAID) {
-                $remark = $orcStatus.' - '.'取消订单';
-                $msg = $this->forceCancel($order);
+            // 快捷抢单
+            if ($request->orderType == OtcTicket::OTC_QUICK) {
+                // 已支付或取消-未放币 - 强制出售方放币
+                if ($request->field == 'release' && $order->status == OtcOrderQuick::PAID) {
+                    $remark = $orcStatus.' - '.'强制放币';
+                    $msg = $this->forceReleaseOfQuick($order);
+                }
+
+                // 已支付-未收到付款 - 强制取消订单
+                if ($request->field == 'cancel' && $order->status == OtcOrderQuick::PAID) {
+                    $remark = $orcStatus.' - '.'取消订单';
+                    $msg = $this->forceCancelOfQuick($order);
+                }
+
+                // 未付款-已放币完成交易 - 强制恢复发布方的"错误"放币
+                if ($request->field == 'recover' && $order->status == OtcOrderQuick::RECEIVED) {
+                    $remark = $orcStatus.' - '.'强制恢复';
+                    $msg = $this->forceRecoverOfQuick($order);
+                }
             }
 
-            // 未付款-已放币完成交易 - 强制恢复广告方的"错误"放币
-            if ($request->field == 'recover' && $order->status == OtcOrder::RECEIVED) {
-                $remark = $orcStatus.' - '.'强制恢复';
-                $msg = $this->forceRecover($order);
-            }
 
             // 仅完结申诉订单和工单
 
             // 更新otc订单的申诉状态
-            $order->appeal_status = OtcOrder::APPEAL_END;
+            $order->appeal_status = $request->orderType == OtcTicket::OTC_QUICK
+                ? OtcOrderQuick::APPEAL_END : OtcOrder::APPEAL_END;
             $order->save();
 
             // 更新工单状态
@@ -584,6 +627,24 @@ class HandlerController extends Controller
         });
 
         return '已强制恢复完成交易的订单';
+    }
+
+    // 快捷抢单购买 - 放币
+    public function forceReleaseOfQuick($order)
+    {
+
+    }
+
+    // 快捷抢单购买 - 取消
+    public function forceCancelOfQuick($order)
+    {
+
+    }
+
+    // 快捷抢单购买 - 恢复
+    public function forceRecoverOfQuick($order)
+    {
+
     }
 
     /**

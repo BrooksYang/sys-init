@@ -40,6 +40,16 @@ class OtcTicket extends Model
         6 => ['name' => '待处理', 'class' => 'waring']
     ];
 
+    // 订单类型，1普通otc，2快捷购买',
+    const OTC_COMMON = 1;
+    const OTC_QUICK  = 2;
+
+    const TYPE = [
+        self::OTC_COMMON => ['name' => '普通OTC',  'class' => 'info',   'color'=>'#666666'],
+        self::OTC_QUICK  => ['name' => '快捷抢单', 'class' => 'primary', 'color'=>'#a94442'],
+    ];
+
+
     /**
      * 关联用户
      *

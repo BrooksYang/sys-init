@@ -23,6 +23,7 @@
                       <th>序号</th>
                       <th>工单编号</th>
                       <th>OTC订单</th>
+                      <th>类型</th>
                       <th>工单摘要</th>
                       <th>当前状态</th>
                       <th>创建日期</th>
@@ -38,6 +39,7 @@
                       <td>{{ ($key + 1) + ($tickets->currentPage() - 1) * $tickets->perPage() }}</td>
                       <td>{{ $ticket->id }}</td>
                       <td>#{{ $ticket->order_id }}</td>
+                      <td><span style="color:{{$type[$ticket->order_type]['color']}};">{{$type[$ticket->order_type]['name'] }}</span></td>
                       <td><a href="{{ url('ticket/handler/detail').'/'.$ticket->id }}"><?= mb_substr($ticket->content,0,10) ?> ..</a></td>
                       <td>
                         @if($ticket->ticket_state != null)
@@ -65,7 +67,7 @@
                       @endif
                   </tr>
                   @empty
-                      <tr><td colspan="{{ $role == config('conf.supervisor_role') ? 10 : 9 }}" class="text-center">
+                      <tr><td colspan="{{ $role == config('conf.supervisor_role') ? 11 : 10 }}" class="text-center">
                               <div class="noDataValue">
                                   暂无数据
                               </div>
