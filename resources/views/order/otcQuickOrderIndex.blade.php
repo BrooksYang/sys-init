@@ -126,7 +126,7 @@
                                     <td>{{ number_format($item->cash_amount, 8) }}</td>
                                     <td>{{ number_format($item->field_amount, 8) }}</td>
                                     <td>{{ number_format($item->price, 2) }}</td>
-                                    <td>{{ number_format($item->rate, 2) }}</td>
+                                    <td>{{ number_format($item->rate_sys, 2) }}</td>
                                     {{--<td>{{ number_format($item->income_total, 8) }}</td>--}}
                                     <td>{{ number_format($item->income_sys, 8) }}</td>
                                     <td>{{ number_format($item->income_merchant, 8) }}</td>
