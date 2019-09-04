@@ -88,7 +88,7 @@ class WalletExternal extends Model
      */
     public static function addrEnabled($uid = 0, $type = self::WITHDRAW_ADDR)
     {
-        $exists = WalletExternal::where($uid)->type($type)
+        $exists = WalletExternal::where('user_id', $uid)->type($type)
             ->status(WalletExternal::ENABLE)->exists() ?: false;
 
         return $exists;

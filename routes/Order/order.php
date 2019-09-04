@@ -41,12 +41,16 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
  */
 Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function()
 {
-    //用户交易订单
+    // 用户交易订单
     Route::resource('order/exchange', 'Order\ExchangeOrderController', ['only' => ['index']]);
 
-    //用户 OTC 交易订单
+    // 用户 OTC 交易订单
     Route::resource('order/otc', 'Order\UserOtcOrderController', ['only' => ['index','destroy']]);
+
+    // OTC 币商快捷抢单列表
+    Route::resource('order/quick/otc', 'Order\OtcOrderQuickController',['only' => ['index']]);
 });
+
 
 
 
