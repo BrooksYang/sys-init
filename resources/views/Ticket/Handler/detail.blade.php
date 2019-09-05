@@ -107,7 +107,7 @@
                         </div>
                     </div>
                     @else
-                        未上传凭证
+                        无
                     @endif
                 </p>
                 <p>【交易数量】{{ $order->field_amount }}&nbsp;&nbsp;&nbsp;&nbsp;
@@ -291,8 +291,8 @@
                                     '{{ csrf_token() }}','取消订单 - 请慎重操作！');" title="取消OTC订单">取消订单</a>--}}
 
                             <!-- Button trigger modal -->
-                            <a href="javascript:;"  class="btn btn-default ml-5" data-toggle="modal" data-target="#exampleModalCancel" title="取消OTC订单">
-                                取消订单
+                            <a href="javascript:;"  class="btn btn-default ml-5" data-toggle="modal" data-target="#exampleModalCancel" title="取消OTC订单"
+                                {{$ticket->order_type==\App\Models\OTC\OtcTicket::OTC_QUICK ? 'disabled' : ''}}>取消订单
                             </a>
                             <!-- Modal -->
                             <div class="modal fade" id="exampleModalCancel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCancelTitle"
