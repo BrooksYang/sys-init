@@ -376,7 +376,7 @@ class HandlerController extends Controller
         }
 
         // 快捷抢单
-        if ($request->orderType == OtcTicket::OTC_COMMON) {
+        if ($request->orderType == OtcTicket::OTC_QUICK) {
             $order = OtcOrderQuick::findOrFail($request->update);
         }
 
