@@ -253,6 +253,27 @@
         </div>
 
         <div class="row">
+            <div class="col-lg-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="news-widget">
+                            <h2>
+                                <span class="bg-aqua">Current</span>
+                            </h2>
+                            <i class="fa fa-btc"></i>
+                            <h4 class="text-aqua">{{ number_format($otcQuickIncomeSys, 2) }}</h4>
+                            <h5>OTC 快捷购买溢价收益({{ config('conf.currency_usdt') }})</h5>
+                            <div style="clear:both;"></div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-lg-6">
                 <div class="box">
                     <!-- /.box-header -->
@@ -262,9 +283,9 @@
                                 <span class="bg-aqua">Current</span>
                             </h2>
                             <i class="fontello-money"></i>
-                            <h4 class="text-aqua">{{ number_format($otcFeeTotal, 2) }}</h4>
+                            <h4 class="text-aqua">{{ number_format($otcSysIncomeTotal, 2) }}</h4>
                             <h5>OTC 平台累计收益({{ config('conf.currency_usdt') }})&nbsp;&nbsp;
-                                <span style="color: #32526E !important;">{{number_format($otcFeeRmbTotal,2)}}</span>(RMB)
+                                <span style="color: #32526E !important;">{{number_format($otcSysIncomeRmbTotal,2)}}</span>(RMB)
                             </h5>
                             <div style="clear:both;"></div>
                         </div>
@@ -350,7 +371,7 @@
                         <hr>
                         <div class="row">
                             <div class="col-md-10">
-                                <!-- OTC平台各手续费统计 - 默认USDT -->
+                                <!-- OTC平台各手续费及收益统计 - 默认USDT -->
                                 <div id="otcSysIncomeOfDay" style="width: 100%;height:600px;"></div>
                             </div>
                         </div>
@@ -681,7 +702,7 @@
             },
             calculable : true,
             legend: {
-                data:['订单手续费','充值手续费','总收益']
+                data:['订单手续费','充值手续费','溢价收益','总收益']
             },
             grid: {
                 left: '3%',
@@ -722,6 +743,23 @@
                     type:'bar',
                     stack: '广告',
                     data:[@foreach($otcSysIncomeOfDay as $incomeKey=>$incomeItem) {{round($incomeItem['deposit_fee'], 2)}}, @endforeach],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                {
+                    name:'溢价收益',
+                    type:'bar',
+                    stack: '广告',
+                    data:[@foreach($otcSysIncomeOfDay as $incomeKey=>$incomeItem) {{round($incomeItem['quick_income'], 2)}}, @endforeach],
                     markPoint : {
                         data : [
                             {type : 'max', name: '最大值'},

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Currency;
 use App\Models\LegalCurrency;
 use App\Models\OTC\OtcOrder;
+use App\Models\OTC\OtcOrderQuick;
 use App\Models\Wallet\WalletExternal;
 use App\Models\Wallet\WalletTransaction;
 use Carbon\Carbon;
@@ -250,6 +251,16 @@ class HomeController extends Controller
             return $this->otcOrderTotal(OtcOrder::SELL);
         });
 
+        // OTC 快捷抢单-平台累计收益(商户出金-币商抢单买入) - USDT
+        $otcQuickIncomeSys = Cache::remember('otcQuickIncomeSys', $cacheLength, function () {
+            return $this->otcQuickIncomeSys();
+        });
+
+        // OTC 快捷抢单-平台累计收益-每天 - USDT
+        $otcQuickIncomeSysOfDay = Cache::remember('otcQuickIncomeSysOfDay', $cacheLength, function () {
+            return $this->otcQuickIncomeSysOfDay();
+        });
+
         // OTC 订单买入及手续费统计-每天 - 默认USDT
         $otcBuyOfDay = Cache::remember('otcBuyOfDay', $cacheLength, function () {
             return $this->otcOrderOfDay(OtcOrder::BUY);
@@ -275,9 +286,11 @@ class HomeController extends Controller
             return $this->walletTransFee(WalletTransaction::WITHDRAW);
         });
 
+
         //  OTC 平台收益统计- 每天 默认USDT
-        $otcSysIncomeOfDay = Cache::remember('otcSysIncomeOfDay', $cacheLength, function () use ($otcBuyOfDay,$transFeeDepositOfDay){
-            return $this->sysFeeIncome($otcBuyOfDay, $transFeeDepositOfDay);
+        $otcSysIncomeOfDay = Cache::remember('otcSysIncomeOfDay', $cacheLength, function ()
+            use ($otcBuyOfDay,$transFeeDepositOfDay,$otcQuickIncomeSysOfDay){
+            return $this->sysFeeIncome($otcBuyOfDay, $transFeeDepositOfDay, $otcQuickIncomeSysOfDay);
         });
 
         // OTC 平台累计提币（外部地址）
@@ -285,15 +298,17 @@ class HomeController extends Controller
             return $this->otcSysIncomeWithdraw();
         });
 
-        // OTC 平台累计交易手续费 - 收益（USDT）
+        // OTC 平台累计交易手续费及溢价收益 - 收益（USDT）
         $otcOrderFee = bcadd($otcBuyTotal->fee, $otcSellTotal->fee);
         $walletFee = bcadd($transFeeDeposit, $transFeeWithdraw);
         $otcFeeTotal = bcadd($otcOrderFee, $walletFee);
-        $otcFeeRmbTotal = bcmul($otcFeeTotal, LegalCurrency::rmbRate() ?: 0);
+
+        $otcSysIncomeTotal = bcadd($otcFeeTotal, $otcQuickIncomeSys); // 平台累计总收益=手续费收入+溢价收益
+        $otcSysIncomeRmbTotal = bcmul($otcSysIncomeTotal, LegalCurrency::rmbRate() ?: 0);
 
         // OTC 平台当前收益 默认USDT
-        $otcSysIncomeCurrent = Cache::remember('otcSysIncomeCurrent', $cacheLength, function () use ($otcFeeTotal, $otcSysWithdraw) {
-            return bcsub($otcFeeTotal, $otcSysWithdraw);
+        $otcSysIncomeCurrent = Cache::remember('otcSysIncomeCurrent', $cacheLength, function () use ($otcSysIncomeTotal, $otcSysWithdraw) {
+            return bcsub($otcSysIncomeTotal, $otcSysWithdraw);
         });
         $otcSysIncomeCurrentRmb = bcmul($otcSysIncomeCurrent, LegalCurrency::rmbRate() ?: 0);
 
@@ -303,7 +318,7 @@ class HomeController extends Controller
             'otcWithdrawOrderStatus',
             'grandOtcWithdrawOrder',
             'otcDepositAmount','otcWithdrawAmount','otcTotal', 'otcBuyTotal', 'otcSellTotal','otcBuyOfDay','otcSellOfDay',
-            'transFeeDepositOfDay','transFeeDeposit', 'transFeeWithdraw', 'otcSysIncomeOfDay','otcFeeTotal','otcFeeRmbTotal',
+            'transFeeDepositOfDay','transFeeDeposit', 'transFeeWithdraw', 'otcQuickIncomeSys','otcSysIncomeOfDay','otcSysIncomeTotal','otcSysIncomeRmbTotal',
             'otcSysIncomeCurrent','otcSysIncomeCurrentRmb'
         );
     }
@@ -313,15 +328,17 @@ class HomeController extends Controller
      *
      * @param $otcBuyOfDay
      * @param $depositFeeOfDay
+     * @param $otcQuickIncomeSysOfDay
      * @return array
      */
-    public function sysFeeIncome($otcBuyOfDay, $depositFeeOfDay)
+    public function sysFeeIncome($otcBuyOfDay, $depositFeeOfDay, $otcQuickIncomeSysOfDay)
     {
         bcscale(config('app.bcmath_scale'));
         $sysIncome = [];
 
         $otcBuy = $otcBuyOfDay->pluck('fee','time');
         $deposit = $depositFeeOfDay->pluck('fee','time');
+        $quickIncome = $otcQuickIncomeSysOfDay->pluck('income','time');
 
         $otcBuyTime = $otcBuy->keys();
         $depositTime = $deposit->keys();
@@ -330,7 +347,8 @@ class HomeController extends Controller
         foreach ($times as $time) {
             $sysIncome[$time]['otc_buy_fee'] = $otcBuy[$time] ?? 0;
             $sysIncome[$time]['deposit_fee'] = $deposit[$time] ?? 0;
-            $sysIncome[$time]['total'] = bcadd($otcBuy[$time] ?? 0,  $deposit[$time] ?? 0);
+            $sysIncome[$time]['quick_income'] = $quickIncome[$time] ?? 0;
+            $sysIncome[$time]['total'] = bcadd(bcadd($otcBuy[$time] ?? 0, $deposit[$time] ?? 0), $quickIncome[$time] ?? 0);
         }
 
         return $sysIncome;
@@ -849,6 +867,31 @@ class HomeController extends Controller
             ->first();
 
         return $otcOrder;
+    }
+
+    /**
+     * OTC 快捷抢单-平台累计收益(商户出金-币商抢单买入)
+     *
+     * @return mixed
+     */
+    public function otcQuickIncomeSys()
+    {
+        return OtcOrderQuick::status(OtcOrderQuick::RECEIVED)->sum('income_sys');
+    }
+
+    /**
+     * OTC 快捷抢单-平台累计收益 - 每天
+     *
+     * @return mixed
+     */
+    public function otcQuickIncomeSysOfDay()
+    {
+        $otcQuickIncomeSysOfDay = OtcOrderQuick::status(OtcOrderQuick::RECEIVED)
+            ->select(\DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as time,sum(income_sys) as income"))
+            ->groupBy('time')
+            ->get();
+
+        return $otcQuickIncomeSysOfDay;
     }
 
     /**
