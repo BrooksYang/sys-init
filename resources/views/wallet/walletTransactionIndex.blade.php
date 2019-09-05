@@ -175,9 +175,11 @@
                             {{--交易记录类型--}}
                             <div class="col-sm-2">
                                 <select class="filter-status form-control input-sm" id="filterType" name="filterType">
-                                    <option value="">请选择类型</option>
+                                    <option value="">请选择记录类型</option>
                                     @foreach($type as $key => $itemType)
-                                        <option value="{{$key}}" {{ Request::get('filterType')==$key ? 'selected' :''}}>{{ $itemType['name'] }}</option>
+                                        <option value="{{$key}}" {{ Request::get('filterType')==$key ||
+                                            (Request::path()=='otc/sys/withdrawLog' && $key==\App\Models\Wallet\WalletTransaction::WITHDRAW) ? 'selected' :''}}>
+                                            {{ $itemType['name'] }}</option>
                                     @endforeach
                                 </select>
                             </div>

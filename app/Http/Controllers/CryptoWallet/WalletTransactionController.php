@@ -35,9 +35,10 @@ class WalletTransactionController extends Controller
      *
      * @param $request
      * @param string $isFilterSysWithdraw
+     * @param string $filterType
      * @return array
      */
-    public function walletTransaction($request, $isFilterSysWithdraw='')
+    public function walletTransaction($request, $isFilterSysWithdraw='', $filterType='')
     {
         // 搜索用户或钱包地址
         $search = trim($request->search,'');
@@ -46,7 +47,7 @@ class WalletTransactionController extends Controller
         $filterWithdrawType = trim($request->filterWithdrawType,'');
         $filterCurrency = trim($request->filterCurrency,'');
         $filterStatus = trim($request->filterStatus,'');
-        $filterType = trim($request->filterType,'');
+        $filterType = trim($request->filterType ?: $filterType,'');
         $start = trim($request->start,'');
         $end = trim($request->end,'');
         $orderC = trim($request->orderC,'') ?: 'desc';
@@ -61,7 +62,7 @@ class WalletTransactionController extends Controller
         $withdrawType = WalletTransaction::WITHDRAW_TYPE;
         $currencies = Currency::getCurrencies();
         $external = WalletExternal::getAddr();
-
+\DB::enableQueryLog();
         $transDetails = WalletTransaction::with(['user','currency'])
             ->when($filterSys , function ($query) use ($search){
                 return $query->where('user_id',0);
@@ -182,9 +183,13 @@ class WalletTransactionController extends Controller
      */
     public function sysWithdraw(Request $request)
     {
+        // 提币的类型（系统、商户、用户） - 默认系统提取
         $filterSys = $request->filterWithdrawType ? false : true;
 
-        $data = $this->walletTransaction($request, $filterSys);
+        // 记录类型（充值、提币） - 默认提币
+        $filterType = $request->filterType ? false : WalletTransaction::WITHDRAW;
+
+        $data = $this->walletTransaction($request, $filterSys, $filterType);
 
         return view('wallet.walletTransactionIndex', $data);
     }
