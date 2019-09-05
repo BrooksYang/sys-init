@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\OTC\OtcOrder;
+use App\Models\OTC\OtcOrderQuick;
+use App\Models\OTC\OtcTicket;
 use Illuminate\Console\Command;
 use DB;
 
@@ -70,8 +72,18 @@ class AssignTicket extends Command
 
                 // 更新otc订单申诉状态
                 if ($ticket->order_id) {
+
+                    // 普通OTC订单
                     $otcOrder = OtcOrder::find($ticket->order_id);
-                    $otcOrder->appeal_status = OtcOrder::APPEALING;
+                    $appealStatus = OtcOrder::APPEALING;
+
+                    // 快捷购买-币商抢单
+                    if ($ticket->order_type == OtcTicket::OTC_QUICK) {
+                        $otcOrder = OtcOrderQuick::find($ticket->order_id);
+                        $appealStatus = OtcOrderQuick::APPEALING;
+                    }
+
+                    $otcOrder->appeal_status = $appealStatus;
                     $otcOrder->save();
                 }
             });
