@@ -759,7 +759,7 @@
                     name:'溢价收益',
                     type:'bar',
                     stack: '广告',
-                    data:[@foreach($otcSysIncomeOfDay as $incomeKey=>$incomeItem) {{round($incomeItem['quick_income'], 2)}}, @endforeach],
+                    data:[@foreach($otcSysIncomeOfDay as $incomeKey=>$incomeItem) {{round($incomeItem['quick_income'] ?? 0, 2)}}, @endforeach],
                     markPoint : {
                         data : [
                             {type : 'max', name: '最大值'},
