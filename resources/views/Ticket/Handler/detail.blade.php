@@ -95,8 +95,8 @@
                                     <div style="height: 20px"></div>
                                     {{--凭证开放路由--}}
                                     <img id="" src="{{ $order->payment_url }}"
-                                         style="width:400px;border-radius:20px;margin: 0 auto"
-                                         onerror="this.src='http://placehold.it/400x566'" onclick="rotate(this)"/>
+                                         style="width:470px;border-radius:20px;margin: 0 auto"
+                                         onerror="this.src='http://placehold.it/470x850'" onclick="rotate(this)"/>
                                     <p></p>
                                 </div>
                                 <div style="height: 55px"></div>
