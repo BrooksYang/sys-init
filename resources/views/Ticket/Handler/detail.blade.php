@@ -139,7 +139,7 @@
                         @endif</strong>】&nbsp;【操作备注：{{$ticket->remark ?:'--'}}】</p>
                     <p>内容：<b>{{ $ticket->content}}</b></p>
                     @if($role == config('conf.supervisor_role'))
-                    <p> <a href="javascript:;" title="回复工单" onclick="ticketReply('{{ $ticket->id }}')">回复</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#javascript:;" onclick="ticketDel('{{ $ticket->id }}')">删除</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="{{ url('ticket/handler/ticketTransfer').'/'.$ticket->id }}" title="">转移</a></p>
+                    <p> <a href="javascript:;" title="回复工单" onclick="ticketReply('{{ $ticket->id }}', '{{ $ticket->user_id }}')">回复</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#javascript:;" onclick="ticketDel('{{ $ticket->id }}')">删除</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="{{ url('ticket/handler/ticketTransfer').'/'.$ticket->id }}" title="">转移</a></p>
                     @endif
                     <div class="row" style="margin-top:20px">
                       <div class="col-md-12">
@@ -203,7 +203,7 @@
                                 <div class="media-body">
                                   <h6 class="media-heading"><strong>回复时间：{{ $replyLtwo['created_at']}} &nbsp;&nbsp; 
                                     @if($replyLtwo['reply_type']==1)
-                                    <a href="#javascript:;" onclick="replyLevelTwo('{{ $replyLtwo['ticketId'] }}','{{ $replyLtwo['reply_parent_id'] }}','{{ $replyLtwo['ownerId'] }}')">回复</a>&nbsp;&nbsp;
+                                    <a href="#javascript:;" onclick="replyLevelTwo('{{ $replyLtwo['userId'] }}','{{ $replyLtwo['ticketId'] }}','{{ $replyLtwo['reply_parent_id'] }}','{{ $replyLtwo['ownerId'] }}')">回复</a>&nbsp;&nbsp;
                                     @endif
                                     <a href="#javascript:;" onclick="deleteReply('{{ $replyLtwo['id'] }}')">删除</a></strong></h6>
                                   {{ $replyLtwo['reply_content'] }}
@@ -362,7 +362,7 @@
 @section('js-part')
 
 <script type="text/javascript">
-  function ticketReply(ticketId) {
+  function ticketReply(ticketId, userId) {
     layer.prompt({title: '回复工单内容', formType: 2}, function(content, index){
       layer.close(index); // 关闭窗口
       var ii = layer.load();
@@ -371,7 +371,7 @@
             type : 'POST',
             url : "{{ url('ticket/handler/ticketReply') }}",
             dataType : 'json',
-            data : {'ticketId':ticketId,'ownerId':'{{ $ticket->supervisor_id }}','content':content,'replyParentId':0},
+            data : { 'userId':userId,'ticketId':ticketId,'ownerId':'{{ $ticket->supervisor_id }}','content':content,'replyParentId':0},
             success : function(data,status){
                   layer.close(ii)
                   var obj = eval(data)
@@ -441,7 +441,7 @@
     });
 }
 
-function replyLevelTwo(ticket_id,parent_id,owner_id) {
+function replyLevelTwo(user_id,ticket_id,parent_id,owner_id) {
     layer.prompt({title: '回复用户工单', formType: 2}, function(content, index){
     layer.close(index); // 关闭窗口
     var ii = layer.load();
@@ -451,7 +451,7 @@ function replyLevelTwo(ticket_id,parent_id,owner_id) {
           type : 'POST',
           url : "{{ url('ticket/handler/replyLevelTwo') }}",
           dataType : 'json',
-          data : {'ticket_id':ticket_id,'content':content,'reply_parent_id':parent_id,'owner_id':owner_id},
+          data : {'user_id':user_id,'ticket_id':ticket_id,'content':content,'reply_parent_id':parent_id,'owner_id':owner_id},
           success : function(data,status){
                 layer.close(ii)
                 var obj = eval(data)

@@ -84,6 +84,7 @@ class HandlerController extends Controller
     {
 
         $reply = [
+            'user_id'=>$request->input('user_id'),
             'ticket_id'=>$request->input('ticket_id'),
             'reply_type'=>0,
             'owner_id'=>$request->input('owner_id'),
@@ -146,6 +147,7 @@ class HandlerController extends Controller
     public function ticketReply(Request $request)
     {
         $reply = [
+            'user_id'=>$request->input('userId'),
             'ticket_id'=>$request->input('ticketId'),
             'owner_id'=>$request->input('ownerId'),
             'reply_content'=>$request->input('content'),
@@ -190,6 +192,7 @@ class HandlerController extends Controller
             if ( DB::table('otc_ticket_reply')->where('reply_parent_id', $reply->id)->exists()==false ) {
                 $levelOne = [
                     'id' => $reply->id,
+                    'userId' => $reply->user_id,
                     'ticketId' => $reply->ticket_id,
                     'ownerId' => $reply->owner_id,
                     'reply_type' => $reply->reply_type,
@@ -208,6 +211,7 @@ class HandlerController extends Controller
                 foreach($res as $replyLtwo) {
                     $tmp = [
                         'id' => $replyLtwo->id,
+                        'userId' => $reply->user_id,
                         'ticketId' => $replyLtwo->ticket_id,
                         'ownerId' => $replyLtwo->owner_id,
                         'reply_type' => $replyLtwo->reply_type,
@@ -221,6 +225,7 @@ class HandlerController extends Controller
 
                 $levelOne = [
                     'id' => $reply->id,
+                    'userId' => $reply->user_id,
                     'ticketId' => $reply->ticket_id,
                     'ownerId' => $reply->owner_id,
                     'reply_type' => $reply->reply_type,
@@ -411,22 +416,11 @@ class HandlerController extends Controller
 
             // 快捷抢单
             if ($request->orderType == OtcTicket::OTC_QUICK) {
-                // 已支付或取消-未放币 - 强制出售方放币
-                if ($request->field == 'release' && $order->status == OtcOrderQuick::PAID) {
-                    $remark = $orcStatus.' - '.'强制放币';
-                    $msg = $this->forceReleaseOfQuick($order);
-                }
 
                 // 已支付-未收到付款 - 强制取消订单
                 if ($request->field == 'cancel' && $order->status == OtcOrderQuick::PAID) {
                     $remark = $orcStatus.' - '.'取消订单';
                     $msg = $this->forceCancelOfQuick($order);
-                }
-
-                // 未付款-已放币完成交易 - 强制恢复发布方的"错误"放币
-                if ($request->field == 'recover' && $order->status == OtcOrderQuick::RECEIVED) {
-                    $remark = $orcStatus.' - '.'强制恢复';
-                    $msg = $this->forceRecoverOfQuick($order);
                 }
             }
 
@@ -629,20 +623,9 @@ class HandlerController extends Controller
         return '已强制恢复完成交易的订单';
     }
 
-    // 快捷抢单购买 - 放币
-    public function forceReleaseOfQuick($order)
-    {
-
-    }
 
     // 快捷抢单购买 - 取消
     public function forceCancelOfQuick($order)
-    {
-
-    }
-
-    // 快捷抢单购买 - 恢复
-    public function forceRecoverOfQuick($order)
     {
 
     }
