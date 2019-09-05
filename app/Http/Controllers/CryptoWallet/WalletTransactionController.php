@@ -111,7 +111,7 @@ class WalletTransactionController extends Controller
             });
         //->paginate(self::WALLET_TRANS_PAGE_SIZE );
 
-        $search = $search || $from || $to || $start || $end;
+        $search = $search || $from || $to || $start || $end || $filterSys || $filterMerchant;
 
         if ($search) {
             $statistics = $transDetails;
