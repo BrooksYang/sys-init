@@ -50,6 +50,9 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
 
     // OTC 收益列表
     Route::get('otc/sys/income', 'Wallet\OtcSysIncomeController@index');
+
+    // OTC 运营方提币记录
+    Route::get('otc/sys/withdrawLog','CryptoWallet\WalletTransactionController@sysWithdraw');
 });
 
 

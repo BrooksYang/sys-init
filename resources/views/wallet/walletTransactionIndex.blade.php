@@ -105,7 +105,9 @@
 
                     {{-- Title --}}
                     <h3 class="box-title"><i class="fontello-doc"></i>
-                        <span>用户钱包交易记录列表</span>
+                        <span>
+                             {{ Request::path() == 'otc/sys/withdrawLog' ? '系统对外提币记录' : '用户钱包交易记录列表' }}
+                        </span>
                     </h3>
                 </div>
 
@@ -114,8 +116,23 @@
                     <form action="{{ url('wallet/transaction')}}" id="searchForm">
                         <div class="row" style="margin-bottom:10px;">
                             {{--搜索--}}
+                            {{--提币类型 系统/商户/普通用户--}}
+                            <div class="col-sm-2">
+                                <select class="filter-status form-control input-sm" id="filterWithdrawType" name="filterWithdrawType">
+                                    <option value="">提币类型</option>
+                                    @foreach($withdrawType as $key => $withdraw)
+                                        <option value="{{$key}}"
+                                            {{ Request::get('filterWithdrawType')==$key ||
+                                               (Request::path()=='otc/sys/withdrawLog' && $key==\App\Models\Wallet\WalletTransaction::SYS_WITHDRAW)
+                                                ? 'selected' :''}}>
+                                            {{$withdraw}}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             {{--用户基本信息--}}
-                            <div class="col-sm-4">
+                            <div class="col-sm-2">
                                 <input class="form-control input-sm"  placeholder="请输入用户名、电话或邮箱信息"
                                        name="search" id="search" type="text" value="{{ Request::get('search')?? '' }}"/>
                             </div>
@@ -123,13 +140,13 @@
                             {{--转账地址--}}
                             <div class="col-sm-4">
                                 <input class="form-control input-sm"  placeholder="请输入转账地址"
-                                       name="searchFrom" id="searchFrom" type="text" value="{{ Request::get('searchFrom')?? '' }}"/>
+                                       name="searchFrom" id="searchFrom" type="text" value="{{ Request::get('from')?? '' }}"/>
                             </div>
 
                             {{--收款地址--}}
                             <div class="col-sm-4">
                                 <input class="form-control input-sm"  placeholder="请输入收款地址"
-                                       name="searchTo" id="searchTo" type="text" value="{{ Request::get('searchTo')?? '' }}"/>
+                                       name="searchTo" id="searchTo" type="text" value="{{ Request::get('to')?? '' }}"/>
                             </div>
                         </div>
 
@@ -268,7 +285,7 @@
                                     <hr>
                                     <div class="pull-left">
                                         {{--类型，1充值，2提现--}}
-                                        总计： <b>{{ $statistics['total'] ?: 0 }}</b> &nbsp;&nbsp<b>{{ $transDetails->total() }}</b>&nbsp;单<br>
+                                        总计： <b>{{ $statistics['total'] ?: 0 }} ,</b>&nbsp;&nbsp;<b>{{ $transDetails->total() }}</b>&nbsp;单<br>
                                         充值：<b>{{ $statistics['transDeposit'] ?: 0 }}</b> |
                                         提币： <b>{{ $statistics['transWithDraw'] ?: 0 }}</b>
                                     </div>
@@ -327,6 +344,7 @@
                 var uri = '?search='+$('#search').val()
                     +'&from='+$('#searchFrom').val()
                     +'&to='+$('#searchTo').val()
+                    +'&filterWithdrawType='+$('#filterWithdrawType').val()
                     +'&filterCurrency='+$('#filterCurrency').val()
                     +'&filterType='+$('#filterType').val()
                     +'&filterStatus='+$('#filterStatus').val()

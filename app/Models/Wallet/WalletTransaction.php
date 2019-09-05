@@ -9,15 +9,15 @@ use Illuminate\Database\Eloquent\Model;
 class WalletTransaction extends Model
 {
     /**
-     * @var string 
+     * @var string
      */
     protected $table = 'wallet_transactions';
 
     /**
-     * @var array 
+     * @var array
      */
     protected $guarded = [];
-    
+
 
     // 类型，1充值，2提币
     const DEPOSIT  = 1;
@@ -40,7 +40,18 @@ class WalletTransaction extends Model
       self::FAILED   => ['name'=>'失败', 'class'=>'default'],
       self::CANCELED => ['name'=>'撤销', 'class'=>'warning'],
     ];
-    
+
+    // 提币类型 1系统, 2商户, 3普通用户
+    const SYS_WITHDRAW      = 1;
+    const MERCHANT_WITHDRAW = 2;
+    const USER_WITHDRAW     = 3;
+
+    const WITHDRAW_TYPE = [
+        self::SYS_WITHDRAW      => '系统',
+        self::MERCHANT_WITHDRAW => '商户',
+        self::USER_WITHDRAW     => '用户',
+    ];
+
 
     /**
      * 关联用户

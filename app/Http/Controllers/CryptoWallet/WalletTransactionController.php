@@ -5,6 +5,7 @@ namespace App\Http\Controllers\CryptoWallet;
 use App\Models\Currency;
 use App\Models\Wallet\WalletExternal;
 use App\Models\Wallet\WalletTransaction;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -24,10 +25,25 @@ class WalletTransactionController extends Controller
      */
     public function index(Request $request)
     {
+        $data = $this->walletTransaction($request);
+
+        return view('wallet.walletTransactionIndex', $data);
+    }
+
+    /**
+     * 数据查询
+     *
+     * @param $request
+     * @param string $isFilterSysWithdraw
+     * @return array
+     */
+    public function walletTransaction($request, $isFilterSysWithdraw='')
+    {
         // 搜索用户或钱包地址
         $search = trim($request->search,'');
         $from = trim($request->from,'');
         $to = trim($request->to,'');
+        $filterWithdrawType = trim($request->filterWithdrawType,'');
         $filterCurrency = trim($request->filterCurrency,'');
         $filterStatus = trim($request->filterStatus,'');
         $filterType = trim($request->filterType,'');
@@ -35,17 +51,37 @@ class WalletTransactionController extends Controller
         $end = trim($request->end,'');
         $orderC = trim($request->orderC,'') ?: 'desc';
 
+        //
+        $sysWithdrawLog = trim($request->path(),'') == 'otc/sys/withdrawLog' ? true : false;
+        $filterMerchant = $filterWithdrawType == WalletTransaction::MERCHANT_WITHDRAW ? true : false;
+        $filterUser = $filterWithdrawType == WalletTransaction::USER_WITHDRAW ? true : false;
+        $filterSys = $filterWithdrawType == WalletTransaction::SYS_WITHDRAW || $isFilterSysWithdraw ? true : false;
+
         $status = WalletTransaction::STATUS;
         $type = WalletTransaction::TYPE;
+        $withdrawType = WalletTransaction::WITHDRAW_TYPE;
         $currencies = Currency::getCurrencies();
         $external = WalletExternal::getAddr();
 
         $transDetails = WalletTransaction::with(['user','currency'])
-            ->when($search, function ($query) use ($search){
+            ->when($filterSys , function ($query) use ($search){
+                return $query->where('user_id',0);
+            })
+            ->when($filterMerchant, function ($query) use ($search){
                 return $query->whereHas('user', function ($query) use ($search) {
-                        $query->where('username', 'like', "%$search%")
-                            ->orwhere('email', 'like', "%$search%")
-                            ->orwhere('phone', 'like', "%$search%");
+                    $query->where('is_merchant', User::MERCHANT)
+                        ->where(function ($query) use ($search){
+                            $query->where('username', 'like', "%$search%")
+                                ->orwhere('email', 'like', "%$search%")
+                                ->orwhere('phone', 'like', "%$search%");
+                        });
+                });
+            })
+            ->when($search && $filterUser, function ($query) use ($search){
+                return $query->whereHas('user', function ($query) use ($search) {
+                    $query->where('username', 'like', "%$search%")
+                        ->orwhere('email', 'like', "%$search%")
+                        ->orwhere('phone', 'like', "%$search%");
                 });
             })
             ->when($from, function ($query) use ($from){
@@ -74,7 +110,9 @@ class WalletTransactionController extends Controller
             ->when($orderC, function ($query) use ($orderC){
                 return $query->orderBy('created_at', $orderC);
             });
-          //->paginate(self::WALLET_TRANS_PAGE_SIZE );
+        //->paginate(self::WALLET_TRANS_PAGE_SIZE );
+
+        $search = $search || $from || $to || $start || $end;
 
         if ($search) {
             $statistics = $transDetails;
@@ -83,8 +121,8 @@ class WalletTransactionController extends Controller
 
         $transDetails = $transDetails->paginate(config('app.pageSize'));
 
-        return view('wallet.walletTransactionIndex', compact('status','type','currencies','transDetails',
-            'search','statistics','external'));
+        return compact('status','type','withdrawType','currencies','transDetails',
+            'search','statistics','external');
     }
 
 
@@ -135,6 +173,19 @@ class WalletTransactionController extends Controller
             $sum = bcadd($sum, $amount);
         }
         return $sum;
+    }
+
+    /**
+     * 系统提币记录
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function sysWithdraw(Request $request)
+    {
+        $data = $this->walletTransaction($request, true);
+
+        return view('wallet.walletTransactionIndex', $data);
     }
 
 

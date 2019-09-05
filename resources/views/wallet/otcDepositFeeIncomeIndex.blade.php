@@ -138,13 +138,13 @@
                             {{--转账地址--}}
                             <div class="col-sm-4">
                                 <input class="form-control input-sm"  placeholder="请输入转账地址"
-                                       name="searchFrom" id="searchFrom" type="text" value="{{ Request::get('searchFrom')?? '' }}"/>
+                                       name="searchFrom" id="searchFrom" type="text" value="{{ Request::get('from')?? '' }}"/>
                             </div>
 
                             {{--收款地址--}}
                             <div class="col-sm-4">
                                 <input class="form-control input-sm"  placeholder="请输入收款地址"
-                                       name="searchTo" id="searchTo" type="text" value="{{ Request::get('searchTo')?? '' }}"/>
+                                       name="searchTo" id="searchTo" type="text" value="{{ Request::get('to')?? '' }}"/>
                             </div>
                         </div>
                         <div class="row">
