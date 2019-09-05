@@ -24,6 +24,19 @@ class OtcOrderQuickController extends Controller
      */
     public function index(Request $request)
     {
+       $quickOrder = self::quickOrder($request);
+
+        return view('order.otcQuickOrderIndex', $quickOrder);
+    }
+
+    /**
+     * 快捷订单数据查询
+     *
+     * @param $request
+     * @return array
+     */
+    public static function quickOrder($request)
+    {
         // 多条件搜索
         $searchUser = trim($request->searchUser,''); // 币商
         $searchFromUser = trim($request->searchFromUser,''); // 发布者-商户旗下用户
@@ -94,11 +107,10 @@ class OtcOrderQuickController extends Controller
             })
             ->get();
 
-        $statistics = $this->sum($otcQuickOrder);
+        $statistics = self::sum($otcQuickOrder);
         $otcQuickOrder = self::selfPage($otcQuickOrder, config('app.pageSize'));
 
-        return view('order.otcQuickOrderIndex',compact('orderStatus', 'appealStatus',
-            'otcQuickOrder','statistics','search'));
+        return compact('orderStatus', 'appealStatus', 'otcQuickOrder','statistics','search');
     }
 
     /**
@@ -126,7 +138,7 @@ class OtcOrderQuickController extends Controller
      * @param $otcOrder
      * @return array
      */
-    public function sum($otcOrder)
+    public static function sum($otcOrder)
     {
         //bcscale(config('app.bcmath_scale'));
         list($totalFieldAmount, $totalIncome, $totalIncomeSys,$totalIncomeMerchant)= [0, 0, 0, 0];

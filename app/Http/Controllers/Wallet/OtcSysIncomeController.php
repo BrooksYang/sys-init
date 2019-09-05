@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Wallet;
 
+use App\Http\Controllers\Order\OtcOrderQuickController;
 use App\Models\Currency;
 use App\Models\OTC\OtcOrder;
+use App\Models\OTC\OtcOrderQuick;
 use App\Models\Wallet\WalletExternal;
 use App\Models\Wallet\WalletTransaction;
 use Illuminate\Http\Request;
@@ -24,8 +26,9 @@ class OtcSysIncomeController extends Controller
     public function __construct()
     {
         $this->incomeType = [
-            1 => ['name' => '订单手续费', 'url'=>url('otc/sys/income')],
-            2 => ['name' => '充值手续费', 'url'=>url('otc/sys/income?type=deposit')]
+            1 => ['name' => '订单手续费',  'url'=>url('otc/sys/income')],
+            2 => ['name' => '充值手续费',  'url'=>url('otc/sys/income?type=deposit')],
+            3 => ['name' => 'OTC快捷购买', 'url'=>url('otc/sys/income?type=orderQuick')]
         ];
     }
 
@@ -40,6 +43,12 @@ class OtcSysIncomeController extends Controller
         if ($request->type == 'deposit') {
             $depositIncome = $this->depositFee($request);
             return view('wallet.otcDepositFeeIncomeIndex', $depositIncome);
+        }
+
+        if ($request->type == 'orderQuick') {
+            $request->filterStatus = OtcOrderQuick::RECEIVED;
+            $orderQuickIncome = $this->orderQuickIncome($request);
+            return view('wallet.otcQuickOrderIncomeIndex', $orderQuickIncome);
         }
 
         $orderType = [
@@ -301,5 +310,19 @@ class OtcSysIncomeController extends Controller
         }
         return $sum;
     }
+
+    /**
+     * OTC 快捷抢单购买 - 溢价收益
+     *
+     * @param $request
+     * @return array
+     */
+    public function orderQuickIncome($request)
+    {
+        $quickOrder = OtcOrderQuickController::quickOrder($request);
+
+        return $quickOrder;
+    }
+
 
 }
