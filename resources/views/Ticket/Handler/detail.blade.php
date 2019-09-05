@@ -68,7 +68,9 @@
                     【备注】{{ $order->remark ?: '--' }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     【付款卡号】{{ $order->card_number ?: '--' }}
                 </p>
+
                 <p>【付款凭证】
+                    @if($order->payment_url)
                    <!-- Button trigger modal -->
                     <a href="####"  class="" data-toggle="modal" data-target="#exampleModalLong">
                         <i class="fontello-ticket"></i> 查看
@@ -94,10 +96,8 @@
                                     <span><b>【用户】</b></span>{{ str_limit($order->owner_phone ?:'--', 11) }}
                                     <div style="height: 20px"></div>
                                     {{--凭证开放路由--}}
-                                    <img id="" src="{{ $order->payment_url }}"
-                                         style="width:470px;border-radius:20px;margin: 0 auto"
-                                         {{--onerror="this.src='http://placehold.it/470x850'"--}} onclick="rotate(this)"/>
-                                    <p></p>
+                                    <img id="" src="{{config('app.api_res_url')}}.'/'.{{ $order->payment_url }}" style="width:570px;border-radius:20px;"
+                                         onerror="this.src='http://placehold.it/570x922'" onclick="rotate(this)"/>
                                 </div>
                                 <div style="height: 55px"></div>
                                 <div class="modal-footer">
@@ -106,6 +106,9 @@
                             </div>
                         </div>
                     </div>
+                    @else
+                        未上传凭证
+                    @endif
                 </p>
                 <p>【交易数量】{{ $order->field_amount }}&nbsp;&nbsp;&nbsp;&nbsp;
                     【币商单价】{{ $order->price }}&nbsp;&nbsp;&nbsp;&nbsp;

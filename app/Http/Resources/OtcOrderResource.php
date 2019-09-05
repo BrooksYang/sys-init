@@ -77,7 +77,7 @@ class OtcOrderResource
             'appeal_content'        => $order->content,
             'remark'                => $order->remark,
             'card_number'           => $order->card_number,
-            'payment_url'           => config('app.api_res_url').'/'.$order->payment_url,
+            'payment_url'           => $order->payment_url,
             'merchant_order_id'     => $order->merchant_order_id,
             'created_at'            => $order->created_at->toDateTimeString(),
         ];
