@@ -47,9 +47,9 @@ class WalletTransaction extends Model
     const USER_WITHDRAW     = 3;
 
     const WITHDRAW_TYPE = [
-        self::SYS_WITHDRAW      => '系统',
-        self::MERCHANT_WITHDRAW => '商户',
-        self::USER_WITHDRAW     => '用户',
+        self::SYS_WITHDRAW      => '系统提币',
+        self::MERCHANT_WITHDRAW => '商户提币',
+        self::USER_WITHDRAW     => '用户提币',
     ];
 
 
