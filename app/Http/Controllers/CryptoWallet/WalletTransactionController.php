@@ -34,17 +34,17 @@ class WalletTransactionController extends Controller
      * 数据查询
      *
      * @param $request
-     * @param string $isFilterSysWithdraw
+     * @param string $filterSys
      * @param string $filterType
      * @return array
      */
-    public function walletTransaction($request, $isFilterSysWithdraw='', $filterType='')
+    public function walletTransaction($request, $filterSys='', $filterType='')
     {
         // 搜索用户或钱包地址
         $search = trim($request->search,'');
         $from = trim($request->from,'');
         $to = trim($request->to,'');
-        $filterWithdrawType = trim($request->filterWithdrawType,'');
+        $filterWithdrawType = trim($request->filterWithdrawType ?:$filterSys,'');
         $filterCurrency = trim($request->filterCurrency,'');
         $filterStatus = trim($request->filterStatus,'');
         $filterType = trim($request->filterType ?: $filterType,'');
@@ -55,14 +55,14 @@ class WalletTransactionController extends Controller
         // 筛选提币类型 -系统-商户-普通用户
         $filterMerchant = $filterWithdrawType == WalletTransaction::MERCHANT_WITHDRAW ? true : false;
         $filterUser = $filterWithdrawType == WalletTransaction::USER_WITHDRAW ? true : false;
-        $filterSys = $filterWithdrawType == WalletTransaction::SYS_WITHDRAW || $isFilterSysWithdraw ? true : false;
+        $filterSys = $filterWithdrawType == WalletTransaction::SYS_WITHDRAW ? true : false;
 
         $status = WalletTransaction::STATUS;
         $type = WalletTransaction::TYPE;
         $withdrawType = WalletTransaction::WITHDRAW_TYPE;
         $currencies = Currency::getCurrencies();
         $external = WalletExternal::getAddr();
-\DB::enableQueryLog();
+
         $transDetails = WalletTransaction::with(['user','currency'])
             ->when($filterSys , function ($query) use ($search){
                 return $query->where('user_id',0);
@@ -184,7 +184,7 @@ class WalletTransactionController extends Controller
     public function sysWithdraw(Request $request)
     {
         // 提币的类型（系统、商户、用户） - 默认系统提取
-        $filterSys = $request->filterWithdrawType ? false : true;
+        $filterSys = $request->filterWithdrawType ? false : WalletTransaction::SYS_WITHDRAW;
 
         // 记录类型（充值、提币） - 默认提币
         $filterType = $request->filterType ? false : WalletTransaction::WITHDRAW;
