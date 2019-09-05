@@ -51,8 +51,7 @@ class WalletTransactionController extends Controller
         $end = trim($request->end,'');
         $orderC = trim($request->orderC,'') ?: 'desc';
 
-        //
-        $sysWithdrawLog = trim($request->path(),'') == 'otc/sys/withdrawLog' ? true : false;
+        // 筛选提币类型 -系统-商户-普通用户
         $filterMerchant = $filterWithdrawType == WalletTransaction::MERCHANT_WITHDRAW ? true : false;
         $filterUser = $filterWithdrawType == WalletTransaction::USER_WITHDRAW ? true : false;
         $filterSys = $filterWithdrawType == WalletTransaction::SYS_WITHDRAW || $isFilterSysWithdraw ? true : false;
@@ -183,7 +182,9 @@ class WalletTransactionController extends Controller
      */
     public function sysWithdraw(Request $request)
     {
-        $data = $this->walletTransaction($request, true);
+        $filterSys = $request->filterWithdrawType ? false : true;
+
+        $data = $this->walletTransaction($request, $filterSys);
 
         return view('wallet.walletTransactionIndex', $data);
     }
