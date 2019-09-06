@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Wallet;
 
 use App\Http\Requests\UserWalletRequest;
 use App\Models\Wallet\Balance;
+use App\Models\Wallet\WalletsBalanceLog;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -137,5 +138,32 @@ class UserWalletController extends Controller
 
             return response()->json([]);
         }*/
+    }
+
+    /**
+     * 用户钱包余额变更记录
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function balanceLog(Request $request)
+    {
+        $search = trim($request->search);
+        $orderC = trim($request->orderC ?: 'desc');
+
+        $type = WalletsBalanceLog::TYPE;
+
+        $balanceLog = WalletsBalanceLog::with(['user'])
+            ->when($search, function ($query) use ($search) {
+                $query->whereHas('user', function ($query) use ($search){
+                    $query->where('username','like', "%$search%")
+                        ->orWhere('phone','like', "%$search%")
+                        ->orWhere('email','like', "%$search%");
+                });
+            })
+            ->orderBy('created_at', $orderC)
+            ->paginate(config('app.pageSize'));
+
+        return view('wallet.walletBalanceLogIndex', compact('search','type','balanceLog'));
     }
 }

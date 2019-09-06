@@ -12,12 +12,14 @@
 
 Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function()
 {
-    //交易用户记账钱包
+    // 交易用户记账钱包
     Route::resource('user/wallet', 'Wallet\UserWalletController');
 
-    //运营方记账钱包
+    // 运营方记账钱包
     Route::resource('sys/wallet', 'Wallet\SysWalletController');
 
+    // 用户钱包余额变更记录 - 划转
+    Route::get('wallet/balance/log', 'Wallet\UserWalletController@balanceLog');
 });
 
 /**
