@@ -60,33 +60,33 @@
                         </tr>
                         <tr>
                             <td class="t-right">累计广告卖出</td>
-                            <td colspan="2" class="t-left">{{ number_format($totalTradesSell,8) }}</td>
+                            <td colspan="2" class="t-left">{{ number_format($totalTradesSell, 8) }}</td>
                             <td class="t-right">商户买入</td>
-                            <td colspan="2" class="t-left">{{ number_format($field,8)}}</td>
+                            <td colspan="2" class="t-left">{{ number_format($field, 8)}}</td>
                             <td class="t-right">商户到账</td>
-                            <td colspan="2" class="t-left">{{ number_format($final,8) }}</td>
+                            <td colspan="2" class="t-left">{{ number_format($final, 8) }}</td>
                         </tr>
                         <tr>
                             <td class="t-right">商户提币</td>
-                            <td colspan="2" class="t-left">{{ number_format($withdraw,8) }}</td>
+                            <td colspan="2" class="t-left">{{ number_format($withdraw, 8) }}</td>
                             <td class="t-right">广告卖出</td>
-                            <td colspan="2" class="t-left">{{ number_format($sell,8) }}</td>
+                            <td colspan="2" class="t-left">{{ number_format($sell, 8) }}</td>
                             <td class="t-right" title="">商户出金</td>
-                            <td colspan="2" class="t-left">{{ number_format($out,8) }}</td>
+                            <td colspan="2" class="t-left">{{ number_format($out, 8) }}</td>
                         </tr>
                         <tr>
                             <td class="t-right" title="（商户正常余额）">商户正常余额</td>
-                            <td colspan="2" class="t-left">{{ number_format($correctBalance,8) }}</td>
+                            <td colspan="2" class="t-left">{{ number_format($correctBalance, 8) }}</td>
                             <td class="t-right" title="（商户当前余额）">商户当前余额</td>
-                            <td colspan="2" class="t-left">{{ number_format($currentBalance,8) }}&nbsp;【冻结】{{ number_format($frozen,8) }}</td>
+                            <td colspan="2" class="t-left">{{ number_format($currentBalance, 8) }}&nbsp;【冻结】{{ number_format($frozen, 8) }}</td>
                             <td class="t-right">用户累计充值</td>
-                            <td colspan="2" class="t-left">{{ number_format($totalDeposit,8) }}</td>
+                            <td colspan="2" class="t-left">{{ number_format($totalDeposit, 8) }}</td>
                         </tr>
                         <tr>
                             <td class="t-right" title="（用户总余额）">用户总余额</td>
-                            <td colspan="2" class="t-left">{{ number_format($totalBalance) }}</td>
+                            <td colspan="2" class="t-left">{{ number_format($totalBalance, 8) }}</td>
                             <td class="t-right" title="（广告累计余量)">广告累计余量</td>
-                            <td colspan="2" class="t-left">{{ number_format($totalLeft,8) }}</td>
+                            <td colspan="2" class="t-left">{{ number_format($totalLeft, 8) }}</td>
                             <td class="t-right"></td>
                             <td colspan="2" class="t-left"></td>
                         </tr>
