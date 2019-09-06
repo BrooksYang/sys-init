@@ -7,6 +7,12 @@ use App\Http\Requests\UserAppKeyRequest;
 use App\Models\Country;
 use App\Models\OTC\UserAppKey;
 use App\User;
+use App\Models\Currency;
+use App\Models\OTC\OtcOrder;
+use App\Models\OTC\OtcOrderQuick;
+use App\Models\OTC\Trade;
+use App\Models\Wallet\Balance;
+use App\Models\Wallet\WalletTransaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -195,4 +201,88 @@ class UserAppKeyController extends Controller
 
         return response()->json(['code' =>0, 'msg' => '更新成功']);
     }
+
+    /**
+     * 商户钱包账户资料信息
+     *
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function show($id)
+    {
+        // 商户
+        $merchant = User::find($id);
+
+        // 商户旗下用户id
+        $userIds = $merchant->appKey->user()->pluck('id')->toArray();
+
+        // 订单总额
+        $orders = OtcOrder::where('type', OtcOrder::BUY)
+            ->where('status', OtcOrder::RECEIVED)
+            ->whereIn('user_id', $userIds)
+            ->get();
+
+        // 广告支出
+        $sell = OtcOrder::where('type', OtcOrder::SELL)
+            ->where('status', OtcOrder::RECEIVED)
+            ->whereIn('user_id', $userIds)
+            ->sum('field_amount');
+
+        $field = $orders->sum('field_amount');
+        $final = $orders->sum('final_amount');
+
+        // 出金
+        $out = OtcOrderQuick::where('merchant_id', $merchant->id)
+            ->where('status', OtcOrder::RECEIVED)
+            ->sum('merchant_final_amount');
+
+        // 商户余额
+        $balance = Balance::where('user_id', $merchant->id)
+            ->where('user_wallet_currency_id', Currency::USDT)
+            ->first();
+
+        // 商户提币
+        $withdraw = WalletTransaction::where('user_id', $merchant->id)
+            ->where('type', WalletTransaction::WITHDRAW)
+            ->where('status', WalletTransaction::SUCCESS)
+            ->sum('amount');
+
+        // 正常余额 = 到账金额 - 提币金额 - 卖出 - 出金
+        $correctBalance = $final - $withdraw - $sell - $out;
+
+        // 余额
+        $currentBalance = $balance->user_wallet_balance + $balance->user_wallet_balance_freeze_amount; // 当前余额
+        $frozen = $balance->user_wallet_balance_freeze_amount; // 冻结余额
+
+
+        // 用户累计充值
+        $deposit = WalletTransaction::where('type', WalletTransaction::DEPOSIT)
+            ->where('user_id', '>=', 133)
+            ->where('user_id', '!=', 277)
+            ->where('status', WalletTransaction::SUCCESS)
+            ->get(['id', 'user_id', 'amount', 'fee']);
+        $totalDeposit = $deposit->sum('amount') - $deposit->sum('fee');
+
+        // 用户总余额
+        $balances = Balance::where('user_wallet_currency_id', Currency::USDT)
+            ->where('user_id', '>=', 133)
+            ->whereNotIn('user_id', [134, 277])
+            ->get();
+        $totalBalance = $balances->sum('user_wallet_balance') + $balances->sum('user_wallet_balance_freeze_amount');
+
+
+        // 累计广告卖出
+        $totalTradesSell = Trade::where('type', Trade::SELL)
+            ->sum('field_amount');
+
+        // 广告累计余量
+        $trades = Trade::where('type', Trade::SELL)
+            ->whereIn('status', [Trade::ON_SALE, Trade::OFF])
+            ->get();
+        $totalLeft = $trades->sum('amount') - $trades->sum('field_amount');
+
+        return view('user.userWalletShow', compact('merchant', 'totalTradesSell','field','final','withdraw',
+            'sell','out','correctBalance','currentBalance','frozen', 'totalDeposit','totalBalance','totalLeft'));
+    }
+
 }

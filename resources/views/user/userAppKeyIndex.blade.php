@@ -51,7 +51,8 @@
 
                                     <td><strong>{{ $item->user->id ?? '--' }}</strong></td>
                                     <td>{{ $item->user->username ?? '--' }}</td>
-                                    <td>{{ $item->user->phone ?? '--' }}</td>
+                                    <td><a href="{{ $item->user ? url('user/merchant').'/'.$item->user->id : '####'}}">
+                                        {{ $item->user->phone ?? '--' }}</a></td>
                                     <td title="{{ $item->user->email ?? '' }}">{{ str_limit($item->user->email ?? '--',20) }}</td>
                                     <td>
                                         <span class="label label-{{ $status[$item->user->is_valid]['class'] }}">

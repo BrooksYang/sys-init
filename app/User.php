@@ -48,6 +48,27 @@ class User extends Authenticatable
     const NOT_MERCHANT = 0;
     const MERCHANT = 1;
 
+    // 用户类型 0全部，1商户，2币商
+    const USERS     = 0;
+    const MERCHANTS = 1;
+    const TRADERS   = 2;
+
+    const USER_TYPE = [
+        self::USERS    => ['name' => '全部', 'class' => ''],
+        self::MERCHANT => ['name' => '商户', 'class' => ''],
+        self::TRADERS  => ['name' => '币商', 'class' => '']
+    ];
+
+    /**
+     * 关联 App Key（商户获取App Key）
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\hasOne
+     */
+    public function appKey()
+    {
+        return $this->hasOne(UserAppKey::class, 'user_id');
+    }
+
     /**
      * 关联所属商户
      *
