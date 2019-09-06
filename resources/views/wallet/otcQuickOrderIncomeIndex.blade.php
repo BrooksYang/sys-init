@@ -182,8 +182,10 @@
                                                         <span><b>【用户】</b></span>{{ str_limit($item->owner_phone ?:'--', 11) }}
                                                         <div style="height: 20px"></div>
                                                         {{--凭证开放路由--}}
-                                                        <img id="" src="{{ config('app.api_res_url') }}/{{ $item->payment_url }}" style="width:570px;border-radius:20px"
-                                                             onerror="this.src='http://placehold.it/570x922'" onclick="rotate(this)"/>
+                                                        <span style="margin-left: 98px">
+                                                        <img id="" src="{{ config('app.api_res_url') }}/{{ $item->payment_url }}" style="width:370px;border-radius:20px"
+                                                             onerror="this.src='http://placehold.it/370x802'" onclick="rotate(this)"/>
+                                                        </span>
                                                         <p></p>
                                                     </div>
                                                     <div style="height: 55px"></div>
