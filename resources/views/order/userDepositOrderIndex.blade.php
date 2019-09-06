@@ -68,7 +68,7 @@
                                     <td title="{{$item->currency_title_cn.' ('.$item->currency_title_en_abbr.')'}}">
                                         <span class="label label-success">{{ str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',15) }}</span>
                                     </td>
-                                    <td title="{{number_format($item->deposit_amount,8,'.',',')}}">{{ number_format($item->deposit_amount,8,'.',',') }}</td>
+                                    <td title="{{number_format($item->deposit_amount,8)}}">{{ floatval($item->deposit_amount) }}</td>
                                     <td title="{{$item->deposit_trade_id}}">{{ $item->deposit_trade_id }}</td>
                                     <td title="{{ $item->sys_crypto_wallet_title }}"><strong>{{ str_limit($item->sys_crypto_wallet_title,15) }}</strong></td>
                                     <td title="{{$item->from}}">{{ strtotime($item->from, 15) }}</td>

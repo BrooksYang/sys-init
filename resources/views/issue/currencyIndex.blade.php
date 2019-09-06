@@ -77,8 +77,8 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{ number_format($item->currency_issue_amount,8,'.',',') }}</td>
-                                    <td>{{ number_format($item->currency_issue_circulation,8,'.',',') }}</td>
+                                    <td title="{{ number_format($item->currency_issue_amount,8) }}">{{ floatval($item->currency_issue_amount) }}</td>
+                                    <td title="{{ number_format($item->currency_issue_circulation,8)}}">{{ floatval($item->currency_issue_circulation) }}</td>
                                     <td>
                                      <!-- Button trigger modal -->
                                         <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLong{{$key}}">

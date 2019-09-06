@@ -105,5 +105,126 @@ class OtcOrderQuick extends Model
         return $query->where('status', $status);
     }
 
+    /**
+     * 数值格式化
+     *
+     * @param $value
+     * @return string
+     */
+    public function getMerchantAmountAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 数值格式化
+     *
+     * @param $value
+     * @return string
+     */
+    public function getMerchantFinalAmountAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 数值格式化
+     *
+     * @param $value
+     * @return string
+     */
+    public function getCashAmountAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 数值格式化
+     *
+     * @param $value
+     * @return string
+     */
+    public function getFieldAmountAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 数值格式化
+     *
+     * @param $value
+     * @return string
+     */
+    public function getPriceAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 数值格式化
+     *
+     * @param $value
+     * @return string
+     */
+    public function getRateAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 数值格式化
+     *
+     * @param $value
+     * @return string
+     */
+    public function getRateSysAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 数值格式化
+     *
+     * @param $value
+     * @return string
+     */
+    public function getIncomeTotalAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 数值格式化
+     *
+     * @param $value
+     * @return string
+     */
+    public function getIncomeSysAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 数值格式化
+     *
+     * @param $value
+     * @return string
+     */
+    public function getIncomeMerchantAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 数值格式化
+     *
+     * @param $value
+     * @return string
+     */
+    public function getIncomeUserAttribute($value)
+    {
+        return floatval($value);
+    }
+
 }
 

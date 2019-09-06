@@ -242,9 +242,9 @@
                                         <strong><a {!! $item->address ? 'href="https://etherscan.io/tx/'.$item->address.'"'.' target="_blank"' : '####' !!}>
                                                 {{ str_limit($item->address ?: '--',15) }}</a></strong>
                                     </td>
-                                    <td>{{ number_format($item->total,8) }}</td>
-                                    <td>{{ number_format($item->amount,8) }}</td>
-                                    <td>{{ number_format($item->fee,8) }}</td>
+                                    <td title="{{ number_format($item->total,8) }}">{{ floatval($item->total) }}</td>
+                                    <td title="{{ number_format($item->amount,8) }}">{{ floatval($item->amount) }}</td>
+                                    <td title="{{ number_format($item->amount,8) }}">{{ floatval($item->fee) }}</td>
                                     <td><span class="label label-{{$status[$item->status]['class']}}">{{ $status[$item->status]['name'] }}</span></td>
                                     <td title="{{$item->desc}}">{{ str_limit($item->desc ?: '--', 15) }}</td>
                                     <td>{{ $item->created_at ?:'--' }}</td>

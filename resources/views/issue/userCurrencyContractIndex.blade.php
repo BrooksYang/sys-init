@@ -45,12 +45,16 @@
                             @forelse($userCurrencyContract as $key => $item)
                                 <tr>
                                     <td>{{ ($key + 1) + ($userCurrencyContract->currentPage() - 1) * $userCurrencyContract->perPage() }}</td>
-                                    <td title="{!! $item->currency_title_cn.'&nbsp;&nbsp;('.$item->currency_title_en_abbr.')' !!}"><strong>{!! str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',15)  !!} </strong></td>
-                                    <td>{{ number_format($item->user_withdraw_daily_amount_limit, 8,'.',',')}}</td>
-                                    <td>{{ $item->user_withdraw_daily_count_limit }}</td>
+                                    <td title="{!! $item->currency_title_cn.'&nbsp;&nbsp;('.$item->currency_title_en_abbr.')' !!}">
+                                        <strong>{!! str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',15)  !!} </strong></td>
+                                    <td title="{{ number_format($item->user_withdraw_daily_amount_limit, 8)}}">
+                                        {{ floatval($item->user_withdraw_daily_amount_limit)}}</td>
+                                    <td title="">{{ $item->user_withdraw_daily_count_limit }}</td>
                                     <td>{{ $item->user_withdraw_fee_rate }}</td>
-                                    <td>{{ number_format($item->user_deposit_minimum_amount, 8,'.',',')}}</td>
-                                    <td>{{ number_format($item->user_sell_daily_limit, 8,'.',',')}}</td>
+                                    <td title="{{ number_format($item->user_deposit_minimum_amount, 8)}}">
+                                        {{ floatval($item->user_deposit_minimum_amount)}}</td>
+                                    <td title="{{ number_format($item->user_sell_daily_limit, 8)}}">
+                                        {{ floatval($item->user_sell_daily_limit)}}</td>
                                     <td>
                                         <!-- Button trigger modal -->
                                         <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLong{{$key}}">

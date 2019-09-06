@@ -138,12 +138,12 @@
                                     <td title="{{$item->currency_title_cn.' ('.$item->currency_title_en_abbr.')'}}">
                                         <span class="">{{ str_limit($item->currency_title_en_abbr,15) }}</span>
                                     </td>
-                                    <td title="{{number_format($item->price,8,'.',',') }}">{{ number_format($item->price,8,'.',',') }}</td>
+                                    <td title="{{number_format($item->price)}}">{{ floatval($item->price) }}</td>
                                     <td title="{{ $item->name }}">{{ $item->abbr }}</td>
-                                    <td title="{{number_format($item->field_amount, 8) }}">{{ number_format($item->field_amount, 8) }}</td>
-                                    <td title="{{number_format($item->cash_amount, 8) }}">{{ number_format($item->cash_amount, 8) }}</td>
-                                    <td title="{{number_format($item->fee, 8) }}">{{ number_format($item->fee, 8) }}</td>
-                                    <td title="{{number_format($item->final_amount, 8) }}">{{ number_format($item->final_amount, 8) }}</td>
+                                    <td title="{{number_format($item->field_amount, 8) }}">{{ floatval($item->field_amount) }}</td>
+                                    <td title="{{number_format($item->cash_amount, 8) }}">{{ floatval($item->cash_amount) }}</td>
+                                    <td title="{{number_format($item->fee, 8) }}">{{ floatval($item->fee) }}</td>
+                                    <td title="{{number_format($item->final_amount, 8) }}">{{ floatval($item->final_amount) }}</td>
                                     <td><span class="label label-{{ $orderStatus[$item->status]['class'] ??''}}">
                                             {{ $orderStatus[$item->status]['name'] ?? '--'}}</span>
                                     </td>

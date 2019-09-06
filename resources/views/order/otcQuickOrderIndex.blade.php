@@ -120,17 +120,17 @@
                                     <td title="UID：{{ $item->user_id }} | 联系方式：{{ @$item->user->phone ?: @$item->user->email}}">
                                         <strong>{{ str_limit(@$item->user->username ?: (@$item->user->phone ?:@$item->user->email) ?:'--',8) }}</strong></td>
                                     <td>{{ str_limit($item->owner_phone ?:'--', 11) }}</td>
-                                    <td>{{ number_format($item->merchant_amount, 8) }}</td>
+                                    <td>{{ $item->merchant_amount }}</td>
                                     {{--<td title="商户结算数量">{{ number_format($item->merchant_final_amount, 8) }}</td>--}}
-                                    <td>{{ number_format($item->merchant_rate, 2) }}</td>
-                                    <td>{{ number_format($item->cash_amount, 8) }}</td>
-                                    <td>{{ number_format($item->field_amount, 8) }}</td>
-                                    <td>{{ number_format($item->price, 2) }}</td>
-                                    <td>{{ number_format($item->rate_sys, 2) }}</td>
-                                    {{--<td>{{ number_format($item->income_total, 8) }}</td>--}}
-                                    <td>{{ number_format($item->income_sys, 8) }}</td>
-                                    <td>{{ number_format($item->income_merchant, 8) }}</td>
-                                    <td>{{ number_format($item->income_user, 8) }}</td>
+                                    <td>{{ $item->merchant_rate}}</td>
+                                    <td>{{ $item->cash_amount }}</td>
+                                    <td>{{ $item->field_amount }}</td>
+                                    <td>{{ $item->price }}</td>
+                                    <td>{{ $item->rate_sys }}</td>
+                                    {{--<td>{{ $item->income_total }}</td>--}}
+                                    <td>{{ $item->income_sys }}</td>
+                                    <td>{{ $item->income_merchant }}</td>
+                                    <td>{{ $item->income_user }}</td>
                                     <td title="{{$item->remark}}">{{ str_limit($item->remark ?: '--', 8) }}</td>
                                     <td title="{{$item->card_number}}">{{ str_limit($item->card_number ?: '--', 8) }}</td>
 
