@@ -45,9 +45,12 @@ class OtcSysIncomeController extends Controller
             return view('wallet.otcDepositFeeIncomeIndex', $depositIncome);
         }
 
+        // OTC 快捷购买溢价收益
         if ($request->type == 'orderQuick') {
+
             $request->filterStatus = OtcOrderQuick::RECEIVED;
             $orderQuickIncome = $this->orderQuickIncome($request);
+
             return view('wallet.otcQuickOrderIncomeIndex', $orderQuickIncome);
         }
 
@@ -319,7 +322,9 @@ class OtcSysIncomeController extends Controller
      */
     public function orderQuickIncome($request)
     {
-        $quickOrder = OtcOrderQuickController::quickOrder($request);
+        // OTC 系统收益类型
+        $incomeType = $this->incomeType;
+        $quickOrder = OtcOrderQuickController::quickOrder($request, $incomeType);
 
         return $quickOrder;
     }

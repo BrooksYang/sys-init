@@ -15,6 +15,25 @@
                     {{-- Filter and Search  Button --}}
                     <div class="pull-right" style="margin: 20px 20px;">
                         @include('component.conditionSearch', ['url'=>url('otc/sys/income')])
+
+                        @if($incomeType)
+                        <button data-toggle="dropdown" class="btn btn-default dropdown-toggle" type="button" style="margin-left: 10px;">
+                            收益类型<span class="caret"></span>
+                        </button>
+                        <ul role="menu" class="dropdown-menu">
+                            @foreach($incomeType as $key=>$item)
+                                <li><a href="{{ $item['url'] }}">{{ $item['name'] }}
+                                        @if ($key==1 && !Request::get('type'))
+                                            &nbsp;<i class="fa fa-check txt-info"></i>
+                                        @elseif($key==2 && Request::get('type')=='deposit')
+                                            &nbsp;<i class="fa fa-check txt-info"></i>
+                                        @elseif($key==3 && Request::get('type')=='orderQuick')
+                                            &nbsp;<i class="fa fa-check txt-info"></i>
+                                        @endif
+                                    </a></li>
+                            @endforeach
+                        </ul>
+                        @endif
                     </div>
 
                 </div>
@@ -59,7 +78,7 @@
                         <div class="row" style="margin-bottom:10px;">
                             {{--订单状态--}}
                             <div class="col-sm-2">
-                                <select class="flter-status form-control input-sm" id="filterStatus" name="filterStatus">
+                                <select class="flter-status form-control input-sm" id="filterStatus" name="filterStatus" disabled>
                                     <option value="">请选择订单状态</option>
                                     @foreach($orderStatus as $key => $item)
                                         <option value="{{$key}}" {{ Request::get('filterStatus')==$key ||
@@ -120,7 +139,7 @@
                                     <td>{{ ($key + 1) + ($otcQuickOrder->currentPage() - 1) * $otcQuickOrder->perPage() }}</td>
                                     <td>#{{ $item->id }}</td>
                                     <td title="UID：{{ $item->user_id }} | 联系方式：{{ @$item->user->phone ?: @$item->user->email}}">
-                                        <strong>{{ str_limit(@$item->user->username ?: (@$item->user->phone ?:@$item->user->email) ?:'--',10) }}</strong></td>
+                                        <strong>{{ str_limit(@$item->user->username ?: (@$item->user->phone ?:@$item->user->email) ?:'--',8) }}</strong></td>
                                     <td>{{ str_limit($item->owner_phone ?:'--', 11) }}</td>
                                     <td>{{ number_format($item->merchant_amount, 8) }}</td>
                                     {{--<td title="商户结算数量">{{ number_format($item->merchant_final_amount, 8) }}</td>--}}
@@ -206,7 +225,8 @@
                                             <b>{{ $otcQuickOrder->total() }}</b>&nbsp;单<br>
                                         总收益： <b>{{ number_format($statistics['totalIncome'] ?: 0, 8) }}</b> |
                                         平台收益：<b>{{ number_format($statistics['totalIncomeSys'] ?: 0, 8) }} </b> |
-                                        商户收益：<b>{{ number_format($statistics['totalIncomeMerchant'] ?: 0, 8) }} </b>
+                                        商户收益：<b>{{ number_format($statistics['totalIncomeMerchant'] ?: 0, 8) }} </b> |
+                                        币商收益：<b>{{ number_format($statistics['totalIncomeUser'] ?: 0, 8) }} </b>
                                     </div>
                                 @endif
                                 <div class="pull-right">

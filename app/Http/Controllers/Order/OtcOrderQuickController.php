@@ -24,7 +24,7 @@ class OtcOrderQuickController extends Controller
      */
     public function index(Request $request)
     {
-       $quickOrder = self::quickOrder($request);
+        $quickOrder = self::quickOrder($request);
 
         return view('order.otcQuickOrderIndex', $quickOrder);
     }
@@ -33,9 +33,10 @@ class OtcOrderQuickController extends Controller
      * 快捷订单数据查询
      *
      * @param $request
+     * @param $incomeType
      * @return array
      */
-    public static function quickOrder($request)
+    public static function quickOrder($request, $incomeType = '')
     {
         // 多条件搜索
         $searchUser = trim($request->searchUser,''); // 币商
@@ -52,7 +53,7 @@ class OtcOrderQuickController extends Controller
         $end = trim($request->end,'');
         $orderC = trim($request->orderC ?: 'desc','');
 
-        //1已下单，2已支付，3确认收款(已发币)，4确认收币，5已取消
+        // 订单状态, 1已下单，2已支付，3确认收款(已发币)，4确认收币，5已取消
         $orderStatus = OtcOrderQuick::STATUS;
 
         // 申诉状态，1已申诉，2申诉处理中，3申诉完结
@@ -110,7 +111,7 @@ class OtcOrderQuickController extends Controller
         $statistics = self::sum($otcQuickOrder);
         $otcQuickOrder = self::selfPage($otcQuickOrder, config('app.pageSize'));
 
-        return compact('orderStatus', 'appealStatus', 'otcQuickOrder','statistics','search');
+        return compact('orderStatus', 'appealStatus', 'otcQuickOrder','statistics','search', 'incomeType');
     }
 
     /**
@@ -141,16 +142,17 @@ class OtcOrderQuickController extends Controller
     public static function sum($otcOrder)
     {
         //bcscale(config('app.bcmath_scale'));
-        list($totalFieldAmount, $totalIncome, $totalIncomeSys,$totalIncomeMerchant)= [0, 0, 0, 0];
+        list($totalFieldAmount, $totalIncome, $totalIncomeSys,$totalIncomeMerchant, $totalIncomeUser)= [0, 0, 0, 0, 0];
 
         foreach ($otcOrder ?? [] as $key => $item){
             $totalFieldAmount += $item->field_amount; // 累计交易数量
             $totalIncome += $item->income_total;  // 累计总收益
             $totalIncomeSys += $item->income_sys;  // 累计平台收益
             $totalIncomeMerchant += $item->income_merchant;  // 累计商户收益
+            $totalIncomeUser += $item->income_user;  // 累计币商收益
         }
 
-        return compact('totalFieldAmount','totalIncome','totalIncomeSys','totalIncomeMerchant');
+        return compact('totalFieldAmount','totalIncome','totalIncomeSys','totalIncomeMerchant','totalIncomeUser');
     }
 
 }
