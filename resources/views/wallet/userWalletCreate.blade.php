@@ -56,7 +56,6 @@
                                                                     <input type="radio" name="balance" value='available' checked>可用余额
                                                                 </label>&nbsp;&nbsp;&nbsp;
                                                                 <label >
-                                                                    <input type="radio" name="balance" value='frozen'>冻结余额
                                                                     @if ($errors->has('balance'))
                                                                         <p class="help-block" style="color: red;"><strong>{{ $errors->first('balance') }}</strong></p>
                                                                     @endif
@@ -71,6 +70,16 @@
                                                                    value="{{ $item->amount ?? old('amount') }}"  placeholder="请填写数额">
                                                             @if ($errors->has('amount'))
                                                                 <p class="" style="color: red;"><strong>{{ $errors->first('amount') }}</strong></p>
+                                                            @endif
+                                                        </div>
+
+                                                        <div class="col-md-12">
+                                                            <br>
+                                                            <label>备注信息</label>
+                                                            <input class="form-control input-lg" type="text" name="remark"
+                                                                   value="{{ $item->remark ?? old('remark') }}"  placeholder="建议填写备注或说明">
+                                                            @if ($errors->has('remark'))
+                                                                <p class="" style="color: red;"><strong>{{ $errors->first('remark') }}</strong></p>
                                                             @endif
                                                         </div>
 

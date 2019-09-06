@@ -109,17 +109,33 @@ class UserWalletController extends Controller
      * @param UserWalletRequest $request
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
+     * @throws \Throwable
      */
     public function update(UserWalletRequest $request, $id)
     {
         bcscale(config('app.bcmath_scale'));
-
         $action = $request->action == 'add' ? 'bcadd' : 'bcsub';
-        $field = $request->balance == 'available' ? 'user_wallet_balance' : 'user_wallet_balance_freeze_amount';
 
-        $balance = Balance::findOrFail($id);
-        $balance->$field = $action($balance->$field, $request->amount);
-        $balance->save();
+        $balance = Balance::lockForUpdate()->find($id);
+
+        DB::transaction(function () use ($request, $id, $action, $balance){
+
+            // 更新余额
+            $from = $balance->user_wallet_balance;
+            $balance->user_wallet_balance = $action($balance->user_wallet_balance, $request->amount);
+            $balance->save();
+            $to = $balance->user_wallet_balance;
+
+            // 变更记录
+            WalletsBalanceLog::create([
+               'user_id' => $balance->user_id,
+               'currency_id' => $balance->user_wallet_currency_id,
+               'amount' => $request->amount,
+               'from' => $from,
+               'to' => $to,
+               'remark' => $request->remark
+            ]);
+        });
 
         return back();
     }

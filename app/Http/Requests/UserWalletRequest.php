@@ -28,6 +28,7 @@ class UserWalletRequest extends FormRequest
             'action'  => 'required|in:add,sub',
             'balance' => 'required|in:available,frozen',
             'amount'  => 'required|numeric|min:0',
+            'remark'  => 'nullable|max:255',
            /* 'user_wallet_currency_id' =>
                 'required|numeric|min:1|unique:wallet_balances,user_wallet_currency_id,'.$request->wallet,
             'user_wallet_balance' =>
