@@ -102,9 +102,9 @@
                                     <td>{{ ($key + 1) + ($otcQuickDeposits->currentPage() - 1) * $otcQuickDeposits->perPage() }}</td>
                                     <td title="{{$item->phone}}"><strong>{{ str_limit($item->username?$item->username:$item->phone,15) }}</strong></td>
                                     <td title="{{ $item->order_no }}">{{ $item->order_no }}</td>
-                                    <td>{{ number_format($item->amount,8)}}</td>
-                                    <td>{{ number_format($item->usdt_amount,8)}}</td>
-                                    <td>{{ number_format($item->rate,8)}}</td>
+                                    <td title="{{ number_format($item->amount,8)}}">{{ floatval($item->amount,8)}}</td>
+                                    <td title="{{ number_format($item->usdt_amount,8)}}">{{ floatval($item->usdt_amount)}}</td>
+                                    <td title="{{ number_format($item->rate,8)}}">{{ floatval($item->rate)}}</td>
                                     <td title="{{ $item->trade_no }}">{{$item->trade_no ?: '--'}}</td>
                                     <td class="hbfont" title="{{ $payType[$item->pay_type]['name'] }}"><i class="{{ $payType[$item->pay_type]['class'] }}"></i></td>
                                     <td>

@@ -78,12 +78,12 @@
                                     <td title="{{$item->currency_title_cn.' ('.$item->currency_title_en_abbr.')'}}">
                                         <span class="label label-success">{{ str_limit($item->currency_title_en_abbr,15) }}</span>
                                     </td>
-                                    <td title="{{number_format($item->price,8,'.',',') }}">{{ number_format($item->price,8,'.',',') }}</td>
+                                    <td title="{{number_format($item->price) }}">{{ floatval($item->price) }}</td>
                                     <td title="{{ $item->name }}">{{ $item->abbr }}</td>
-                                    <td title="{{number_format($item->field_amount,8,'.',',') }}">{{ number_format($item->field_amount,8,'.',',') }}</td>
-                                    <td title="{{number_format($item->floor,8,'.',',') }}">{{ number_format($item->floor,8,'.',',') }}</td>
-                                    <td title="{{number_format($item->ceiling,8,'.',',') }}">{{ number_format($item->ceiling,8,'.',',') }}</td>
-                                    <td title="{{number_format($item->field_amount,8,'.',',') }}">{{ number_format($item->field_amount,8,'.',',') }}</td>
+                                    <td title="{{number_format($item->field_amount) }}">{{ floatval($item->field_amount) }}</td>
+                                    <td title="{{number_format($item->floor) }}">{{ floatval($item->floor) }}</td>
+                                    <td title="{{number_format($item->ceiling) }}">{{ floatval($item->ceiling) }}</td>
+                                    <td title="{{number_format($item->field_amount) }}">{{ floatval($item->field_amount) }}</td>
                                     <td title="{{ $item->field_order_count }}">{{ $item->field_order_count }}</td>
                                     <td title="{{ $item->field_percentage }}%">{{ $item->field_percentage }}%</td>
                                     <td>

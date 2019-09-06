@@ -50,8 +50,8 @@
                                     <td title="{{$item->currency_title_cn.' ('.$item->currency_title_en_abbr.')'}}">
                                         <span class="label label-success">{{ str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',15) }}</span>
                                     </td>
-                                    <td title="{{number_format($item->available,8,'.',',')}}">{{ number_format($item->available,8,'.',',')}}</td>
-                                    <td title="{{number_format($item->frozen,8,'.',',')}}">{{ number_format($item->frozen,8,'.',',') }}</td>
+                                    <td title="{{number_format($item->available,8)}}">{{ floatval($item->available)}}</td>
+                                    <td title="{{number_format($item->frozen,8)}}">{{ floatval($item->frozen) }}</td>
                                     <td>
                                         <a href="{{ url("otc/user/wallet/$item->id/edit") }}">
                                             <i class="fontello-edit" title="编辑"></i>

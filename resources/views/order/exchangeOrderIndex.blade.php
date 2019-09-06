@@ -107,13 +107,13 @@
                                     <td><span class="label label-info">{{ strtoupper($item->base_currency) }}/{{ strtoupper($item->quote_currency) }}</span></td>
                                     <td>{{ $item->maker_fee.'%'}}</td>
                                     <td>{{ $item->taker_fee.'%'}}</td>
-                                    <td>{{ number_format($item->amount,8,'.',',') }}</td>
-                                    <td>{{ number_format($item->field_amount,8,'.',',') }}</td>
-                                    <td>{{ number_format($item->left_amount,8,'.',',') }}</td>
-                                    <td>{{ number_format($item->total,8,'.',',') }}</td>
-                                    <td>{{ number_format($item->field_cash_amount,8,'.',',') }}</td>
-                                    <td>{{ number_format($item->price,8,'.',',') }}</td>
-                                    <td>{{ number_format($item->traded_average_price,8,'.',',') }}</td>
+                                    <td>{{ floatval($item->amount) }}</td>
+                                    <td>{{ floatval($item->field_amount) }}</td>
+                                    <td>{{ floatval($item->left_amount) }}</td>
+                                    <td>{{ floatval($item->total) }}</td>
+                                    <td>{{ floatval($item->field_cash_amount) }}</td>
+                                    <td>{{ floatval($item->price) }}</td>
+                                    <td>{{ floatval($item->traded_average_price) }}</td>
                                     <td>
                                         <span class="label label-{{ $status[$item->status]['class'] }}">{{ $status[$item->status]['name'] }}</span>
                                     </td>

@@ -44,9 +44,9 @@
                                     <td title="{{$item->currency_title_cn.' ('.$item->currency_title_en_abbr.')'}}">
                                         <span class="label label-success">{{ str_limit($item->currency_title_cn. '('.$item->currency_title_en_abbr.')',25) }}</span>
                                     </td>
-                                    <td title="{{number_format($item->sys_wallet_balance,8,'.',',')}}">{{ number_format($item->sys_wallet_balance,8,'.',',') }}</td>
-                                    <td title="{{number_format($item->sys_wallet_balance_freeze_amount,8,'.',',')}}">{{ number_format($item->sys_wallet_balance_freeze_amount,8,'.',',') }}</td>
-                                    <td title="{{number_format($item->lost,10,'.',',')}}">{{ number_format($item->lost,10,'.',',') }}</td>
+                                    <td title="{{number_format($item->sys_wallet_balance,8)}}">{{ floatval($item->sys_wallet_balance) }}</td>
+                                    <td title="{{number_format($item->sys_wallet_balance_freeze_amount,8)}}">{{ floatval($item->sys_wallet_balance_freeze_amount) }}</td>
+                                    <td title="{{number_format($item->lost,10)}}">{{ floatval($item->lost) }}</td>
                                     <td>
                                         <a href="{{ url("sys/wallet/$item->id/edit") }}">
                                             <i class="fontello-edit" title="编辑"></i>

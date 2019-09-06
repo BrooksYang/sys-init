@@ -141,9 +141,9 @@ class WalletTransaction extends Model
      * @param $value
      * @return string
      */
-    public function getAmountAttributes($value)
+    public function getAmountAttribute($value)
     {
-        return number_format($value, 8);
+        return floatval($value);
     }
 
     /**
@@ -152,9 +152,9 @@ class WalletTransaction extends Model
      * @param $value
      * @return string
      */
-    public function getFeeAttributes($value)
+    public function getFeeAttribute($value)
     {
-        return number_format($value, 8);
+        return floatval($value);
     }
 
 
