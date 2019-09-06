@@ -118,7 +118,7 @@
                                     <td>{{ ($key + 1) + ($otcQuickOrder->currentPage() - 1) * $otcQuickOrder->perPage() }}</td>
                                     <td>#{{ $item->id }}</td>
                                     <td title="UID：{{ $item->user_id }} | 联系方式：{{ @$item->user->phone ?: @$item->user->email}}">
-                                        <strong>{{ str_limit(@$item->user->username ?: (@$item->user->phone ?:@$item->user->email) ?:'--',10) }}</strong></td>
+                                        <strong>{{ str_limit(@$item->user->username ?: (@$item->user->phone ?:@$item->user->email) ?:'--',8) }}</strong></td>
                                     <td>{{ str_limit($item->owner_phone ?:'--', 11) }}</td>
                                     <td>{{ number_format($item->merchant_amount, 8) }}</td>
                                     {{--<td title="商户结算数量">{{ number_format($item->merchant_final_amount, 8) }}</td>--}}
