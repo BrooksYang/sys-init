@@ -213,7 +213,7 @@ return [
     | 交易所API资源访问路径
     |
     */
-    'api_res_url' => env('API_RES_URL','https://ex-api.workwithme.vip'),
+    'api_res_url' => env('API_RES_URL','https://exapi.neucontract.com'),
 
     /*
     |--------------------------------------------------------------------------
