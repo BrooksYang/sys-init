@@ -2,6 +2,9 @@
 
 return [
 
+    // 系统页面布局全屏
+    'layout_full' => env('LAYOUT_FULL', true),
+
     // 客服人员角色
     'supervisor_role' => env('SUPERVISOR_ROLE', 3),
 

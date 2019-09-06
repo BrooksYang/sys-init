@@ -18,8 +18,11 @@
 
     <!-- Custom styles for this template -->
     {{--Layout Full width--}}
-   {{-- <link rel="stylesheet" href="{{ asset('vendor/entrance/css/theme-nopadding.css') }}">--}}
-    <link rel="stylesheet" href="{{ asset('vendor/entrance/css/theme.css') }}">
+    @if(config('conf.layout_full'))
+        <link rel="stylesheet" href="{{ asset('vendor/entrance/css/theme-nopadding.css') }}">
+    @else
+        <link rel="stylesheet" href="{{ asset('vendor/entrance/css/theme.css') }}">
+    @endif
     <link rel="stylesheet" href="{{ asset('vendor/entrance/css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/entrance/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/entrance/css/dripicon.css') }}">
