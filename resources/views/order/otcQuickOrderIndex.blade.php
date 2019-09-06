@@ -145,7 +145,9 @@
                                             <div class="modal-dialog" role="document" width="auto">
                                                 <div class="modal-content" width="auto">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLongTitle{{$key}}">{!!  '<i class="fontello-user-1"></i>'.$item->username !!}</h5>
+                                                        <h5 class="modal-title" id="exampleModalLongTitle{{$key}}"><i class="fontello-user-1"></i>
+                                                            {{ str_limit(@$item->user->username ?:(@$item->user->phone ?:@$item->user->email)?:'--',8) }}
+                                                        </h5>
                                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
