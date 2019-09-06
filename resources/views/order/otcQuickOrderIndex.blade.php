@@ -208,7 +208,8 @@
                                             <b>{{ $otcQuickOrder->total() }}</b>&nbsp;单<br>
                                         总收益： <b>{{ number_format($statistics['totalIncome'] ?: 0, 8) }}</b> |
                                         平台收益：<b>{{ number_format($statistics['totalIncomeSys'] ?: 0, 8) }} </b> |
-                                        商户收益：<b>{{ number_format($statistics['totalIncomeMerchant'] ?: 0, 8) }} </b>
+                                        商户收益：<b>{{ number_format($statistics['totalIncomeMerchant'] ?: 0, 8) }} </b> |
+                                        币商收益：<b>{{ number_format($statistics['totalIncomeUser'] ?: 0, 8) }} </b>
                                     </div>
                                 @endif
                                 <div class="pull-right">
