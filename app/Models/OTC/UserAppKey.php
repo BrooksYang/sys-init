@@ -31,6 +31,16 @@ class UserAppKey extends Model
     }
 
     /**
+     * 获取商户旗下用户
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function users()
+    {
+        return $this->hasMany(User::class, 'access_key', 'access_key');
+    }
+
+    /**
      * 格式化ip
      *
      * @param $value

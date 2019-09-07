@@ -214,7 +214,7 @@ class UserAppKeyController extends Controller
         $merchant = User::find($id);
 
         // 商户旗下用户id
-        $userIds = $merchant->appKey->user()->pluck('id')->toArray();
+        $userIds = $merchant->appKey->users()->pluck('id')->toArray();
 
         // 订单总额
         $orders = OtcOrder::where('type', OtcOrder::BUY)
