@@ -89,7 +89,7 @@
                     <hr>
                     <div class="row">
                         <div class="col-md-4">
-                            【用户总余额】 <strong>{{ number_format($totalBalance, 8) }}</strong>
+                            【用户总余额】 <strong style="color: #32526E">{{ number_format($totalBalance, 8) }}</strong>
                         </div>
                         <div class="col-md-4">
                             【广告累计余量】 <strong>{{ number_format($totalLeft, 8) }}</strong>
