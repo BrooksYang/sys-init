@@ -32,66 +32,70 @@
                     </h3>
                 </div>
 
-                <div class="box-body table-responsive no-padding">
-                    <table class="table table-hover {{--table-striped--}}">
-                       {{-- <tr>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr>--}}
-
-                        <tr>
-                            <td class="t-right"><i class="fontello-vcard"></i> 【UID】</td>
-                            <td colspan="8" class="t-left"><strong>#{{ $merchant->id }}</strong></td>
-                        </tr>
-                        <tr>
-                            <td class="t-right"><i class="fontello-user"></i>【用户名】</td>
-                            <td colspan="2" class="t-left">{{ $merchant->username ?: '--' }}</td>
-                            <td class="t-right"><i class="fontello-mobile-1"></i>【手机号】</td>
-                            <td colspan="2" class="t-left"><span class="label label-info">{{ $merchant->phone ?:'--' }}</span></td>
-                            <td class="t-right"><i class="fontello-mail"></i>【邮箱】</td>
-                            <td colspan="2" class="t-left">{{ $merchant->email ?: '--' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="t-right">累计广告卖出</td>
-                            <td colspan="2" class="t-left">{{ number_format($totalTradesSell, 8) }}</td>
-                            <td class="t-right">商户买入</td>
-                            <td colspan="2" class="t-left">{{ number_format($field, 8)}}</td>
-                            <td class="t-right">商户到账</td>
-                            <td colspan="2" class="t-left">{{ number_format($final, 8) }}</td>
-                        </tr>
-                        <tr>
-                            <td class="t-right">商户提币</td>
-                            <td colspan="2" class="t-left">{{ number_format($withdraw, 8) }}</td>
-                            <td class="t-right">广告卖出</td>
-                            <td colspan="2" class="t-left">{{ number_format($sell, 8) }}</td>
-                            <td class="t-right" title="">商户出金</td>
-                            <td colspan="2" class="t-left">{{ number_format($out, 8) }}</td>
-                        </tr>
-                        <tr>
-                            <td class="t-right" title="（商户正常余额）">商户正常余额</td>
-                            <td colspan="2" class="t-left">{{ number_format($correctBalance, 8) }}</td>
-                            <td class="t-right" title="（商户当前余额）">商户当前余额</td>
-                            <td colspan="2" class="t-left">{{ number_format($currentBalance, 8) }}&nbsp;【冻结】{{ number_format($frozen, 8) }}</td>
-                            <td class="t-right">用户累计充值</td>
-                            <td colspan="2" class="t-left">{{ number_format($totalDeposit, 8) }}</td>
-                        </tr>
-                        <tr>
-                            <td class="t-right" title="（用户总余额）">用户总余额</td>
-                            <td colspan="2" class="t-left">{{ number_format($totalBalance, 8) }}</td>
-                            <td class="t-right" title="（广告累计余量)">广告累计余量</td>
-                            <td colspan="2" class="t-left">{{ number_format($totalLeft, 8) }}</td>
-                            <td class="t-right"></td>
-                            <td colspan="2" class="t-left"></td>
-                        </tr>
-
-                    </table>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <i class="fontello-vcard"></i> 【UID】<strong>#{{ $merchant->id }}</strong>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <i class="fontello-user"></i>【用户名】{{ $merchant->username ?: '--' }}
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fontello-mobile-1"></i>【手机号】<span class="label label-info">{{ $merchant->phone ?:'--' }}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fontello-mail"></i>【邮箱】{{ $merchant->email ?: '--' }}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-4">
+                            【累计广告卖出】<strong>{{ number_format($totalTradesSell, 8) }}</strong>
+                        </div>
+                        <div class="col-md-4">
+                            【商户买入】 <strong>{{ number_format($field, 8)}}</strong>
+                        </div>
+                        <div class="col-md-4">
+                            【商户到账】 <strong>{{ number_format($final, 8) }}</strong>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-4">
+                            【商户提币】 <strong>{{ number_format($withdraw, 8) }}</strong>
+                        </div>
+                        <div class="col-md-4">
+                            【广告卖出】 <strong>{{ number_format($sell, 8) }}</strong>
+                        </div>
+                        <div class="col-md-4">
+                            【商户出金】 <strong>{{ number_format($out, 8) }}</strong>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-4">
+                            【商户正常余额】 <strong>{{ number_format($correctBalance, 8) }}</strong>
+                        </div>
+                        <div class="col-md-4">
+                            【商户当前余额】 <strong>{{ number_format($currentBalance, 8) }}&nbsp;</strong>
+                            【冻结】<strong>{{ number_format($frozen, 8) }}</strong>
+                        </div>
+                        <div class="col-md-4">
+                            【用户累计充值】 <strong>{{ number_format($totalDeposit, 8) }}</strong>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-4">
+                            【用户总余额】 <strong>{{ number_format($totalBalance, 8) }}</strong>
+                        </div>
+                        <div class="col-md-4">
+                            【广告累计余量】 <strong>{{ number_format($totalLeft, 8) }}</strong>
+                        </div>
+                    </div>
+                    <div style="height: 50px"></div>
 
                     {{-- Paginaton --}}
                     <div class="row">
