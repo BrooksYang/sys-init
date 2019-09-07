@@ -210,6 +210,7 @@ class UserAppKeyController extends Controller
      */
     public function show($id)
     {
+        // 用户起始id - 133; 自有币商id - 277
         // 商户
         $merchant = User::find($id);
 
@@ -266,7 +267,7 @@ class UserAppKeyController extends Controller
         // 用户总余额
         $balances = Balance::where('user_wallet_currency_id', Currency::USDT)
             ->where('user_id', '>=', 133)
-            ->whereNotIn('user_id', [134, 277])
+            ->whereNotIn('user_id', [$id, 277])
             ->get();
         $totalBalance = $balances->sum('user_wallet_balance') + $balances->sum('user_wallet_balance_freeze_amount');
 
