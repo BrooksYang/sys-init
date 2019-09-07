@@ -50,7 +50,7 @@
                                     <td title="{{ number_format($item->user_withdraw_daily_amount_limit, 8)}}">
                                         {{ floatval($item->user_withdraw_daily_amount_limit)}}</td>
                                     <td title="">{{ $item->user_withdraw_daily_count_limit }}</td>
-                                    <td>{{ $item->user_withdraw_fee_rate }}</td>
+                                    <td>{{ floatval($item->user_withdraw_fee_rate) }}</td>
                                     <td title="{{ number_format($item->user_deposit_minimum_amount, 8)}}">
                                         {{ floatval($item->user_deposit_minimum_amount)}}</td>
                                     <td title="{{ number_format($item->user_sell_daily_limit, 8)}}">
