@@ -158,4 +158,70 @@ class OtcOrder extends Model
         return $query->where('currency_id', $currency);
     }
 
+    /**
+     * 格式化数据
+     *
+     * @param $value
+     * @return float
+     */
+    public function getPriceAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 格式化数据
+     *
+     * @param $value
+     * @return float
+     */
+    public function getAmountAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 格式化数据
+     *
+     * @param $value
+     * @return float
+     */
+    public function getFieldAmountAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 格式化数据
+     *
+     * @param $value
+     * @return float
+     */
+    public function getCashAmountAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 格式化数据
+     *
+     * @param $value
+     * @return float
+     */
+    public function getFeeAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 格式化数据
+     *
+     * @param $value
+     * @return float
+     */
+    public function getFinalAmountAttribute($value)
+    {
+        return floatval($value);
+    }
+
 }

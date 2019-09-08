@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Order;
 
 use App\Models\Currency;
+use App\Models\OTC\OtcOrder;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -68,59 +69,57 @@ class UserOtcOrderController extends Controller
 
         $search = $searchUser || $searchOtc || $searchMerchant || $filterStatus|| $filterAppeal ||  $start || $end;
 
-        $userOtcOrder = DB::table('otc_orders as otcOrder')
-            ->join('users as u','otcOrder.user_id','u.id') //用户信息
-            ->join('users as fu','otcOrder.from_user_id','fu.id') //用户信息
-            ->join('currencies as currency','otcOrder.currency_id','currency.id')  //币种
-            ->join('legal_currencies as legal_currency','otcOrder.legal_currency_id','legal_currency.id') //法币
+        $userOtcOrder = OtcOrder::with(['user', 'tradeOwner','currency','legalCurrency'])
             ->when($searchUser, function ($query) use ($searchUser){
-                return $query->where('u.username', 'like', "%$searchUser%")
-                    ->orwhere('u.phone', 'like', "%$searchUser%")
-                    ->orwhere('u.email', 'like', "%$searchUser%");
+                $query->whereHas('user', function ($query) use ($searchUser) {
+                    $query->where('username', 'like', "%$searchUser%")
+                        ->orwhere('phone', 'like', "%$searchUser%")
+                        ->orwhere('email', 'like', "%$searchUser%");
+                });
             })
             ->when($searchFromUser, function ($query) use ($searchFromUser){
-                return $query->where('fu.username', 'like', "%$searchFromUser%")
-                    ->orwhere('fu.phone', 'like', "%$searchFromUser%")
-                    ->orwhere('fu.email', 'like', "%$searchFromUser%");
+                $query->whereHas('tradeOwner', function ($query) use ($searchFromUser) {
+                    $query->where('username', 'like', "%$searchFromUser%")
+                        ->orwhere('phone', 'like', "%$searchFromUser%")
+                        ->orwhere('email', 'like', "%$searchFromUser%");
+                });
             })
             ->when($searchOtc, function ($query) use ($searchOtc){
-                return $query->where('otcOrder.id',  'like', "%$searchOtc%");
+                return $query->where('.id',  'like', "%$searchOtc%");
             })
             ->when($searchRemark, function ($query) use ($searchRemark){
-                return $query->where('otcOrder.remark',  'like', "%$searchRemark%");
+                return $query->where('remark',  'like', "%$searchRemark%");
             })
             ->when($searchCardNumber, function ($query) use ($searchCardNumber){
-                return $query->where('otcOrder.card_number',  'like', "%$searchCardNumber%");
+                return $query->where('card_number',  'like', "%$searchCardNumber%");
             })
             ->when($searchMerchant, function ($query) use ($searchMerchant){
-                return $query->where('otcOrder.merchant_order_id', 'like', "%$searchMerchant%");
+                return $query->where('merchant_order_id', 'like', "%$searchMerchant%");
             })
+
             ->when($searchCurrency, function ($query) use ($searchCurrency){
-                return $query->where('otcOrder.currency_id', $searchCurrency);
+                $query->whereHas('currency', function ($query) use ($searchCurrency) {
+                    $query->where('id', $searchCurrency);
+                });
             })
             ->when($start, function ($query) use ($start){
-                return $query->where('otcOrder.created_at', '>=', $start);
+                return $query->where('created_at', '>=', $start);
             })
             ->when($end, function ($query) use ($end){
-                return $query->where('otcOrder.created_at', '<=', $end);
+                return $query->where('created_at', '<=', $end);
             })
             ->when($filterType, function ($query) use ($filterType){
-                return $query->where('otcOrder.type', $filterType);
+                return $query->type($filterType);
             })
             ->when($filterStatus, function ($query) use ($filterStatus){
-                return $query->where('otcOrder.status', $filterStatus);
+                return $query->status($filterStatus);
             })
             ->when($filterAppeal, function ($query) use ($filterAppeal){
-                return $query->where('otcOrder.appeal_status', $filterAppeal);
+                return $query->appealStatus($filterAppeal);
             })
             ->when($orderC, function ($query) use ($orderC){
-                return $query->orderBy('otcOrder.created_at', $orderC);
+                return $query->orderBy('created_at', $orderC);
             })
-            ->select(
-                'otcOrder.*', 'u.username', 'u.phone','u.email','fu.username as f_username','fu.phone as f_phone',
-                'currency.currency_title_cn','currency.currency_title_en_abbr',
-                'legal_currency.name','legal_currency.abbr'
-            )
             ->get();
 
         $statistics = $this->sum($userOtcOrder);

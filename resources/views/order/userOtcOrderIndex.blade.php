@@ -103,7 +103,6 @@
                                 <th>用户名</th>
                                 <th>备注</th>
                                 <th>付款卡号</th>
-                                {{--<th>广告用户</th>--}}
                                 <th>类型</th>
                                 <th>币种</th>
                                 <th>单价</th>
@@ -127,23 +126,18 @@
                                 <tr>
                                     <td>{{ ($key + 1) + ($userOtcOrder->currentPage() - 1) * $userOtcOrder->perPage() }}</td>
                                     <td>#{{ $item->id }}</td>
-                                    <td title="电话：{{$item->phone ?: $item->email}}">
-                                        <strong>{{ str_limit($item->username ? $item->username : ($item->phone ? $item->phone :$item->email),15) }}</strong></td>
-                                   {{-- <td title="{{ $item->from_username }} 电话：{{$item->from_user_phone}}"><strong>{{ str_limit($item->from_username,15) }}</strong></td>--}}
+                                    <td title="账号：{{@$item->user->email ?: @$item->user->phone}}">
+                                        <strong>{{ str_limit(@$item->user->username ?: (@$item->user->phone ?:@$item->user->email),15) }}</strong></td>
                                     <td title="{{$item->remark}}">{{ str_limit($item->remark ?: '--', 8) }}</td>
                                     <td title="{{$item->card_number}}">{{ str_limit($item->card_number ?: '--', 8) }}</td>
-                                    <td>
-                                        <span class="label label-{{ $orderType[$item->type]['class'] }}">{{ $orderType[$item->type]['name'] }}</span>
-                                    </td>
-                                    <td title="{{$item->currency_title_cn.' ('.$item->currency_title_en_abbr.')'}}">
-                                        <span class="">{{ str_limit($item->currency_title_en_abbr,15) }}</span>
-                                    </td>
-                                    <td title="{{number_format($item->price)}}">{{ floatval($item->price) }}</td>
-                                    <td title="{{ $item->name }}">{{ $item->abbr }}</td>
-                                    <td title="{{number_format($item->field_amount, 8) }}">{{ floatval($item->field_amount) }}</td>
-                                    <td title="{{number_format($item->cash_amount, 8) }}">{{ floatval($item->cash_amount) }}</td>
-                                    <td title="{{number_format($item->fee, 8) }}">{{ floatval($item->fee) }}</td>
-                                    <td title="{{number_format($item->final_amount, 8) }}">{{ floatval($item->final_amount) }}</td>
+                                    <td><span class="label label-{{ $orderType[$item->type]['class'] }}">{{ $orderType[$item->type]['name'] }}</span></td>
+                                    <td><span class="">{{ str_limit(@$item->currency->abbr,15) }}</span></td>
+                                    <td title="{{number_format($item->price)}}">{{ $item->price }}</td>
+                                    <td title="{{ @$item->legalCurrency->name }}">{{ @$item->legalCurrency->abbr }}</td>
+                                    <td title="{{number_format($item->field_amount, 8) }}">{{ $item->field_amount }}</td>
+                                    <td title="{{number_format($item->cash_amount, 8) }}">{{ $item->cash_amount }}</td>
+                                    <td title="{{number_format($item->fee, 8) }}">{{ $item->fee }}</td>
+                                    <td title="{{number_format($item->final_amount, 8) }}">{{ $item->final_amount }}</td>
                                     <td><span class="label label-{{ $orderStatus[$item->status]['class'] ??''}}">
                                             {{ $orderStatus[$item->status]['name'] ?? '--'}}</span>
                                     </td>
@@ -152,8 +146,8 @@
                                     </td>
                                     <td>{{ $item->merchant_order_id ?:'--'}}</td>
                                     <td title="{{ $item->merchant_callback }}"><i class="fontello-globe-1"></i></td>
-                                    <td title="广告-{{ $item->advertisement_id }} | 广告商-{{ $item->from_user_id }} | 电话-{{ $item->f_phone }}">
-                                        {{ str_limit($item->f_username ?: $item->f_phone,11) }}
+                                    <td title="广告-{{ $item->advertisement_id }} | 广告商UID-{{ $item->from_user_id }} | {{ @$item->tradeOwner->username ?: @$item->tradeOwner->phone }}">
+                                        {{ str_limit(@$item->tradeOwner->username ?: @$item->tradeOwner->phone,11) }}
                                     </td>
                                     <td>{{ $item->created_at ?: '--' }}</td>
                                     <td>
