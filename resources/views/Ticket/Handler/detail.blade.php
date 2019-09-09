@@ -4,6 +4,7 @@
     <style>
         .ml-5{
             margin-left: 5px;
+            margin-top: 6px;
         }
     </style>
 
@@ -11,7 +12,7 @@
 <div class="box">
     <div class="box-header">
         <div class="pull-right box-tools">
-            <a href="#javascript:;" onClick="javascript :history.back(-1);">
+            <a href="#####" onClick="javascript :history.back(-1);">
                 <span class="box-btn"><i class="fa fa-level-up"></i></span>
             </a>
         </div>
@@ -147,7 +148,7 @@
                         @endif</strong>】&nbsp;【操作备注：{{$ticket->remark ?:'--'}}】</p>
                     <p>内容：<b>{{ $ticket->content}}</b></p>
                     @if($role == config('conf.supervisor_role'))
-                    <p> <a href="javascript:;" title="回复工单" onclick="ticketReply('{{ $ticket->id }}', '{{ $ticket->user_id }}')">回复</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#javascript:;" onclick="ticketDel('{{ $ticket->id }}')">删除</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="{{ url('ticket/handler/ticketTransfer').'/'.$ticket->id }}" title="">转移</a></p>
+                    <p> <a href="####" title="回复工单" onclick="ticketReply('{{ $ticket->id }}', '{{ $ticket->user_id }}')">回复</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#####" onclick="ticketDel('{{ $ticket->id }}')">删除</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="{{ url('ticket/handler/ticketTransfer').'/'.$ticket->id }}" title="">转移</a></p>
                     @endif
                     <div class="row" style="margin-top:20px">
                       <div class="col-md-12">
@@ -171,7 +172,7 @@
                       @if($reply['levelTwo'] == 0)
                         <div class="media">
                           <div class="media-left">
-                            <a href="javascript:;">
+                            <a href="####">
                               <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('img/supervisor.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
                             </a>
                           </div>
@@ -187,7 +188,7 @@
                      @else
                         <div class="media">
                           <div class="media-left">
-                            <a href="javascript:;">
+                            <a href="####">
                               <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('img/supervisor.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
                             </a>
                           </div>
@@ -211,9 +212,9 @@
                                 <div class="media-body">
                                   <h6 class="media-heading"><strong>回复时间：{{ $replyLtwo['created_at']}} &nbsp;&nbsp; 
                                     @if($replyLtwo['reply_type']==1)
-                                    <a href="#javascript:;" onclick="replyLevelTwo('{{ $replyLtwo['userId'] }}','{{ $replyLtwo['ticketId'] }}','{{ $replyLtwo['reply_parent_id'] }}','{{ $replyLtwo['ownerId'] }}')">回复</a>&nbsp;&nbsp;
+                                    <a href="#####" onclick="replyLevelTwo('{{ $replyLtwo['userId'] }}','{{ $replyLtwo['ticketId'] }}','{{ $replyLtwo['reply_parent_id'] }}','{{ $replyLtwo['ownerId'] }}')">回复</a>&nbsp;&nbsp;
                                     @endif
-                                    <a href="#javascript:;" onclick="deleteReply('{{ $replyLtwo['id'] }}')">删除</a></strong></h6>
+                                    <a href="#####" onclick="deleteReply('{{ $replyLtwo['id'] }}')">删除</a></strong></h6>
                                   {{ $replyLtwo['reply_content'] }}
                                 </div>
                               </div>
@@ -230,7 +231,7 @@
                                     '{{ csrf_token() }}','完结工单');" title="仅更新申诉进程和工单">申诉完结</a>--}}
 
                             <!-- Button trigger modal -->
-                            <a href="javascript:;"  class="btn btn-success" data-toggle="modal" data-target="#exampleModalEnd" title="申诉完结">
+                            <a href="####"  class="btn btn-success" data-toggle="modal" data-target="#exampleModalEnd" title="申诉完结">
                                 申诉完结
                             </a>
                             <!-- Modal -->
@@ -279,23 +280,23 @@
                                 </div>
                             </div>
 
-                            <a href="javascript:viod(0)" class="btn btn-danger ml-5" {{--onclick="itemUpdate('{{ $ticket->id }}',
+                            <a href="####" class="btn btn-danger ml-5" {{--onclick="itemUpdate('{{ $ticket->id }}',
                                     '{{ url("ticket/handler/appealEnd/$ticket->id") }}','release','{{ $ticket->order_id }}',
                                     '订单为<b><strong> 强制发币 </strong></b> 状态',
                                     '{{ csrf_token() }}','强制发币 - 请慎重操作！');"--}} title="已支付-未放币" disabled>强制发币</a>
 
-                            <a href="javascript:viod(0)" class="btn btn-info ml-5" {{--onclick="itemUpdate('{{ $ticket->id }}',
+                            <a href="####" class="btn btn-info ml-5" {{--onclick="itemUpdate('{{ $ticket->id }}',
                                     '{{ url("ticket/handler/appealEnd/$ticket->id") }}','recover','{{ $ticket->order_id }}',
                                     '订单为<b><strong> 强制恢复 </strong></b> 状态',
                                     '{{ csrf_token() }}','强制恢复 - 请慎重操作！');"--}} title="未付款-已放币完成交易 - 强制恢复广告方的放币" disabled>强制恢复</a>
 
-                            {{--<a href="javascript:viod(0)" class="btn btn-default ml-5" onclick="itemUpdate('{{ $ticket->id }}',
+                            {{--<a href="####" class="btn btn-default ml-5" onclick="itemUpdate('{{ $ticket->id }}',
                                     '{{ url("ticket/handler/appealEnd/$ticket->id") }}','cancel','{{ $ticket->order_id }}',
                                     '订单为<b><strong> 取消 </strong></b> 状态',
                                     '{{ csrf_token() }}','取消订单 - 请慎重操作！');" title="取消OTC订单">取消订单</a>--}}
 
                             <!-- Button trigger modal -->
-                            <a href="javascript:;"  class="btn btn-default ml-5" data-toggle="modal" data-target="#exampleModalCancel" title="取消OTC订单"
+                            <a href="####"  class="btn btn-default ml-5" data-toggle="modal" data-target="#exampleModalCancel" title="取消OTC订单"
                                 {{$ticket->order_type==\App\Models\OTC\OtcTicket::OTC_QUICK ? 'disabled' : ''}}>取消订单
                             </a>
                             <!-- Modal -->
