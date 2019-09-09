@@ -69,9 +69,9 @@ class OtcSysWithdrawAddrController extends Controller
     public function store(WalletExternalRequest $request)
     {
         // 用户已存在被启用的地址
-       /* if (WalletExternal::addrEnabled()) {
+        if (WalletExternal::addrEnabled()) {
             return back()->withErrors(['address' => '已存在被启用的地址']);
-        }*/
+        }
 
         WalletExternal::create([
             'user_id' => 0,
@@ -118,7 +118,7 @@ class OtcSysWithdrawAddrController extends Controller
         $external =  WalletExternal::findOrFail($id);
 
         // 用户已存在被启用的地址
-        if (WalletExternal::addrEnabled()) {
+        if ($external->status==WalletExternal::DISABLE && WalletExternal::addrEnabled()) {
             return response()->json(['code' => 402, 'msg'=>'已存在被启用的地址']);
         }
 
