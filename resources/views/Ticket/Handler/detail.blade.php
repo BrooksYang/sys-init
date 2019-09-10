@@ -297,13 +297,13 @@
                                             {{ csrf_field() }}
                                             {{  method_field('PATCH')}}
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalRecoverTitle"><i class="fontello-warning"></i>强制恢复</h5>
+                                                <h5 class="modal-title" id="exampleModalRecoverTitle" ><i class="fontello-warning"></i>强制恢复</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
                                             <div class="modal-body">
-                                                <div class="alert alert-warning">
+                                                <div class="alert alert-danger">
                                                     <button data-dismiss="alert" class="close" type="button">×</button>
                                                     <span class="entypo-cancel-circled"></span>
                                                     <strong>操作提示：进行操作前请先仔细核对订单信息并填写订单操作说明以备查</strong>
@@ -311,7 +311,7 @@
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <div class="col-md-12">
-                                                            <h4>是否确定更新订单为取消（强制恢复）状态?</h4>
+                                                            <h4>是否确定更新订单为取消<span style="color: red">（强制恢复）</span>状态?</h4>
                                                             <input type="hidden" name="id" value="{{ $ticket->id }}" >
                                                             <input type="hidden" name="field" value="recover" >
                                                             <input type="hidden" name="update" value="{{ $ticket->order_id }}" >
