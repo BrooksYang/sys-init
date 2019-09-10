@@ -381,7 +381,7 @@ class HandlerController extends Controller
         }
 
         // 订单存在且为申诉处理中
-        if ($order->appeal_status != OtcOrder::APPEALING) {
+        if (@$order->appeal_status != OtcOrder::APPEALING) {
             abort('400', '非法请求');
         }
 
