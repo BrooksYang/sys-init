@@ -611,8 +611,14 @@ class HandlerController extends Controller
             $balanceBuyer = Balance::lockForUpdate()->firstOrCreate(['user_id' => $buyerId, 'user_wallet_currency_id' => $order->currency_id]);
             $balanceSeller = Balance::lockForUpdate()->firstOrCreate(['user_id' => $sellerId, 'user_wallet_currency_id' => $order->currency_id]);
 
-            // 恢复广告方钱包冻结余额（所恢复数额为订单交易数额）
-            $balanceSeller->user_wallet_balance_freeze_amount = bcadd($balanceSeller->user_wallet_balance_freeze_amount, $order->field_amount);
+            // 恢复广告方钱包冻结或可用余额（所恢复数额为订单交易数额）
+            if ($trade->status == Trade::CANCELLED) {
+                // 原广告已下架
+                $balanceSeller->user_wallet_balance = bcadd($balanceSeller->user_wallet_balance, $order->field_amount);
+            }else{
+                // 原广告进行中或已完成重置为进行中
+                $balanceSeller->user_wallet_balance_freeze_amount = bcadd($balanceSeller->user_wallet_balance_freeze_amount, $order->field_amount);
+            }
             $balanceSeller->save();
 
             // 扣除商户钱包可用余额(所扣数额为实际到账金额)
