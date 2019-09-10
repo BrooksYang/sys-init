@@ -285,8 +285,8 @@
 
                             {{--强制恢复(普通OTC订单)--}}
                             @if($ticket->order_type == \App\Models\OTC\OtcTicket::OTC_COMMON)
-                            <a href="####"  class="btn btn-info ml-5" data-toggle="modal" data-target="#exampleModalRecover" title="强制恢复">
-                                强制恢复
+                            <a href="####"  class="btn btn-info ml-5" data-toggle="modal" data-target="#exampleModalRecover" title="强制恢复"
+                               {{ $order->status == \App\Models\OTC\OtcOrder::RECEIVED ? '': 'disabled'}}>强制恢复
                             </a>
                             <!-- Modal -->
                             <div class="modal fade" id="exampleModalRecover" tabindex="-1" role="dialog" aria-labelledby="exampleModalRecoverTitle"
