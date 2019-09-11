@@ -76,8 +76,7 @@
                   @endforelse
                   </tbody>
             </table>
-
-            {{ $tickets->links() }}
+                {{ $tickets->appends(Request::except('page'))->links() }}
 		    </div>
 		</div>
     </div>
