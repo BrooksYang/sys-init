@@ -253,6 +253,8 @@ class HandlerController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
+        $type = $request->type;
+
         $data['status'] = OtcTicket::STATUS;
         $data['type'] = OtcTicket::TYPE;
         $data['search'] = $search;
@@ -264,6 +266,9 @@ class HandlerController extends Controller
                                 ->when($search, function ($query) use ($search){
                                     return $query->where('order_id', $search);
                                 })
+                                ->when($type, function ($query) use ($type) {
+                                    $query->where('order_type', $type);
+                                })
                                 ->where('supervisor_id', Entrance::user()->id)
                                 ->orderByDesc('created_at')
                                 ->paginate('30');
@@ -272,6 +277,9 @@ class HandlerController extends Controller
             $data['tickets'] = DB::table('otc_ticket')
                 ->when($search, function ($query) use ($search){
                     return $query->where('order_id', $search);
+                })
+                ->when($type, function ($query) use ($type) {
+                    $query->where('order_type', $type);
                 })
                 ->orderByDesc('created_at')->paginate('30');
         }

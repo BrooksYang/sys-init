@@ -9,6 +9,7 @@
         {{-- Filter and Add Button --}}
         <div class="pull-right box-tools">
             @include('component.searchForm', ['url'=>url('ticket/handler/index'), 'placeholder'=>'订单号','placeholderRole'=>'订单号'])
+            @include('component.filter', ['url'=>url('ticket/handler/index'), 'filters'=>$type,'filter'=>'type', 'title'=>'筛选状态'])
         </div>
 
 
