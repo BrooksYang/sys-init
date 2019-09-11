@@ -252,8 +252,8 @@ class UserAppKeyController extends Controller
         $correctBalance = $final - $withdraw - $sell - $out;
 
         // 余额
-        $currentBalance = $balance->user_wallet_balance + $balance->user_wallet_balance_freeze_amount; // 当前余额
-        $frozen = $balance->user_wallet_balance_freeze_amount; // 冻结余额
+        $currentBalance = @$balance->user_wallet_balance + @$balance->user_wallet_balance_freeze_amount; // 当前余额
+        $frozen = @$balance->user_wallet_balance_freeze_amount; // 冻结余额
 
 
         // 用户累计充值
