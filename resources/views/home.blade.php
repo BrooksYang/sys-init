@@ -10,7 +10,6 @@
     <!-- TC 顶部统计区域 -->
     @if(env('APP_TC_MODULE'))
         <div class="row">
-
             <div class="col-lg-6">
                 <div class="box">
                     <!-- /.box-header -->
@@ -49,7 +48,6 @@
                 </div>
                 <!-- /.box -->
             </div>
-
         </div>
 
         <div class="row">
@@ -69,25 +67,6 @@
                 </div>
                 <!-- /.box -->
             </div>
-
-            {{--<div class="col-lg-6">
-                <div class="box">
-                    <!-- /.box-header -->
-                    <div class="box-body">
-                        <div class="news-widget">
-                            <h2>
-                                <span class="bg-blue">Current</span>
-                            </h2>
-                            <i class="fontello-user-1"></i>
-                            <h4 class="text-blue">{{ number_format($users,0,'',',') }}</h4>
-                            <h5>当前注册用户数/最近7天新增用户 <span class="sevenDay">{{ number_format($lastSevenDayUser,0,'',',') }}</span></h5>
-                            <div style="clear:both;"></div>
-                        </div>
-                    </div>
-                    <!-- /.box-body -->
-                </div>
-                <!-- /.box -->
-            </div>--}}
         </div>
     @endif
     <!-- END TC 顶部统计区域 -->
