@@ -125,7 +125,7 @@ class WalletTransactionController extends Controller
 
         if ($search) {
             $statistics = $transDetails;
-            $statistics = $this->statistics($statistics->get(['amount','type'])->groupBy('type'));
+            $statistics = $this->statistics($statistics->get(['amount','type','fee'])->groupBy('type'));
         }
 
         $transDetails = $transDetails->paginate(config('app.pageSize'));
@@ -144,23 +144,26 @@ class WalletTransactionController extends Controller
     public function statistics($transDetails)
     {
         bcscale(config('app.bcmath_scale'));
-        $transDeposit = $transWithDraw = 0;
+        list($transDeposit,$transWithDraw, $transDepositFee, $transWithDrawFee) = [0,0,0,0];
 
         foreach ($transDetails as $key => &$userTransDetail) {
             //$userTransDetail = array_column($userTransDetail->toArray(), 'usdt_amount');
-            $userTransDetail = array_column($userTransDetail->toArray(), 'amount');
+            $transDetail = $userTransDetail->pluck('amount');
+            $transDetailFee = $userTransDetail->pluck('fee');
 
             switch ($key) {
                 case WalletTransaction::DEPOSIT:
-                    $transDeposit = $this->amountMap($userTransDetail);
+                    $transDeposit = $this->amountMap($transDetail);
+                    $transDepositFee = $this->amountMap($transDetailFee);
                     break;
                 case WalletTransaction::WITHDRAW:
-                    $transWithDraw = $this->amountMap($userTransDetail);
+                    $transWithDraw = $this->amountMap($transDetail);
+                    $transWithDrawFee = $this->amountMap($transDetailFee);
                     break;
             }
         }
 
-        $amountByType = compact('transDeposit','transWithDraw');
+        $amountByType = compact('transDeposit','transDepositFee','transWithDraw','transWithDrawFee');
 
         $total = $this->amountMap($amountByType);
 

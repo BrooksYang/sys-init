@@ -289,7 +289,9 @@
                                         {{--类型，1充值，2提现--}}
                                         总计： <b>{{ $statistics['total'] ?: 0 }} ,</b>&nbsp;&nbsp;<b>{{ $transDetails->total() }}</b>&nbsp;单<br>
                                         充值：<b>{{ $statistics['transDeposit'] ?: 0 }}</b> |
-                                        提币： <b>{{ $statistics['transWithDraw'] ?: 0 }}</b>
+                                        充值手续费：<b>{{ $statistics['transDepositFee'] ?: 0 }}</b> |
+                                        提币： <b>{{ $statistics['transWithDraw'] ?: 0 }}</b> |
+                                        提币手续费： <b>{{ $statistics['transWithDrawFee'] ?: 0 }}</b>
                                     </div>
                                 @endif
                                 <div class="pull-right">
