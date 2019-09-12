@@ -156,6 +156,7 @@
                                 <th>法币名称</th>
                                 <th>英文缩写</th>
                                 <th>汇率</th>
+                                <th>出售汇率</th>
                                 <th>货币符号 </th>
                                 <th>默认法币_中文 </th>
                                 <th>默认法币_英文 </th>
@@ -171,7 +172,8 @@
                                     <td>{{ ($key + 1) + ($legalCurrency->currentPage() - 1) * $legalCurrency->perPage() }}</td>
                                     <td title="{{$item->name}}">{{ str_limit($item->name,15) }}</td>
                                     <td title="{{$item->abbr?:'暂无'}}">{{ str_limit($item->abbr ?:'--',15) }}</td>
-                                    <td title="{{$item->rate}}"> {{ number_format($item->rate,8,'.',',') }}</td>
+                                    <td title="{{number_format($item->rate,8)}}"> {{ floatval($item->rate) }}</td>
+                                    <td title="{{number_format($item->rate_sell,8)}}"> {{ floatval($item->rate_sell) }}</td>
                                     <td>{{ $item->symbol ?: '--' }}</td>
                                     <td title="是否为中文版默认法币">
                                         <span class="{{ $item->is_default_cn ==1 ? 'label label-'.$type[$item->is_default_cn]['class']:'' }}">{{ $type[$item->is_default_cn]['name']}}</span>
@@ -193,7 +195,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="9" class="text-center">
+                                <tr><td colspan="10" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
