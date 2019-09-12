@@ -109,6 +109,22 @@
                         </div>
 
                         <div class="row">
+                            {{--出售汇率--}}
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <label>出售汇率（相对于USDT的单位价值）（即1USDT=***RMB；汇率即为***）</label>
+                                        <input class="form-control input-lg" placeholder="请填写出售汇率" type="text"  required
+                                               name="rate_sell" value="{{ $flag->rate_sell ?? old('rate_sell')  }}">
+                                        @if ($errors->has('rate_sell'))
+                                            <p style="color: red"><strong>{{ $errors->first('rate_sell') }}</strong></p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="radio">

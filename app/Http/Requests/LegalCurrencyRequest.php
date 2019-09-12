@@ -35,7 +35,8 @@ class LegalCurrencyRequest extends FormRequest
                 'max:50',
                 'regex:/^[a-zA-Z]+$/',    //允许英文字符
             ],
-            'rate' => 'required|numeric|min:0.001',
+            'rate' => 'required|numeric|min:0',
+            'rate_sell' => 'nullable|numeric|min:0',
             'symbol' => 'nullable|max:10',
             'is_default_cn' => [
                 'required',
