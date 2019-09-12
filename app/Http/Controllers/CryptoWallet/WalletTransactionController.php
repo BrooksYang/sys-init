@@ -165,7 +165,7 @@ class WalletTransactionController extends Controller
 
         $amountByType = compact('transDeposit','transDepositFee','transWithDraw','transWithDrawFee');
 
-        $total = $this->amountMap($amountByType);
+        $total = $this->amountMap(compact('transDeposit','transWithDraw'));
 
         return array_add($amountByType, 'total', $total);
     }
