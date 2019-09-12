@@ -70,14 +70,23 @@ class WalletTransactionController extends Controller
             ->when($filterMerchant, function ($query) use ($search){
                 return $query->whereHas('user', function ($query) use ($search) {
                     $query->where('is_merchant', User::MERCHANT)
-                        ->where(function ($query) use ($search){
+                        ->when($search, function ($query) use ($search){
                             $query->where('username', 'like', "%$search%")
                                 ->orwhere('email', 'like', "%$search%")
                                 ->orwhere('phone', 'like', "%$search%");
                         });
                 });
             })
-            ->when($search && $filterUser, function ($query) use ($search){
+            ->when($filterUser, function ($query) use ($search){
+                return $query->whereHas('user', function ($query) use ($search) {
+                    $query->when($search, function ($query) use ($search) {
+                        $query->where('username', 'like', "%$search%")
+                            ->orwhere('email', 'like', "%$search%")
+                            ->orwhere('phone', 'like', "%$search%");
+                    });
+                });
+            })
+            ->when($search && !$filterUser && !$filterSys && !$filterMerchant, function ($query) use ($search){
                 return $query->whereHas('user', function ($query) use ($search) {
                     $query->where('username', 'like', "%$search%")
                         ->orwhere('email', 'like', "%$search%")
