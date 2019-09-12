@@ -254,6 +254,7 @@ class HandlerController extends Controller
     {
         $search = $request->search;
         $type = $request->type;
+        $status = $request->status;
 
         $data['status'] = OtcTicket::STATUS;
         $data['type'] = OtcTicket::TYPE;
@@ -269,6 +270,9 @@ class HandlerController extends Controller
                                 ->when($type, function ($query) use ($type) {
                                     $query->where('order_type', $type);
                                 })
+                                ->when($status, function ($query) use ($status) {
+                                    $query->where('ticket_state', $status);
+                                })
                                 ->where('supervisor_id', Entrance::user()->id)
                                 ->orderByDesc('created_at')
                                 ->paginate('30');
@@ -280,6 +284,9 @@ class HandlerController extends Controller
                 })
                 ->when($type, function ($query) use ($type) {
                     $query->where('order_type', $type);
+                })
+                ->when($status, function ($query) use ($status) {
+                    $query->where('ticket_state', $status);
                 })
                 ->orderByDesc('created_at')->paginate('30');
         }

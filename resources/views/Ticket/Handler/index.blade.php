@@ -7,9 +7,11 @@
             <span>全部工单</span>
         </h3>
         {{-- Filter and Add Button --}}
-        <div class="pull-right box-tools">
+        <div class="pull-right box-tools" style="margin-right: 20px;">
             @include('component.searchForm', ['url'=>url('ticket/handler/index'), 'placeholder'=>'订单号','placeholderRole'=>'订单号'])
-            @include('component.filter', ['url'=>url('ticket/handler/index'), 'filters'=>$type,'filter'=>'type', 'title'=>'筛选状态'])
+            @include('component.filter', ['url'=>url('ticket/handler/index'), 'filters'=>$type,'filter'=>'type', 'title'=>'筛选类型'])
+            @include('component.filter', ['url'=>url('ticket/handler/index'), 'filters'=>$status,'filter'=>'status', 'title'=>'筛选状态',
+                   'isInline'=>true,'icon'=>'fontello-th-list'])
         </div>
 
 
