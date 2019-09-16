@@ -26,12 +26,8 @@ class IncomeController extends Controller
      */
     public function incomeDaily(Request $request)
     {
-        // 每天-%Y-%m-%d  每周-%Y-%u  每月-%Y-%m
-        $groups = [
-            'day'   => ['name'=>'按日'],
-            'week'  => ['name'=>'按周'],
-            'month' => ['name'=>'按月']
-        ];
+        // 按日-按周-按月
+        $groups = OtcOrder::GROUP;
 
         // 多条件搜索
         $searchGroup = trim($request->searchGroup ?: 'day','');
