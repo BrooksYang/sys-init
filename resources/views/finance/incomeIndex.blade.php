@@ -60,7 +60,8 @@
                                     <td>{{ (@$item['key'] + 1) }}</td>
                                     <td>
                                         @if(!Request::get('searchGroup') || Request::get('searchGroup')=='day')
-                                            <a href="{{ url('otc/sys/income')}}?start={{@$key.' 00:00:00'}}&end={{@$key.' 59:59:59'}}">
+                                            <a href="{{ url('otc/sys/income')}}?start={{@$key.' 00:00:00'}}&end={{@$key.' 59:59:59'}}"
+                                               target="_blank">
                                             {{ @$key ?: '--'}}{{ Request::get('searchGroup')=='week' ? ' 周':(Request::get('searchGroup')=='month' ? ' 月':'') }}</a>
                                         @else
                                             {{ @$key ?: '--'}}{{ Request::get('searchGroup')=='week' ? ' 周':(Request::get('searchGroup')=='month' ? ' 月':'') }}

@@ -54,7 +54,8 @@
                                     <td>{{ ($key + 1) + ($external->currentPage() - 1) * $external->perPage() }}</td>
                                     <td>
                                         @if(!Request::get('searchGroup') || Request::get('searchGroup')=='day')
-                                        <a href="{{ url('otc/sys/withdrawLog')}}?start={{@$item->time.' 00:00:00'}}&end={{@$item->time.' 59:59:59'}}">
+                                        <a href="{{ url('otc/sys/withdrawLog')}}?start={{@$item->time.' 00:00:00'}}&end={{@$item->time.' 59:59:59'}}"
+                                            target="_blank">
                                             {{@$item->time ?: '--'}}{{Request::get('searchGroup')=='week' ? ' 周':(Request::get('searchGroup')=='month' ? ' 月':'') }}</a>
                                         @else
                                             {{@$item->time ?: '--'}}{{Request::get('searchGroup')=='week' ? ' 周':(Request::get('searchGroup')=='month' ? ' 月':'') }}
