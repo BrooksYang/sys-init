@@ -108,7 +108,7 @@ class CostController extends Controller
     }
 
     /**
-     * 提币记录-导出Excel
+     * 收益支出记录-导出Excel
      * @param Request $request
      */
     public function export(Request $request)
