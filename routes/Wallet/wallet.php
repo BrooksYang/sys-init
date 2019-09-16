@@ -58,6 +58,25 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
 });
 
 
+/**
+ * OTC 运营方财务日报管理
+ *
+ */
+Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function()
+{
+    // OTC 运营方收益日报
+    Route::get('otc/income/daily', 'Finance\IncomeController@incomeDaily');
+
+    // OTC 运营方收益日报导出
+    Route::get('otc/income/daily/export', 'Finance\IncomeController@export');
+
+    // OTC 运营方支出日报（收益提取）
+    Route::get('otc/expenditure/daily', 'Finance\CostController@index');
+
+    // OTC 运营方支出日报导出
+    Route::get('otc/expenditure/daily/exportExcel', 'Finance\CostController@export');
+
+});
 
 
 

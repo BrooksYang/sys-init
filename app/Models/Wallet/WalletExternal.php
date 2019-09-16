@@ -34,6 +34,13 @@ class WalletExternal extends Model
         2 => ['name' => '停用', 'class' => 'default']
     ];
 
+    // 分组统计文本
+    const GROUP =  [
+        'day'   => ['name'=>'按日'],
+        'week'  => ['name'=>'按周'],
+        'month' => ['name'=>'按月']
+    ];
+
     /**
      * 关联用户
      *

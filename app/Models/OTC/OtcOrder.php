@@ -66,6 +66,13 @@ class OtcOrder extends Model
         self::APPEAL_END => '申诉完结'
     ];
 
+    // 分组统计文本
+    const GROUP =  [
+        'day'   => ['name'=>'按日'],
+        'week'  => ['name'=>'按周'],
+        'month' => ['name'=>'按月']
+    ];
+
     /**
      * 广告所有者
      *
