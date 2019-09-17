@@ -33,18 +33,20 @@ class OtcOrderQuick extends Model
     ];
 
 
-    // 申诉状态，1已申诉，2申诉处理中，3申诉完结
-    const NOT_APPEAL = 0;
-    const APPEALED   = 1;
-    const APPEALING  = 2;
-    const APPEAL_END = 3;
+    // 申诉状态，1已申诉，2申诉处理中，3申诉完结, 4已撤诉
+    const NOT_APPEAL      = 0;
+    const APPEALED        = 1;
+    const APPEALING       = 2;
+    const APPEAL_END      = 3;
+    const APPEAL_CANCELED = 4;
 
     // 申诉状态文本
     const APPEAL_STATUS = [
         self::NOT_APPEAL => ['name' => '无申诉', 'class' => 'default'],
         self::APPEALED   => ['name' => '已申诉', 'class' => 'danger'],
         self::APPEALING  => ['name' => '处理中', 'class' => 'warning'],
-        self::APPEAL_END => ['name' => '已完结', 'class' => 'default'],
+        self::APPEAL_END => ['name' => '已完结', 'class' => 'info'],
+        self::APPEAL_END => ['name' => '已撤诉', 'class' => 'default'],
     ];
 
 

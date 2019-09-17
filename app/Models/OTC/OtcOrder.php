@@ -51,19 +51,20 @@ class OtcOrder extends Model
         self::CANCELED => '已取消',
     ];
 
-
-    // 申诉状态，1已申诉，2申诉处理中，3申诉完结
-    const NOT_APPEAL = 0;
-    const APPEALED   = 1;
-    const APPEALING  = 2;
-    const APPEAL_END = 3;
+    // 申诉状态，1已申诉，2申诉处理中，3申诉完结, 4已撤诉
+    const NOT_APPEAL      = 0;
+    const APPEALED        = 1;
+    const APPEALING       = 2;
+    const APPEAL_END      = 3;
+    const APPEAL_CANCELED = 4;
 
     // 申诉状态文本
     public static $appealText = [
-        self::NOT_APPEAL => '无申诉',
-        self::APPEALED   => '已申诉',
-        self::APPEALING  => '申诉处理中',
-        self::APPEAL_END => '申诉完结'
+        self::NOT_APPEAL      => '无申诉',
+        self::APPEALED        => '已申诉',
+        self::APPEALING       => '申诉处理中',
+        self::APPEAL_END      => '申诉完结',
+        self::APPEAL_CANCELED => '已撤诉'
     ];
 
     // 分组统计文本
