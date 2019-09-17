@@ -298,22 +298,38 @@ class IncomeController extends Controller
 
         // 统计数据概览 - sheet2
         $report = HomeController::exportReport();
-        $reportData[1][] = Carbon::now()->toDateString();
+        $reportData[0][] = '日期';
+        $reportData[0][] = Carbon::now()->toDateString();
+        $reportData[1][] = '累计交易手续费(USDT)';
         $reportData[1][] = $report['otcFee'];
-        $reportData[1][] = $report['walletFee'];
-        $reportData[1][] = $report['otcQuickIncomeSys'];
-        $reportData[1][] = $report['otcSysIncomeTotal'];
-        $reportData[1][] = $report['otcSysIncomeTotalRmb'];
-        $reportData[1][] = $report['otcSysWithdraw'];
-        $reportData[1][] = $report['otcSysWithdrawRmb'];
-        $reportData[1][] = $report['otcSysIncomeCurrent'];
-        $reportData[1][] = $report['otcSysIncomeCurrentRmb'];
-        $reportData[1][] = $report['users'];
-        $reportData[1][] = $report['lastSevenDayUser'];
-        $reportData[1][] = $report['otcDepositAmount'];
-        $reportData[1][] = $report['otcWithdrawAmount'];
-        $reportData[1][] = @$report['otcBuyTotal']->field_amount;
-        $reportData[1][] = @$report['otcSellTotal']->field_amount;
+        $reportData[2][] = '累计充提币手续费(USDT)';
+        $reportData[2][] = $report['walletFee'];
+        $reportData[3][] = '出金溢价收益(USDT)';
+        $reportData[3][] = $report['otcQuickIncomeSys'];
+        $reportData[4][] = '平台累计收益(USDT)';
+        $reportData[4][] = $report['otcSysIncomeTotal'];
+        $reportData[5][] = '平台累计收益(RMB)';
+        $reportData[5][] = $report['otcSysIncomeTotalRmb'];
+        $reportData[6][] = '累计支出(USDT)';
+        $reportData[6][] = $report['otcSysWithdraw'];
+        $reportData[7][] = '累计支出(RMB)';
+        $reportData[7][] = $report['otcSysWithdrawRmb'];
+        $reportData[8][] = '收益余额(USDT)';
+        $reportData[8][] = $report['otcSysIncomeCurrent'];
+        $reportData[9][] = '收益余额(RMB)';
+        $reportData[9][] = $report['otcSysIncomeCurrentRmb'];
+        $reportData[10][] = '注册用户数';
+        $reportData[10][] = $report['users'];
+        $reportData[11][] = '最近7天新增';
+        $reportData[11][] = $report['lastSevenDayUser'];
+        $reportData[12][] = '累计充值数额(USDT)';
+        $reportData[12][] = $report['otcDepositAmount'];
+        $reportData[13][] = '累计提币数额(USDT)';
+        $reportData[13][] = $report['otcWithdrawAmount'];
+        $reportData[14][] = '累计买入交易数量(USDT)';
+        $reportData[14][] = @$report['otcBuyTotal']->field_amount;
+        $reportData[15][] = '累计卖出交易数量(USDT)';
+        $reportData[15][] = @$report['otcSellTotal']->field_amount;
 
         unset($list);
 
@@ -334,8 +350,8 @@ class IncomeController extends Controller
             // 单sheet导出
             $newRowData = $rowData;
 
-            $excel->sheet('数据概览', function ($sheet) use ($reportData, $reportColumns){
-                array_unshift($reportData, $reportColumns);  $sheet->rows($reportData);
+            $excel->sheet('OTC数据概览', function ($sheet) use ($reportData){
+                $sheet->rows($reportData);
                 $this->reportSheetStyle($sheet);
             });
 
@@ -397,28 +413,45 @@ class IncomeController extends Controller
 
         // 统计数据概览 - sheet2
         $report = HomeController::exportReport();
-        $reportData[1][] = Carbon::now()->toDateString();
+        $reportData[0][] = '日期';
+        $reportData[0][] = Carbon::now()->toDateString();
+        $reportData[1][] = '累计交易手续费(USDT)';
         $reportData[1][] = $report['otcFee'];
-        $reportData[1][] = $report['walletFee'];
-        $reportData[1][] = $report['otcQuickIncomeSys'];
-        $reportData[1][] = $report['otcSysIncomeTotal'];
-        $reportData[1][] = $report['otcSysIncomeTotalRmb'];
-        $reportData[1][] = $report['otcSysWithdraw'];
-        $reportData[1][] = $report['otcSysWithdrawRmb'];
-        $reportData[1][] = $report['otcSysIncomeCurrent'];
-        $reportData[1][] = $report['otcSysIncomeCurrentRmb'];
-        $reportData[1][] = $report['users'];
-        $reportData[1][] = $report['lastSevenDayUser'];
-        $reportData[1][] = $report['otcDepositAmount'];
-        $reportData[1][] = $report['otcWithdrawAmount'];
-        $reportData[1][] = @$report['otcBuyTotal']->field_amount;
-        $reportData[1][] = @$report['otcSellTotal']->field_amount;
+        $reportData[2][] = '累计充提币手续费(USDT)';
+        $reportData[2][] = $report['walletFee'];
+        $reportData[3][] = '出金溢价收益(USDT)';
+        $reportData[3][] = $report['otcQuickIncomeSys'];
+        $reportData[4][] = '平台累计收益(USDT)';
+        $reportData[4][] = $report['otcSysIncomeTotal'];
+        $reportData[5][] = '平台累计收益(RMB)';
+        $reportData[5][] = $report['otcSysIncomeTotalRmb'];
+        $reportData[6][] = '累计支出(USDT)';
+        $reportData[6][] = $report['otcSysWithdraw'];
+        $reportData[7][] = '累计支出(RMB)';
+        $reportData[7][] = $report['otcSysWithdrawRmb'];
+        $reportData[8][] = '收益余额(USDT)';
+        $reportData[8][] = $report['otcSysIncomeCurrent'];
+        $reportData[9][] = '收益余额(RMB)';
+        $reportData[9][] = $report['otcSysIncomeCurrentRmb'];
+        $reportData[10][] = '注册用户数';
+        $reportData[10][] = $report['users'];
+        $reportData[11][] = '最近7天新增';
+        $reportData[11][] = $report['lastSevenDayUser'];
+        $reportData[12][] = '累计充值数额(USDT)';
+        $reportData[12][] = $report['otcDepositAmount'];
+        $reportData[13][] = '累计提币数额(USDT)';
+        $reportData[13][] = $report['otcWithdrawAmount'];
+        $reportData[14][] = '累计买入交易数量(USDT)';
+        $reportData[14][] = @$report['otcBuyTotal']->field_amount;
+        $reportData[15][] = '累计卖出交易数量(USDT)';
+        $reportData[15][] = @$report['otcSellTotal']->field_amount;
 
         // 格式化excel数据
         Excel::create($fileName, function ($excel) use ($reportData, $reportColumns) {
             // 单sheet导出
-            $excel->sheet('数据概览', function ($sheet) use ($reportData, $reportColumns){
-                array_unshift($reportData, $reportColumns);  $sheet->rows($reportData);
+            $excel->sheet('OTC数据概览', function ($sheet) use ($reportData, $reportColumns){
+                //array_unshift($reportData, $reportColumns);
+                $sheet->rows($reportData);
                 $this->reportSheetStyle($sheet);
             });
 
@@ -474,7 +507,7 @@ class IncomeController extends Controller
 
         // 列宽
         $sheet->setWidth(array(
-            'A'     =>  10,
+            'A'     =>  25,
             'B'     =>  22,
             'C'     =>  25,
             'D'     =>  20,

@@ -9,7 +9,7 @@
 
                     {{-- Title --}}
                     <h3 class="box-title"><i class="fontello-doc"></i>
-                        <span>OTC收益提取报表({{ config('conf.currency_usdt') }})</span>
+                        <span>OTC收益支出报表({{ config('conf.currency_usdt') }})</span>
                     </h3>
 
                     {{-- Filter and Search  Button --}}
