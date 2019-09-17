@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Finance;
 
+use App\Http\Controllers\HomeController;
 use App\Models\Currency;
+use App\Models\LegalCurrency;
 use App\Models\OTC\OtcOrder;
 use App\Models\OTC\OtcOrderQuick;
 use App\Models\Wallet\WalletTransaction;
@@ -263,7 +265,11 @@ class IncomeController extends Controller
         set_time_limit(0);
 
         // 设置下载excel文件的headers
-        $columns = [ '日期','交易手续费','充值手续费','出金溢价收益','小计'];
+        $columns = ['日期','交易手续费(USDT)','充值手续费(USDT)','出金溢价收益(USDT)','小计(USDT)', 'RMB'];
+
+        $reportColumns = ['日期', '累计交易手续费(USDT)','累计充提币手续费(USDT)', '出金溢价收益(USDT)',
+            '平台累计收益(USDT)','平台累计收益(RMB)', '累计支出(USDT)', '累计支出(RMB)','收益余额(USDT)','收益余额(RMB)',
+            '注册用户','最近7天新增','累计充值数额(USDT)','累计提币数额(USDT)', '累计买入交易数量(USDT)',' 累计卖出交易数量(USDT)',];
 
         $timeFlag = ($start ?:'开始').'-'.($end ?:'当前');
         if (!($start || $end)) { $timeFlag = Carbon::now()->toDateString(); }
@@ -279,6 +285,7 @@ class IncomeController extends Controller
             $rowData[$key]['deposit_fee'] = $item['deposit_fee'] ?? '';
             $rowData[$key]['quick_income'] = $item['quick_income'] ?? '';
             $rowData[$key]['total'] = $item['total'] ?? '';
+            $rowData[$key]['rmb'] = bcmul($item['total'] ?? 0, LegalCurrency::rmbRate() ?: 0);
         }
 
         // 数据总计
@@ -287,6 +294,26 @@ class IncomeController extends Controller
         $rowData[$item['key']+1][] = @$this->sum($rowData)['totalDepositFee'];
         $rowData[$item['key']+1][] = @$this->sum($rowData)['totalQuickIncome'];
         $rowData[$item['key']+1][] = @$this->sum($rowData)['totals'];
+        $rowData[$item['key']+1][] = bcmul(@$this->sum($rowData)['totals'], LegalCurrency::rmbRate() ?: 0);
+
+        // 统计数据概览 - sheet2
+        $report = HomeController::exportReport();
+        $reportData[1][] = Carbon::now()->toDateString();
+        $reportData[1][] = $report['otcFee'];
+        $reportData[1][] = $report['walletFee'];
+        $reportData[1][] = $report['otcQuickIncomeSys'];
+        $reportData[1][] = round($report['otcSysIncomeTotal'],8);
+        $reportData[1][] = $report['otcSysIncomeTotalRmb'];
+        $reportData[1][] = $report['otcSysWithdraw'];
+        $reportData[1][] = $report['otcSysWithdrawRmb'];
+        $reportData[1][] = $report['otcSysIncomeCurrent'];
+        $reportData[1][] = $report['otcSysIncomeCurrentRmb'];
+        $reportData[1][] = $report['users'];
+        $reportData[1][] = $report['lastSevenDayUser'];
+        $reportData[1][] = $report['otcDepositAmount'];
+        $reportData[1][] = $report['otcWithdrawAmount'];
+        $reportData[1][] = @$report['otcBuyTotal']->field_amount;
+        $reportData[1][] = @$report['otcSellTotal']->field_amount;
 
         unset($list);
 
@@ -294,7 +321,7 @@ class IncomeController extends Controller
         if (!$rowData) {$rowData[][] = $columns; $dataFlag = null;}
 
         // 格式化excel数据
-        Excel::create($fileName, function ($excel) use ($rowData, $columns, $dataFlag) {
+        Excel::create($fileName, function ($excel) use ($rowData, $columns, $dataFlag, $reportData, $reportColumns) {
             // 多sheet导出
             /* foreach ($rowData as $key => $leaderTeam) {
                  $excel->sheet($key ?: '无数据', function ($sheet) use ($leaderTeam, $columns, $dataFlag) {
@@ -307,6 +334,11 @@ class IncomeController extends Controller
             // 单sheet导出
             $newRowData = $rowData;
 
+            $excel->sheet('数据概览', function ($sheet) use ($reportData, $reportColumns){
+                array_unshift($reportData, $reportColumns);  $sheet->rows($reportData);
+                $this->reportSheetStyle($sheet);
+            });
+
             $excel->sheet($dataFlag ? '收益报表': '无数据', function ($sheet) use ($rowData, $newRowData, $columns, $dataFlag) {
                 if ($dataFlag) { array_unshift($newRowData, $columns);  $sheet->rows($newRowData); }
                 else{ $sheet->rows($newRowData); }
@@ -316,12 +348,89 @@ class IncomeController extends Controller
             // 释放变量
             unset($rowData);
             unset($newRowData);
+            unset($reportData);
 
         })->export('xlsx');
 
         // 刷新输出缓冲到浏览器
         ob_flush();
         flush();
+    }
+
+    /**
+     * OTC 数据概览导出
+     *
+     * @param Request $request
+     */
+    public function report(Request $request)
+    {
+        $searchGroup = $request->searchGroup ?: 'day';
+        $start = $request->start ?:'';
+        $end = $request->end ?:'';
+
+        $dateFormat = '%Y-%m-%d';
+        $dateUnit = '';
+
+        if ($searchGroup == 'week') {
+            $dateFormat = '%Y-%u';
+            $dateUnit = ' 周';
+        }
+
+        if ($searchGroup == 'month') {
+            $dateFormat = '%Y-%m';
+            $dateUnit = ' 月';
+        }
+
+        set_time_limit(0);
+
+        // 设置下载excel文件的headers
+        $reportColumns = ['日期', '累计交易手续费(USDT)','累计充提币手续费(USDT)', '出金溢价收益(USDT)',
+            '平台累计收益(USDT)','平台累计收益(RMB)', '累计支出(USDT)', '累计支出(RMB)','收益余额(USDT)','收益余额(RMB)',
+            '注册用户','最近7天新增','累计充值数额(USDT)','累计提币数额(USDT)', '累计买入交易数量(USDT)',' 累计卖出交易数量(USDT)',];
+
+        $timeFlag = ($start ?:'开始').'-'.($end ?:'当前');
+        if (!($start || $end)) { $timeFlag = Carbon::now()->toDateString(); }
+        $fileName = 'OTC数据概览_'.$timeFlag;
+
+        // 处理数据
+        $reportData = [];
+
+        // 统计数据概览 - sheet2
+        $report = HomeController::exportReport();
+        $reportData[1][] = Carbon::now()->toDateString();
+        $reportData[1][] = $report['otcFee'];
+        $reportData[1][] = $report['walletFee'];
+        $reportData[1][] = $report['otcQuickIncomeSys'];
+        $reportData[1][] = $report['otcSysIncomeTotal'];
+        $reportData[1][] = $report['otcSysIncomeTotalRmb'];
+        $reportData[1][] = $report['otcSysWithdraw'];
+        $reportData[1][] = $report['otcSysWithdrawRmb'];
+        $reportData[1][] = $report['otcSysIncomeCurrent'];
+        $reportData[1][] = $report['otcSysIncomeCurrentRmb'];
+        $reportData[1][] = $report['users'];
+        $reportData[1][] = $report['lastSevenDayUser'];
+        $reportData[1][] = $report['otcDepositAmount'];
+        $reportData[1][] = $report['otcWithdrawAmount'];
+        $reportData[1][] = @$report['otcBuyTotal']->field_amount;
+        $reportData[1][] = @$report['otcSellTotal']->field_amount;
+
+        // 格式化excel数据
+        Excel::create($fileName, function ($excel) use ($reportData, $reportColumns) {
+            // 单sheet导出
+            $excel->sheet('数据概览', function ($sheet) use ($reportData, $reportColumns){
+                array_unshift($reportData, $reportColumns);  $sheet->rows($reportData);
+                $this->reportSheetStyle($sheet);
+            });
+
+            // 释放变量
+            unset($reportData);
+
+        })->export('xlsx');
+
+        // 刷新输出缓冲到浏览器
+        ob_flush();
+        flush();
+
     }
 
     /**
@@ -347,6 +456,40 @@ class IncomeController extends Controller
             'C'     =>  25,
             'D'     =>  25,
             'E'     =>  25,
+            'F'     =>  25,
+        ));
+
+        return $sheet;
+    }
+
+    public function reportSheetStyle($sheet)
+    {
+        // 行格式-首行-背景色-加粗和锁定
+        $sheet->row(1, function($rowData) {
+            $rowData->setBackground('#00B0F0');
+        });
+
+        $sheet->getStyle('A1:P1')->getFont()->setBold(true);
+        $sheet->freezePane('A2');
+
+        // 列宽
+        $sheet->setWidth(array(
+            'A'     =>  10,
+            'B'     =>  22,
+            'C'     =>  25,
+            'D'     =>  20,
+            'E'     =>  20,
+            'F'     =>  20,
+            'G'     =>  18,
+            'H'     =>  18,
+            'I'     =>  19,
+            'J'     =>  19,
+            'K'     =>  10,
+            'L'     =>  12,
+            'M'     =>  20,
+            'N'     =>  20,
+            'O'     =>  25,
+            'P'     =>  25,
         ));
 
         return $sheet;

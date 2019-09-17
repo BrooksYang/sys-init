@@ -15,7 +15,9 @@
                     {{-- Filter and Search  Button --}}
                     <div class="pull-right" style="margin: 20px 20px;">
                         @include('component.conditionSearch', ['url'=>url('otc/income/daily')])
-
+                        <a href="{{ url('otc/report') }}" style="margin-right:10px;color: #fff;" class="btn btn-info" title="">
+                            <i class="fontello-export"></i>&nbsp;&nbsp;导出数据概览
+                        </a>
                     </div>
 
                 </div>

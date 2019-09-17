@@ -70,6 +70,9 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     // OTC 运营方收益日报导出
     Route::get('otc/income/daily/export', 'Finance\IncomeController@export');
 
+    // OTC 统计数据概览导出
+    Route::get('otc/report', 'Finance\IncomeController@report');
+
     // OTC 运营方支出日报（收益提取）
     Route::get('otc/expenditure/daily', 'Finance\CostController@index');
 

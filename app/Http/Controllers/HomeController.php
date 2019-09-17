@@ -360,7 +360,7 @@ class HomeController extends Controller
      * @param int $type
      * @return mixed
      */
-    public function otcSysIncomeWithdraw($type = WalletExternal::WITHDRAW_ADDR)
+    public static function otcSysIncomeWithdraw($type = WalletExternal::WITHDRAW_ADDR)
     {
          return WalletExternal::type($type)->sum('amount');
     }
@@ -457,7 +457,7 @@ class HomeController extends Controller
      * @param string $status
      * @return mixed
      */
-    public function getUser($statusField='', $status = '')
+    public static function getUser($statusField='', $status = '')
     {
         return DB::table('users')
             ->when($statusField, function ($query) use($statusField,$status) {
@@ -734,7 +734,7 @@ class HomeController extends Controller
      * @param $day
      * @return int
      */
-    public function getLastSevenDayUser($day)
+    public static function getLastSevenDayUser($day)
     {
         $timeStr = '-' . $day . ' day';
         $beginTime = Carbon::parse(Carbon::parse($timeStr)->toDateString())->toDateTimeString();
@@ -833,7 +833,7 @@ class HomeController extends Controller
      * @param $status
      * @return int|mixed
      */
-    public function getOtcTransactions($type, $currency = Currency::USDT, $status = WalletTransaction::SUCCESS)
+    public static function getOtcTransactions($type, $currency = Currency::USDT, $status = WalletTransaction::SUCCESS)
     {
         $getOtcTransactions = DB::table('wallet_transactions')
             ->where('type', $type)
@@ -857,7 +857,7 @@ class HomeController extends Controller
      * @param int $status
      * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|object|null
      */
-    public function otcOrderTotal($type = OtcOrder::BUY, $currency = Currency::USDT, $status = OtcOrder::RECEIVED)
+    public static function otcOrderTotal($type = OtcOrder::BUY, $currency = Currency::USDT, $status = OtcOrder::RECEIVED)
     {
         $otcOrder =  DB::table('otc_orders')
             ->select(DB::raw('sum(field_amount) as field_amount'),DB::raw('sum(fee) as fee'))
@@ -874,7 +874,7 @@ class HomeController extends Controller
      *
      * @return mixed
      */
-    public function otcQuickIncomeSys()
+    public static function otcQuickIncomeSys()
     {
         return OtcOrderQuick::status(OtcOrderQuick::RECEIVED)->sum('income_sys');
     }
@@ -939,7 +939,7 @@ class HomeController extends Controller
      * @param $currency
      * @return mixed
      */
-    public function walletTransFee($type, $currency = Currency::USDT)
+    public static function walletTransFee($type, $currency = Currency::USDT)
     {
         $walletTransFee = WalletTransaction::type($type)
             ->currency($currency)
@@ -1004,4 +1004,62 @@ class HomeController extends Controller
 
         return [1=>'未分配',2=>'已分配', 3=>'已回复',4=>'已关闭',5=>'正在处理', 6=>'等待处理'];
     }
+
+    /**
+     * 财务报表数据概览
+     *
+     * @return array
+     */
+    public static function exportReport()
+    {
+        // 注册用户数
+        $users = self::getUser();
+
+        // 最近7天新增
+        $lastSevenDayUser = self::getLastSevenDayUser(7);
+
+        // OTC 累计充值数额(USDT)
+        $otcDepositAmount = self::getOtcTransactions(WalletTransaction::DEPOSIT);
+
+        // OTC 累计提币数额(USDT)
+        $otcWithdrawAmount = self::getOtcTransactions(WalletTransaction::WITHDRAW);
+
+        // OTC 累计买入交易数量及手续费(USDT)
+        $otcBuyTotal =  self::otcOrderTotal();
+
+        // OTC 累计卖出交易数量及手续费(USDT)
+        $otcSellTotal =  self::otcOrderTotal(OtcOrder::SELL);
+
+        // OTC 累计交易手续费 (USDT)
+        $otcFee = bcadd($otcBuyTotal->fee, $otcSellTotal->fee);
+
+        // OTC 累计充提币手续费(USDT)
+        $transFeeDeposit = self::walletTransFee(WalletTransaction::DEPOSIT);
+        $transFeeWithdraw = self::walletTransFee(WalletTransaction::WITHDRAW);
+        $walletFee = bcadd($transFeeDeposit, $transFeeWithdraw);
+
+        // OTC 快捷购买溢价收益(USDT)
+        $otcQuickIncomeSys = self::otcQuickIncomeSys();
+
+        // OTC 平台累计收益(USDT)  (RMB)
+        $otcSysIncomeTotal = bcadd($otcFee, $walletFee);
+        $otcSysIncomeTotal = bcadd($otcSysIncomeTotal, $otcQuickIncomeSys);
+        $otcSysIncomeTotalRmb = bcmul($otcSysIncomeTotal, LegalCurrency::rmbRate() ?: 0);
+
+        // OTC 累计支出（USDT）
+        $otcSysWithdraw =  self::otcSysIncomeWithdraw();
+        $otcSysWithdrawRmb = bcmul($otcSysWithdraw, LegalCurrency::rmbRate() ?: 0);
+
+        // OTC 收益余额(USDT) (RMB)
+        $otcSysIncomeCurrent = bcsub($otcSysIncomeTotal, $otcSysWithdraw);
+        $otcSysIncomeCurrentRmb = bcmul($otcSysIncomeCurrent, LegalCurrency::rmbRate() ?: 0);
+
+        return compact('users','lastSevenDayUser','otcDepositAmount','otcWithdrawAmount',
+            'otcBuyTotal','otcSellTotal','otcFee','walletFee','otcQuickIncomeSys',
+            'otcSysIncomeTotal','otcSysIncomeTotalRmb',
+            'otcSysWithdraw', 'otcSysWithdrawRmb',
+            'otcSysIncomeCurrent','otcSysIncomeCurrentRmb');
+
+    }
+
 }
