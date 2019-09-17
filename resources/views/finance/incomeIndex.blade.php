@@ -9,7 +9,7 @@
 
                     {{-- Title --}}
                     <h3 class="box-title"><i class="fontello-doc"></i>
-                        <span>OTC 平台收益报表</span>
+                        <span>OTC 平台收益报表({{ config('conf.currency_usdt') }})</span>
                     </h3>
 
                     {{-- Filter and Search  Button --}}
@@ -52,10 +52,10 @@
                             <tr>
                                 <th>序号</th>
                                 <th>日期</th>
-                                <th>交易手续费</th>
-                                <th>充值手续费</th>
-                                <th>出金溢价收益</th>
-                                <th>小计</th>
+                                <th>交易手续费({{ config('conf.currency_usdt') }})</th>
+                                <th>充值手续费({{ config('conf.currency_usdt') }})</th>
+                                <th>出金溢价收益({{ config('conf.currency_usdt') }})</th>
+                                <th>小计({{ config('conf.currency_usdt') }})</th>
                             </tr>
                             @forelse($otcSysIncome as $key => $item)
                                 <tr>

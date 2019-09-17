@@ -1012,6 +1012,8 @@ class HomeController extends Controller
      */
     public static function exportReport()
     {
+        bcscale(config('app.bcmath_scale'));
+
         // 注册用户数
         $users = self::getUser();
 

@@ -9,7 +9,7 @@
 
                     {{-- Title --}}
                     <h3 class="box-title"><i class="fontello-doc"></i>
-                        <span>OTC收益提取报表</span>
+                        <span>OTC收益提取报表({{ config('conf.currency_usdt') }})</span>
                     </h3>
 
                     {{-- Filter and Search  Button --}}
@@ -47,7 +47,7 @@
                             <tr>
                                 <th>序号</th>
                                 <th>日期</th>
-                                <th>支出数额</th>
+                                <th>支出数额({{ config('conf.currency_usdt') }})</th>
                             </tr>
                             @forelse($external as $key => $item)
                                 <tr>
