@@ -302,7 +302,7 @@ class IncomeController extends Controller
         $reportData[1][] = $report['otcFee'];
         $reportData[1][] = $report['walletFee'];
         $reportData[1][] = $report['otcQuickIncomeSys'];
-        $reportData[1][] = round($report['otcSysIncomeTotal'],8);
+        $reportData[1][] = $report['otcSysIncomeTotal'];
         $reportData[1][] = $report['otcSysIncomeTotalRmb'];
         $reportData[1][] = $report['otcSysWithdraw'];
         $reportData[1][] = $report['otcSysWithdrawRmb'];
