@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Finance;
 
 use App\Models\Currency;
 use App\Models\Wallet\WalletExternal;
+use App\Models\Wallet\WalletTransaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -134,6 +135,7 @@ class CostController extends Controller
 
         // 设置下载excel文件的headers
         $columns = [ '日期','支出数额'];
+        $detailColumns = ['日期','描述','金额(USDT)','手续费','转出地址','转入地址','交易号'];
 
         $timeFlag = ($start ?:'开始').'-'.($end ?:'当前');
         if (!($start || $end)) { $timeFlag = Carbon::now()->toDateString(); }
@@ -160,13 +162,16 @@ class CostController extends Controller
         $rowData[$key+1][] = '总计';
         $rowData[$key+1][] = @$this->sum(array_column($rowData, 1))['totalAmount'];
 
+        // 获取收益支出明细数据
+        $rowDetailData = $this->costDetail($start, $end);
+
         unset($list);
 
         // 空数据处理
         if (!$rowData) {$rowData[][] = $columns; $dataFlag = null;}
 
         // 格式化excel数据
-        Excel::create($fileName, function ($excel) use ($rowData, $columns, $dataFlag) {
+        Excel::create($fileName, function ($excel) use ($rowData, $columns, $dataFlag, $rowDetailData, $detailColumns) {
             // 多sheet导出
             /* foreach ($rowData as $key => $leaderTeam) {
                  $excel->sheet($key ?: '无数据', function ($sheet) use ($leaderTeam, $columns, $dataFlag) {
@@ -179,6 +184,12 @@ class CostController extends Controller
             // 单sheet导出
             $newRowData = $rowData;
 
+            $excel->sheet('提取明细', function ($sheet) use ($rowDetailData, $detailColumns) {
+                array_unshift($rowDetailData, $detailColumns);
+                $sheet->rows($rowDetailData);
+                $this->sheetDetailStyle($sheet);
+            });
+
             $excel->sheet($dataFlag ? '收益提取': '无数据', function ($sheet) use ($rowData, $newRowData, $columns, $dataFlag) {
                 if ($dataFlag) { array_unshift($newRowData, $columns);  $sheet->rows($newRowData); }
                 else{ $sheet->rows($newRowData); }
@@ -188,6 +199,7 @@ class CostController extends Controller
             // 释放变量
             unset($rowData);
             unset($newRowData);
+            unset($rowDetailData);
 
         })->export('xlsx');
 
@@ -216,6 +228,36 @@ class CostController extends Controller
         $sheet->setWidth(array(
             'A'     =>  15,
             'B'     =>  22,
+        ));
+
+        return $sheet;
+    }
+
+    /**
+     * 设定sheet样式
+     *
+     * @param $sheet
+     * @return mixed
+     */
+    public function sheetDetailStyle($sheet)
+    {
+        // 行格式-首行-背景色-加粗和锁定
+        $sheet->row(1, function($rowData) {
+            $rowData->setBackground('#00B0F0');
+        });
+
+        $sheet->getStyle('A1:N1')->getFont()->setBold(true);
+        $sheet->freezePane('A2');
+
+        // 列宽
+        $sheet->setWidth(array(
+            'A'     =>  15,
+            'B'     =>  45,
+            'C'     =>  20,
+            'D'     =>  10,
+            'E'     =>  20,
+            'F'     =>  20,
+            'G'     =>  70,
         ));
 
         return $sheet;
@@ -269,5 +311,92 @@ class CostController extends Controller
 
         return $export;
     }
+
+    /**
+     * 获取和处理支出明细数据
+     *
+     * @param $start
+     * @param $end
+     * @return array
+     */
+    public function costDetail($start, $end)
+    {
+        // 分批次处理-获取数据总数和设置和计算偏移量
+        $num = $this->getDetailExportNum($start, $end);
+        $perSize = self::EXPORT_PER_SIZE;//每次查询的条数
+        $pages = ceil($num / $perSize);
+        bcscale(config('app.bcmath_scale'));
+
+        // 处理数据  ['日期','备注','金额(USDT)','手续费','转出地址','转入地址',,'交易号'];
+        $rowData = [];
+        for($i = 1; $i <= $pages; $i++) {
+            $list = $this->getDetailUnitExportData($i, $perSize, $start, $end);
+            foreach($list as $key=>$item) {
+                $rowData[$key][] = $item->created_at  ?? '';
+                $rowData[$key][] = $item->remark ?? '';
+                $rowData[$key][] = $item->amount ?? '';
+                $rowData[$key][] = $item->fee ?? '';
+                $rowData[$key][] = $item->from ?? '';
+                $rowData[$key][] = $item->to ?? '';
+                $rowData[$key][] = $item->hash ?? '';
+            }
+        }
+
+        unset($list);
+
+        return $rowData;
+    }
+
+    /**
+     * 获取支出明细数据量
+     *
+     * @param string $start
+     * @param string $end
+     * @return mixed
+     */
+    public function getDetailExportNum($start='', $end='')
+    {
+        $exportNum = WalletTransaction::where('user_id', 0)
+            ->type(WalletTransaction::WITHDRAW)
+            ->currency(Currency::USDT)
+            ->status(WalletTransaction::SUCCESS)
+            ->when($start, function ($query) use ($start) {
+                $query->where('created_at','>=', $start);
+            })
+            ->when($end, function ($query) use ($end) {
+                $query->where('created_at','<=', $end);
+            })
+            ->count();
+
+        return $exportNum;
+    }
+
+    /**
+     * 分批获取支出明细数据
+     *
+     * @param $i
+     * @param $perSize
+     * @param $start
+     * @param $end
+     * @return mixed
+     */
+    public function getDetailUnitExportData($i, $perSize, $start, $end)
+    {
+        $export = WalletTransaction::where('user_id', 0)
+            ->type(WalletTransaction::WITHDRAW)
+            ->currency(Currency::USDT)
+            ->status(WalletTransaction::SUCCESS)
+            ->when($start, function ($query) use ($start) {
+                $query->where('created_at','>=', $start);
+            })
+            ->when($end, function ($query) use ($end) {
+                $query->where('created_at','<=', $end);
+            })
+            ->skip(($i-1)*$perSize)->take($perSize)
+            ->get();
+
+        return $export;
+    }
+
 
 }
