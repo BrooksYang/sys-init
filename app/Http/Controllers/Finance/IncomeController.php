@@ -138,7 +138,7 @@ class IncomeController extends Controller
     public function otcQuickIncomeSysOfDay($dateFormat = '%Y-%m-%d', $start='', $end='')
     {
         $otcQuickIncomeSysOfDay = OtcOrderQuick::status(OtcOrderQuick::RECEIVED)
-            ->select(\DB::raw("DATE_FORMAT(created_at, '$dateFormat') as time,sum(income_sys) as income"))
+            ->select(\DB::raw("DATE_FORMAT(updated_at, '$dateFormat') as time,sum(income_sys) as income"))
             ->when($start, function ($query) use ($start) {
                 $query->where('created_at','>=', $start);
             })
@@ -166,7 +166,7 @@ class IncomeController extends Controller
         $otcOrderOfDay = OtcOrder::type($type)
             ->currency($currency)
             ->status(OtcOrder::RECEIVED)
-            ->select(\DB::raw("DATE_FORMAT(created_at, '$dateFormat') as time,sum(field_amount) as amount,sum(fee) as fee"))
+            ->select(\DB::raw("DATE_FORMAT(updated_at, '$dateFormat') as time,sum(field_amount) as amount,sum(fee) as fee"))
             ->when($start, function ($query) use ($start) {
                 $query->where('created_at','>=', $start);
             })
@@ -194,7 +194,7 @@ class IncomeController extends Controller
         $walletTransFeeOfDay = WalletTransaction::type($type)
             ->currency($currency)
             ->status(WalletTransaction::SUCCESS)
-            ->select(\DB::raw("DATE_FORMAT(created_at, '$dateFormat') as time,sum(amount) as amount,sum(fee) as fee"))
+            ->select(\DB::raw("DATE_FORMAT(updated_at, '$dateFormat') as time,sum(amount) as amount,sum(fee) as fee"))
             ->when($start, function ($query) use ($start) {
                 $query->where('created_at','>=', $start);
             })
