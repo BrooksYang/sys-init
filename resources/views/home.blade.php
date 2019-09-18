@@ -126,7 +126,8 @@
                             </h2>
                             <i class="fa fa-dollar"></i>
                             <h4 class="text-green">{{ number_format($otcDepositAmount, 2) }}</h4>
-                            <h5>OTC 累计充值数额({{ config('conf.currency_usdt') }})</h5>
+                            <h5>OTC 累计充值数额({{ config('conf.currency_usdt') }})&nbsp;&nbsp;
+                            <span style="color: #32526E !important;">{{number_format(bcmul($otcDepositAmount, $rate,8),2)}}</span>(RMB)</h5>
                             <div style="clear:both;"></div>
                         </div>
                     </div>
@@ -144,7 +145,8 @@
                             </h2>
                             <i class="fa fa-dollar"></i>
                             <h4 class="text-red">{{ number_format($otcWithdrawAmount, 2) }}</h4>
-                            <h5>OTC 累计提币数额({{ config('conf.currency_usdt') }})</h5>
+                            <h5>OTC 累计提币数额({{ config('conf.currency_usdt') }})&nbsp;&nbsp;
+                                <span style="color: #32526E !important;">{{number_format(bcmul($otcWithdrawAmount, $rate,8),2)}}</span>(RMB)</h5>
                             <div style="clear:both;"></div>
                         </div>
                     </div>
@@ -165,7 +167,8 @@
                             </h2>
                             <i class="fa fa-dollar"></i>
                             <h4 class="text-aqua">{{ number_format($otcBuyTotal->field_amount, 2) }}</h4>
-                            <h5>OTC 累计买入交易数量({{ config('conf.currency_usdt') }})</h5>
+                            <h5>OTC 累计买入交易数量({{ config('conf.currency_usdt') }})&nbsp;
+                                <span style="color: #32526E !important;">{{number_format(bcmul($otcBuyTotal->field_amount, $rate,8),2)}}</span>(RMB)</h5>
                             <div style="clear:both;"></div>
                         </div>
                     </div>
@@ -183,7 +186,8 @@
                             </h2>
                             <i class="fa fa-dollar"></i>
                             <h4 class="text-yellow">{{ number_format($otcSellTotal->field_amount, 2) }}</h4>
-                            <h5>OTC 累计卖出交易数量({{ config('conf.currency_usdt') }})</h5>
+                            <h5>OTC 累计卖出交易数量({{ config('conf.currency_usdt') }})&nbsp;
+                                <span style="color: #32526E !important;">{{number_format(bcmul($otcSellTotal->field_amount, $rate,8),2)}}</span>(RMB)</h5>
                             <div style="clear:both;"></div>
                         </div>
                     </div>
@@ -203,7 +207,9 @@
                             </h2>
                             <i class="fa fa-dollar"></i>
                             <h4 class="text-green">{{ number_format(bcadd($otcBuyTotal->fee, $otcSellTotal->fee,8), 2) }}</h4>
-                            <h5>OTC  &nbsp;累计交易手续费 ({{ config('conf.currency_usdt') }})</h5>
+                            <h5>OTC  &nbsp;累计交易手续费 ({{ config('conf.currency_usdt') }})&nbsp;
+                                <span style="color: #32526E !important;">
+                                    {{number_format(bcmul(bcadd($otcBuyTotal->fee, $otcSellTotal->fee,8), $rate,8),2)}}</span>(RMB)</h5>
                             <div style="clear:both;"></div>
                         </div>
                     </div>
@@ -220,8 +226,10 @@
                                 <span class="bg-green">Current</span>
                             </h2>
                             <i class="fa fa-btc"></i>
-                            <h4 class="text-green">{{ number_format(bcadd($transFeeDeposit, $transFeeWithdraw), 2) }}</h4>
-                            <h5>OTC 累计充提币手续费({{ config('conf.currency_usdt') }})</h5>
+                            <h4 class="text-green">{{ number_format(bcadd($transFeeDeposit, $transFeeWithdraw,8), 2) }}</h4>
+                            <h5>OTC 累计充提币手续费({{ config('conf.currency_usdt') }})&nbsp;
+                                <span style="color: #32526E !important;">
+                                    {{number_format(bcmul(bcadd($transFeeDeposit, $transFeeWithdraw,8), $rate,8),2)}}</span>(RMB)</h5>
                             <div style="clear:both;"></div>
                         </div>
                     </div>
@@ -242,7 +250,8 @@
                             </h2>
                             <i class="fa fa-btc"></i>
                             <h4 class="text-aqua">{{ number_format($otcQuickIncomeSys, 2) }}</h4>
-                            <h5>OTC 快捷购买溢价收益({{ config('conf.currency_usdt') }})</h5>
+                            <h5>OTC 快捷购买溢价收益({{ config('conf.currency_usdt') }})&nbsp;
+                                <span style="color: #32526E !important;">{{number_format(bcmul($otcQuickIncomeSys, $rate,8),2)}}</span>(RMB)</h5>
                             <div style="clear:both;"></div>
                         </div>
                     </div>

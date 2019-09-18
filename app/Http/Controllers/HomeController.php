@@ -37,7 +37,8 @@ class HomeController extends Controller
     public function index()
     {
         $cacheLength = intval(config('app.cache_length'));
-        $tc = $otc = $otcTicket = [];
+        $tc = $otc = $otcTicket = $rate = [];
+        $rate = ['rate' => LegalCurrency::rmbRate()];
 
         //工单客服数据面板
         if (\Entrance::user()->role_id == config('app.supervisor_role_id')) {
@@ -60,7 +61,7 @@ class HomeController extends Controller
             $otc = $this->otcStatisticItem($cacheLength);
         }
 
-        return view('home', $public + $tc + $otc);
+        return view('home', $public + $tc + $otc + $rate);
     }
 
     /**
