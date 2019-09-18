@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\User;
 
 use App\Models\Country;
+use App\Models\Currency;
 use App\Models\KycLevel;
+use App\Models\OTC\OtcOrder;
+use App\Models\OTC\OtcOrderQuick;
+use App\Models\Wallet\WalletTransaction;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -98,7 +102,10 @@ class UserController extends Controller
         // 认证状态
         $kycStatus = $this->getUserStatus()['verify_status'];
 
-        return view('user.userKycShow', compact('user','uri','country','kycLevels','kycStatus'));
+        // 用户交易数据
+        $transaction = $this->transaction($user->id);
+
+        return view('user.userKycShow', compact('user','uri','country','kycLevels','kycStatus','transaction'));
     }
 
     /**
@@ -225,4 +232,55 @@ class UserController extends Controller
         ];
 
     }
+
+    /**
+     * 用户交易数据统计
+     *
+     * @param $uid
+     * @return array
+     */
+    public function transaction($uid)
+    {
+        // 累计充值数额
+        $deposit = WalletTransaction::where('user_id', $uid)
+            ->select(DB::raw('sum(amount) as amount'),DB::raw('sum(fee) as fee'))
+            ->type(WalletTransaction::DEPOSIT)
+            ->currency(Currency::USDT)
+            ->status(WalletTransaction::SUCCESS)
+            ->first();
+
+        // 累计提币数额
+        $withdraw = WalletTransaction::where('user_id', $uid)
+            ->select(DB::raw('sum(amount) as amount'),DB::raw('sum(fee) as fee'))
+            ->type(WalletTransaction::WITHDRAW)
+            ->currency(Currency::USDT)
+            ->status(WalletTransaction::SUCCESS)
+            ->first();
+
+        // 累计入金交易量 - （即用户买入-广告商卖出）
+        $sell = OtcOrder::where('from_user_id', $uid)
+            ->select(DB::raw('sum(field_amount) as amount'),DB::raw('sum(fee) as fee'))
+            ->type(OtcOrder::BUY)
+            ->currency(Currency::USDT)
+            ->status(OtcOrder::RECEIVED)
+            ->first();
+
+        // 累计出金交易量
+        $out = OtcOrderQuick::where('user_id', $uid)
+            ->select(DB::raw('sum(field_amount) as amount'),DB::raw('sum(income_sys) as income'))
+            ->status(OtcOrderQuick::RECEIVED)
+            ->first();
+
+        // 累计充值手续费
+        $depositFee = @$deposit->fee;
+
+        // 累计入金交易手续费
+        $sellFee = @$sell->fee;
+
+        // 累计出金溢价收益-贡献给平台(快捷抢单-平台收益)
+        $outIncome = @$out->income;
+
+        return compact('deposit','withdraw','sell','out','depositFee','sellFee','outIncome');
+    }
+
 }

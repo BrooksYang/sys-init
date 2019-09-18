@@ -30,6 +30,9 @@
                                 <span class="entypo-info-circled"></span>
                                 <strong>个人信息：</strong>
                                 <p class="">
+                                    <strong>用户名：</strong>{{ $user->username ?: '暂无' }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                </p>
+                                <p class="">
                                     <strong>真实姓名：</strong>{{ $user->full_name ?: '暂无' }}&nbsp;&nbsp;&nbsp;&nbsp;
                                     <strong>性别：</strong>{{ !$user->geder ? '保密' :$user->geder==1 ? '男':'女'  }}&nbsp;&nbsp;&nbsp;&nbsp;
                                     <strong>年龄：</strong>{{ $user->age ?: '暂无' }}&nbsp;&nbsp;&nbsp;&nbsp;
@@ -46,22 +49,37 @@
                                     <strong>认证状态：</strong>{{$user->verify_status ? ($kycStatus[$user->verify_status]['name'] ?? '暂无'):'暂无'}}&nbsp;&nbsp;&nbsp;&nbsp;
                                     <strong>认证等级：</strong>{{ $kycLevels->pluck('name','id')[$user->kyc_level_id] ?? '暂无'}}&nbsp;&nbsp;
                                 </p>
+                                <br>
+
+                                <p class="">
+                                    <strong>【累计充值数额】</strong>{{ number_format(@$transaction['deposit']->amount,8) }}&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <strong>【累计提币数额】</strong>{{ number_format(@$transaction['withdraw']->amount,8)}}&nbsp;&nbsp;
+                                </p>
+                                <p class="">
+                                    <strong>【累计入金交易量】</strong>{{ number_format(@$transaction['sell']->amount,8) }}&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <strong>【累计出金交易量】</strong>{{ number_format(@$transaction['out']->amount,8)}}&nbsp;&nbsp;
+                                </p>
+                                <p class="">
+                                    <strong>【累计充值手续费】</strong>{{ number_format(@$transaction['depositFee'],8) }}&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <strong>【累计入金交易手续费】</strong>{{ number_format(@$transaction['sellFee'],8) }}&nbsp;&nbsp;
+                                    <strong>【累计出金溢价贡献收益】</strong>{{ number_format(@$transaction['outIncome'],8) }}&nbsp;&nbsp;
+                                </p>
                             </div>
                             <div style="height: 20px"></div>
 
                             {{--身份证件信息--}}
                             *身份证件信息：<br/><br>
-                            <div style="height: 50px"></div>
+                            <div style="height: 30px"></div>
                             <p class="">
                                 @if($user->id_image_front ?? $user->id_image_back )
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <img id="" src="{{ config('app.api_res_url') }}/{{ $user->id_image_front }}" style="width:570px;border-radius:20px"
-                                             onerror="this.src='http://placehold.it/570x420'" onclick="rotate(this)"/>
+                                        <img id="" src="{{ config('app.api_res_url') }}/{{ $user->id_image_front }}" style="width:270px;border-radius:20px"
+                                             onerror="this.src='http://placehold.it/270x200'" onclick="rotate(this)"/>
                                     </div>
                                     <div class="col-md-6">
-                                        <img id="" src="{{ config('app.api_res_url') }}/{{ $user->id_image_back }}" style="width:570px;border-radius:20px"
-                                             onerror="this.src='http://placehold.it/570x420'" onclick="rotate(this)"/>
+                                        <img id="" src="{{ config('app.api_res_url') }}/{{ $user->id_image_back }}" style="width:270px;border-radius:20px"
+                                             onerror="this.src='http://placehold.it/270x200'" onclick="rotate(this)"/>
                                     </div>
                                 </div>
 
@@ -72,48 +90,48 @@
                                     暂无信息
                                 @endif
                             </p>
-                            <div style="height: 20px"></div>
+
                             <hr>
 
-                            {{--手持身份证件信息--}}
-                            *手持身份证件照片：<br/><br>
-                            <div style="height: 55px"></div>
+                            {{--手持身份证件信息及护照--}}
+                            *手持身份证件照片及护照信息：<br/><br>
+                            <div style="height: 30px"></div>
                             <p class="">
-                                @if($user->id_image_handheld )
-                                <img id="" src="{{ config('app.api_res_url') }}/{{ $user->id_image_handheld }}" style="width:570px;border-radius:20px"
-                                     onerror="this.src='http://placehold.it/570x420'" onclick="rotate(this)"/>
-                                @else
-                                    暂无信息
-                                @endif
-                            </p>
-                            <div style="height: 20px"></div>
-                            <hr>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        @if($user->id_image_handheld )
+                                            <img id="" src="{{ config('app.api_res_url') }}/{{ $user->id_image_handheld }}" style="width:270px;border-radius:20px"
+                                                 onerror="this.src='http://placehold.it/270x200'" onclick="rotate(this)"/>
+                                        @else
+                                            暂无信息
+                                        @endif
+                                    </div>
+                                    <div class="col-md-6">
+                                        @if(in_array(pathinfo($user->passport)['extension'] ?? '',['pdf']))
+                                            <a href="{{ config('app.api_res_url') }}/{{ $user->passport }}" target="_blank">
+                                                {{ pathinfo($user->passport)['basename'] }}</a>
+                                        @elseif($user->passport)
+                                            <img id="" src="{{ config('app.api_res_url') }}/{{ $user->passport }}" style="width:270px;border-radius:20px"
+                                                 onerror="this.src='http://placehold.it/270x200'" onclick="rotate(this)"/>
+                                        @else
+                                            暂无信息
+                                        @endif
+                                    </div>
+                                </div>
 
-                            {{--护照信息--}}
-                            *护照信息：<br/><br>
-                            <div style="height: 55px"></div>
-                            <p class="">
-                                @if(in_array(pathinfo($user->passport)['extension'] ?? '',['pdf']))
-                                    <a href="{{ config('app.api_res_url') }}/{{ $user->passport }}" target="_blank">{{ pathinfo($user->passport)['basename'] }}</a>
-                                @elseif($user->passport)
-                                    <img id="" src="{{ config('app.api_res_url') }}/{{ $user->passport }}" style="width:570px;border-radius:20px"
-                                     onerror="this.src='http://placehold.it/570x420'" onclick="rotate(this)"/>
-                                @else
-                                    暂无信息
-                                @endif
                             </p>
                             <div style="height: 20px"></div>
                             <hr>
 
                             {{--信用卡电子账单--}}
                             *信用卡电子账单：<br><br>
-                            <div style="height: 55px"></div>
+                            <div style="height: 30px"></div>
                             <p class="">
                                 @if(in_array(pathinfo($user->bill)['extension'] ?? '',['pdf']))
                                     <a href="{{ config('app.api_res_url') }}/{{ $user->bill }}" target="_blank">{{ pathinfo($user->bill)['basename'] }}</a>
                                 @elseif($user->bill)
-                                    <img id="" src="{{ config('app.api_res_url') }}/{{ $user->bill }}" style="width:570px;border-radius:20px"
-                                     onerror="this.src='http://placehold.it/570x420'" onclick="rotate(this)"/>
+                                    <img id="" src="{{ config('app.api_res_url') }}/{{ $user->bill }}" style="width:270px;border-radius:20px"
+                                     onerror="this.src='http://placehold.it/270x200'" onclick="rotate(this)"/>
                                 @else
                                     暂无信息
                                 @endif
