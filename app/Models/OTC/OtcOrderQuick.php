@@ -46,7 +46,7 @@ class OtcOrderQuick extends Model
         self::APPEALED   => ['name' => '已申诉', 'class' => 'danger'],
         self::APPEALING  => ['name' => '处理中', 'class' => 'warning'],
         self::APPEAL_END => ['name' => '已完结', 'class' => 'info'],
-        self::APPEAL_END => ['name' => '已撤诉', 'class' => 'default'],
+        self::APPEAL_CANCELED => ['name' => '已撤诉', 'class' => 'default'],
     ];
 
 

@@ -887,7 +887,7 @@ class HomeController extends Controller
     public function otcQuickIncomeSysOfDay()
     {
         $otcQuickIncomeSysOfDay = OtcOrderQuick::status(OtcOrderQuick::RECEIVED)
-            ->select(\DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as time,sum(income_sys) as income"))
+            ->select(\DB::raw("DATE_FORMAT(updated_at, '%Y-%m-%d') as time,sum(income_sys) as income"))
             ->groupBy('time')
             ->get();
 
@@ -906,7 +906,7 @@ class HomeController extends Controller
         $otcOrderOfDay = OtcOrder::type($type)
             ->currency($currency)
             ->status(OtcOrder::RECEIVED)
-            ->select(\DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as time,sum(field_amount) as amount,sum(fee) as fee"))
+            ->select(\DB::raw("DATE_FORMAT(updated_at, '%Y-%m-%d') as time,sum(field_amount) as amount,sum(fee) as fee"))
             ->groupBy('time')
             ->get();
 
@@ -925,7 +925,7 @@ class HomeController extends Controller
         $walletTransFeeOfDay = WalletTransaction::type($type)
             ->currency($currency)
             ->status(WalletTransaction::SUCCESS)
-            ->select(\DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as time,sum(amount) as amount,sum(fee) as fee"))
+            ->select(\DB::raw("DATE_FORMAT(updated_at, '%Y-%m-%d') as time,sum(amount) as amount,sum(fee) as fee"))
             ->groupBy('time')
             ->get();
 

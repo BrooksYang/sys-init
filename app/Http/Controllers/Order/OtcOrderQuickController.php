@@ -98,13 +98,13 @@ class OtcOrderQuickController extends Controller
                 return $query->where('merchant_order_id', 'like', "%$searchMerchant%");
             })
             ->when($start, function ($query) use ($start){
-                return $query->where('created_at', '>=', $start);
+                return $query->where('updated_at', '>=', $start);
             })
             ->when($end, function ($query) use ($end){
-                return $query->where('created_at', '<=', $end);
+                return $query->where('updated_at', '<=', $end);
             })
             ->when($orderC, function ($query) use ($orderC){
-                return $query->orderBy('created_at', $orderC);
+                return $query->orderBy('updated_at', $orderC);
             })
             ->get();
 
