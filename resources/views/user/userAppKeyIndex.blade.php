@@ -101,11 +101,11 @@
                                         </a>
 
                                         <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
-                                                '{{ url("change/merchant/status/$item->id") }}','is_valid',2,
-                                                '商户账户为<b><strong> {{ $item->user->is_valid == \App\User::ACTIVE ? '禁用' : '启用'}} </strong></b> 状态',
+                                            '{{ url("change/merchant/status/$item->id") }}','is_valid',2,
+                                            '商户账户为<b><strong> {{ $item->user->is_valid == \App\User::ACTIVE ? '禁用账户' : '启用账户'}} </strong></b> 状态',
                                                 '{{ csrf_token() }}', '修改账户状态');">
                                             <i class="{{ $item->user->is_valid == \App\User::ACTIVE ? 'fontello-lock-filled' : 'fontello-lock-open-filled'}}"
-                                               title="{{ $item->user->is_valid == \App\User::ACTIVE ? "禁用" : "启用"}}"></i>
+                                               title="{{ $item->user->is_valid == \App\User::ACTIVE ? "禁用账户" : "启用账户"}}"></i>
                                         </a>
                                     </td>
                                 </tr>
