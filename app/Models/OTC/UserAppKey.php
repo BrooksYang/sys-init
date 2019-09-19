@@ -63,4 +63,26 @@ class UserAppKey extends Model
         return count($ip) == 1 ? $ip[0] : (count($ip) > 1 ? implode(',', $ip) : null);
     }
 
+    /**
+     * 格式化时间
+     *
+     * @param $value
+     * @return false|string
+     */
+    public function getStartTimeAttribute($value)
+    {
+        return date('H:i',strtotime($value));
+    }
+
+    /**
+     * 格式化时间
+     *
+     * @param $value
+     * @return false|string
+     */
+    public function getEndTimeAttribute($value)
+    {
+        return date('H:i', strtotime($value));
+    }
+
 }
