@@ -115,9 +115,9 @@
                             </div>
                         </div>
 
-                        {{--ip--}}
+                        {{--ip及通道开关--}}
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="form-group {{ $errors->has('ip') ? 'has-error' : '' }}">
                                     <div class="col-sm-12">
                                         <label>绑定IP(可选)</label>
@@ -135,6 +135,51 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="form-group {{ $errors->has('is_enabled') ? 'has-error' : '' }}">
+                                    <div class="col-sm-12">
+                                        <label>是否开启通道</label>
+                                        <select name="is_enabled" id="" class="form-control">
+                                            <option value="1"  {{@$editFlag ?
+                                                ($user->is_enabled == \App\Models\OTC\UserAppKey::OPEN ? 'selected' : '') : 'selected'}}>开启 - 通道</option>
+                                            <option value="0" {{@$editFlag ?
+                                                ($user->is_enabled == \App\Models\OTC\UserAppKey::CLOSE ? 'selected' : '') : ''}}>关闭 - 通道</option>
+                                        </select>
+                                        @if ($errors->has('is_enabled'))
+                                            <span class="help-block"><strong>{{ $errors->first('is_enabled') }}</strong></span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- 交易开始和结束时间 --}}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group {{ $errors->has('start_time') ? 'has-error' : '' }}">
+                                    <div class="col-sm-12">
+                                        <label>通道交易开始时间</label>
+                                        <input id="start_time" name="start_time" value="{{ $user->start_time ?? old('start_time') }}" data-format="HH:mm"
+                                            readonly="" class="form-control" type="text">
+                                        @if ($errors->has('start_time'))
+                                            <span class="help-block"><strong>{{ $errors->first('start_time') }}</strong></span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group {{ $errors->has('end_time') ? 'has-error' : '' }}">
+                                    <div class="col-sm-12">
+                                        <label>通道交易结束时间</label>
+                                        <input id="end_time" name="end_time" value="{{ $user->end_time ?? old('end_time') }}" data-format="HH:mm"
+                                               readonly="" class="form-control" type="text">
+                                        @if ($errors->has('end_time'))
+                                            <span class="help-block"><strong>{{ $errors->first('end_time') }}</strong></span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         {{--备注--}}
@@ -144,7 +189,7 @@
                                     <div class="col-sm-12">
                                         <label>备注</label>
                                         <textarea class="form-control" name="remark" rows="5"
-                                                  placeholder="请填写备注信息">{{ $announcement->remark ?? old('remark') }}</textarea>
+                                                  placeholder="请填写备注信息">{{ $user->remark ?? old('remark') }}</textarea>
                                         @if ($errors->has('remark'))
                                             <span class="help-block"><strong>{{ $errors->first('remark') }}</strong></span>
                                         @endif
@@ -171,6 +216,14 @@
 
     <script>
         $(function () {
+            // 初始化timePicker
+            $('#start_time').clockface();
+            $('#end_time').clockface();
+            $('#t2').clockface({
+                format: 'HH:mm',
+                trigger: 'manual'
+            });
+
             let selectCountry = $('#country_id');
             let nationality = $('#nationality');
 

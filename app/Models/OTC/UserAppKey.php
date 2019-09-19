@@ -7,6 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserAppKey extends Model
 {
+
+    // 是否开启：0关闭，1开启
+    const CLOSE = 0;
+    const OPEN  = 1;
+
+    const IS_OPEN = [
+        self::CLOSE => ['name' => '关闭', 'class'=>'danger'],
+        self::OPEN  => ['name' => '开启', 'class'=>'success']
+    ];
+
     /**
      * 商户密钥管理
      *

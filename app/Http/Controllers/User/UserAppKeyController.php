@@ -50,6 +50,9 @@ class UserAppKeyController extends Controller
         // 账号状态
         $status = User::STATUS;
 
+        // 通道状态
+        $isOpen = UserAppKey::IS_OPEN;
+
         $users =  UserAppKey::with('user')
             ->when($search, function ($query) use ($search) {
                 return $query->whereHas('user', function ($query) use($search){
@@ -70,7 +73,7 @@ class UserAppKeyController extends Controller
             })
             ->paginate(config('app.pageSize'));
 
-        return view('user.userAppKeyIndex', compact('search','status','users'));
+        return view('user.userAppKeyIndex', compact('search','status','isOpen','users'));
     }
 
     /**
@@ -120,6 +123,9 @@ class UserAppKeyController extends Controller
                 'secret_key'  => Str::uuid(),
                 'ip'          => $ip,
                 'expired_at'  => $expiredAt,
+                'is_enabled'     => $request->is_enabled,
+                'start_time'       => $request->start_time,
+                'end_time'         => $request->end_time,
                 'remark'      => $request->remark
             ]);
 
@@ -178,6 +184,9 @@ class UserAppKeyController extends Controller
             $userAppKey->ip = $ip;
             $userAppKey->expired_at = $expiredAt;
             $userAppKey->remark = $request->remark;
+            $userAppKey->is_enabled = $request->is_enabled;
+            $userAppKey->start_time = $request->start_time;
+            $userAppKey->end_time = $request->end_time;
             $userAppKey->save();
         });
         

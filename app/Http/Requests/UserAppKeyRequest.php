@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Rules\VerifyIpFormat;
+use App\Rules\VerifyTimePeriod;
 use App\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
@@ -55,6 +56,14 @@ class UserAppKeyRequest extends FormRequest
                  new VerifyIpFormat($request->ip),
             ],
             'remark' => 'sometimes|max:255',
+
+            'is_enabled' => "required|in:0,1",
+            'start_time' => "sometimes|required_with:end_time",
+            'end_time' => [
+                "sometimes",
+                "required_with:start_time",
+                new VerifyTimePeriod($request->start_time)
+            ]
         ];
     }
 

@@ -39,7 +39,9 @@
                                 <th>API 签名密钥</th>
                                 <th title="绑定ip后永久有效，未绑定ip过期时间为90天">绑定IP</th>
                                 <th>过期时间</th>
-                                <th>备注 </th>
+                                <th>备注</th>
+                                <th>通道状态</th>
+                                <th>交易时间</th>
                                 <th>创建时间
                                     @include('component.sort', ['url'=>url('user/appKey')])
                                 </th>
@@ -90,6 +92,8 @@
                                         </p>
                                         @include('component.modalFooter',['form'=>false])
                                     </td>
+                                    <td><span class="label label-{{ $isOpen[$item->is_enabled]['class'] }}">{{$isOpen[$item->is_enabled]['name']}}</span></td>
+                                    <td>{{ $item->start_time ? $item->start_time.' - '.$item->end_time : '无限制'}}</td>
                                     <td>{{ $item->created_at ?: '--' }}</td>
                                     <td>
                                         <a href="{{ url("user/merchant/$item->id/edit") }}">
@@ -106,7 +110,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                @include('component.noData',['colSpan'=>13])
+                                @include('component.noData',['colSpan'=>15])
                             @endforelse
                         </table>
 
