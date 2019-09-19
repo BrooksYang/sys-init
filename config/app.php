@@ -103,7 +103,7 @@ return [
     |
     */
 
-    'timezone' => env('TIME_ZONE', 'Asia/Shanghai'),
+    'timezone' => env('TIME_ZONE', 'UTC'),
 
     /*
     |--------------------------------------------------------------------------
