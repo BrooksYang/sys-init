@@ -71,7 +71,7 @@ class UserAppKey extends Model
      */
     public function getStartTimeAttribute($value)
     {
-        return date('H:i',strtotime($value));
+        return $value ? date('H:i',strtotime($value)) : null;
     }
 
     /**
@@ -82,7 +82,7 @@ class UserAppKey extends Model
      */
     public function getEndTimeAttribute($value)
     {
-        return date('H:i', strtotime($value));
+        return $value ? date('H:i', strtotime($value)) : null;
     }
 
 }
