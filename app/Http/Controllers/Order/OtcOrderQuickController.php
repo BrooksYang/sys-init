@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Order;
 
 use App\Models\OTC\OtcOrderQuick;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -59,9 +60,12 @@ class OtcOrderQuickController extends Controller
         // 申诉状态，1已申诉，2申诉处理中，3申诉完结
         $appealStatus = OtcOrderQuick::APPEAL_STATUS;
 
+        // 系统商户
+        $merchants = User::merchant();
+
         $search = $searchUser || $searchOtc || $searchMerchant || $filterStatus|| $filterAppeal || $searchMerchantOrder|| $start || $end;
 
-        $otcQuickOrder = OtcOrderQuick::with(['user','merchant'])
+        $otcQuickOrder = OtcOrderQuick::with(['user'])
             ->when($searchUser, function ($query) use ($searchUser){
                 return $query->whereHas('user', function ($query) use ($searchUser){
                     return $query->where('username', 'like', "%$searchUser%")
@@ -70,11 +74,7 @@ class OtcOrderQuickController extends Controller
                 });
             })
             ->when($searchMerchant, function ($query) use ($searchMerchant){
-                return $query->whereHas('merchant', function ($query) use ($searchMerchant){
-                    return $query->where('username', 'like', "%$searchMerchant%")
-                        ->orwhere('phone', 'like', "%$searchMerchant%")
-                        ->orwhere('email', 'like', "%$searchMerchant%");
-                });
+                return $query->where('merchant_id', $searchMerchant);
             })
             ->when($filterStatus, function ($query) use ($filterStatus){
                 return $query->status($filterStatus);
@@ -111,7 +111,7 @@ class OtcOrderQuickController extends Controller
         $statistics = self::sum($otcQuickOrder);
         $otcQuickOrder = self::selfPage($otcQuickOrder, config('app.pageSize'));
 
-        return compact('orderStatus', 'appealStatus', 'otcQuickOrder','statistics','search', 'incomeType');
+        return compact('orderStatus', 'appealStatus', 'merchants', 'otcQuickOrder','statistics','search', 'incomeType');
     }
 
     /**
