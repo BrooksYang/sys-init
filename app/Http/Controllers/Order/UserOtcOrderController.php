@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Order;
 
 use App\Models\Currency;
 use App\Models\OTC\OtcOrder;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -52,6 +53,9 @@ class UserOtcOrderController extends Controller
         // 币种
         $currencies = Currency::getCurrencies();
 
+        // 系统商户
+        $merchants = User::merchant();
+
         //按币种-用户名-电话-商户订单id检索
         $searchUser = trim($request->searchUser,'');
         $searchFromUser = trim($request->searchFromUser,'');
@@ -59,6 +63,7 @@ class UserOtcOrderController extends Controller
         $searchCardNumber = trim($request->searchCardNumber,'');
         $searchOtc = trim($request->searchOtc,'');
         $searchMerchant = trim($request->searchMerchant,'');
+        $searchMerchantOrder = trim($request->searchMerchantOrder,'');
         $searchCurrency = trim($request->searchCurrency,'');
         $filterType = trim($request->filterType,'');
         $filterStatus = trim($request->filterStatus,'');
@@ -66,8 +71,18 @@ class UserOtcOrderController extends Controller
         $start = trim($request->start,'');
         $end = trim($request->end,'');
         $orderC = trim($request->orderC ?: 'desc','');
+        $uIds = [];
 
-        $search = $searchUser || $searchOtc || $searchMerchant || $filterStatus|| $filterAppeal ||  $start || $end;
+        if ($searchMerchant) {
+            // 商户
+            $merchant = User::find($searchMerchant);
+
+            // 商户旗下用户id
+            $uIds = $merchant->appKey->users()->pluck('id')->toArray();
+        }
+
+
+        $search = $searchUser || $searchOtc || $searchMerchant || $searchMerchantOrder || $filterStatus|| $filterAppeal ||  $start || $end;
 
         $userOtcOrder = OtcOrder::with(['user', 'tradeOwner','currency','legalCurrency'])
             ->when($searchUser, function ($query) use ($searchUser){
@@ -93,10 +108,12 @@ class UserOtcOrderController extends Controller
             ->when($searchCardNumber, function ($query) use ($searchCardNumber){
                 return $query->where('card_number',  'like', "%$searchCardNumber%");
             })
-            ->when($searchMerchant, function ($query) use ($searchMerchant){
-                return $query->where('merchant_order_id', 'like', "%$searchMerchant%");
+            ->when($searchMerchantOrder, function ($query) use ($searchMerchantOrder){
+                return $query->where('merchant_order_id', 'like', "%$searchMerchantOrder%");
             })
-
+            ->when($searchMerchant, function ($query) use ($searchMerchant, $uIds){
+                return $query->whereIn('user_id', $uIds);
+            })
             ->when($searchCurrency, function ($query) use ($searchCurrency){
                 $query->whereHas('currency', function ($query) use ($searchCurrency) {
                     $query->where('id', $searchCurrency);
@@ -125,7 +142,7 @@ class UserOtcOrderController extends Controller
         $statistics = $this->sum($userOtcOrder);
         $userOtcOrder = self::selfPage($userOtcOrder, OTC_ORDER_PAGE_SIZE);
 
-        return view('order.userOtcOrderIndex',compact('orderStatus', 'appealStatus', 'currencies','orderType',
+        return view('order.userOtcOrderIndex',compact('orderStatus', 'appealStatus', 'currencies','orderType','merchants',
             'userOtcOrder','statistics','search'));
     }
 

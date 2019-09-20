@@ -54,8 +54,8 @@
                             </div>
                             {{--商户订单--}}
                             <div class="col-sm-2">
-                                <input class="form-control input-sm"  placeholder="商户订单号" name="searchMerchant" id="searchMerchant" type="text"
-                                       value="{{ Request::get('searchMerchant') ?? '' }}" />
+                                <input class="form-control input-sm"  placeholder="商户订单号" name="searchMerchantOrder" id="searchMerchantOrder" type="text"
+                                       value="{{ Request::get('searchMerchantOrder') ?? '' }}" />
                             </div>
                             {{--广告上名称或电话--}}
                             <div class="col-sm-2">
@@ -91,8 +91,18 @@
                                     @endforeach
                                 </select>
                             </div>
-                            @include('component.dateTimePicker', ['colMdNum'=>4, 'id'=>1, 'label'=>'','name'=>'start','placeholder'=>'请选择开始时间'])
-                            @include('component.dateTimePicker', ['colMdNum'=>4, 'id'=>2, 'label'=>'','name'=>'end','placeholder'=>'请选择结束时间'])
+                            {{--筛选商户--}}
+                            <div class="col-sm-2">
+                                <select class="flter-status form-control input-sm" id="searchMerchant" name="searchMerchant">
+                                    <option value="" {{ !Request::get('searchMerchant') ? 'selected':'' }}>请选择商户</option>
+                                    @foreach($merchants as $key => $item)
+                                        <option value="{{$item->id}}" {{ Request::get('searchMerchant')==$item->id
+                                            ? 'selected' : ''}}>{{ $item->phone }} - {{ $item->username }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @include('component.dateTimePicker', ['colMdNum'=>3, 'id'=>1, 'label'=>'','name'=>'start','placeholder'=>'请选择开始时间'])
+                            @include('component.dateTimePicker', ['colMdNum'=>3, 'id'=>2, 'label'=>'','name'=>'end','placeholder'=>'请选择结束时间'])
                         </div>
                     </form>
                     <div class="box-body table-responsive no-padding">
@@ -250,6 +260,7 @@
                     +'&searchCardNumber='+$('#searchCardNumber').val()
                     +'&searchOtc='+$('#searchOtc').val()
                     +'&searchMerchant='+$('#searchMerchant').val()
+                    +'&searchMerchantOrder='+$('#searchMerchantOrder').val()
                     +'&searchCurrency='+$('#searchCurrency').val()
                     +'&filterType='+$('#filterType').val()
                     +'&filterStatus='+$('#filterStatus').val()
