@@ -78,4 +78,16 @@ class User extends Authenticatable
     {
         return $this->belongsTo(UserAppKey::class, 'access_key', 'access_key');
     }
+
+    /**
+     * 获取商户
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function scopeMerchant()
+    {
+        return self::where('is_merchant', self::MERCHANTS)
+            ->whereNotIn('id', [26])
+            ->get(['username','phone','id']);
+    }
 }

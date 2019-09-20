@@ -8,6 +8,7 @@ use App\Models\LegalCurrency;
 use App\Models\OTC\OtcOrder;
 use App\Models\OTC\OtcOrderQuick;
 use App\Models\Wallet\WalletTransaction;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -30,12 +31,23 @@ class IncomeController extends Controller
     {
         // 按日-按周-按月
         $groups = OtcOrder::GROUP;
+        $merchants = $this->getMerchant();
 
         // 多条件搜索
+        $searchMerchant = trim($request->searchMerchant,'');
         $searchGroup = trim($request->searchGroup ?: 'day','');
         $start = trim($request->start,'');
         $end = trim($request->end,'');
         $dateFormat = '%Y-%m-%d';
+        $uIds = [];
+
+        if ($searchMerchant) {
+            // 商户
+            $merchant = User::find($searchMerchant);
+
+            // 商户旗下用户id
+            $uIds = $merchant->appKey->users()->pluck('id')->toArray();
+        }
 
         if ($searchGroup == 'week') {
             $dateFormat = '%Y-%u';
@@ -47,33 +59,46 @@ class IncomeController extends Controller
 
         $search = $searchGroup || $start || $end;
 
+
         // 获取OTC平台各项收益
-        $otcSysIncome = $this->getOtcSysIncome($dateFormat, $start, $end);
+        $otcSysIncome = $this->getOtcSysIncome(@$merchant->id, $uIds, $dateFormat, $start, $end);
 
         $statistics = $this->sum($otcSysIncome);
         $otcSysIncome = self::selfPage($otcSysIncome, config('app.pageSize'));
 
-        return view('finance.incomeIndex', compact('otcSysIncome', 'groups', 'search','statistics'));
+        return view('finance.incomeIndex', compact('otcSysIncome', 'groups', 'merchants','search','statistics'));
+    }
+
+    /**
+     * 获取系统商户信息
+     *
+     * @return mixed
+     */
+    public function getMerchant()
+    {
+        return User::merchant();
     }
 
     /**
      * 获取平台收益
      *
+     * @param $merchantId
+     * @param $uIds
      * @param $dateFormat
      * @param $start
      * @param $end
      * @return array
      */
-    public function getOtcSysIncome($dateFormat, $start, $end)
+    public function getOtcSysIncome($merchantId, $uIds, $dateFormat, $start, $end)
     {
         // OTC 订单买入及手续费统计-每天 - 默认USDT
-        $otcBuyOfDay = $this->otcOrderOfDay(OtcOrder::BUY, $dateFormat, $start, $end);
+        $otcBuyOfDay = $this->otcOrderOfDay($uIds, OtcOrder::BUY, $dateFormat, $start, $end);
 
         // 钱包交易手续费-充值-每天 - 默认USDT
-        $transFeeDepositOfDay = $this->walletTransFeeOfDay(WalletTransaction::DEPOSIT, $dateFormat, $start, $end);
+        $transFeeDepositOfDay = $this->walletTransFeeOfDay($uIds, WalletTransaction::DEPOSIT, $dateFormat, $start, $end);
 
         // OTC 快捷抢单-平台累计收益-每天 - USDT
-        $otcQuickIncomeSysOfDay = $this->otcQuickIncomeSysOfDay($dateFormat, $start, $end);
+        $otcQuickIncomeSysOfDay = $this->otcQuickIncomeSysOfDay($merchantId, $dateFormat, $start, $end);
 
         // OTC 平台收益统计-每天 默认USDT
         $otcSysIncome = $this->sysFeeIncome($otcBuyOfDay, $transFeeDepositOfDay, $otcQuickIncomeSysOfDay);
@@ -130,20 +155,24 @@ class IncomeController extends Controller
     /**
      * OTC 快捷抢单-平台累计收益 - 每天
      *
+     * @param $merchantId
      * @param string $dateFormat
      * @param string $start
      * @param string $end
      * @return mixed
      */
-    public function otcQuickIncomeSysOfDay($dateFormat = '%Y-%m-%d', $start='', $end='')
+    public function otcQuickIncomeSysOfDay($merchantId, $dateFormat = '%Y-%m-%d', $start='', $end='')
     {
         $otcQuickIncomeSysOfDay = OtcOrderQuick::status(OtcOrderQuick::RECEIVED)
             ->select(\DB::raw("DATE_FORMAT(updated_at, '$dateFormat') as time,sum(income_sys) as income"))
+            ->when($merchantId, function ($query) use ($merchantId) {
+                $query->where('merchant_id', $merchantId);
+            })
             ->when($start, function ($query) use ($start) {
-                $query->where('created_at','>=', $start);
+                $query->where('updated_at','>=', $start);
             })
             ->when($end, function ($query) use ($end) {
-                $query->where('created_at','<=', $end);
+                $query->where('updated_at','<=', $end);
             })
             ->groupBy('time')
             ->get();
@@ -154,6 +183,7 @@ class IncomeController extends Controller
     /**
      * OTC订单买入或卖出及手续费统计 - 默认USDT
      *
+     * @param $uIds
      * @param $type
      * @param string $dateFormat
      * @param string $start
@@ -161,12 +191,15 @@ class IncomeController extends Controller
      * @param int $currency
      * @return mixed
      */
-    public function otcOrderOfDay($type, $dateFormat = '%Y-%m-%d',$start='', $end='', $currency = Currency::USDT)
+    public function otcOrderOfDay($uIds, $type, $dateFormat = '%Y-%m-%d',$start='', $end='', $currency = Currency::USDT)
     {
         $otcOrderOfDay = OtcOrder::type($type)
             ->currency($currency)
             ->status(OtcOrder::RECEIVED)
             ->select(\DB::raw("DATE_FORMAT(updated_at, '$dateFormat') as time,sum(field_amount) as amount,sum(fee) as fee"))
+            ->when($uIds, function ($query) use ($uIds) {
+                $query->whereIn('user_id', $uIds);
+            })
             ->when($start, function ($query) use ($start) {
                 $query->where('created_at','>=', $start);
             })
@@ -182,6 +215,7 @@ class IncomeController extends Controller
     /**
      * 钱包交易手续费-每天 - 默认USDT
      *
+     * @param $uIds
      * @param $type
      * @param string $dateFormat
      * @param string $start
@@ -189,12 +223,15 @@ class IncomeController extends Controller
      * @param int $currency
      * @return mixed
      */
-    public function walletTransFeeOfDay($type, $dateFormat = '%Y-%m-%d', $start='', $end='',$currency = Currency::USDT)
+    public function walletTransFeeOfDay($uIds, $type, $dateFormat = '%Y-%m-%d', $start='', $end='', $currency = Currency::USDT)
     {
         $walletTransFeeOfDay = WalletTransaction::type($type)
             ->currency($currency)
             ->status(WalletTransaction::SUCCESS)
             ->select(\DB::raw("DATE_FORMAT(updated_at, '$dateFormat') as time,sum(amount) as amount,sum(fee) as fee"))
+            ->when($uIds, function ($query) use ($uIds) {
+                $query->whereIn('user_id', $uIds);
+            })
             ->when($start, function ($query) use ($start) {
                 $query->where('created_at','>=', $start);
             })

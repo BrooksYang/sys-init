@@ -28,6 +28,17 @@
                     {{--多条件搜索导出--}}
                     <form action="{{ url('otc/income/daily/export')}}" id="searchForm">
                         <div class="row" style="margin-bottom:10px;">
+                            {{--筛选商户--}}
+                            <div class="col-sm-2">
+                                <select class="flter-status form-control input-sm" id="searchMerchant" name="searchMerchant">
+                                    <option value="" {{ !Request::get('searchMerchant') ? 'selected':'' }}>请选择商户</option>
+                                    @foreach($merchants as $key => $item)
+                                        <option value="{{$item->id}}" {{ Request::get('searchMerchant')==$item->id
+                                            ? 'selected' : ''}}>{{ $item->phone }} - {{ $item->username }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             {{--分组/按日、周、月--}}
                             <div class="col-sm-2">
                                 <select class="flter-status form-control input-sm" id="searchGroup" name="searchGroup">
@@ -37,8 +48,8 @@
                                     @endforeach
                                 </select>
                             </div>
-                            @include('component.dateTimePicker', ['colMdNum'=>4, 'id'=>1, 'label'=>'','name'=>'start','placeholder'=>'请选择开始时间'])
-                            @include('component.dateTimePicker', ['colMdNum'=>4, 'id'=>2, 'label'=>'','name'=>'end','placeholder'=>'请选择结束时间'])
+                            @include('component.dateTimePicker', ['colMdNum'=>3, 'id'=>1, 'label'=>'','name'=>'start','placeholder'=>'请选择开始时间'])
+                            @include('component.dateTimePicker', ['colMdNum'=>3, 'id'=>2, 'label'=>'','name'=>'end','placeholder'=>'请选择结束时间'])
                             <div class="col-sm-2">
                                 <div class="input-group date">
                                     <button class="btn btn-default pull-right" title="默认导出全部">按日期导出报表</button>
@@ -145,8 +156,8 @@
             // 整理uri searchTeam
             function implodeUri() {
                 var uri = '?searchGroup='+$('#searchGroup').val()
-                    /*+'&searchFromUser='+$('#searchFromUser').val()
-                    +'&searchRemark='+$('#searchRemark').val()
+                    +'&searchMerchant='+$('#searchMerchant').val()
+                    /*+'&searchRemark='+$('#searchRemark').val()
                     +'&searchCardNumber='+$('#searchCardNumber').val()
                     +'&searchOtc='+$('#searchOtc').val()
                     +'&searchMerchant='+$('#searchMerchant').val()
