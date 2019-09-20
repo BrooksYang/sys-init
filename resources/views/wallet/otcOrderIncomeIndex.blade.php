@@ -79,13 +79,23 @@
                             </div>
                         </div>
                         <div class="row" style="margin-bottom:10px;">
+                            {{--筛选商户--}}
+                            <div class="col-sm-2">
+                                <select class="flter-status form-control input-sm" id="searchMerchant" name="searchMerchant">
+                                    <option value="" {{ !Request::get('searchMerchant') ? 'selected':'' }}>请选择商户</option>
+                                    @foreach($merchants as $key => $item)
+                                        <option value="{{$item->id}}" {{ Request::get('searchMerchant')==$item->id
+                                            ? 'selected' : ''}}>{{ $item->phone }} - {{ $item->username }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             {{--商户订单--}}
-                            <div class="col-sm-3">
+                            <div class="col-sm-2">
                                 <input class="form-control input-sm"  placeholder="商户订单号" name="searchMerchantOrder" id="searchMerchantOrder" type="text"
                                        value="{{ Request::get('searchMerchantOrder') ?? '' }}" />
                             </div>
                             {{--广告商名称或电话--}}
-                            <div class="col-sm-3">
+                            <div class="col-sm-1">
                                 <input class="form-control input-sm"  placeholder="搜索广告商名称或电话" name="searchFromUser" id="searchFromUser" type="text"
                                        value="{{ Request::get('searchFromUser')?? '' }}"/>
                             </div>
@@ -219,6 +229,7 @@
                     +'&searchRemark='+$('#searchRemark').val()
                     +'&searchCardNumber='+$('#searchCardNumber').val()
                     +'&searchOtc='+$('#searchOtc').val()
+                    +'&searchMerchant='+$('#searchMerchant').val()
                     +'&searchMerchantOrder='+$('#searchMerchantOrder').val()
                     +'&searchCurrency='+$('#searchCurrency').val()
                     +'&filterType='+$('#filterType').val()

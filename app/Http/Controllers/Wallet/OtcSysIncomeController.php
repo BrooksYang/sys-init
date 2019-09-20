@@ -82,6 +82,9 @@ class OtcSysIncomeController extends Controller
         // 币种
         $currencies = Currency::getCurrencies();
 
+        // 系统商户
+        $merchants = User::merchant();
+
         // 多条件搜索
         $searchUser = trim($request->searchUser,'');
         $searchFromUser = trim($request->searchFromUser,'');
@@ -98,7 +101,7 @@ class OtcSysIncomeController extends Controller
         $end = trim($request->end,'');
         $orderC = trim($request->orderC ?: 'desc','');
 
-        $search = $searchUser || $searchOtc || $searchMerchantOrder || $filterStatus|| $filterAppeal ||  $start || $end;
+        $search = $searchUser || $searchOtc || $searchMerchant || $searchMerchantOrder || $filterStatus|| $filterAppeal ||  $start || $end;
 
         // 处理商户搜索
         $uIds = [];
@@ -165,7 +168,7 @@ class OtcSysIncomeController extends Controller
         $userOtcOrder = self::selfPage($userOtcOrder, config('app.pageSize'));
 
         return view('wallet.otcOrderIncomeIndex',compact('orderStatus', 'appealStatus', 'currencies','orderType',
-            'userOtcOrder','statistics','search','incomeType'));
+            'merchants','userOtcOrder','statistics','search','incomeType'));
     }
 
     /**
