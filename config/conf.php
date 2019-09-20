@@ -19,7 +19,4 @@ return [
 
     // 系统默认币商
     'default_traders' => env('ENABLE_SYS_WITHDRAW', ''),
-
-    133, 178,277,361,369,491,617,705,709
-
 ];
