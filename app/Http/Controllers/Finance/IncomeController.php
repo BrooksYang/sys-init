@@ -521,6 +521,9 @@ class IncomeController extends Controller
         $traders = User::getTraders();
         list($contribution, $transaction) = [[], ''];
 
+        list($sumDeposit, $sumWithdraw, $sumSell, $sumOut, $sumDepositFee, $sumSellFee,
+            $sumOutIncome, $sumContribution, $sumContributionRmb) = [0,0,0,0,0,0,0,0,0];
+
         foreach ($traders as $key => $trader) {
 
             $transaction = UserController::transaction($trader->id);
@@ -540,7 +543,31 @@ class IncomeController extends Controller
             $contribution[$key][] = @$transaction['outIncome'];
             $contribution[$key][] = @$transaction['contribution'];
             $contribution[$key][] = @$transaction['contributionRmb'];
+
+            $sumDeposit += @$transaction['deposit']->amount;
+            $sumWithdraw += @$transaction['withdraw']->amount;
+            $sumSell += @$transaction['sell']->amount;
+            $sumOut += @$transaction['out']->amount;
+            $sumDepositFee += @$transaction['depositFee'];
+            $sumSellFee += @$transaction['sellFee'];
+            $sumOutIncome += @$transaction['outIncome'];
+            $sumContribution += @$transaction['contribution'];
+            $sumContributionRmb += @$transaction['contributionRmb'];
         }
+
+        $contribution[$key+1][] = '合计';
+        $contribution[$key+1][] = '---';
+        $contribution[$key+1][] = '---';
+        $contribution[$key+1][] = '---';
+        $contribution[$key+1][5] = $sumDeposit;
+        $contribution[$key+1][6] = $sumWithdraw;
+        $contribution[$key+1][7] = $sumSell;
+        $contribution[$key+1][8] = $sumOut;
+        $contribution[$key+1][9] = $sumDepositFee;
+        $contribution[$key+1][10] = $sumSellFee;
+        $contribution[$key+1][11] = $sumOutIncome;
+        $contribution[$key+1][12] = $sumContribution;
+        $contribution[$key+1][13] = $sumContributionRmb;
 
         return $contribution;
     }
