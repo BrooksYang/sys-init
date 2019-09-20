@@ -94,8 +94,8 @@ class OtcOrderQuickController extends Controller
             ->when($searchCardNumber, function ($query) use ($searchCardNumber){
                 return $query->where('card_number',  'like', "%$searchCardNumber%");
             })
-            ->when($searchMerchant, function ($query) use ($searchMerchant){
-                return $query->where('merchant_order_id', 'like', "%$searchMerchant%");
+            ->when($searchMerchantOrder, function ($query) use ($searchMerchantOrder){
+                return $query->where('merchant_order_id', 'like', "%$searchMerchantOrder%");
             })
             ->when($start, function ($query) use ($start){
                 return $query->where('updated_at', '>=', $start);

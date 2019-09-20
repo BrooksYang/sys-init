@@ -81,8 +81,8 @@
                         <div class="row" style="margin-bottom:10px;">
                             {{--商户订单--}}
                             <div class="col-sm-3">
-                                <input class="form-control input-sm"  placeholder="商户订单号" name="searchMerchant" id="searchMerchant" type="text"
-                                       value="{{ Request::get('searchMerchant') ?? '' }}" />
+                                <input class="form-control input-sm"  placeholder="商户订单号" name="searchMerchantOrder" id="searchMerchantOrder" type="text"
+                                       value="{{ Request::get('searchMerchantOrder') ?? '' }}" />
                             </div>
                             {{--广告商名称或电话--}}
                             <div class="col-sm-3">
@@ -219,7 +219,7 @@
                     +'&searchRemark='+$('#searchRemark').val()
                     +'&searchCardNumber='+$('#searchCardNumber').val()
                     +'&searchOtc='+$('#searchOtc').val()
-                    +'&searchMerchant='+$('#searchMerchant').val()
+                    +'&searchMerchantOrder='+$('#searchMerchantOrder').val()
                     +'&searchCurrency='+$('#searchCurrency').val()
                     +'&filterType='+$('#filterType').val()
                    /* +'&filterStatus='+$('#filterStatus').val()

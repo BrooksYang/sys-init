@@ -68,21 +68,45 @@
                                 <th>出金溢价收益({{ config('conf.currency_usdt') }})</th>
                                 <th>小计({{ config('conf.currency_usdt') }})</th>
                             </tr>
+                            <?php $merchant = @$merchants->filter(function($item){ return $item->id==Request::get('searchMerchant'); })->first(); ?>
                             @forelse($otcSysIncome as $key => $item)
+                                <?php $start = (!Request::get('searchGroup') || Request::get('searchGroup')=='day' ? @$key.' 00:00:00' : Request::get('start')?:'') ;
+                                      $end = Request::get('end')?:'';?>
                                 <tr>
                                     <td>{{ (@$item['key'] + 1) }}</td>
                                     <td>
                                         @if(!Request::get('searchGroup') || Request::get('searchGroup')=='day')
-                                            <a href="{{ url('otc/sys/income')}}?start={{@$key.' 00:00:00'}}&end={{@$key.' 59:59:59'}}"
+                                            <a href="{{ url('otc/sys/income')}}?searchMerchant={{@$merchant->id?:''}}&start={{@$key.' 00:00:00'}}&end={{@$key.' 59:59:59'}}"
                                                target="_blank">
                                             {{ @$key ?: '--'}}{{ Request::get('searchGroup')=='week' ? ' 周':(Request::get('searchGroup')=='month' ? ' 月':'') }}</a>
                                         @else
                                             {{ @$key ?: '--'}}{{ Request::get('searchGroup')=='week' ? ' 周':(Request::get('searchGroup')=='month' ? ' 月':'') }}
                                         @endif
                                     </td>
-                                    <td>{{ floatval(@$item['otc_buy_fee'] ?:0) }}</td>
-                                    <td>{{ floatval(@$item['deposit_fee'] ?:0) }}</td>
-                                    <td>{{ floatval(@$item['quick_income'] ?:0)}}</td>
+                                    <td>
+                                        @if($start || $end || (!Request::get('searchGroup') || Request::get('searchGroup')=='day'))
+                                        <a href="{{ url('otc/sys/income') }}?searchMerchant={{@$merchant->id?:''}}&start={{$start}}&end={{$end}}" target="_blank">
+                                            {{ floatval(@$item['otc_buy_fee'] ?:0) }}</a>
+                                        @else
+                                            {{ floatval(@$item['otc_buy_fee'] ?:0) }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if(($start || $end || (!Request::get('searchGroup') || Request::get('searchGroup')=='day')) && @$item['deposit_fee'] )
+                                        <a href="{{ url('otc/sys/income') }}?type=deposit&start={{$start}}&end={{$end}}" target="_blank">
+                                            {{ floatval(@$item['deposit_fee'] ?:0) }}</a>
+                                        @else
+                                            {{ floatval(@$item['deposit_fee'] ?:0) }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($start || $end || (!Request::get('searchGroup') || Request::get('searchGroup')=='day'))
+                                        <a href="{{ url('otc/sys/income') }}?type=orderQuick&searchMerchant={{@$merchant->phone?:''}}&start={{$start}}&end={{$end}}"
+                                           target="_blank">{{ floatval(@$item['quick_income'] ?:0)}}</a>
+                                        @else
+                                            {{ floatval(@$item['quick_income'] ?:0)}}
+                                        @endif
+                                    </td>
                                     <td><strong>{{ floatval(@$item['total'] ?:0) }}</strong></td>
                                 </tr>
                             @empty

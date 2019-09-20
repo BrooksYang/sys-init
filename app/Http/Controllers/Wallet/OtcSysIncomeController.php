@@ -8,6 +8,7 @@ use App\Models\OTC\OtcOrder;
 use App\Models\OTC\OtcOrderQuick;
 use App\Models\Wallet\WalletExternal;
 use App\Models\Wallet\WalletTransaction;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -87,7 +88,8 @@ class OtcSysIncomeController extends Controller
         $searchRemark = trim($request->searchRemark,'');
         $searchCardNumber = trim($request->searchCardNumber,'');
         $searchOtc = trim($request->searchOtc,'');
-        $searchMerchant = trim($request->searchMerchant,'');
+        $searchMerchantOrder = trim($request->searchMerchantOrder,''); // 商户订单
+        $searchMerchant = trim($request->searchMerchant,''); // 商户
         $searchCurrency = trim($request->searchCurrency,'');
         $filterType = trim($request->filterType,'');
         $filterStatus = trim($request->filterStatus ?: OtcOrder::RECEIVED,'');
@@ -96,7 +98,17 @@ class OtcSysIncomeController extends Controller
         $end = trim($request->end,'');
         $orderC = trim($request->orderC ?: 'desc','');
 
-        $search = $searchUser || $searchOtc || $searchMerchant || $filterStatus|| $filterAppeal ||  $start || $end;
+        $search = $searchUser || $searchOtc || $searchMerchantOrder || $filterStatus|| $filterAppeal ||  $start || $end;
+
+        // 处理商户搜索
+        $uIds = [];
+        if ($searchMerchant) {
+            // 商户
+            $merchant = User::find($searchMerchant);
+
+            // 商户旗下用户id
+            $uIds = $merchant->appKey->users()->pluck('id')->toArray();
+        }
 
         $userOtcOrder = OtcOrder::with(['user','tradeOwner','currency','legalCurrency'])
             ->status($filterStatus)
@@ -123,8 +135,11 @@ class OtcSysIncomeController extends Controller
             ->when($searchCardNumber, function ($query) use ($searchCardNumber){
                 return $query->where('card_number',  'like', "%$searchCardNumber%");
             })
-            ->when($searchMerchant, function ($query) use ($searchMerchant){
-                return $query->where('merchant_order_id', 'like', "%$searchMerchant%");
+            ->when($searchMerchantOrder, function ($query) use ($searchMerchantOrder){
+                return $query->where('merchant_order_id', 'like', "%$searchMerchantOrder%"); // 商户订单
+            })
+            ->when($searchMerchant, function ($query) use ($searchMerchant, $uIds){
+                return $query->whereIn('user_id', $uIds); // 搜索商户（即商户旗下用户）
             })
             ->when($searchCurrency, function ($query) use ($searchCurrency){
                 return $query->currency($searchCurrency);

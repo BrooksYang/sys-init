@@ -282,12 +282,22 @@ class IncomeController extends Controller
      */
     public function export(Request $request)
     {
+        $searchMerchant = trim($request->searchMerchant,'');
         $searchGroup = $request->searchGroup ?: 'day';
         $start = $request->start ?:'';
         $end = $request->end ?:'';
 
         $dateFormat = '%Y-%m-%d';
         $dateUnit = '';
+        $uIds = [];
+
+        if ($searchMerchant) {
+            // 商户
+            $merchant = User::find($searchMerchant);
+
+            // 商户旗下用户id
+            $uIds = $merchant->appKey->users()->pluck('id')->toArray();
+        }
 
         if ($searchGroup == 'week') {
             $dateFormat = '%Y-%u';
@@ -302,7 +312,7 @@ class IncomeController extends Controller
         set_time_limit(0);
 
         // 设置下载excel文件的headers
-        $columns = ['日期','交易手续费(USDT)','充值手续费(USDT)','出金溢价收益(USDT)','小计(USDT)', 'RMB'];
+        $columns = ['日期','交易手续费(USDT)','充值手续费(USDT)','出金溢价收益(USDT)','小计(USDT)', 'RMB', '商戶'];
 
         $reportColumns = ['日期', '累计交易手续费(USDT)','累计充提币手续费(USDT)', '出金溢价收益(USDT)',
             '平台累计收益(USDT)','平台累计收益(RMB)', '累计支出(USDT)', '累计支出(RMB)','收益余额(USDT)','收益余额(RMB)',
@@ -314,7 +324,7 @@ class IncomeController extends Controller
 
         // 处理数据
         $rowData = []; $dataFlag = true;
-        $list = $this->getOtcSysIncome($dateFormat,$start, $end);
+        $list = $this->getOtcSysIncome(@$merchant->id, $uIds, $dateFormat,$start, $end);
 
         foreach($list as $key=>$item) {
             $rowData[$key]['time'] = ($key.$dateUnit ?? '') ?? '';
@@ -323,6 +333,7 @@ class IncomeController extends Controller
             $rowData[$key]['quick_income'] = $item['quick_income'] ?? '';
             $rowData[$key]['total'] = $item['total'] ?? '';
             $rowData[$key]['rmb'] = bcmul($item['total'] ?? 0, LegalCurrency::rmbRate() ?: 0);
+            $rowData[$key][] = $searchMerchant?@$merchant->username?$merchant->username. '-' :''.@$merchant->phone:'全部';
         }
 
         // 数据总计
@@ -527,6 +538,7 @@ class IncomeController extends Controller
             'D'     =>  25,
             'E'     =>  25,
             'F'     =>  25,
+            'G'     =>  20,
         ));
 
         return $sheet;

@@ -70,8 +70,8 @@
                             </div>
                             {{--商户订单--}}
                             <div class="col-sm-2">
-                                <input class="form-control input-sm"  placeholder="商户订单号" name="searchMerchant" id="searchMerchant" type="text"
-                                       value="{{ Request::get('searchMerchant') ?? '' }}" />
+                                <input class="form-control input-sm"  placeholder="商户订单号" name="searchMerchantOrder" id="searchMerchantOrder" type="text"
+                                       value="{{ Request::get('searchMerchantOrder') ?? '' }}" />
                             </div>
                         </div>
 
@@ -130,7 +130,7 @@
                                 <th>申诉</th>
                                 <th>商户订单</th>
                                 {{--<th>商户</th>--}}
-                                <th>创建时间
+                                <th>更新时间
                                     @include('component.sort', ['url'=>url('otc/sys/income')])
                                 </th>
                             </tr>
@@ -208,7 +208,7 @@
                                     </td>
                                    {{-- <td title="UID：{{ $item->merchant_id }} | 联系方式：{{ @$item->merchant->phone ?: @$item->merchant->email}}">
                                         <strong>{{ str_limit(@$item->merchant->username ?: (@$item->merchant->phone ?:@$item->merchant->email),15) }}</strong></td>--}}
-                                    <td>{{ $item->created_at ?: '--' }}</td>
+                                    <td title="下单时间{{ $item->created_at ?: '--' }}">{{ $item->updated_at ?: '--' }}</td>
                                 </tr>
                             @empty
                                 <tr><td colspan="20" class="text-center">
@@ -287,6 +287,7 @@
                     +'&searchRemark='+$('#searchRemark').val()
                     +'&searchCardNumber='+$('#searchCardNumber').val()
                     +'&searchOtc='+$('#searchOtc').val()
+                    +'&searchMerchantOrder='+$('#searchMerchantOrder').val()
                     +'&searchMerchant='+$('#searchMerchant').val()
                     +'&filterStatus='+$('#filterStatus').val()
                     +'&filterAppeal='+$('#filterAppeal').val()
