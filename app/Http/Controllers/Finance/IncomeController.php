@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Finance;
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\User\UserController;
 use App\Models\Currency;
 use App\Models\LegalCurrency;
 use App\Models\OTC\OtcOrder;
@@ -318,6 +319,9 @@ class IncomeController extends Controller
             '平台累计收益(USDT)','平台累计收益(RMB)', '累计支出(USDT)', '累计支出(RMB)','收益余额(USDT)','收益余额(RMB)',
             '注册用户','最近7天新增','累计充值数额(USDT)','累计提币数额(USDT)', '累计买入交易数量(USDT)',' 累计卖出交易数量(USDT)',];
 
+        $traderColumns = ['截止日期', 'UID','用户名','联系方式','累计充值(USDT)','累计提币(USDT)', '累计入金交易(USDT)', '累计出金交易(USDT)',
+            '累计充值手续费(RMB)', '累计入金交易手续费(USDT)', '累计出金溢价收益(USDT)','合计贡献收益(USDT)','合计贡献收益(RMB)',];
+
         $timeFlag = ($start ?:'开始').'-'.($end ?:'当前');
         if (!($start || $end)) { $timeFlag = Carbon::now()->toDateString(); }
         $fileName = 'OTC收益报表_'.$timeFlag;
@@ -344,40 +348,11 @@ class IncomeController extends Controller
         $rowData[$item['key']+1][] = @$this->sum($rowData)['totals'];
         $rowData[$item['key']+1][] = bcmul(@$this->sum($rowData)['totals'], LegalCurrency::rmbRate() ?: 0);
 
-        // 统计数据概览 - sheet2
-        $report = HomeController::exportReport();
-        $reportData[0][] = '日期';
-        $reportData[0][] = Carbon::now()->toDateString();
-        $reportData[1][] = '累计交易手续费(USDT)';
-        $reportData[1][] = $report['otcFee'];
-        $reportData[2][] = '累计充提币手续费(USDT)';
-        $reportData[2][] = $report['walletFee'];
-        $reportData[3][] = '出金溢价收益(USDT)';
-        $reportData[3][] = $report['otcQuickIncomeSys'];
-        $reportData[4][] = '平台累计收益(USDT)';
-        $reportData[4][] = $report['otcSysIncomeTotal'];
-        $reportData[5][] = '平台累计收益(折合RMB)';
-        $reportData[5][] = $report['otcSysIncomeTotalRmb'];
-        $reportData[6][] = '累计支出(USDT)';
-        $reportData[6][] = $report['otcSysWithdraw'];
-        $reportData[7][] = '累计支出(折合RMB)';
-        $reportData[7][] = $report['otcSysWithdrawRmb'];
-        $reportData[8][] = '收益余额(USDT)';
-        $reportData[8][] = $report['otcSysIncomeCurrent'];
-        $reportData[9][] = '收益余额(折合RMB)';
-        $reportData[9][] = $report['otcSysIncomeCurrentRmb'];
-        $reportData[10][] = '注册用户数';
-        $reportData[10][] = $report['users'];
-        $reportData[11][] = '最近7天新增';
-        $reportData[11][] = $report['lastSevenDayUser'];
-        $reportData[12][] = '累计充值数额(USDT)';
-        $reportData[12][] = $report['otcDepositAmount'];
-        $reportData[13][] = '累计提币数额(USDT)';
-        $reportData[13][] = $report['otcWithdrawAmount'];
-        $reportData[14][] = '累计买入交易数量(USDT)';
-        $reportData[14][] = @$report['otcBuyTotal']->field_amount;
-        $reportData[15][] = '累计卖出交易数量(USDT)';
-        $reportData[15][] = @$report['otcSellTotal']->field_amount;
+        // 统计数据概览-sheet1
+        $reportData = $this->reportData();
+
+        // 各币商交易数据-sheet2
+        $traderData = $this->traderData();
 
         unset($list);
 
@@ -385,7 +360,8 @@ class IncomeController extends Controller
         if (!$rowData) {$rowData[][] = $columns; $dataFlag = null;}
 
         // 格式化excel数据
-        Excel::create($fileName, function ($excel) use ($rowData, $columns, $dataFlag, $reportData, $reportColumns) {
+        Excel::create($fileName, function ($excel) use ($rowData, $columns, $dataFlag, $reportData, $reportColumns,
+            $traderColumns, $traderData) {
             // 多sheet导出
             /* foreach ($rowData as $key => $leaderTeam) {
                  $excel->sheet($key ?: '无数据', function ($sheet) use ($leaderTeam, $columns, $dataFlag) {
@@ -403,6 +379,12 @@ class IncomeController extends Controller
                 $this->reportSheetStyle($sheet);
             });
 
+            $excel->sheet('广告商累计交易', function ($sheet) use ($traderColumns, $traderData){
+                array_unshift($traderData, $traderColumns);
+                $sheet->rows($traderData);
+                $this->traderSheetStyle($sheet);
+            });
+
             $excel->sheet($dataFlag ? '收益报表': '无数据', function ($sheet) use ($rowData, $newRowData, $columns, $dataFlag) {
                 if ($dataFlag) { array_unshift($newRowData, $columns);  $sheet->rows($newRowData); }
                 else{ $sheet->rows($newRowData); }
@@ -413,6 +395,7 @@ class IncomeController extends Controller
             unset($rowData);
             unset($newRowData);
             unset($reportData);
+            unset($traderData);
 
         })->export('xlsx');
 
@@ -460,7 +443,37 @@ class IncomeController extends Controller
         $reportData = [];
 
         // 统计数据概览 - sheet2
+        $reportData = $this->reportData();
+
+        // 格式化excel数据
+        Excel::create($fileName, function ($excel) use ($reportData, $reportColumns) {
+            // 单sheet导出
+            $excel->sheet('OTC数据概览', function ($sheet) use ($reportData, $reportColumns){
+                //array_unshift($reportData, $reportColumns);
+                $sheet->rows($reportData);
+                $this->reportSheetStyle($sheet);
+            });
+
+            // 释放变量
+            unset($reportData);
+
+        })->export('xlsx');
+
+        // 刷新输出缓冲到浏览器
+        ob_flush();
+        flush();
+
+    }
+
+    /**
+     * 概览数据统计
+     *
+     * @return mixed
+     */
+    public function reportData()
+    {
         $report = HomeController::exportReport();
+
         $reportData[0][] = '日期';
         $reportData[0][] = Carbon::now()->toDateString();
         $reportData[1][] = '累计交易手续费(USDT)';
@@ -494,24 +507,42 @@ class IncomeController extends Controller
         $reportData[15][] = '累计卖出交易数量(USDT)';
         $reportData[15][] = @$report['otcSellTotal']->field_amount;
 
-        // 格式化excel数据
-        Excel::create($fileName, function ($excel) use ($reportData, $reportColumns) {
-            // 单sheet导出
-            $excel->sheet('OTC数据概览', function ($sheet) use ($reportData, $reportColumns){
-                //array_unshift($reportData, $reportColumns);
-                $sheet->rows($reportData);
-                $this->reportSheetStyle($sheet);
-            });
+        return $reportData;
+    }
 
-            // 释放变量
-            unset($reportData);
+    /**
+     * 广告商交易数据
+     *
+     * @return mixed
+     */
+    public function traderData()
+    {
+        // 获取币商
+        $traders = User::getTraders();
+        list($contribution, $transaction) = [[], ''];
 
-        })->export('xlsx');
+        foreach ($traders as $key => $trader) {
 
-        // 刷新输出缓冲到浏览器
-        ob_flush();
-        flush();
+            $transaction = UserController::transaction($trader->id);
 
+            $contribution[$key][] = now()->toDateString();
+            $contribution[$key][] = '#'.$trader->id;
+            $contribution[$key][] = @$trader->username;
+            $contribution[$key][] = @$trader->phone?:@$trader->email;
+            // compact('deposit','withdraw','sell','out','depositFee','sellFee','outIncome',
+            //            'contribution','contributionRmb');
+            $contribution[$key][] = @$transaction['deposit']->amount;
+            $contribution[$key][] = @$transaction['withdraw']->amount;
+            $contribution[$key][] = @$transaction['sell']->amount;
+            $contribution[$key][] = @$transaction['out']->amount;
+            $contribution[$key][] = @$transaction['depositFee'];
+            $contribution[$key][] = @$transaction['sellFee'];
+            $contribution[$key][] = @$transaction['outIncome'];
+            $contribution[$key][] = @$transaction['contribution'];
+            $contribution[$key][] = @$transaction['contributionRmb'];
+        }
+
+        return $contribution;
     }
 
     /**
@@ -544,6 +575,12 @@ class IncomeController extends Controller
         return $sheet;
     }
 
+    /**
+     * 设定sheet样式 - 数据概览
+     *
+     * @param $sheet
+     * @return mixed
+     */
     public function reportSheetStyle($sheet)
     {
         // 行格式-首行-背景色-加粗和锁定
@@ -572,6 +609,42 @@ class IncomeController extends Controller
             'N'     =>  20,
             'O'     =>  25,
             'P'     =>  25,
+        ));
+
+        return $sheet;
+    }
+
+    /**
+     * 设定sheet样式 - 广告商交易数据
+     *
+     * @param $sheet
+     * @return mixed
+     */
+    public function traderSheetStyle($sheet)
+    {
+        // 行格式-首行-背景色-加粗和锁定
+        $sheet->row(1, function($rowData) {
+            $rowData->setBackground('#00B0F0');
+        });
+
+        $sheet->getStyle('A1:P1')->getFont()->setBold(true);
+        $sheet->freezePane('A2');
+
+        // 列宽
+        $sheet->setWidth(array(
+            'A'     =>  11,
+            'B'     =>  8,
+            'C'     =>  18,
+            'D'     =>  20,
+            'E'     =>  16,
+            'F'     =>  16,
+            'G'     =>  20,
+            'H'     =>  20,
+            'I'     =>  22,
+            'J'     =>  25,
+            'K'     =>  25,
+            'L'     =>  20,
+            'M'     =>  20,
         ));
 
         return $sheet;

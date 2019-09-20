@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Models\Country;
 use App\Models\Currency;
 use App\Models\KycLevel;
+use App\Models\LegalCurrency;
 use App\Models\OTC\OtcOrder;
 use App\Models\OTC\OtcOrderQuick;
 use App\Models\Wallet\WalletTransaction;
@@ -239,8 +240,10 @@ class UserController extends Controller
      * @param $uid
      * @return array
      */
-    public function transaction($uid)
+    public static function transaction($uid)
     {
+        bcscale(config('app.bcmath_scale'));
+
         // 累计充值数额
         $deposit = WalletTransaction::where('user_id', $uid)
             ->select(DB::raw('sum(amount) as amount'),DB::raw('sum(fee) as fee'))
@@ -280,7 +283,12 @@ class UserController extends Controller
         // 累计出金溢价收益-贡献给平台(快捷抢单-平台收益)
         $outIncome = @$out->income;
 
-        return compact('deposit','withdraw','sell','out','depositFee','sellFee','outIncome');
+        // 合计 - 产生收益
+        $contribution  = bcadd(bcadd($depositFee,$sellFee),$outIncome);
+        $contributionRmb = bcmul($contribution, LegalCurrency::rmbRate());
+
+        return compact('deposit','withdraw','sell','out','depositFee','sellFee','outIncome',
+            'contribution','contributionRmb');
     }
 
 }

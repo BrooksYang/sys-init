@@ -64,6 +64,9 @@
                                     <strong>【累计入金交易手续费】</strong>{{ number_format(@$transaction['sellFee'],8) }}&nbsp;&nbsp;
                                     <strong>【累计出金溢价贡献收益】</strong>{{ number_format(@$transaction['outIncome'],8) }}&nbsp;&nbsp;
                                 </p>
+                                <p class="" style="color: red">
+                                    <strong>【合计-产生收益】</strong>{{ number_format(@$transaction['contribution'],8) }}
+                                </p>
                             </div>
                             <div style="height: 20px"></div>
 

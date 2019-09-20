@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\KycLevel;
 use App\Models\OTC\UserAppKey;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -86,8 +87,23 @@ class User extends Authenticatable
      */
     public function scopeMerchant()
     {
+        // 排除模拟及测试账户
         return self::where('is_merchant', self::MERCHANTS)
             ->whereNotIn('id', [26])
             ->get(['username','phone','id']);
+    }
+
+    /**
+     * 获取认证的币商
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getTraders()
+    {
+        // 排除模拟账户-包含测试账户
+        return self::where('kyc_level_id', KycLevel::ADVANCED)
+            ->where('id', '>=' ,133)
+            ->orWhereIn('id', [88,89,122])
+            ->get(['username','phone','email','id']);
     }
 }

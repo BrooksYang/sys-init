@@ -20,4 +20,8 @@ class KycLevel extends Model
      */
     protected $guarded = [];
 
+    // 1初级认证，2高级认证
+    const COMMON   = 1;
+    const ADVANCED = 2;
+
 }

@@ -16,4 +16,10 @@ return [
 
     // 是否开启OTC运营方提币
     'enable_sys_withdraw' => env('ENABLE_SYS_WITHDRAW', false),
+
+    // 系统默认币商
+    'default_traders' => env('ENABLE_SYS_WITHDRAW', ''),
+
+    133, 178,277,361,369,491,617,705,709
+
 ];
