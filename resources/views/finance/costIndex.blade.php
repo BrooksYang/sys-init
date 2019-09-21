@@ -50,18 +50,28 @@
                                 <th>支出数额({{ config('conf.currency_usdt') }})</th>
                             </tr>
                             @forelse($external as $key => $item)
+                                <?php $start = (!Request::get('searchGroup') || Request::get('searchGroup')=='day' ? @$item->time.' 00:00:00' : Request::get('start')?:'') ;
+                                      $end = $start || Request::get('end') ? @$item->time.' 23:59:59' : '';?>
                                 <tr>
                                     <td>{{ ($key + 1) + ($external->currentPage() - 1) * $external->perPage() }}</td>
                                     <td>
                                         @if(!Request::get('searchGroup') || Request::get('searchGroup')=='day')
-                                        <a href="{{ url('otc/sys/withdrawLog')}}?start={{@$item->time.' 00:00:00'}}&end={{@$item->time.' 59:59:59'}}"
+                                        <a href="{{ url('otc/sys/withdrawLog')}}?start={{@$item->time.' 00:00:00'}}&end={{@$item->time.' 23:59:59'}}"
                                             target="_blank">
                                             {{@$item->time ?: '--'}}{{Request::get('searchGroup')=='week' ? ' 周':(Request::get('searchGroup')=='month' ? ' 月':'') }}</a>
                                         @else
                                             {{@$item->time ?: '--'}}{{Request::get('searchGroup')=='week' ? ' 周':(Request::get('searchGroup')=='month' ? ' 月':'') }}
                                         @endif
                                     </td>
-                                    <td><strong>{{ floatval($item->amount) }}</strong></td>
+                                    <td><strong>
+                                            @if($start || $end || (!Request::get('searchGroup') || Request::get('searchGroup')=='day'))
+                                                <a href="{{ url('otc/sys/withdrawLog') }}?start={{$start}}&end={{$end}}" target="_blank">
+                                                    {{ floatval($item->amount) }}</a>
+                                            @else
+                                                {{ floatval($item->amount) }}
+                                            @endif
+                                        </strong>
+                                    </td>
                                 </tr>
                             @empty
                                 @include('component.noData', ['colSpan'=>3])

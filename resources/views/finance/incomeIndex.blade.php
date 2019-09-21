@@ -71,12 +71,12 @@
                             <?php $merchant = @$merchants->filter(function($item){ return $item->id==Request::get('searchMerchant'); })->first(); ?>
                             @forelse($otcSysIncome as $key => $item)
                                 <?php $start = (!Request::get('searchGroup') || Request::get('searchGroup')=='day' ? @$key.' 00:00:00' : Request::get('start')?:'') ;
-                                      $end = Request::get('end')?:'';?>
+                                      $end = $start || Request::get('end') ? @$key.' 23:59:59' : '';?>
                                 <tr>
                                     <td>{{ (@$item['key'] + 1) }}</td>
                                     <td>
                                         @if(!Request::get('searchGroup') || Request::get('searchGroup')=='day')
-                                            <a href="{{ url('otc/sys/income')}}?searchMerchant={{@$merchant->id?:''}}&start={{@$key.' 00:00:00'}}&end={{@$key.' 59:59:59'}}"
+                                            <a href="{{ url('otc/sys/income')}}?searchMerchant={{@$merchant->id?:''}}&start={{@$key.' 00:00:00'}}&end={{@$key.' 23:59:59'}}"
                                                target="_blank">
                                             {{ @$key ?: '--'}}{{ Request::get('searchGroup')=='week' ? ' 周':(Request::get('searchGroup')=='month' ? ' 月':'') }}</a>
                                         @else
