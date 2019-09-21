@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Finance;
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\User\UserAppKeyController;
 use App\Http\Controllers\User\UserController;
 use App\Models\Currency;
 use App\Models\LegalCurrency;
@@ -319,6 +320,9 @@ class IncomeController extends Controller
             '平台累计收益(USDT)','平台累计收益(RMB)', '累计支出(USDT)', '累计支出(RMB)','收益余额(USDT)','收益余额(RMB)',
             '注册用户','最近7天新增','累计充值数额(USDT)','累计提币数额(USDT)', '累计买入交易数量(USDT)',' 累计卖出交易数量(USDT)',];
 
+        $merchantColumns = ['截止日期', 'UID','用户名','联系方式','买入量(USDT)','实际到账(USDT)', '商户广告卖出(USDT)', '商户出金(USDT)',
+            '商户提币(USDT)', '可用金额(USDT)', '冻结金额(USDT)','当前总余额(USDT)','当前总余额(RMB)',];
+
         $traderColumns = ['截止日期', 'UID','用户名','联系方式','累计充值(USDT)','累计提币(USDT)', '累计入金交易(USDT)', '累计出金交易(USDT)',
             '累计充值手续费(RMB)', '累计入金交易手续费(USDT)', '累计出金溢价收益(USDT)','合计贡献收益(USDT)','合计贡献收益(RMB)',];
 
@@ -351,7 +355,10 @@ class IncomeController extends Controller
         // 统计数据概览-sheet1
         $reportData = $this->reportData();
 
-        // 各币商交易数据-sheet2
+        // 商户交易数据-sheet2
+        $merchantData = $this->merchantData();
+
+        // 各币商交易数据-sheet3
         $traderData = $this->traderData();
 
         unset($list);
@@ -361,7 +368,7 @@ class IncomeController extends Controller
 
         // 格式化excel数据
         Excel::create($fileName, function ($excel) use ($rowData, $columns, $dataFlag, $reportData, $reportColumns,
-            $traderColumns, $traderData) {
+            $traderColumns, $traderData, $merchantColumns, $merchantData) {
             // 多sheet导出
             /* foreach ($rowData as $key => $leaderTeam) {
                  $excel->sheet($key ?: '无数据', function ($sheet) use ($leaderTeam, $columns, $dataFlag) {
@@ -377,6 +384,12 @@ class IncomeController extends Controller
             $excel->sheet('OTC数据概览', function ($sheet) use ($reportData){
                 $sheet->rows($reportData);
                 $this->reportSheetStyle($sheet);
+            });
+
+            $excel->sheet('商户交易', function ($sheet) use ($merchantColumns, $merchantData){
+                array_unshift($merchantData, $merchantColumns);
+                $sheet->rows($merchantData);
+                $this->merchantSheetStyle($sheet);
             });
 
             $excel->sheet('广告商累计交易', function ($sheet) use ($traderColumns, $traderData){
@@ -395,6 +408,7 @@ class IncomeController extends Controller
             unset($rowData);
             unset($newRowData);
             unset($reportData);
+            unset($merchantData);
             unset($traderData);
 
         })->export('xlsx');
@@ -573,6 +587,69 @@ class IncomeController extends Controller
     }
 
     /**
+     * 商户交易数据
+     *
+     * @return mixed
+     */
+    public function merchantData()
+    {
+        // 获取商户
+        $merchants = User::merchant();
+
+        bcscale(config('app.bcmath_scale'));
+        list($transaction, $merchantData) = ['', []];
+        list($sumField, $sumFinal, $sumSell, $sumOut, $sumWithdraw, $sumAvailable, $sumFrozen, $sumCurrentBalance,
+            $sumCurrentBalanceRmb) = [0,0,0,0,0,0,0,0,0];
+
+        foreach ($merchants as $key => $merchant) {
+
+            $transaction = UserAppKeyController::merchantExchange($merchant->id);
+
+            $merchantData[$key][] = now()->toDateString();
+            $merchantData[$key][] = '#'.@$merchant->id;
+            $merchantData[$key][] = @$merchant->username;
+            $merchantData[$key][] = @$merchant->phone;
+
+            $merchantData[$key][] = $transaction['field']; // 商户买入量
+            $merchantData[$key][] = $transaction['final']; // 商户实际到账
+            $merchantData[$key][] = $transaction['sell']; // 商户广告卖出
+            $merchantData[$key][] = $transaction['out']; // 商户出金
+            $merchantData[$key][] = $transaction['withdraw']; // 商户提币
+
+            $merchantData[$key][] = $transaction['available']; // 商户可用金额
+            $merchantData[$key][] = $transaction['frozen']; // 商户冻结金额
+            $merchantData[$key][] = $transaction['currentBalance']; // 商户当前总余额
+            $merchantData[$key][] = $transaction['currentBalanceRmb']; // 商户当前总余额-RMB
+
+            $sumField += @$transaction['field'];
+            $sumFinal += @$transaction['final'];
+            $sumSell += @$transaction['sell'];
+            $sumOut += @$transaction['out'];
+            $sumWithdraw += @$transaction['withdraw'];
+            $sumAvailable += @$transaction['available'];
+            $sumFrozen += @$transaction['frozen'];
+            $sumCurrentBalance += @$transaction['currentBalance'];
+            $sumCurrentBalanceRmb += @$transaction['currentBalanceRmb'];
+        }
+
+        $merchantData[$key+1][] = '合计';
+        $merchantData[$key+1][] = '---';
+        $merchantData[$key+1][] = '---';
+        $merchantData[$key+1][] = '---';
+        $merchantData[$key+1][5] = $sumField;
+        $merchantData[$key+1][6] = $sumFinal;
+        $merchantData[$key+1][7] = $sumSell;
+        $merchantData[$key+1][8] = $sumOut;
+        $merchantData[$key+1][9] = $sumWithdraw;
+        $merchantData[$key+1][10] = $sumAvailable;
+        $merchantData[$key+1][11] = $sumFrozen;
+        $merchantData[$key+1][12] = $sumCurrentBalance;
+        $merchantData[$key+1][13] = $sumCurrentBalanceRmb;
+
+        return $merchantData;
+    }
+
+    /**
      * 设定sheet样式
      *
      * @param $sheet
@@ -670,6 +747,42 @@ class IncomeController extends Controller
             'I'     =>  22,
             'J'     =>  25,
             'K'     =>  25,
+            'L'     =>  20,
+            'M'     =>  20,
+        ));
+
+        return $sheet;
+    }
+
+    /**
+     * 设定sheet样式 - 商户交易数据
+     *
+     * @param $sheet
+     * @return mixed
+     */
+    public function merchantSheetStyle($sheet)
+    {
+        // 行格式-首行-背景色-加粗和锁定
+        $sheet->row(1, function($rowData) {
+            $rowData->setBackground('#00B0F0');
+        });
+
+        $sheet->getStyle('A1:P1')->getFont()->setBold(true);
+        $sheet->freezePane('A2');
+
+        // 列宽
+        $sheet->setWidth(array(
+            'A'     =>  11,
+            'B'     =>  8,
+            'C'     =>  18,
+            'D'     =>  20,
+            'E'     =>  20,
+            'F'     =>  20,
+            'G'     =>  20,
+            'H'     =>  20,
+            'I'     =>  20,
+            'J'     =>  20,
+            'K'     =>  20,
             'L'     =>  20,
             'M'     =>  20,
         ));

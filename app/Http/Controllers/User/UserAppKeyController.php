@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Requests\UserAppKeyRequest;
 use App\Models\Country;
+use App\Models\LegalCurrency;
 use App\Models\OTC\UserAppKey;
 use App\User;
 use App\Models\Currency;
@@ -219,6 +220,21 @@ class UserAppKeyController extends Controller
      */
     public function show($id)
     {
+        $data = self::merchantExchange($id);
+
+        return view('user.userWalletShow', $data);
+    }
+
+    /**
+     * 商户交易数据
+     *
+     * @param $id
+     * @return array
+     */
+    public static function merchantExchange($id)
+    {
+        bcscale(config('app.bcmath_scale'));
+
         // 用户起始id - 133; 自有币商id - 277
         // 商户
         $merchant = User::find($id);
@@ -262,6 +278,8 @@ class UserAppKeyController extends Controller
 
         // 余额
         $currentBalance = @$balance->user_wallet_balance + @$balance->user_wallet_balance_freeze_amount; // 当前余额
+        $currentBalanceRmb = bcmul($currentBalance, LegalCurrency::rmbRate()); // 当前余额-RMB
+        $available = @$balance->user_wallet_balance ; // 可用余额
         $frozen = @$balance->user_wallet_balance_freeze_amount; // 冻结余额
 
 
@@ -291,8 +309,9 @@ class UserAppKeyController extends Controller
             ->get();
         $totalLeft = $trades->sum('amount') - $trades->sum('field_amount');
 
-        return view('user.userWalletShow', compact('merchant', 'totalTradesSell','field','final','withdraw',
-            'sell','out','correctBalance','currentBalance','frozen', 'totalDeposit','totalBalance','totalLeft'));
+        return compact('merchant', 'totalTradesSell','field','final','withdraw',
+            'sell','out','correctBalance','currentBalance', 'currentBalanceRmb','available','frozen',
+            'totalDeposit','totalBalance','totalLeft');
     }
 
 }
