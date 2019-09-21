@@ -103,7 +103,7 @@
                                 <th>备注</th>
                                 <th>类型</th>
                                 <th>状态</th>
-                                <th>创建时间
+                                <th>更新时间
                                     @include('component.sort', ['url'=>'sys/income?type=deposit'])
                                 </th>
                             </tr>

@@ -148,10 +148,10 @@ class OtcSysIncomeController extends Controller
                 return $query->currency($searchCurrency);
             })
             ->when($start, function ($query) use ($start){
-                return $query->where('created_at', '>=', $start);
+                return $query->where('updated_at', '>=', $start);
             })
             ->when($end, function ($query) use ($end){
-                return $query->where('created_at', '<=', $end);
+                return $query->where('updated_at', '<=', $end);
             })
             ->when($filterType, function ($query) use ($filterType){
                 return $query->type($filterType);
@@ -160,7 +160,7 @@ class OtcSysIncomeController extends Controller
                 return $query->appealStatus($filterAppeal);
             })
             ->when($orderC, function ($query) use ($orderC){
-                return $query->orderBy('created_at', $orderC);
+                return $query->orderBy('updated_at', $orderC);
             })
             ->get();
 
@@ -211,6 +211,12 @@ class OtcSysIncomeController extends Controller
         return compact('totalFieldAmount','totalCashAmount','totalFee');
     }
 
+    /**
+     * 充值手续费收益
+     *
+     * @param Request $request
+     * @return array
+     */
     public function depositFee(Request $request)
     {
         // 多条件搜索
@@ -231,6 +237,8 @@ class OtcSysIncomeController extends Controller
 
         // OTC系统收益类型
         $incomeType = $this->incomeType;
+
+        $search = $search || $from || $to || $filterCurrency || $filterStatus|| $filterType ||  $start || $end;
 
         $transDetails = WalletTransaction::with(['user','currency'])
             ->when($search, function ($query) use ($search){
@@ -258,13 +266,13 @@ class OtcSysIncomeController extends Controller
                 return $query->type($filterType);
             })
             ->when($start, function ($query) use ($start){
-                return $query->where('created_at', '>=', $start);
+                return $query->where('updated_at', '>=', $start);
             })
             ->when($end, function ($query) use ($end){
-                return $query->where('created_at', '<=', $end);
+                return $query->where('updated_at', '<=', $end);
             })
             ->when($orderC, function ($query) use ($orderC){
-                return $query->orderBy('created_at', $orderC);
+                return $query->orderBy('updated_at', $orderC);
             });
         //->paginate(self::WALLET_TRANS_PAGE_SIZE );
 
