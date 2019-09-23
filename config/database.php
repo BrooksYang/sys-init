@@ -61,6 +61,29 @@ return [
             ]
         ],
 
+        'neuContract' => [
+            'driver' => 'mysql',
+            'host' => env('DB_HOST_NEU', '127.0.0.1'),
+            'port' => env('DB_PORT_NEU', '3306'),
+            'database' => env('DB_DATABASE_NEU', 'neucontract_prod'),
+            'username' => env('DB_USERNAME_NEU', 'prod'),
+            'password' => env('DB_PASSWORD_NEU', 'exchange@2019!)'),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+            'dump' => [
+                //'dump_binary_path' => '/path/to/the/binary',
+                'use_single_transaction',
+                'timeout' => 60 * 5,
+                //'exclude_tables' => [table1', 'table2'],
+                //'add_extra_option' => '--optionname=optionvalue',
+            ]
+
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'host' => env('DB_HOST', '127.0.0.1'),
