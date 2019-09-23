@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Currency;
 use App\Models\LegalCurrency;
+use App\Models\NeuContract\Transaction;
+use App\Models\NeuContract\Wallet;
 use App\Models\OTC\OtcOrder;
 use App\Models\OTC\OtcOrderQuick;
+use App\Models\Wallet\Balance;
 use App\Models\Wallet\WalletExternal;
 use App\Models\Wallet\WalletTransaction;
 use Carbon\Carbon;
@@ -242,6 +245,21 @@ class HomeController extends Controller
             return $this->getOtcTransactions(WalletTransaction::WITHDRAW);
         });
 
+        // OTC 系统待提币数额 - 默认USDT
+        $otcTobeWithdraw = Cache::remember('otcTobeWithdraw', $cacheLength, function () {
+            return $this->toBeWithdraw();
+        });
+
+        // 结算平台系统待归集余额 - 默认USDT
+        $neuCollectPending = Cache::remember('neuCollectPending', $cacheLength, function () {
+            return $this->neuCollectPending();
+        });
+
+        // 结算平台系统归集账户余额 - 默认USDT
+        $neuCollectionBalance = Cache::remember('neuCollectionBalance', $cacheLength, function () {
+            return $this->neuCollectionBalance();
+        });
+
         // OTC 累计买入成交数额及手续费 - 默认USDT 买入
         $otcBuyTotal = Cache::remember('otcBuyTotal', $cacheLength, function () {
             return $this->otcOrderTotal();
@@ -318,7 +336,8 @@ class HomeController extends Controller
             'otcOrder',
             'otcWithdrawOrderStatus',
             'grandOtcWithdrawOrder',
-            'otcDepositAmount','otcWithdrawAmount','otcTotal', 'otcBuyTotal', 'otcSellTotal','otcBuyOfDay','otcSellOfDay',
+            'otcDepositAmount','otcWithdrawAmount','otcTobeWithdraw','neuCollectPending','neuCollectionBalance',
+            'otcTotal', 'otcBuyTotal', 'otcSellTotal','otcBuyOfDay','otcSellOfDay',
             'transFeeDepositOfDay','transFeeDeposit', 'transFeeWithdraw', 'otcQuickIncomeSys','otcSysIncomeOfDay','otcSysIncomeTotal','otcSysIncomeRmbTotal',
             'otcSysIncomeCurrent','otcSysIncomeCurrentRmb'
         );
@@ -848,6 +867,37 @@ class HomeController extends Controller
         }
 
         return $transactions;
+    }
+
+    /**
+     * OTC 系统待提币数额 - 默认USDT
+     *
+     * @param int $currency
+     * @return mixed
+     */
+    public function toBeWithdraw($currency = Currency::USDT)
+    {
+        return Balance::where('user_wallet_currency_id', $currency)->sum('user_wallet_balance');
+    }
+
+    /**
+     * 结算平台系统待归集余额
+     *
+     * @return mixed
+     */
+    public function neuCollectPending()
+    {
+        return Transaction::sysCollectPending();
+    }
+
+    /**
+     * 结算平台系统归集账户余额
+     *
+     * @return mixed
+     */
+    public function neuCollectionBalance()
+    {
+        return Wallet::sysCollectionBalance();
     }
 
     /**
