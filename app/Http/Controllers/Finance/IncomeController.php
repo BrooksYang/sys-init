@@ -23,6 +23,30 @@ class IncomeController extends Controller
 
     const EXPORT_PER_SIZE = 100;
 
+    private $columns;
+    private $reportColumns;
+    private $merchantColumns;
+    private $traderColumns;
+
+    public function __construct()
+    {
+        // 收益表
+        $this->columns = ['日期','交易手续费(USDT)','充值手续费(USDT)','出金溢价收益(USDT)','小计(USDT)', 'RMB', '商戶'];
+
+        // 数据概览表
+        $this->reportColumns = ['日期', '累计交易手续费(USDT)','累计充提币手续费(USDT)', '出金溢价收益(USDT)',
+            '平台累计收益(USDT)','平台累计收益(RMB)', '累计支出(USDT)', '累计支出(RMB)','收益余额(USDT)','收益余额(RMB)',
+            '注册用户','最近7天新增','累计充值数额(USDT)','累计提币数额(USDT)', '累计买入交易数量(USDT)',' 累计卖出交易数量(USDT)'];
+
+        // 商户交易数据表
+        $this->merchantColumns = ['截止日期', 'UID','用户名','联系方式','买入量(USDT)','实际到账(USDT)', '商户广告卖出(USDT)', '商户出金(USDT)',
+            '商户提币(USDT)', '可用金额(USDT)', '冻结金额(USDT)','当前总余额(USDT)','当前总余额(RMB)'];
+
+        // 广告商交易数据表
+        $this->traderColumns = ['截止日期', 'UID','用户名','联系方式','累计充值(USDT)','累计提币(USDT)', '累计入金交易(USDT)', '累计出金交易(USDT)',
+            '累计充值手续费(RMB)', '累计入金交易手续费(USDT)', '累计出金溢价收益(USDT)','合计贡献收益(USDT)','合计贡献收益(RMB)'];
+    }
+
     /**
      * 收益报表
      *
@@ -314,17 +338,10 @@ class IncomeController extends Controller
         set_time_limit(0);
 
         // 设置下载excel文件的headers
-        $columns = ['日期','交易手续费(USDT)','充值手续费(USDT)','出金溢价收益(USDT)','小计(USDT)', 'RMB', '商戶'];
-
-        $reportColumns = ['日期', '累计交易手续费(USDT)','累计充提币手续费(USDT)', '出金溢价收益(USDT)',
-            '平台累计收益(USDT)','平台累计收益(RMB)', '累计支出(USDT)', '累计支出(RMB)','收益余额(USDT)','收益余额(RMB)',
-            '注册用户','最近7天新增','累计充值数额(USDT)','累计提币数额(USDT)', '累计买入交易数量(USDT)',' 累计卖出交易数量(USDT)',];
-
-        $merchantColumns = ['截止日期', 'UID','用户名','联系方式','买入量(USDT)','实际到账(USDT)', '商户广告卖出(USDT)', '商户出金(USDT)',
-            '商户提币(USDT)', '可用金额(USDT)', '冻结金额(USDT)','当前总余额(USDT)','当前总余额(RMB)',];
-
-        $traderColumns = ['截止日期', 'UID','用户名','联系方式','累计充值(USDT)','累计提币(USDT)', '累计入金交易(USDT)', '累计出金交易(USDT)',
-            '累计充值手续费(RMB)', '累计入金交易手续费(USDT)', '累计出金溢价收益(USDT)','合计贡献收益(USDT)','合计贡献收益(RMB)',];
+        $columns = $this->columns;
+        $reportColumns = $this->reportColumns;
+        $merchantColumns = $this->merchantColumns;
+        $traderColumns = $this->traderColumns;
 
         $timeFlag = ($start ?:'开始').'-'.($end ?:'当前');
         if (!($start || $end)) { $timeFlag = Carbon::now()->toDateString(); }
@@ -445,9 +462,9 @@ class IncomeController extends Controller
         set_time_limit(0);
 
         // 设置下载excel文件的headers
-        $reportColumns = ['日期', '累计交易手续费(USDT)','累计充提币手续费(USDT)', '出金溢价收益(USDT)',
-            '平台累计收益(USDT)','平台累计收益(RMB)', '累计支出(USDT)', '累计支出(RMB)','收益余额(USDT)','收益余额(RMB)',
-            '注册用户','最近7天新增','累计充值数额(USDT)','累计提币数额(USDT)', '累计买入交易数量(USDT)',' 累计卖出交易数量(USDT)',];
+        $reportColumns = $this->reportColumns;
+        $merchantColumns = $this->merchantColumns;
+        $traderColumns = $this->traderColumns;
 
         $timeFlag = ($start ?:'开始').'-'.($end ?:'当前');
         if (!($start || $end)) { $timeFlag = Carbon::now()->toDateString(); }
@@ -456,11 +473,18 @@ class IncomeController extends Controller
         // 处理数据
         $reportData = [];
 
-        // 统计数据概览 - sheet2
+        // 统计数据概览-sheet1
         $reportData = $this->reportData();
 
+        // 商户交易数据-sheet2
+        $merchantData = $this->merchantData();
+
+        // 各币商交易数据-sheet3
+        $traderData = $this->traderData();
+
         // 格式化excel数据
-        Excel::create($fileName, function ($excel) use ($reportData, $reportColumns) {
+        Excel::create($fileName, function ($excel) use ($reportData, $reportColumns, $merchantColumns, $merchantData,
+            $traderColumns, $traderData) {
             // 单sheet导出
             $excel->sheet('OTC数据概览', function ($sheet) use ($reportData, $reportColumns){
                 //array_unshift($reportData, $reportColumns);
@@ -468,8 +492,22 @@ class IncomeController extends Controller
                 $this->reportSheetStyle($sheet);
             });
 
+            $excel->sheet('商户交易', function ($sheet) use ($merchantColumns, $merchantData){
+                array_unshift($merchantData, $merchantColumns);
+                $sheet->rows($merchantData);
+                $this->merchantSheetStyle($sheet);
+            });
+
+            $excel->sheet('广告商累计交易', function ($sheet) use ($traderColumns, $traderData){
+                array_unshift($traderData, $traderColumns);
+                $sheet->rows($traderData);
+                $this->traderSheetStyle($sheet);
+            });
+
             // 释放变量
             unset($reportData);
+            unset($merchantData);
+            unset($traderData);
 
         })->export('xlsx');
 
