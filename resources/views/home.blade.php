@@ -3,6 +3,11 @@
 @section('css-part')
     <style>
         .sevenDay{color: #32526E;font-size: 22px;font-weight: bold;}
+        .soc-widget {
+            margin: 0;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 2px 0;
+        }
     </style>
 @endsection
 
@@ -70,6 +75,50 @@
         </div>
     @endif
     <!-- END TC 顶部统计区域 -->
+
+    @if(env('APP_OTC_MODULE'))
+        {{--财务预警相关数据--}}
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="content-bg">
+                    <div class="content-icon">
+                        <i class="fontello-warning-empty bg-red"></i>
+                        <h2 class="text-red">{{ number_format($otcTobeWithdraw, 2) }}</h2>
+                        <p class="text-blue">OTC 累计待提币数额({{ config('conf.currency_usdt') }})&nbsp;&nbsp;&nbsp;&nbsp;
+                            <span style="color: #32526E !important;">{{number_format(bcmul($otcTobeWithdraw, $rate,8),2)}}</span>(RMB)</p>
+                        <hr class="list-unstyled list-inline soc-widget bg-red">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="content-bg">
+                    <div class="content-icon">
+                        <i class="fontello-warning-empty bg-yellow"></i>
+                        <h2 class="text-yellow">{{ number_format($neuCollectPending, 2) }}</h2>
+                        <p class="text-blue">OTC 系统待归集数额({{ config('conf.currency_usdt') }})&nbsp;&nbsp;&nbsp;&nbsp;
+                            <span style="color: #32526E !important;">{{number_format(bcmul($neuCollectPending, $rate,8),2)}}</span>(RMB)</p>
+                        <ul class="list-unstyled list-inline soc-widget bg-yellow">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="content-bg">
+                    <div class="content-icon">
+                        <i class="fontello-warning-empty bg-blue"></i>
+                        <h2 class="text-blue">{{ number_format($neuCollectionBalance, 2) }}</h2>
+                        <p class="text-blue">系统归集账户余额({{ config('conf.currency_usdt') }})&nbsp;&nbsp;&nbsp;&nbsp;
+                            <span style="color: #32526E !important;">{{number_format(bcmul($neuCollectionBalance, $rate,8),2)}}</span>(RMB)</p>
+                        <ul class="list-unstyled list-inline soc-widget bg-blue">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    @endif
 
     <!-- START Public-1 顶部统计区域 -->
     <div class="row">
@@ -147,69 +196,6 @@
                             <h4 class="text-red">{{ number_format($otcWithdrawAmount, 2) }}</h4>
                             <h5>OTC 累计提币数额({{ config('conf.currency_usdt') }})&nbsp;&nbsp;
                                 <span style="color: #32526E !important;">{{number_format(bcmul($otcWithdrawAmount, $rate,8),2)}}</span>(RMB)</h5>
-                            <div style="clear:both;"></div>
-                        </div>
-                    </div>
-                    <!-- /.box-body -->
-                </div>
-                <!-- /.box -->
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="box">
-                    <!-- /.box-header -->
-                    <div class="box-body">
-                        <div class="news-widget">
-                            <h2>
-                                <span class="bg-red">Current</span>
-                            </h2>
-                            <i class=" fontello-warning-empty"></i>
-                            <h4 class="text-red">{{ number_format($otcTobeWithdraw, 2) }}</h4>
-                            <h5>OTC 累计待提币数额({{ config('conf.currency_usdt') }})&nbsp;&nbsp;
-                                <span style="color: #32526E !important;">{{number_format(bcmul($otcTobeWithdraw, $rate,8),2)}}</span>(RMB)</h5>
-                            <div style="clear:both;"></div>
-                        </div>
-                    </div>
-                    <!-- /.box-body -->
-                </div>
-                <!-- /.box -->
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="box">
-                    <!-- /.box-header -->
-                    <div class="box-body">
-                        <div class="news-widget">
-                            <h2>
-                                <span class="bg-yellow">Current</span>
-                            </h2>
-                            <i class="fontello-warning-empty"></i>
-                            <h4 class="text-yellow">{{ number_format($neuCollectPending, 2) }}</h4>
-                            <h5>OTC 系统待归集数额({{ config('conf.currency_usdt') }})&nbsp;
-                                <span style="color: #32526E !important;">{{number_format(bcmul($neuCollectPending, $rate,8),2)}}</span>(RMB)</h5>
-                            <div style="clear:both;"></div>
-                        </div>
-                    </div>
-                    <!-- /.box-body -->
-                </div>
-                <!-- /.box -->
-            </div>
-            <div class="col-lg-6">
-                <div class="box">
-                    <!-- /.box-header -->
-                    <div class="box-body">
-                        <div class="news-widget">
-                            <h2>
-                                <span class="bg-blue">Current</span>
-                            </h2>
-                            <i class=" fontello-warning-empty"></i>
-                            <h4 class="text-blue">{{ number_format($neuCollectionBalance, 2) }}</h4>
-                            <h5>系统归集账户余额({{ config('conf.currency_usdt') }})&nbsp;
-                                <span style="color: #32526E !important;">{{number_format(bcmul($neuCollectionBalance, $rate,8),2)}}</span>(RMB)</h5>
                             <div style="clear:both;"></div>
                         </div>
                     </div>
