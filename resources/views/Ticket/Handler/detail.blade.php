@@ -42,7 +42,7 @@
             <p>【商户订单】{{ @$order->merchant_order ?: @$order->merchant_order_id ?:'--' }}</p>
             <P>【订单日期】{{ $order->created_at }}&nbsp;&nbsp;&nbsp;&nbsp;
                 {{--{{ \Carbon\Carbon::parse($order->created_at)->addHour(8)->toDateTimeString() }}--}}
-                {{ \Carbon\Carbon::parse($order->created_at)->addHour(8)->diffForHumans() }}
+                {{ \Carbon\Carbon::parse($order->created_at)->diffForHumans() }}
             </P>
             @if($ticket->order_type == \App\Models\OTC\OtcTicket::OTC_COMMON)
             <p>【广告类型】{{ $order->type_text }}&nbsp;&nbsp;&nbsp;&nbsp;【币种】{{ $order->currency }}&nbsp;&nbsp;&nbsp;&nbsp;
