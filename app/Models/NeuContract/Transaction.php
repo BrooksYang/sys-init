@@ -67,7 +67,8 @@ class Transaction extends Model
     {
         return self::where('user_id', self::NEU_CONTRACT_OTC)
             ->type(self::COLLECT)
-            ->status(self::PENDING)
+            ->whereIn('status', [self::PENDING, self::FAILED])
+            //->status(self::PENDING)
             ->sum('amount');
     }
 
