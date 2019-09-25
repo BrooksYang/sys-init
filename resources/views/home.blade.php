@@ -289,7 +289,7 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-6">
                 <div class="box">
                     <!-- /.box-header -->
                     <div class="box-body">
@@ -301,6 +301,24 @@
                             <h4 class="text-aqua">{{ number_format($otcQuickIncomeSys, 2) }}</h4>
                             <h5>OTC 快捷购买溢价收益({{ config('conf.currency_usdt') }})&nbsp;
                                 <span style="color: #32526E !important;">{{number_format(bcmul($otcQuickIncomeSys, $rate,8),2)}}</span>(RMB)</h5>
+                            <div style="clear:both;"></div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <div class="col-lg-6">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="news-widget">
+                            <h2>
+                                <span class="bg-danger">Current</span>
+                            </h2>
+                            <i class="fontello-money"></i>
+                            <h4 class="text-danger">{{ number_format($grandOtcWithdrawOrder, 2) }}</h4>
+                            <h5>OTC 累计提现数额</h5>
                             <div style="clear:both;"></div>
                         </div>
                     </div>
@@ -352,28 +370,6 @@
                 <!-- /.box -->
             </div>
         </div>
-
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="box">
-                    <!-- /.box-header -->
-                    <div class="box-body">
-                        <div class="news-widget">
-                            <h2>
-                                <span class="bg-danger">Current</span>
-                            </h2>
-                            <i class="fontello-money"></i>
-                            <h4 class="text-danger">{{ number_format($grandOtcWithdrawOrder, 2) }}</h4>
-                            <h5>OTC 累计提现数额</h5>
-                            <div style="clear:both;"></div>
-                        </div>
-                    </div>
-                    <!-- /.box-body -->
-                </div>
-                <!-- /.box -->
-            </div>
-        </div>
-
 
     @endif
     <!-- END --OTC 顶部统计区域 -->
