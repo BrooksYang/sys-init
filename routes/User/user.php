@@ -29,6 +29,20 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
 
 });
 
+/*
+|--------------------------------------------------------------------------
+| Trader management route
+|--------------------------------------------------------------------------
+|
+| 币商层级及分润管理路由
+|
+*/
+Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function()
+{
+    // 币商层级及分润
+    Route::resource('user/trader/income', 'User\TraderIncomeController');
+
+});
 
 
 

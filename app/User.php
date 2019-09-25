@@ -104,6 +104,6 @@ class User extends Authenticatable
         return self::where('kyc_level_id', KycLevel::ADVANCED)
             ->where('id', '>=' ,133)
             ->orWhereIn('id', [88,89,122])
-            ->get(['username','phone','email','id']);
+            ->get(['username','phone','email','id','pid']);
     }
 }
