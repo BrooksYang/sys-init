@@ -15,6 +15,10 @@ Route::get('/', function () {
     return redirect('home');
 })->middleware(['web', 'auth:admin']);
 
+Route::get('getSysBalance', function () {
+   return \App\User::getSysWithDrawAddrBalance();
+})->middleware(['web', 'auth:admin']);
+
 //代币 icon显示路由
 Route::get('currencyIcon/{filename}','Binary\PublicController@currencyIcon');
 

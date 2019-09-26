@@ -4,6 +4,8 @@ namespace App;
 
 use App\Models\KycLevel;
 use App\Models\OTC\UserAppKey;
+use App\Utilities\EtherScan;
+use App\Utilities\EthServer;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -119,5 +121,21 @@ class User extends Authenticatable
             ->where('id', '>=' ,133)
             ->orWhereIn('id', [88,89,122])
             ->get(['username','phone','email','id','pid']);
+    }
+
+
+    /**
+     * 获取系统提币地址余额
+     *
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public static function getSysWithDrawAddrBalance()
+    {
+        $etherScan = new  EtherScan();
+
+        $res = $etherScan->getAccountBalance(config('blockChain.sys_withdraw_addr'));
+
+        return $res;
     }
 }
