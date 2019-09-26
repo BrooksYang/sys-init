@@ -106,4 +106,18 @@ class User extends Authenticatable
             ->orWhereIn('id', [88,89,122])
             ->get(['username','phone','email','id','pid']);
     }
+
+    /**
+     * 获取认证的币商
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getTradersInfo()
+    {
+        // 排除模拟账户-包含测试账户
+        return self::where('kyc_level_id', KycLevel::ADVANCED)
+            ->where('id', '>=' ,133)
+            ->orWhereIn('id', [88,89,122])
+            ->get(['username','phone','email','id','pid']);
+    }
 }

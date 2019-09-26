@@ -25,46 +25,6 @@
                     <div class="box-body table-responsive no-padding">
                         <div class="col-sm-6">
                             {!! $tree !!}
-                            {{--<li>
-                                <i class="fontello-users"></i>123
-                                <ul>
-                                    <li>blabla
-                                        <img alt="" src="{{ asset('vendor/entrance/js/tree/images/file.gif') }}" />
-                                    </li>
-                                </ul>
-                            </li>
-                            <li>
-                                <i class="fontello-users"></i>456
-                                --}}{{--<img alt="" src="{{ asset('vendor/entrance/js/tree/images/folder.gif') }}" />--}}{{--
-                                <ul>
-                                    <li>
-                                        <i class="fontello-users"></i>789
-                                        --}}{{--<img alt="" src="{{ asset('vendor/entrance/js/tree/images/folder.gif') }}" />--}}{{--
-                                        <ul id="folder21">
-                                            <li>
-                                                <img alt="" src="{{ asset('vendor/entrance/js/tree/images/file.gif') }}" />more text</li>
-                                            <li>and here, too
-                                                <img alt="" src="{{ asset('vendor/entrance/js/tree/images/file.gif') }}" />
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <img alt="" src="{{ asset('vendor/entrance/js/tree/images/file.gif') }}" />
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="closed">this is closed!
-                                <i class="fontello-users"></i>
-                                <img alt="" src="{{ asset('vendor/entrance/js/tree/images/folder.gif') }}" />
-                                <ul>
-                                    <li>
-                                        <img alt="" src="{{ asset('vendor/entrance/js/tree/images/file.gif') }}" />
-                                    </li>
-                                </ul>
-                            </li>
-                            <li>
-                                <img alt="" src="{{ asset('vendor/entrance/js/tree/images/file.gif') }}" />
-                            </li>--}}
                         </div>
 
                         {{-- Paginaton --}}
@@ -102,7 +62,8 @@
 
            $("#browser").find("ul").each(function () {
                if(jQuery(this).text()===''){
-                   jQuery(this).prev().prev().remove();
+                   //jQuery(this).prev().prev().remove();
+                   jQuery(this).parent().children().first().remove();
                    jQuery(this).parent().removeClass("collapsable");
                    jQuery(this).parent().removeClass("expandable");
                    jQuery(this).parent().removeClass("lastExpandable");
