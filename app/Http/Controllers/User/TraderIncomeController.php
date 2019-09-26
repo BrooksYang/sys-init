@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Http\Requests\TraderIncomeRequest;
 use App\Traits\Children;
 use App\User;
 use Illuminate\Http\Request;
@@ -105,24 +106,26 @@ class TraderIncomeController extends Controller
     
                                     <div class=\"col-md-6\">
                                         <label>充值手续费(百分比)</label>
-                                         <input class=\"form-control input-medium\" type=\"text\" name=\"depoist_fee\"
-                                               value=\"".(@$trader->depoist_fee??old('depoist_fee'))."\"  placeholder='请填写充值手续费比例'>
+                                         <input class=\"form-control input-medium\" type=\"text\" name=\"deposit_fee\"
+                                               value=\"".(@$trader->deposit_fee??old('deposit_fee'))."\"  placeholder='请填写充值手续费比例'>
                                     </div>
                                     
                                     <div class=\"col-md-6\">
                                         <br>
                                         <label>币商分润比例(百分比)</label>
-                                        <input class=\"form-control input-medium\" type=\"text\" name=\"self_percentage\"".(@$trader->is_leader==1?' disabled ':'')." 
+                                        <input class=\"form-control input-medium\" type=\"text\" id='self_percentage'
+                                               name=\"self_percentage\"".(@$trader->is_leader==1?' disabled ':'')." 
                                                value=\"".(@$trader->self_percentage??old('self_percentage'))."\"  placeholder='请填写币商分润比例'>
                                     </div>
                                      
                                      <div class=\"col-md-6\">
                                         <br>
                                         <label>系统分润比例(百分比)</label>
-                                        <input class=\"form-control input-medium\" type=\"text\" name=\"sys_percentage\"".(@$trader->is_leader==1?' disabled ':'')."
+                                        <input class=\"form-control input-medium\" type=\"text\" id='sys_percentage'
+                                               name=\"sys_percentage\"".(@$trader->is_leader==1?' disabled ':'')."
                                                value=\"".(@$trader->sys_percentage??old('sys_percentage'))."\"  placeholder='请填写系统分润比例'>
                                     </div>
-                               
+                                    
                                 </div>
                             </div>
                         </div>
@@ -141,11 +144,11 @@ class TraderIncomeController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  TraderIncomeRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(TraderIncomeRequest $request, $id)
     {
         //dd($request->all(), $id);
     }

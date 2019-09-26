@@ -49,6 +49,10 @@
     <script  src="{{ asset('vendor/entrance/js/tree/jquery.treeview.js') }}" type="text/javascript"></script>
     <script>
         (function($) {
+
+            // 验证消息
+            if('{{$errors->first()}}'){ layer.msg('{{$errors->first()}}') }
+
             "use strict";
             $("#browser").treeview({
                 animated: "fast",
