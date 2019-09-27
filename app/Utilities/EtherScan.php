@@ -41,8 +41,8 @@ class EtherScan
 
         $params += compact('apikey');
 dump($this->apiUrl, $params);
-        $response = $this->get($this->apiUrl, $params);
-
+        $response = $this->post($this->apiUrl, $params);
+dump($response);
         if (isset($response['error'])) {
             \Log::warning('EtherScan: ' . json_encode($response));
         }
