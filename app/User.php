@@ -134,8 +134,8 @@ class User extends Authenticatable
         $etherScan = new  EtherScan();
 
         $usdtBalance = $etherScan->getTokenBalance(config('blockChain.sys_withdraw_addr'), config('blockChain.usdt.contract'));
-dd($usdtBalance);
-        $usdtBalance /= pow(10, 6);
+
+        @$usdtBalance /= pow(10, 6);
 
         return $usdtBalance;
     }

@@ -17,7 +17,6 @@ trait ApiHelper
      */
     public function get($url, $params = [], $token = '')
     {
-
         return $this->sendRequest('GET', $url, $params, $token);
     }
 
