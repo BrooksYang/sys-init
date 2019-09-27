@@ -28,6 +28,29 @@ class EtherScan
     }
 
     /**
+     * 请求 etherscan
+     *
+     * @param $params
+     * @return mixed
+     * @throws \Exception
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    protected function sendEtherscanRequest($params)
+    {
+        $apikey = $this->apiKeyToken;
+
+        $params += compact('apikey');
+
+        $response = $this->post($this->apiUrl, $params);
+
+        if (isset($response['error'])) {
+            \Log::warning('EtherScan: ' . json_encode($response));
+        }
+
+        return $response['result'] ?? 0;
+    }
+
+    /**
      * 根据Hex获取交易信息
      *
      * @param $transactionHash
@@ -47,13 +70,13 @@ class EtherScan
     }
 
     /**
-     * 根据地址获取账户余额
+     * 根据地址获取账户余额 - ether
      *
      * @param $address
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getAccountBalance($address)
+    public function getEthBalance($address)
     {
         $response = $this->sendRequest('GET', $this->apiUrl, [
             'module'  => 'account',
@@ -63,14 +86,26 @@ class EtherScan
             'apikey'  => $this->apiKeyToken,
         ]);
 
-        // module=account&action=balance&address=0x68cee7e8dddadfd72626f64ff8e54b076f5c8ba3&tag=latest&apikey=KPIV3HWTX3U4GY4WBNBAB3MYB6WT3ASQK5
-        /*$response = $this->curlGet($this->apiUrl, [
-            '?module=account',
-            'action=balance',
-            "address=$address",
-            'tag=latest',
-            "apikey=$this->apiKeyToken"
-        ]);*/
+        return $response;
+    }
+
+    /**
+     * 根据地址获取账户余额 - Erc20-token-(USDT)
+     *
+     * @param $address
+     * @param $contractAddress
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getTokenBalance($address, $contractAddress)
+    {
+        $response = $this->sendEtherscanRequest([
+            'module'          => 'account',
+            'action'          => 'tokenbalance',
+            'contractaddress' => $contractAddress,
+            'address'         => $address,
+            'tag'             => 'latest',
+        ]);
 
         return $response;
     }

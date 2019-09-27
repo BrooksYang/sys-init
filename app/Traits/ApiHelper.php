@@ -122,7 +122,7 @@ trait ApiHelper
      * 发送 GET 请求
      *
      * @param $url
-     * @param $data
+     * @param $params
      * @return mixed
      */
     public function curlGet($url, $params)
@@ -140,4 +140,5 @@ trait ApiHelper
 
         return json_decode($output, true);
     }
+
 }

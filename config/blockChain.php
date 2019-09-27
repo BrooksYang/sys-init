@@ -58,4 +58,12 @@ return [
 
     // LG 智能合约地址，或者其他智能合约地址，这些其实可以存在库里
     'lg_address'          => env('LG_ADDRESS', '0xc520f3ac303a107d8f4b08b326b6ea66a4f961cd'),
+
+    // erc20 usdt 智能合约地址
+    'usdt'              => [
+        'name'      => 'Tether USD',
+        'precision' => 6,
+        'contract'  => '0xdac17f958d2ee523a2206206994597c13d831ec7',
+    ],
+
 ];

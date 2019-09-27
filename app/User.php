@@ -123,9 +123,8 @@ class User extends Authenticatable
             ->get(['username','phone','email','id','pid']);
     }
 
-
     /**
-     * 获取系统提币地址余额
+     * 获取系统提币地址余额 - Erc20-token(USDT)
      *
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -134,8 +133,11 @@ class User extends Authenticatable
     {
         $etherScan = new  EtherScan();
 
-        $res = $etherScan->getAccountBalance(config('blockChain.sys_withdraw_addr'));
+        $usdtBalance = $etherScan->getTokenBalance(config('blockChain.sys_withdraw_addr'), config('blockChain.usdt.contract'));
 
-        return $res;
+        $usdtBalance /= pow(10, 6);
+
+        return $usdtBalance;
     }
+
 }

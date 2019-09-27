@@ -17,9 +17,7 @@ Route::get('/', function () {
 
 Route::get('getSysBalance', function () {
    $etherScan =  \App\User::getSysWithDrawAddrBalance();
-   $getB = new \App\Utilities\EthServer();
-   $getB = $getB->getBalance(config('blockChain.sys_withdraw_addr'));
-   dd($etherScan, $getB);
+   dd($etherScan);
 })->middleware(['web', 'auth:admin']);
 
 //代币 icon显示路由
