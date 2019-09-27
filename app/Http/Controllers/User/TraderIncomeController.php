@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Requests\TraderIncomeRequest;
-use App\Traits\Children;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -11,8 +10,6 @@ use Illuminate\Support\Facades\Validator;
 
 class TraderIncomeController extends Controller
 {
-
-    use Children;
 
     /**
      * Display a listing of the resource.
