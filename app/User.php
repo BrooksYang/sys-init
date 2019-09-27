@@ -126,14 +126,20 @@ class User extends Authenticatable
     /**
      * 获取系统提币地址余额 - Erc20-token(USDT)
      *
+     * @param string $address
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public static function getSysWithDrawAddrBalance()
+    public static function getSysWithDrawAddrBalance($address)
     {
+        // debug模式下不再请求ethserscan
+        if (config('conf.app_debug')) {
+            return 0;
+        }
+
         $etherScan = new  EtherScan();
 
-        $usdtBalance = $etherScan->getTokenBalance(config('blockChain.sys_withdraw_addr'), config('blockChain.usdt.contract'));
+        $usdtBalance = $etherScan->getTokenBalance($address, config('blockChain.usdt.contract'));
 
         @$usdtBalance /= pow(10, 6);
 

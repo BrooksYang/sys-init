@@ -17,4 +17,7 @@ return [
     // 是否开启OTC运营方提币
     'enable_sys_withdraw' => env('ENABLE_SYS_WITHDRAW', false),
 
+    // 系统环境
+    'app_debug' => env('APP_DEBUG', true),
+
 ];

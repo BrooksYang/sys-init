@@ -11,6 +11,7 @@ use App\Models\OTC\OtcOrderQuick;
 use App\Models\Wallet\Balance;
 use App\Models\Wallet\WalletExternal;
 use App\Models\Wallet\WalletTransaction;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -250,6 +251,15 @@ class HomeController extends Controller
             return $this->toBeWithdraw();
         });
 
+        // OTC 系统待处理提币数额 - 默认USDT
+        $otcToBeWithdrawPending = Cache::remember('otcToBeWithdrawPending', $cacheLength, function () {
+            return $this->toBeWithdrawPending(WalletTransaction::WITHDRAW);
+        });
+
+        // OTC 系统提币地址余额 - 默认USDT
+        $otcSysWithDrawAddrBalance = User::getSysWithDrawAddrBalance(config('blockChain.sys_withdraw_addr'));
+
+
         // 结算平台系统待归集余额 - 默认USDT
         $neuCollectPending = Cache::remember('neuCollectPending', $cacheLength, function () {
             return $this->neuCollectPending();
@@ -337,6 +347,7 @@ class HomeController extends Controller
             'otcWithdrawOrderStatus',
             'grandOtcWithdrawOrder',
             'otcDepositAmount','otcWithdrawAmount','otcTobeWithdraw','neuCollectPending','neuCollectionBalance',
+            'otcToBeWithdrawPending','otcSysWithDrawAddrBalance',
             'otcTotal', 'otcBuyTotal', 'otcSellTotal','otcBuyOfDay','otcSellOfDay',
             'transFeeDepositOfDay','transFeeDeposit', 'transFeeWithdraw', 'otcQuickIncomeSys','otcSysIncomeOfDay','otcSysIncomeTotal','otcSysIncomeRmbTotal',
             'otcSysIncomeCurrent','otcSysIncomeCurrentRmb'
@@ -878,6 +889,21 @@ class HomeController extends Controller
     public function toBeWithdraw($currency = Currency::USDT)
     {
         return Balance::where('user_wallet_currency_id', $currency)->sum('user_wallet_balance');
+    }
+
+    /**
+     * OTC 系统提币待处理数额 - 默认USDT
+     *
+     * @param int $type
+     * @param int $currency
+     * @return mixed
+     */
+    public function toBeWithdrawPending($type, $currency = Currency::USDT)
+    {
+        return  WalletTransaction::type($type)
+            ->currency($currency)
+            ->status(WalletTransaction::PENDING)
+            ->sum('amount');
     }
 
     /**
