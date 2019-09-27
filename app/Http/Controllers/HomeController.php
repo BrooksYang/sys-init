@@ -252,9 +252,8 @@ class HomeController extends Controller
         });
 
         // OTC 系统待处理提币数额 - 默认USDT
-        $otcToBeWithdrawPending = Cache::remember('otcToBeWithdrawPending', $cacheLength, function () {
-            return $this->toBeWithdrawPending(WalletTransaction::WITHDRAW);
-        });
+        $otcToBeWithdrawPending = $this->toBeWithdrawPending(WalletTransaction::WITHDRAW);
+
 
         // OTC 系统提币地址余额 - 默认USDT
         $otcSysWithDrawAddrBalance = User::getSysWithDrawAddrBalance(config('blockChain.sys_withdraw_addr'));
