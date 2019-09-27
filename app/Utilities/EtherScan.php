@@ -46,7 +46,7 @@ class EtherScan
         if (isset($response['error'])) {
             \Log::warning('EtherScan: ' . json_encode($response));
         }
-
+dump($response['result']);
         return $response['result'] ?? 0;
     }
 
@@ -106,7 +106,7 @@ class EtherScan
             'address'         => $address,
             'tag'             => 'latest',
         ]);
-
+dd($response);
         return $response;
     }
 
