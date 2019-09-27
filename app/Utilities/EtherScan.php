@@ -43,7 +43,7 @@ class EtherScan
 dump($this->apiUrl, $params);
         $response = $this->post($this->apiUrl, $params);
 dump($response);
-        if (isset($response['error'])) {
+        if (isset($response['error']) || !$response['status']) {
             \Log::warning('EtherScan: ' . json_encode($response));
         }
 dump($response['result']);
