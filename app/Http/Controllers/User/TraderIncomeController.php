@@ -7,6 +7,7 @@ use App\Traits\Children;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class TraderIncomeController extends Controller
 {
@@ -101,7 +102,6 @@ class TraderIncomeController extends Controller
                                             <option value='1'".(@$trader->is_leader==1?'selected':'').">领导人</option>
                                             <option value='0'".(@$trader->is_leader==0?'selected':'').">普通成员</option>
                                         </select>
-                                       
                                     </div>
     
                                     <div class=\"col-md-6\">
@@ -125,7 +125,6 @@ class TraderIncomeController extends Controller
                                                name=\"sys_percentage\"".(@$trader->is_leader==1?' disabled ':'')."
                                                value=\"".(@$trader->sys_percentage??old('sys_percentage'))."\"  placeholder='请填写系统分润比例'>
                                     </div>
-                                    
                                 </div>
                             </div>
                         </div>
@@ -148,9 +147,32 @@ class TraderIncomeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(TraderIncomeRequest $request, $id)
+    public function update(Request $request, $id)
     {
-        //dd($request->all(), $id);
+        // 验证
+        $validator = Validator::make($request->all(),[
+            'is_leader'       => 'required|in:0,1',
+            'deposit_fee'     => 'required|numeric|min:0',
+            'self_percentage' => 'sometimes|numeric|min:0',
+            'sys_percentage'  => 'sometimes|numeric|min:0',
+        ]);
+
+        // 钩子验证 - 币商及系统手续费设置
+        $validator->after(function ($validator) use ($request){
+            $sumPercentage = $request->self_percentage + $request->sys_percentage;
+            if (bccomp($sumPercentage,$request->deposit_fee, 8) == 1) {
+                $validator->errors()->add('sys_percentage', '币商及系统分润比例设置错误');
+            }
+        });
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        // 更新数据
+
+
+
     }
 
 }
