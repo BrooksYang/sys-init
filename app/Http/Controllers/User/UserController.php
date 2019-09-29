@@ -129,7 +129,9 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // TODO 用户信息-认证-领导人级别-邀请码-代码重构
         $query = DB::table('users')->where('id', $id);
+        $find = User::findOrFail($id);
         $user = [
             $request->field => $request->update,
             'updated_at' => self::carbonNow(),
@@ -139,6 +141,15 @@ class UserController extends Controller
         if ($request->field == 'kyc_level_id') {
             $verify = ['verify_status' => User::VERIFIED];
             $user = $user + $verify;
+
+            // 如认证通过（高级认证）则分配邀请码；如为团队根用户则默认设为团队领导人
+            if ($request->update == KycLevel::ADVANCED) {
+                $leader = [
+                    'leader_level' => $find->pid == 0 ? User::LEADER_LEVEL_ONE : User::COMMON,  // 是否领导人
+                    'invite_code'  => strtolower(str_random(6)) // 邀请码
+                ];
+                $user = $user + $leader;
+            }
         }
 
         if ($query->update($user)) {

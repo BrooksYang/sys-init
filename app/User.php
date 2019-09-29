@@ -62,6 +62,10 @@ class User extends Authenticatable
         self::TRADERS  => ['name' => '币商', 'class' => '']
     ];
 
+    // 领导人级别 0-非领导人，1-领导人
+    const COMMON           = 0;
+    const LEADER_LEVEL_ONE = 1;
+
     /**
      * 关联 App Key（商户获取App Key）
      *

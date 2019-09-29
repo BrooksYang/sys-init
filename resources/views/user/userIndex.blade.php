@@ -18,7 +18,7 @@
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
                         </form>
-                        {{--筛选测试账户--}}
+                        {{--筛选领导人--}}
                         <div style="display: inline-block;position: relative">
                             <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="按类别筛选用户">
                                 <span class="box-btn"><i class="fontello-menu" title="按类别筛选用户"></i></span>
@@ -30,7 +30,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ url('user/manage') }}?filterObj=is_test&filter=1">测试账户
+                                    <a href="{{ url('user/manage') }}?filterObj=leader_level&filter={{ \App\User::LEADER_LEVEL_ONE }}">领导人
                                         {!!  Request::get('filterObj') && Request::get('filter') == 1 ? '&nbsp;<i class="fa fa-check txt-info"></i>' :
                                              Request::path() == 'user/manage/pending' &&  Request::get('filterObj') && Request::get('filter') ==1 ? '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
                                     </a>
@@ -76,6 +76,9 @@
                                 <th>邮箱</th>
                                 <th>身份信息</th>
                                 <th>证件及交易</th>
+                            <th>领导人</th>
+                            <th>邀请码</th>
+                            <th>邀请人数</th>
                                 {{--<th>真实姓名</th>
                                 <th>性别</th>
                                 <th>年龄</th>
@@ -87,7 +90,7 @@
                                 <th>认证状态</th>
                                 <th>认证等级</th>
                                 <th>用户状态</th>
-                                <th title="是否为测试账户/测试奖励获赠次数">账户</th>
+                                {{--<th title="是否为测试账户/测试奖励获赠次数">账户</th>--}}
                                 <th>注册时间&nbsp;&nbsp;<a href="{{ Request::path() != 'user/manage/pending' ? url('user/manage') : url('user/manage/pending') }}?orderC=desc">
                                         <i class="fa fa-sort-amount-desc" style="color:{{ Request::getQueryString() != 'orderC=desc' ? !Request::getQueryString() ? '' : 'gray' :''}}" title="降序"></i></a> &nbsp;
                                     <a href="{{ Request::path() != 'user/manage/pending' ? url('user/manage') : url('user/manage/pending') }}?orderC=asc">
@@ -144,6 +147,9 @@
                                         </div>
                                     </td>
                                     <td title="其它证件信息"><a href="{{ url("user/manage/$item->id") }}?uri={{ Request::getRequestUri() }}">详情</a></td>
+                                    <td>{{ !$item->leader_level ? '否' : '是' }}</td>
+                                    <td>{{ $item->invite_code ?:'--' }}</td>
+                                    <td>{{ $item->invite_count }}</td>
                                     <td><span class="label label-{{ $userStatus['email_phone_status'][$item->email_status]['class'] }}">
                                         {{ $userStatus['email_phone_status'][$item->email_status]['name'] }}</span>
                                     </td>
@@ -162,7 +168,7 @@
                                     <td><span class="label label-{{ $userStatus['is_valid'][$item->is_valid]['class'] }}">
                                         {{ $userStatus['is_valid'][$item->is_valid]['name'] }}</span>
                                     </td>
-                                    <td title="{{ $item->is_test ? '测试账户/测试奖励获赠次数'.$item->received_times.'次' : '非测试账户/测试奖励获赠次数'.$item->received_times.'次' }}">{!! $item->is_test ? '<i class="fa fa-check" title=""></i>/'.$item->received_times.'次' : '<i class="fa fa-times" title=""></i>/'.$item->received_times.'次' !!}</td>
+                                    {{--<td title="{{ $item->is_test ? '测试账户/测试奖励获赠次数'.$item->received_times.'次' : '非测试账户/测试奖励获赠次数'.$item->received_times.'次' }}">{!! $item->is_test ? '<i class="fa fa-check" title=""></i>/'.$item->received_times.'次' : '<i class="fa fa-times" title=""></i>/'.$item->received_times.'次' !!}</td>--}}
                                     <td>{{ empty($item->created_at)? '--' : $item->created_at}}</td>
 
                                     <td>
@@ -230,7 +236,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="16" class="text-center">
+                                <tr><td colspan="18" class="text-center">
                                     <div class="noDataValue">
                                         暂无数据
                                     </div>
