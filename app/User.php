@@ -4,8 +4,8 @@ namespace App;
 
 use App\Models\KycLevel;
 use App\Models\OTC\UserAppKey;
+use App\Models\UserFeeConfig;
 use App\Utilities\EtherScan;
-use App\Utilities\EthServer;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -87,6 +87,16 @@ class User extends Authenticatable
     }
 
     /**
+     * 关联用户手续费配置
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function feeConfig()
+    {
+        return $this->hasOne(UserFeeConfig::class, 'user_id');
+    }
+
+    /**
      * 获取商户
      *
      * @return \Illuminate\Support\Collection
@@ -121,10 +131,11 @@ class User extends Authenticatable
     public static function getTradersInfo()
     {
         // 排除模拟账户-包含测试账户
-        return self::where('kyc_level_id', KycLevel::ADVANCED)
+        return self::with(['feeConfig'])
+            ->where('kyc_level_id', KycLevel::ADVANCED)
             ->where('id', '>=' ,133)
             ->orWhereIn('id', [88,89,122])
-            ->get(['username','phone','email','id','pid']);
+            ->get(['username','phone','email','id','pid','leader_level']);
     }
 
     /**

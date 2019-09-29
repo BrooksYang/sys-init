@@ -40,7 +40,10 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
 Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function()
 {
     // 币商层级及分润
-    Route::resource('user/trader/income', 'User\TraderIncomeController');
+    Route::resource('user/trader/income', 'User\TraderIncomeController', ['except' => ['create','store','destroy']]);
+
+    // 更新手续费分润 - 系统默认配置
+    Route::patch('trader/income/defConfig', 'User\TraderIncomeController@defaultConf');
 
 });
 

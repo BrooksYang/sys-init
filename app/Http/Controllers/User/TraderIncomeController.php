@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Http\Requests\TraderIncomeRequest;
+use App\Models\UserFeeConfig;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -24,7 +24,10 @@ class TraderIncomeController extends Controller
         // 遍历币商层级
         $tree = $this->tree($traders);
 
-        return view('user.traderLevelIndex', compact('tree'));
+        // 系统默认手续费分润配置
+        $sysFeeConf = UserFeeConfig::sysFeeConfig();
+
+        return view('user.traderLevelIndex', compact('tree', 'sysFeeConf'));
     }
 
     /**
@@ -95,32 +98,32 @@ class TraderIncomeController extends Controller
                                 <div class=\"col-md-12\">
                                     <div class=\"col-md-6\">
                                         <label>是否为领导人</label>
-                                        <select name='is_leader' id='is_leader' class='form-control input-medium'>
-                                            <option value='1'".(@$trader->is_leader==1?'selected':'').">领导人</option>
-                                            <option value='0'".(@$trader->is_leader==0?'selected':'').">普通成员</option>
+                                        <select name='leader_level' id='leader_level' class='form-control input-medium' disabled>
+                                            <option value='1'".(@$trader->leader_level==1?'selected':'').">领导人</option>
+                                            <option value='0'".(@$trader->leader_level==0?'selected':'').">普通成员</option>
                                         </select>
                                     </div>
     
                                     <div class=\"col-md-6\">
-                                        <label>充值手续费(百分比)</label>
-                                         <input class=\"form-control input-medium\" type=\"text\" name=\"deposit_fee\"
-                                               value=\"".(@$trader->deposit_fee??old('deposit_fee'))."\"  placeholder='请填写充值手续费比例'>
+                                        <label>充值总手续费（百分比）</label>
+                                         <input class=\"form-control input-medium\" type=\"text\" name=\"percentage_total\"
+                                               value=\"".(@$trader->feeConfig->percentage_total??old('percentage_total'))."\"  placeholder='请填写充值总手续费比例'>
                                     </div>
                                     
                                     <div class=\"col-md-6\">
                                         <br>
-                                        <label>币商分润比例(百分比)</label>
-                                        <input class=\"form-control input-medium\" type=\"text\" id='self_percentage'
-                                               name=\"self_percentage\"".(@$trader->is_leader==1?' disabled ':'')." 
-                                               value=\"".(@$trader->self_percentage??old('self_percentage'))."\"  placeholder='请填写币商分润比例'>
+                                        <label>领导人手续费分润比例（百分比）</label>
+                                        <input class=\"form-control input-medium\" type=\"text\" id='percentage_leader'
+                                               name=\"percentage_leader\" 
+                                               value=\"".(@$trader->feeConfig->percentage_leader??old('percentage_leader'))."\"  placeholder='请填写领导人手续费分润比例'>
                                     </div>
                                      
                                      <div class=\"col-md-6\">
                                         <br>
-                                        <label>系统分润比例(百分比)</label>
-                                        <input class=\"form-control input-medium\" type=\"text\" id='sys_percentage'
-                                               name=\"sys_percentage\"".(@$trader->is_leader==1?' disabled ':'')."
-                                               value=\"".(@$trader->sys_percentage??old('sys_percentage'))."\"  placeholder='请填写系统分润比例'>
+                                        <label>平台手续费分润比例（百分比）</label>
+                                        <input class=\"form-control input-medium\" type=\"text\" id='percentage_sys'
+                                               name=\"percentage_sys\"
+                                               value=\"".(@$trader->feeConfig->percentage_sys??old('percentage_sys'))."\"  placeholder='请填写平台手续费分润比例'>
                                     </div>
                                 </div>
                             </div>
@@ -140,36 +143,83 @@ class TraderIncomeController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  TraderIncomeRequest  $request
+     * @param  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
         // 验证
-        $validator = Validator::make($request->all(),[
-            'is_leader'       => 'required|in:0,1',
-            'deposit_fee'     => 'required|numeric|min:0',
-            'self_percentage' => 'sometimes|numeric|min:0',
-            'sys_percentage'  => 'sometimes|numeric|min:0',
-        ]);
-
-        // 钩子验证 - 币商及系统手续费设置
-        $validator->after(function ($validator) use ($request){
-            $sumPercentage = $request->self_percentage + $request->sys_percentage;
-            if (bccomp($sumPercentage,$request->deposit_fee, 8) == 1) {
-                $validator->errors()->add('sys_percentage', '币商及系统分润比例设置错误');
-            }
-        });
+        $validator = $this->traderIncomeValidator($request);
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
 
+        $user = User::findOrFail($id);
+
         // 更新数据
+        $user->feeConfig()->updateOrCreate(['user_id' => $user->id], [
+            'percentage_total' => $request->percentage_total,
+            'percentage_sys'   => $request->percentage_sys,
+            'percentage_leader'=> $request->percentage_leader,
+        ]);
 
+        return back();
+    }
 
+    /**
+     * 手续费分润 - 系统默认配置
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function defaultConf(Request $request)
+    {
+        // 验证
+        $validator = $this->traderIncomeValidator($request);
 
+        if ($validator->fails()) {
+            return back()->withErrors($validator, 'defConf')->withInput();
+        }
+
+        // 更新系统默认配置
+        UserFeeConfig::updateOrCreate(['user_id' => 0], [
+            'percentage_total' => $request->percentage_total,
+            'percentage_sys'   => $request->percentage_sys,
+            'percentage_leader'=> $request->percentage_leader,
+        ]);
+
+        return back();
+    }
+
+    /**
+     * 手续费分润配置验证
+     *
+     * @param $request
+     * @return \Illuminate\Contracts\Validation\Validator|\Illuminate\Validation\Validator
+     */
+    public function traderIncomeValidator($request)
+    {
+
+        // 验证
+        $validator = Validator::make($request->all(),[
+            'leader_level'       => 'sometimes|in:0,1',
+            'percentage_total'   => 'required|numeric|min:0',
+            'percentage_sys'     => 'required|numeric|min:0',
+            'percentage_leader'  => 'sometimes|min:0',
+
+        ]);
+
+        // 钩子验证 - 币商及系统手续费设置
+        $validator->after(function ($validator) use ($request){
+            $sumPercentage = $request->percentage_leader + $request->percentage_sys;
+            if (in_array(bccomp($sumPercentage, $request->percentage_total, 8), [1, -1])) {
+                $validator->errors()->add('percentage_sys', '领导人及平台分润比例设置错误');
+            }
+        });
+
+        return $validator;
     }
 
 }
