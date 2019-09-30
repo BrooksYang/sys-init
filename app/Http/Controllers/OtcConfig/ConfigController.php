@@ -90,13 +90,16 @@ class ConfigController extends Controller
         $updateConfig = $request->except(['_token', '_method', 'editFlag']);
 
         Validator::make($request->all(),[
-            'payment_length'            => 'required|numeric|min:0',
-            'order_cancel_frequency'    => 'required|numeric|min:0',
-            'withdraw_fee_percentage'   => 'required|numeric|min:0.00000001',
-            'withdraw_time'             => 'required|integer|between:1,7',
+            'payment_length'                => 'required|numeric|min:0',
+            'order_cancel_frequency'        => 'required|numeric|min:0',
+            'withdraw_fee_percentage'       => 'required|numeric|min:0',
+            'release_order_margin'          => 'required|numeric|min:0',
+            'merchant_order_fee_percentage' => 'required|numeric|min:0',
+            //'deposit_fee_percentage'        => 'required|numeric|min:0',
         ],[
-            'exchange_rate_usdt_rmb.min'    => '期望一个合法的汇率值',
-            'withdraw_fee_percentage.min'   => '期望一个合法的百分比值'
+            'withdraw_fee_percentage.min'   => '期望一个合法的汇率值',
+            'release_order_margin.min'      => '期望一个合法的百分比值',
+            //'deposit_fee_percentage.min'    => '期望一个合法的百分比值'
         ])->validate();
 
         foreach ($updateConfig as $key => $item) {
@@ -133,8 +136,10 @@ class ConfigController extends Controller
         return  [
             'payment_length',
             'order_cancel_frequency',
-            'exchange_rate_usdt_rmb',
-            'withdraw_fee_percentage'
+            'withdraw_fee_percentage',
+            'release_order_margin',
+            'merchant_order_fee_percentage',
+            //'deposit_fee_percentage'
         ];
     }
 }

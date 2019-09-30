@@ -38,7 +38,7 @@
                                                               placeholder="{{  $config->title }}" required>{{  old($config->key) ?? $config->value }}</textarea>
                                                 @else
                                                     <input class="form-control input-sm" type="text" name="{{ $config->key }}" value="{{ old($config->key) ?? $config->value }}"
-                                                           placeholder="{{  $config->title }}" required>
+                                                           placeholder="{{  $config->title }}" required {{ $config->key == 'deposit_fee_percentage'?'disabled':'' }}>
                                                 @endif
                                                 @if ($errors->has($config->key))
                                                     <span class="help-block"><strong>{{ $errors->first($config->key) }}</strong></span>

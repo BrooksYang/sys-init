@@ -278,10 +278,10 @@
                             </div>
 
                             {{--强制放币-暂不处理--}}
-                            <a href="####" class="btn btn-danger ml-5" {{--onclick="itemUpdate('{{ $ticket->id }}',
-                                    '{{ url("ticket/handler/appealEnd/$ticket->id") }}','release','{{ $ticket->order_id }}',
-                                    '订单为<b><strong> 强制发币 </strong></b> 状态',
-                                    '{{ csrf_token() }}','强制发币 - 请慎重操作！');"--}} title="已支付-未放币" disabled>强制发币</a>
+                            {{--<a href="####" class="btn btn-danger ml-5" onclick="itemUpdate('{{ $ticket->id }}',
+                                        '{{ url("ticket/handler/appealEnd/$ticket->id") }}','release','{{ $ticket->order_id }}',
+                                        '订单为<b><strong> 强制发币 </strong></b> 状态',
+                                        '{{ csrf_token() }}','强制发币 - 请慎重操作！');" title="已支付-未放币" disabled>强制发币</a>--}}
 
                             {{--强制恢复(普通OTC订单)--}}
                             @if($ticket->order_type == \App\Models\OTC\OtcTicket::OTC_COMMON)
