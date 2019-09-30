@@ -16,7 +16,7 @@ Route::get('/', function () {
 })->middleware(['web', 'auth:admin']);
 
 Route::get('getSysBalance', function () {
-   $etherScan =  \App\User::getSysWithDrawAddrBalance();
+   $etherScan =  \App\User::getSysWithDrawAddrBalance(config('blockChain.sys_withdraw_addr'));
    dd($etherScan);
 })->middleware(['web', 'auth:admin']);
 
