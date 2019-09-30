@@ -48,8 +48,8 @@ class TraderIncomeController extends Controller
             $modal = $this->edit($trader, $key);
             if ($trader->pid == $pid) {
                 $html .= '<li uid="' . $trader->id . '" pid="'.$trader->pid.'" path="' . @$trader->path .($trader->id==88?'" class="collapsable"':''). '">
-                <a href="'.url("user/trader/income/$trader->id").'" '.($pid == 0 ? "class='topOne'" : "").'onclick="nodeShow('.$trader->id.')">'
-                    .($trader->username?:($trader->phone?:$trader->email)).'</a>'.$modal;
+                <a title="查看收益记录" href="'.url("user/trader/income/$trader->id").'" '.($pid == 0 ? "class='topOne'" : "")
+                    .'onclick="nodeShow('.$trader->id.')">' .($trader->username?:($trader->phone?:$trader->email)).'</a>'.$modal;
                 $html .= $this->tree($traders, $trader->id, true);
             }
         }
@@ -179,7 +179,7 @@ class TraderIncomeController extends Controller
                                 <div class=\"col-md-12\">
                                     <div class=\"col-md-6\">
                                         <label>是否为领导人</label>
-                                        <select name='leader_level' id='leader_level' class='form-control input-medium' disabled>
+                                        <select name='leader_level' id='leader_level' class='form-control input-medium' ".(@$trader->pid!=0?'disabled':'').">
                                             <option value='1'".(@$trader->leader_level==1?'selected':'').">领导人</option>
                                             <option value='0'".(@$trader->leader_level==0?'selected':'').">普通成员</option>
                                         </select>
@@ -222,11 +222,12 @@ class TraderIncomeController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * 更新领导人及手续费配置
      *
-     * @param  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Throwable
      */
     public function update(Request $request, $id)
     {
@@ -239,12 +240,20 @@ class TraderIncomeController extends Controller
 
         $user = User::findOrFail($id);
 
-        // 更新数据
-        $user->feeConfig()->updateOrCreate(['user_id' => $user->id], [
-            'percentage_total' => $request->percentage_total,
-            'percentage_sys'   => $request->percentage_sys,
-            'percentage_leader'=> $request->percentage_leader,
-        ]);
+        \DB::transaction(function () use ($user, $request){
+            // 领导人设置
+            $user->leader_level = $user->pid == 0 ? $request->leader_level : User::COMMON; // 是否领导人
+            $user->leader_id = $user->pid == 0 ? $user->id : $user->pid; // 领导人id
+            $user->save();
+
+            // 手续费设置
+            $user->feeConfig()->updateOrCreate(['user_id' => $user->id], [
+                'percentage_total'  => $request->percentage_total,
+                'percentage_sys'    => $request->percentage_sys,
+                'percentage_leader' => $request->percentage_leader,
+            ]);
+        });
+
 
         return back();
     }

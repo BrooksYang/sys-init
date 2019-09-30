@@ -9,6 +9,9 @@
 
                     {{-- Add Button --}}
                     <div class="pull-right box-tools">
+                        <a href="{{ url('user/trader/income') }}" title="返回币商分润管理">
+                            <span class="box-btn"><i class="fontello-left"></i></span>
+                        </a>
                     </div>
 
                     {{-- Title --}}

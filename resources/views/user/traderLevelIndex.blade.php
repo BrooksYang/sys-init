@@ -128,7 +128,7 @@
             "use strict";
             $("#browser").treeview({
                 animated: "fast",
-                collapsed: true,
+                collapsed: false,
                 unique: true,
                 //persist: "cookie",
                 toggle: function() {
