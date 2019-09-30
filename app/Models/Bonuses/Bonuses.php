@@ -25,7 +25,8 @@ class Bonuses extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id')
+            ->select('id','username','phone','email');
     }
 
     /**
@@ -35,7 +36,8 @@ class Bonuses extends Model
      */
     public function contributor()
     {
-        return $this->belongsTo(User::class, 'contributor_id');
+        return $this->belongsTo(User::class, 'contributor_id')
+            ->select('id','username','phone','email');
     }
 
     /**
@@ -46,6 +48,39 @@ class Bonuses extends Model
     public function transaction()
     {
         return $this->belongsTo(WalletTransaction::class, 'transaction_id');
+    }
+
+    /**
+     * 格式化数额
+     *
+     * @param $value
+     * @return float
+     */
+    public function getAmountAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 格式化数额
+     *
+     * @param $value
+     * @return float
+     */
+    public function getTotalAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 格式化数额
+     *
+     * @param $value
+     * @return float
+     */
+    public function getTransactionAmountAttribute($value)
+    {
+        return floatval($value);
     }
 
 

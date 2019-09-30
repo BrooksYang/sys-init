@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\Bonuses\Bonuses;
 use App\Models\KycLevel;
 use App\Models\OTC\UserAppKey;
 use App\Models\UserFeeConfig;
@@ -94,6 +95,26 @@ class User extends Authenticatable
     public function feeConfig()
     {
         return $this->hasOne(UserFeeConfig::class, 'user_id');
+    }
+
+    /**
+     * 关联用户分润
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function bonuses()
+    {
+        return $this->hasMany(Bonuses::class, 'user_id');
+    }
+
+    /**
+     * 关联分润贡献者
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function contributor()
+    {
+        return $this->hasMany(Bonuses::class, 'contributor_id');
     }
 
     /**
