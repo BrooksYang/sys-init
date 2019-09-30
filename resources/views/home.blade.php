@@ -131,6 +131,27 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="news-widget">
+                            <h2>
+                                <span class="bg-green">Current</span>
+                            </h2>
+                            <i class="fa fa-dollar"></i>
+                            <h4 class="text-green">{{ number_format($otcSysDepositAddrBalance, 2) }}</h4>
+                            <h5>系统储值账户余额({{ config('conf.currency_usdt') }})&nbsp;&nbsp;
+                                <span style="color: #32526E !important;">{{number_format(bcmul($otcSysDepositAddrBalance, $rate,8),2)}}</span>(RMB)</h5>
+                            <div style="clear:both;"></div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
     @endif
 
     <!-- START Public-1 顶部统计区域 -->

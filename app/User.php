@@ -182,4 +182,28 @@ class User extends Authenticatable
         return $usdtBalance;
     }
 
+
+    /**
+     * 获取系统储值地址余额 - Erc20-token(USDT)
+     *
+     * @param $address
+     * @return float|int|mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public static function getSysDepositAddrBalance($address)
+    {
+        // debug模式下不再请求ethserscan
+        if (config('conf.app_debug')) {
+            return 0;
+        }
+
+        $etherScan = new  EtherScan();
+
+        $usdtBalance = $etherScan->getTokenBalance($address, config('blockChain.usdt.contract'));
+
+        @$usdtBalance /= pow(10, 6);
+
+        return $usdtBalance;
+    }
+
 }

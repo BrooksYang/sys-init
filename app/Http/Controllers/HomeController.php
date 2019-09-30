@@ -258,6 +258,9 @@ class HomeController extends Controller
         // OTC 系统提币地址余额 - 默认USDT
         $otcSysWithDrawAddrBalance = User::getSysWithDrawAddrBalance(config('blockChain.sys_withdraw_addr'));
 
+        // OTC 系统储值地址余额 - 默认USDT
+        $otcSysDepositAddrBalance = User::getSysDepositAddrBalance(config('blockChain.sys_deposit_addr'));
+
 
         // 结算平台系统待归集余额 - 默认USDT
         $neuCollectPending = Cache::remember('neuCollectPending', $cacheLength, function () {
@@ -346,7 +349,7 @@ class HomeController extends Controller
             'otcWithdrawOrderStatus',
             'grandOtcWithdrawOrder',
             'otcDepositAmount','otcWithdrawAmount','otcTobeWithdraw','neuCollectPending','neuCollectionBalance',
-            'otcToBeWithdrawPending','otcSysWithDrawAddrBalance',
+            'otcToBeWithdrawPending','otcSysWithDrawAddrBalance','otcSysDepositAddrBalance',
             'otcTotal', 'otcBuyTotal', 'otcSellTotal','otcBuyOfDay','otcSellOfDay',
             'transFeeDepositOfDay','transFeeDeposit', 'transFeeWithdraw', 'otcQuickIncomeSys','otcSysIncomeOfDay','otcSysIncomeTotal','otcSysIncomeRmbTotal',
             'otcSysIncomeCurrent','otcSysIncomeCurrentRmb'

@@ -14,6 +14,9 @@ return [
     // 系统提币地址
     'sys_withdraw_addr'  =>env('SYS_WITHDRAW_ADDR','0x68cee7e8dddadfd72626f64ff8e54b076f5c8ba3'),
 
+    // 系统储值地址
+    'sys_deposit_addr'  =>env('SYS_WITHDRAW_ADDR','0x6ee099619af084337c5f3A4A2CaF1ecFE913D234'),
+
     // ETH API URL
     'eth_api_url'         => 'https://api.etherscan.io/api',
 
