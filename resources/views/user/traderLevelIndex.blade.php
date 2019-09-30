@@ -37,7 +37,7 @@
                                                         <div class="alert alert-warning">
                                                             <button data-dismiss="alert" class="close" type="button">×</button>
                                                             <strong>
-                                                                操作提示：如用户未设置相应手续费比例 - 则其手续费将依据此默认配置项
+                                                                操作提示：如未设置用户相应手续费比例 - 则其手续费将依据此默认配置项
                                                             </strong>
                                                         </div>
                                                     </div>
