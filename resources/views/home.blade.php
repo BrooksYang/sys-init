@@ -97,7 +97,7 @@
                         <i class="fontello-warning-empty bg-aqua"></i>
                         <h2 class="text-aqua">{{ number_format(@$otcSysWithDrawAddrBalance, 2) }}</h2>
                         <p class="text-blue">
-                            <a href="https://etherscan.io/address/0x68cEe7e8DDDadfD72626F64Ff8E54b076F5C8ba3" target="_blank">
+                            <a href="https://etherscan.io/address/{{config('blockChain.sys_withdraw_addr')}}" target="_blank">
                                 OTC 提币地址余额({{ config('conf.currency_usdt') }})</a>&nbsp;&nbsp;&nbsp;&nbsp;
                             <span style="color: #32526E !important;">{{number_format(bcmul(@$otcSysWithDrawAddrBalance, $rate,8),2)}}</span>(RMB)</p>
                         <hr class="list-unstyled list-inline soc-widget bg-red">
@@ -142,7 +142,9 @@
                             </h2>
                             <i class="fa fa-dollar"></i>
                             <h4 class="text-green">{{ number_format($otcSysDepositAddrBalance, 2) }}</h4>
-                            <h5>系统储值账户余额({{ config('conf.currency_usdt') }})&nbsp;&nbsp;
+                            <h5>
+                                <a href="https://etherscan.io/address/{{config('blockChain.sys_deposit_addr')}}" target="_blank">
+                                    系统储值账户余额({{ config('conf.currency_usdt') }})</a>&nbsp;
                                 <span style="color: #32526E !important;">{{number_format(bcmul($otcSysDepositAddrBalance, $rate,8),2)}}</span>(RMB)</h5>
                             <div style="clear:both;"></div>
                         </div>
