@@ -350,7 +350,7 @@ class HomeController extends Controller
             'grandOtcWithdrawOrder',
             'otcDepositAmount','otcWithdrawAmount','otcTobeWithdraw','neuCollectPending','neuCollectionBalance',
             'otcToBeWithdrawPending','otcSysWithDrawAddrBalance','otcSysDepositAddrBalance',
-            'otcTotal', 'otcBuyTotal', 'otcSellTotal','otcBuyOfDay','otcSellOfDay',
+            'otcBuyTotal', 'otcSellTotal','otcBuyOfDay','otcSellOfDay',
             'transFeeDepositOfDay','transFeeDeposit', 'transFeeWithdraw', 'otcQuickIncomeSys','otcSysIncomeOfDay','otcSysIncomeTotal','otcSysIncomeRmbTotal',
             'otcSysIncomeCurrent','otcSysIncomeCurrentRmb'
         );

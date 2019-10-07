@@ -746,6 +746,7 @@
         userVerifyStatus.setOption(userVerifyStatusOption);
     </script>
 
+    @if(env('APP_OTC_MODULE'))
     {{--OTC平台收益统计 - 默认USDT--}}
     <script>
         var otcSysIncomeOfDay = echarts.init(document.getElementById('otcSysIncomeOfDay'));
@@ -1007,6 +1008,7 @@
         };
         otcSellOfDay.setOption(otcSellOfDayOption);
     </script>
+    @endif
 
     {{--OTC充值及手续费统计 - 默认USDT--}}
     <script>
