@@ -95,8 +95,8 @@
                                         {{--交易总额，贡献总额--}}
                                         总计： <b>{{ $bonuses->total() }}</b>&nbsp;单<br>
                                         交易总金额： <b>{{ number_format($statistics['totalTransaction'] ?: 0, 8) }}</b> |
-                                        奖励总金额： <b>{{ number_format($statistics['totalAmount'] ?: 0, 8)}}</b> |
                                         贡献总金额： <b>{{ number_format($statistics['totalContribution'] ?: 0, 8) }}</b>
+                                        贡献分润总金额： <b>{{ number_format($statistics['totalAmount'] ?: 0, 8)}}</b> |
                                     </div>
                                 @endif
                                 <div class="pull-right">
