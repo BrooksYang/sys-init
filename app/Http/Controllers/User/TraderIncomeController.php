@@ -47,8 +47,9 @@ class TraderIncomeController extends Controller
         foreach ($traders as $key=>$trader) {
             $modal = $this->edit($trader, $key);
             if ($trader->pid == $pid) {
-                $html .= '<li uid="' . $trader->id . '" pid="'.$trader->pid.'" path="' . @$trader->path .($trader->id==88?'" class="collapsable"':''). '">
-                <a title="查看收益记录" href="'.url("user/trader/income/$trader->id").'" '.($pid == 0 ? "class='topOne'" : "")
+                $html .= '<li uid="' . $trader->id . '" pid="'.$trader->pid.'" path="' . @$trader->path .($trader->id==88?'" class="collapsable"':''). '">'.
+                    ($trader->leader_level > 0 ? '<i class="fontello-flag" title="领导人"></i>':'').'
+                    <a title="查看收益记录" href="'.url("user/trader/income/$trader->id").'" '.($pid == 0 ? "class='topOne'" : "")
                     .'onclick="nodeShow('.$trader->id.')">' .($trader->username?:($trader->phone?:$trader->email)).'</a>'.$modal;
                 $html .= $this->tree($traders, $trader->id, true);
             }
