@@ -52,12 +52,12 @@
                                 <th>序号</th>
                                 <th>贡献者UID</th>
                                 <th>贡献者</th>
-                                <th>贡献金额</th>
+                                <th>贡献总金额</th>
                                 <th>交易时间</th>
                                 <th>交易ID</th>
                                 <th>交易金额</th>
-                                <th>奖励百分比</th>
-                                <th>奖励金额</th>
+                                <th>分润百分比</th>
+                                <th>贡献分润</th>
                                 <th>备注</th>
                                 <th>分润时间
                                     @include('component.sort',['url'=>url("user/trader/income/$user->id")])
@@ -73,7 +73,7 @@
                                     <td>TS-{{ $item->transaction_id }}</td>
                                     <td>{{ $item->transaction_amount }}</td>
                                     <td>{{ $item->percentage }}</td>
-                                    <td>{{ $item->amount }}</td>
+                                    <td style="color: red;">{{ $item->amount }}</td>
                                     <td title="{{ $item->remark }}">{{ str_limit($item->remark,10) }}</td>
                                     <td>{{ $item->created_at ?:'--' }}</td>
                                 </tr>
