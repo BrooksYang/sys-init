@@ -214,10 +214,11 @@ class HomeController extends Controller
     }
 
     /**
+     *  OTC 场外交易数据面板统计项
      *
-     * OTC 场外交易数据面板统计项
      * @param $cacheLength
      * @return array
+     * @throws
      */
     public function otcStatisticItem($cacheLength)
     {
@@ -324,6 +325,16 @@ class HomeController extends Controller
             return $this->sysFeeIncome($otcBuyOfDay, $transFeeDepositOfDay, $otcQuickIncomeSysOfDay);
         });
 
+        // OTC 各商户贡献总收益统计 - 每天 默认USDT
+        $incomeByMerchantOfDay = Cache::remember('incomeByMerchantOfDay', $cacheLength, function () {
+            return $this->incomeByMerchantOfDay();
+        });
+
+        // OTC 各商户贡献总收益及出入金总额统计 -  默认USDT
+        $incomeByMerchant = Cache::remember('incomeByMerchant', $cacheLength, function () {
+            return $this->incomeByMerchant();
+        });
+
         // OTC 平台累计提币（外部地址）
         $otcSysWithdraw = Cache::remember('otcSysWithdraw', $cacheLength, function () {
             return $this->otcSysIncomeWithdraw();
@@ -351,8 +362,9 @@ class HomeController extends Controller
             'otcDepositAmount','otcWithdrawAmount','otcTobeWithdraw','neuCollectPending','neuCollectionBalance',
             'otcToBeWithdrawPending','otcSysWithDrawAddrBalance','otcSysDepositAddrBalance',
             'otcBuyTotal', 'otcSellTotal','otcBuyOfDay','otcSellOfDay',
-            'transFeeDepositOfDay','transFeeDeposit', 'transFeeWithdraw', 'otcQuickIncomeSys','otcSysIncomeOfDay','otcSysIncomeTotal','otcSysIncomeRmbTotal',
-            'otcSysIncomeCurrent','otcSysIncomeCurrentRmb'
+            'transFeeDepositOfDay','transFeeDeposit', 'transFeeWithdraw', 'otcQuickIncomeSys','otcSysIncomeOfDay',
+            'incomeByMerchantOfDay','incomeByMerchant',
+            'otcSysIncomeTotal','otcSysIncomeRmbTotal', 'otcSysIncomeCurrent','otcSysIncomeCurrentRmb'
         );
     }
 
@@ -961,11 +973,15 @@ class HomeController extends Controller
     /**
      * OTC 快捷抢单-平台累计收益 - 每天
      *
+     * @param $owners
      * @return mixed
      */
-    public function otcQuickIncomeSysOfDay()
+    public function otcQuickIncomeSysOfDay($owners = [])
     {
         $otcQuickIncomeSysOfDay = OtcOrderQuick::status(OtcOrderQuick::RECEIVED)
+            ->when($owners, function ($query) use ($owners){
+                $query->whereIn('owner_id', $owners);
+            })
             ->select(\DB::raw("DATE_FORMAT(updated_at, '%Y-%m-%d') as time,sum(income_sys) as income"))
             ->groupBy('time')
             ->get();
@@ -978,13 +994,17 @@ class HomeController extends Controller
      *
      * @param $type
      * @param $currency
+     * @param $users
      * @return mixed
      */
-    public function otcOrderOfDay($type, $currency = Currency::USDT)
+    public function otcOrderOfDay($type, $currency = Currency::USDT, $users = [])
     {
         $otcOrderOfDay = OtcOrder::type($type)
             ->currency($currency)
             ->status(OtcOrder::RECEIVED)
+            ->when($users, function ($query) use ($users){
+                $query->whereIn('user_id', $users);
+            })
             ->select(\DB::raw("DATE_FORMAT(updated_at, '%Y-%m-%d') as time,sum(field_amount) as amount,sum(fee) as fee"))
             ->groupBy('time')
             ->get();
@@ -1083,6 +1103,193 @@ class HomeController extends Controller
 
         return [1=>'未分配',2=>'已分配', 3=>'已回复',4=>'已关闭',5=>'正在处理', 6=>'等待处理'];
     }
+
+    /**
+     * 获取商户及其旗下用户
+     *
+     * @return array
+     */
+    public function merchantUser()
+    {
+        $merchantUsers = [];
+        $merchants = User::merchant();
+        foreach ($merchants as $key => $merchant) {
+            // 商户
+            $find = User::find($merchant->id);
+
+            // 商户旗下用户id
+            $userIds = $find->appKey->users()->pluck('id')->toArray();
+            $merchantUsers[$merchant->id] = $userIds;
+        }
+
+        return $merchantUsers;
+    }
+
+    /**
+     * 获取商户所贡献各项收益 - 每天
+     *
+     * @param $merchantUsers
+     * @return array
+     */
+    public function merchantContribution($merchantUsers)
+    {
+        $merchantContribution = [];
+        foreach ($merchantUsers as $merchantId => $users) {
+            $merchantContribution[$merchantId]['otcOrderBuy'] = $this->otcOrderOfDay(OtcOrder::BUY,Currency::USDT, $users);
+            $merchantContribution[$merchantId]['otcQuickIncomeSys'] = $this->otcQuickIncomeSysOfDay($users);
+        }
+
+        return $merchantContribution;
+    }
+
+    /**
+     * 整合商户所贡献总收益 - 每天
+     *
+     * @param $merchantContribution
+     * @return array
+     */
+    public function merchantContributions($merchantContribution)
+    {
+        bcscale(config('app.bcmath_scale'));
+        $merchantContributions = [];
+
+        // 遍历商户订单交易及快捷抢单所贡献收益
+        foreach ($merchantContribution as $merchantId => $contribution) {
+
+            $sysIncome = [];
+
+            $otcBuy = $contribution['otcOrderBuy']->pluck('fee','time');
+            $quickIncome = $contribution['otcQuickIncomeSys']->pluck('income','time');
+
+            $otcBuyTime = $otcBuy->keys();
+            $quickIncomeTime = $quickIncome->keys();
+            $times = $otcBuyTime->merge($quickIncomeTime)->sort();
+
+            // 按时间遍历并计算商户所贡献总收益
+            foreach ($times as $time) {
+                $sysIncome[$time]['otc_buy_fee'] = $otcBuy[$time] ?? 0;
+                $sysIncome[$time]['quick_income'] = $quickIncome[$time] ?? 0;
+                $sysIncome[$time]['total'] = bcadd($otcBuy[$time] ?? 0, $quickIncome[$time] ?? 0);
+            }
+
+            $merchantContributions[$merchantId]  =  $sysIncome;
+        }
+
+
+        return $merchantContributions;
+
+    }
+
+    /**
+     * 按时间合并处理各商户所贡献总收益 - 每天
+     *
+     * @return array
+     */
+    public function incomeByMerchantOfDay()
+    {
+        bcscale(config('app.bcmath_scale'));
+        $incomeByMerchantOfDay = [];
+
+        $merchantUser = $this->merchantUser();
+        $merchantIds = array_keys($merchantUser ?? []);
+        $merchantContribution = $this->merchantContribution($merchantUser);
+        $merchantContributions = $this->merchantContributions($merchantContribution);
+
+        // 按时间合并处理各商户所贡献收益
+        $times= [];
+        foreach ($merchantContributions as $merchantId => $contribution) {
+            $times += array_keys($contribution);
+        }
+
+        foreach ($times as $time) {
+            foreach ($merchantIds as $merchantId) {
+                $merchant = User::find($merchantId);
+                $merchant= $merchant->username ?: $merchant->phone ?: $merchant->email;
+                $merchantInfo[] = $merchant;
+
+                $incomeByMerchantOfDay['data'][$time][$merchant] = $merchantContributions[$merchantId][$time]['total'] ?? 0;
+                $incomeByMerchantOfDay['data'][$time]['total'] = bcadd($incomeByMerchantOfDay['data'][$time][$merchant], $incomeByMerchantOfDay['data'][$time]['total']??0);
+            }
+        }
+
+
+        // 处理商户信息
+        foreach ($merchantIds as $merchantId) {
+            $merchant = User::find($merchantId);
+            $incomeByMerchantOfDay['merchant'][]= $merchant->username ?: $merchant->phone ?: $merchant->email;
+        }
+        $incomeByMerchantOfDay['merchant']['total']= 'total';
+
+        return $incomeByMerchantOfDay;
+    }
+
+    /**
+     * 各商户贡献收益及出入金总额
+     *
+     * @return mixed
+     */
+    public function incomeByMerchant()
+    {
+        $incomeByMerchant = [];
+        $merchantUser = $this->merchantUser();
+
+        // 交易订单手续费总额、溢价收益（快捷抢单）总额、入金总额、出金总额
+        foreach ($merchantUser as $merchantId => $users) {
+            $merchant = User::find($merchantId);
+            $merchant = $merchant->username ?: $merchant->phone ?: $merchant->email;
+            $incomeByMerchant['merchant'][] = $merchant;
+
+            $merchantOrder = $this->merchantOrder($users);
+            $merchantOrderQuick = $this->merchantOrderQuick($users);
+
+            $incomeByMerchant['merchantData'][$merchant]['fee'] = $merchantOrder->sum('fee');
+            $incomeByMerchant['merchantData'][$merchant]['income_sys'] = $merchantOrderQuick->sum('income_sys');
+            $incomeByMerchant['merchantData'][$merchant]['field_amount_in'] = $merchantOrder->sum('field_amount');
+            $incomeByMerchant['merchantData'][$merchant]['field_amount_out'] = $merchantOrderQuick->sum('field_amount');
+
+            $incomeByMerchant['data']['fee'] = array_column($incomeByMerchant['merchantData'],'fee');
+            $incomeByMerchant['data']['income_sys'] = array_column($incomeByMerchant['merchantData'],'income_sys');
+            $incomeByMerchant['data']['field_amount_in'] = array_column($incomeByMerchant['merchantData'],'field_amount_in');
+            $incomeByMerchant['data']['field_amount_out'] = array_column($incomeByMerchant['merchantData'],'field_amount_out');
+        }
+
+        return $incomeByMerchant;
+    }
+
+
+    /**
+     * 商户入金总额 - 交易订单买入
+     *
+     * @param $userIds
+     * @param int $currency
+     * @return mixed
+     */
+    public function merchantOrder($userIds, $currency = Currency::USDT)
+    {
+        $orders = OtcOrder::type(OtcOrder::BUY)
+            ->currency($currency)
+            ->status(OtcOrder::RECEIVED)
+            ->whereIn('user_id', $userIds)
+            ->get();
+
+        return $orders;
+    }
+
+    /**
+     * 商户出金总额 - 快捷抢单
+     *
+     * @param $userIds
+     * @return mixed
+     */
+    public function merchantOrderQuick($userIds)
+    {
+        $ordersQuick = OtcOrderQuick::status(OtcOrderQuick::RECEIVED)
+            ->whereIn('owner_id', $userIds)
+            ->get();
+
+        return $ordersQuick;
+    }
+
 
     /**
      * 财务报表数据概览

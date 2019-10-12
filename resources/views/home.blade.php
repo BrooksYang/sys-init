@@ -448,6 +448,22 @@
                         <hr>
                         <div class="row">
                             <div class="col-md-10">
+                                <!-- OTC平台各商户贡献总收益统计 - 每天 - 默认USDT -->
+                                <div id="incomeByMerchantOfDay" style="width: 100%;height:600px;"></div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <!-- OTC平台各商户贡献总收益及出入金总额统计 - 默认USDT -->
+                                <div id="incomeByMerchant" style="width: 100%;height:600px;"></div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-10">
                                 <!-- OTC订单买入及手续费统计 - 默认USDT -->
                                 <div id="otcBuyOfDay" style="width: 100%;height:600px;"></div>
                             </div>
@@ -861,6 +877,164 @@
             ]
         };
         otcSysIncomeOfDay.setOption(otcSysIncomeOfDayOption);
+    </script>
+
+    {{--OTC平台各商户所贡献总收益统计 - 每天 - 默认USDT--}}
+    <script>
+        var incomeByMerchantOfDay = echarts.init(document.getElementById('incomeByMerchantOfDay'));
+        var incomeByMerchantOfDayOption = {
+            title : {
+                text: 'OTC 平台商户贡献收益',
+                subtext: 'USDT',
+            },
+            tooltip : {
+                trigger: 'axis',
+                axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            toolbox: {
+                show : true,
+                feature : {
+                    dataView : {show: true, readOnly: false},
+                    magicType : {show: true, type: ['line', 'bar']},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
+            calculable : true,
+            legend: {
+                //data:['订单手续费','充值手续费','溢价收益','总收益']
+                data:[@foreach($incomeByMerchantOfDay['merchant'] as $merchant) '{{$merchant=='total'?'总收益':$merchant}}', @endforeach]
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis : [
+                {
+                    type : 'category',
+                    data : [@foreach($incomeByMerchantOfDay['data'] as $incomeKey=>$incomeItem) '{{date('n/d', strtotime($incomeKey))}}', @endforeach]
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+                @foreach($incomeByMerchantOfDay['merchant'] as $merchant)
+                {
+                    name:'{{$merchant=='total'?'总收益':$merchant}}',
+                    type:'bar',
+                    data:[@foreach($incomeByMerchantOfDay['data'] as $incomeKey=>$incomeItem) {{round($incomeItem[$merchant], 2)}}, @endforeach],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                @endforeach
+            ]
+        };
+        incomeByMerchantOfDay.setOption(incomeByMerchantOfDayOption);
+    </script>
+
+    {{--OTC平台各商户贡献总收益及出入金总额统计 - 默认USDT--}}
+    <script>
+        var incomeByMerchant = echarts.init(document.getElementById('incomeByMerchant'));
+        var incomeByMerchantOption = {
+            title : {
+                text: 'OTC 平台商户贡献收益及出入金总额',
+                subtext: 'USDT',
+            },
+            tooltip : {
+                trigger: 'axis',
+                axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            legend: {
+                data: ['交易手续费', '溢价总收益','入金总数额','出金总数额']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'category',
+                    // data: ['商户1', ... '商户n']
+                    data:[@foreach($incomeByMerchant['merchant'] as $merchant) '{{$merchant}}', @endforeach]
+                }
+            ],
+            series : [
+                {
+                    name:'交易手续费',
+                    type:'bar',
+                    stack:'入金相关总量',
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'insideRight'
+                        }
+                    },
+                    data:[@foreach($incomeByMerchant['data']['fee'] as $incomeKey=>$incomeItem) {{round($incomeItem, 2)}}, @endforeach]
+                },
+                {
+                    name:'溢价总收益',
+                    type:'bar',
+                    stack:'出金相关总量',
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'insideRight'
+                        }
+                    },
+                    data:[@foreach($incomeByMerchant['data']['income_sys'] as $incomeKey=>$incomeItem) {{round($incomeItem, 2)}}, @endforeach]
+                },
+                {
+                    name:'入金总数额',
+                    type:'bar',
+                    stack:'入金相关总量',
+                    label: {
+                        normal: {
+                            show: true,
+                            position: 'insideRight'
+                        }
+                    },
+                    data:[@foreach($incomeByMerchant['data']['field_amount_in'] as $incomeKey=>$incomeItem) {{round($incomeItem, 2)}}, @endforeach],
+                },
+                {
+                    name:'出金总数额',
+                    type:'bar',
+                    stack:'出金相关总量',
+                    label: {
+                        normal: {
+                            show: true,
+                            position: 'insideRight'
+                        }
+                    },
+                    data:[@foreach($incomeByMerchant['data']['field_amount_out'] as $incomeKey=>$incomeItem) {{round($incomeItem, 2)}}, @endforeach]
+                }
+            ]
+        };
+        incomeByMerchant.setOption(incomeByMerchantOption);
     </script>
 
     {{--OTC订单买入及手续费统计 - 默认USDT--}}
