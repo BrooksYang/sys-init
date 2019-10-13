@@ -954,7 +954,7 @@
         var incomeByMerchantOption = {
             title : {
                 text: 'OTC 平台商户贡献收益及出入金总额',
-                subtext: 'USDT',
+                subtext: 'USDT (注：负号仅表示资金或收益流动的方向)',
             },
             tooltip : {
                 trigger: 'axis',
@@ -979,6 +979,7 @@
             yAxis : [
                 {
                     type : 'category',
+                    axisTick : {show: false},
                     // data: ['商户1', ... '商户n']
                     data:[@foreach($incomeByMerchant['merchant'] as $merchant) '{{$merchant}}', @endforeach]
                 }
@@ -987,11 +988,11 @@
                 {
                     name:'交易手续费',
                     type:'bar',
-                    stack:'入金相关总量',
+                    stack:'利润',
                     label: {
                         normal: {
-                            show: false,
-                            position: 'insideRight'
+                            show: true,
+                            position: 'right'
                         }
                     },
                     data:[@foreach($incomeByMerchant['data']['fee'] as $incomeKey=>$incomeItem) {{round($incomeItem, 2)}}, @endforeach]
@@ -999,38 +1000,38 @@
                 {
                     name:'溢价总收益',
                     type:'bar',
-                    stack:'出金相关总量',
+                    stack:'利润',
                     label: {
                         normal: {
-                            show: false,
-                            position: 'insideRight'
+                            show: true,
+                            position: 'left'
                         }
                     },
-                    data:[@foreach($incomeByMerchant['data']['income_sys'] as $incomeKey=>$incomeItem) {{round($incomeItem, 2)}}, @endforeach]
+                    data:[@foreach($incomeByMerchant['data']['income_sys'] as $incomeKey=>$incomeItem) {{-round($incomeItem, 2)}}, @endforeach]
                 },
                 {
                     name:'入金总数额',
                     type:'bar',
-                    stack:'入金相关总量',
+                    stack:'交易总量',
                     label: {
                         normal: {
                             show: true,
                             position: 'insideRight'
                         }
                     },
-                    data:[@foreach($incomeByMerchant['data']['field_amount_in'] as $incomeKey=>$incomeItem) {{round($incomeItem, 2)}}, @endforeach],
+                    data:[@foreach($incomeByMerchant['data']['field_amount_in'] as $incomeKey=>$incomeItem) {{round($incomeItem, 2)}}, @endforeach]
                 },
                 {
                     name:'出金总数额',
                     type:'bar',
-                    stack:'出金相关总量',
+                    stack:'交易总量',
                     label: {
                         normal: {
                             show: true,
-                            position: 'insideRight'
+                            position: 'insideLeft'
                         }
                     },
-                    data:[@foreach($incomeByMerchant['data']['field_amount_out'] as $incomeKey=>$incomeItem) {{round($incomeItem, 2)}}, @endforeach]
+                    data:[@foreach($incomeByMerchant['data']['field_amount_out'] as $incomeKey=>$incomeItem) {{-round($incomeItem, 2)}}, @endforeach]
                 }
             ]
         };
