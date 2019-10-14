@@ -954,7 +954,7 @@
         var incomeByMerchantOption = {
             title : {
                 text: 'OTC 平台商户贡献收益及出入金总额',
-                subtext: 'USDT (注：负号仅表示资金或收益流动的方向)',
+                subtext: 'USDT',
             },
             tooltip : {
                 trigger: 'axis',
@@ -1007,7 +1007,7 @@
                             position: 'left'
                         }
                     },
-                    data:[@foreach($incomeByMerchant['data']['income_sys'] as $incomeKey=>$incomeItem) {{-round($incomeItem, 2)}}, @endforeach]
+                    data:[@foreach($incomeByMerchant['data']['income_sys'] as $incomeKey=>$incomeItem) {{round($incomeItem, 2)}}, @endforeach]
                 },
                 {
                     name:'入金总数额',
@@ -1028,10 +1028,10 @@
                     label: {
                         normal: {
                             show: true,
-                            position: 'insideLeft'
+                            position: 'insideRight'
                         }
                     },
-                    data:[@foreach($incomeByMerchant['data']['field_amount_out'] as $incomeKey=>$incomeItem) {{-round($incomeItem, 2)}}, @endforeach]
+                    data:[@foreach($incomeByMerchant['data']['field_amount_out'] as $incomeKey=>$incomeItem) {{round($incomeItem, 2)}}, @endforeach]
                 }
             ]
         };
