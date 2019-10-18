@@ -43,7 +43,7 @@
                             <i class="fontello-desktop"></i>&nbsp;&nbsp;锁屏
                         </a>
                         <a href="#" onclick="document.getElementById('logout-form').submit();"  class="text-white">
-                            <i class="fontello-upload-outline"></i>&nbsp;&nbsp;退出222
+                            <i class="fontello-upload-outline"></i>&nbsp;&nbsp;退出
                         </a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                             {{ csrf_field() }}

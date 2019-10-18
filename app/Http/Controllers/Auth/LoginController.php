@@ -54,9 +54,11 @@ class LoginController extends Controller
                 ->update(['context' => 'logout#'.self::carbonNow()]);
         }
 
-        $this->guard()->logout();
+        /*$this->guard()->logout();
 
-        $request->session()->flush();
+        $request->session()->flush();*/
+
+        auth('admin')->logout();
 
         return redirect('/');
     }
