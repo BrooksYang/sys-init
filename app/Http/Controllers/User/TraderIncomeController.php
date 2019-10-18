@@ -207,6 +207,14 @@ class TraderIncomeController extends Controller
                                                name=\"percentage_sys\"
                                                value=\"".(@$trader->feeConfig->percentage_sys??old('percentage_sys'))."\"  placeholder='请填写平台手续费分润比例'>
                                     </div>
+                                    
+                                    <div class=\"col-md-12\">
+                                        <label>所属领导人</label>
+                                        <select name='leader_id' id='leader_id' class='form-control input-medium' ".(@$trader->pid==0?'disabled':'').">".
+                                            (@$this->leader($trader))."
+                                        </select>
+                                    </div>
+                                   
                                 </div>
                             </div>
                         </div>
@@ -220,6 +228,26 @@ class TraderIncomeController extends Controller
         </div>";
 
        return $modal;
+    }
+
+    /**
+     * 处理领导人信息
+     *
+     * @param $trader
+     * @param array $leaders
+     * @return string
+     */
+    public function leader($trader, $leaders=[1,2,3])
+    {
+        $options = "<option value=''>请选择所属领导人</option>";
+        $leaders = User::getLeaders();
+        //dd($leaders);
+        foreach ($leaders as $key => $leader) {
+            $options .= "<option value='$leader->id'".(@$trader->leader_id==$leader->id?'selected':'').">".
+                ($leader->username?:$leader->phone?:$leader->email)."(UID: #$leader->id)</option>";
+        }
+
+        return $options;
     }
 
     /**
@@ -243,15 +271,39 @@ class TraderIncomeController extends Controller
 
         \DB::transaction(function () use ($user, $request){
             // 领导人设置
-            $user->leader_level = $user->pid == 0 ? $request->leader_level : User::COMMON; // 是否领导人
-            $user->leader_id = $user->pid == 0 ? $user->id : $user->pid; // 领导人id
+            if ($request->leader_level) {
+                $user->leader_level = $user->pid == 0 ? $request->leader_level : User::COMMON; // 是否领导人
+                if ($user->pid == 0) {
+                    $user->leader_id =  $user->id; // 领导人id
+                }
+            }
+
+            // 设置或修改所属领导人及相关信息
+            if ($request->leader_id && ($user->leader_id !=$request->leader_id)) {
+                $newLeader = User::find($request->leader_id);
+                $srcLeader = User::find($user->leader_id);
+
+                $user->leader_id = $request->leader_id;
+                $user->pid = $request->leader_id;
+                $user->depth = $newLeader->depth + 1;
+
+                // 原领导人存在 - 即修改所属领导人则更新其邀请人数
+                if ($srcLeader) {
+                    $srcLeader->decrement('invite_count');
+                    $srcLeader->save();
+                }
+
+                $newLeader->increment('invite_count');
+                $newLeader->save();
+            }
+
             $user->save();
 
             // 手续费设置
             $user->feeConfig()->updateOrCreate(['user_id' => $user->id], [
-                'percentage_total'  => $request->percentage_total,
-                'percentage_sys'    => $request->percentage_sys,
-                'percentage_leader' => $request->percentage_leader,
+                'percentage_total'  => $request->percentage_total ?:0,
+                'percentage_sys'    => $request->percentage_sys ?:0,
+                'percentage_leader' => $request->percentage_leader ?:0,
             ]);
         });
 
@@ -292,14 +344,15 @@ class TraderIncomeController extends Controller
      */
     public function traderIncomeValidator($request)
     {
+        $leaderRule = $request->leader_level ? 'required' : 'nullable';
 
         // 验证
         $validator = Validator::make($request->all(),[
             'leader_level'       => 'sometimes|in:0,1',
-            'percentage_total'   => 'required|numeric|min:0',
-            'percentage_sys'     => 'required|numeric|min:0',
+            'percentage_total'   => $leaderRule.'|numeric|min:0',
+            'percentage_sys'     => $leaderRule.'|numeric|min:0',
             'percentage_leader'  => 'sometimes|min:0',
-
+            'leader_id'          => $leaderRule.'|min:0',
         ]);
 
         // 钩子验证 - 币商及系统手续费设置

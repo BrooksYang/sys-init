@@ -156,6 +156,17 @@ class User extends Authenticatable
             ->where('kyc_level_id', KycLevel::ADVANCED)
             ->where('id', '>=' ,133)
             ->orWhereIn('id', [88,89,122])
+            ->get(['username','phone','email','id','pid','leader_level','leader_id']);
+    }
+
+    /**
+     * 获取系统领导人
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getLeaders()
+    {
+        return self::where('leader_level', '>',0)
             ->get(['username','phone','email','id','pid','leader_level']);
     }
 
