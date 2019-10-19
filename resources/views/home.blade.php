@@ -374,7 +374,7 @@
                                 <span class="bg-aqua">Current</span>
                             </h2>
                             <i class="fontello-money"></i>
-                            <h4 class="text-aqua">{{ number_format($otcSysIncomeTotal, 2) }}</h4>
+                            <h4 class="text-aqua"  title="{{$otcSysIncomeTotal}}">{{ number_format($otcSysIncomeTotal, 2) }}</h4>
                             <h5>OTC 平台累计收益({{ config('conf.currency_usdt') }})&nbsp;&nbsp;
                                 <span style="color: #32526E !important;">{{number_format($otcSysIncomeRmbTotal,2)}}</span>(RMB)
                             </h5>
