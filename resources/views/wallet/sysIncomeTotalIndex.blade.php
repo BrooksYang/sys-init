@@ -43,7 +43,7 @@
                             <tr>
                                 <th>序号</th>
                                 <th>UID</th>
-                                <th>用户名</th>
+                                <th>商户</th>
                                 <th>联系方式</th>
                                 <th>入金收益({{config('conf.currency_usdt')}})</th>
                                 <th>出金收益({{config('conf.currency_usdt')}})</th>
