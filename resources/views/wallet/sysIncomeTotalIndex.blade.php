@@ -45,8 +45,8 @@
                                 <th>UID</th>
                                 <th>用户名</th>
                                 <th>联系方式</th>
-                                <th>入金收益</th>
-                                <th>出金收益</th>
+                                <th>入金收益({{config('conf.currency_usdt')}})</th>
+                                <th>出金收益({{config('conf.currency_usdt')}})</th>
                             </tr>
                             @forelse($merchants as $key => $item)
                                 <tr>
@@ -69,9 +69,9 @@
                                 <div class="pull-left">
                                     {{--类型，1入金收益，2出金收益， 3充值手续费--}}
                                     @if(Request::get('searchMerchant'))
-                                        总计： <b>{{ bcadd( $statistics['inTotal'] ?:0, $statistics['outTotal'] ?:0) }} ,</b><br>
+                                        总计： <b>{{ bcadd( $statistics['inTotal'] ?:0, $statistics['outTotal'] ?:0) }} {{config('conf.currency_usdt')}}</b><br>
                                     @else
-                                        总计： <b>{{ $statistics['total'] ?: 0 }} ,</b><br>
+                                        总计： <b>{{ $statistics['total'] ?: 0 }} {{config('conf.currency_usdt')}}</b><br>
                                     @endif
                                     入金收益：<b>{{ $statistics['inTotal'] ?: 0 }}</b> |
                                     出金收益：<b>{{ $statistics['outTotal'] ?: 0 }}</b>
