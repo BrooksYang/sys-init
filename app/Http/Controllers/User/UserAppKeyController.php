@@ -314,4 +314,48 @@ class UserAppKeyController extends Controller
             'totalDeposit','totalBalance','totalLeft');
     }
 
+    /**
+     * 商户贡献收益 - 入金/出金
+     *
+     * @param $id
+     * @param Request $request
+     * @return array
+     */
+    public function incomeShow($id, Request $request)
+    {
+        $start = trim($request->start);
+        $end = trim($request->end);
+
+        $merchant = User::find($id);
+
+        // 商户旗下用户id
+        $userIds = $merchant->appKey->users()->pluck('id')->toArray();
+
+        // 入金贡献收益
+        $in = OtcOrder::whereIn('type', [OtcOrder::BUY, OtcOrder::SELL])
+            ->whereIn('user_id', $userIds)
+            ->currency(Currency::USDT)
+            ->status(OtcOrder::RECEIVED)
+            ->when($start, function ($query) use ($start) {
+                $query->where('updated_at', '>=', $start);
+            })
+            ->when($end, function ($query) use ($end) {
+                $query->where('updated_at', '<=', $end);
+            })
+            ->sum('fee');
+
+        // 出金贡献收益
+        $out = OtcOrderQuick::whereIn('owner_id', $userIds)
+            ->status(OtcOrderQuick::RECEIVED)
+            ->when($start, function ($query) use ($start) {
+                $query->where('updated_at', '>=', $start);
+            })
+            ->when($end, function ($query) use ($end) {
+                $query->where('updated_at', '<=', $end);
+            })
+            ->sum('income_sys');
+
+        return compact('in','out');
+    }
+
 }
