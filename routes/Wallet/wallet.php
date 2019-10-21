@@ -55,6 +55,9 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
 
     // OTC 运营方提币记录
     Route::get('otc/sys/withdrawLog','CryptoWallet\WalletTransactionController@sysWithdraw');
+
+    // OTC 系统总收益查询
+    Route::get('otc/sys/income/total', 'Wallet\IncomeTotalController@index');
 });
 
 
