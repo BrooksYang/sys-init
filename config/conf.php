@@ -17,6 +17,9 @@ return [
     // 是否开启OTC运营方提币
     'enable_sys_withdraw' => env('ENABLE_SYS_WITHDRAW', false),
 
+    // 领导人保证金 - USDT
+    'leader_margin' => env('LEADER_MARGIN', 10000),
+
     // 系统环境
     'app_debug' => env('APP_DEBUG', true),
 

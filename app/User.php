@@ -6,6 +6,7 @@ use App\Models\Bonuses\Bonuses;
 use App\Models\KycLevel;
 use App\Models\OTC\UserAppKey;
 use App\Models\UserFeeConfig;
+use App\Models\Wallet\Balance;
 use App\Utilities\EtherScan;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -67,6 +68,15 @@ class User extends Authenticatable
     const COMMON           = 0;
     const LEADER_LEVEL_ONE = 1;
 
+    // 账户类型，0普通用户，1领导人，2搬砖工
+    const TYPE_USER   = 0;
+    const TYPE_LEADER = 1;
+    const TYPE_TRADER = 2;
+
+    // 是否已缴纳保证金，0否，1是
+    const NOT_MARGIN = 0;
+    const IS_MARGIN  = 1;
+
     /**
      * 关联 App Key（商户获取App Key）
      *
@@ -115,6 +125,20 @@ class User extends Authenticatable
     public function contributor()
     {
         return $this->hasMany(Bonuses::class, 'contributor_id');
+    }
+
+    /**
+     * 获取用户钱包指定币种余额
+     *
+     * @param $currency
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function balance($currency)
+    {
+        return $this->hasOne(Balance::class, 'user_id')
+            ->where('user_wallet_currency_id', $currency)
+            ->select('id','user_wallet_balance','user_wallet_balance_freeze_amount')
+            ->first();
     }
 
     /**
