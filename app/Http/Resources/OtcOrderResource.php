@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use App\Models\OTC\OtcOrder;
 use App\Models\OTC\OtcOrderQuick;
+use App\User;
 
 /**
  * 订单属性转换
@@ -27,6 +28,7 @@ class OtcOrderResource
             'type_text'      => OtcOrder::$typeText[$order->type],
             'from'           => (@$order->tradeOwner->username ?:'--').' | '.(@$order->tradeOwner->email?:'--').' | '.(@$order->tradeOwner->phone ?:'--'),
             'from_user_id'   => $order->from_user_id,
+            'from_user_type' => User::find($order->from_user_id)->account_type,
             'to'             => (@$order->user->username ?:'--').' | '.(@$order->user->email?:'--').' | '.(@$order->user->phone ?:'--'),
             'remark'         => $order->remark,
             'card_number'    => $order->card_number,

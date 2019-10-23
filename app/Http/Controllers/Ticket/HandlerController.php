@@ -403,7 +403,7 @@ class HandlerController extends Controller
         $msg = '更新成功';
 
         // 更新otc订单及工单
-        DB::transaction(function () use($request, $order, $ticket){
+        $res = DB::transaction(function () use($request, $order, $ticket){
 
             $orcStatus = '[订单原状态_'.OtcOrder::$statusTexts[$order->status].']';
             $remark = $orcStatus.' - '.'申诉完结';
@@ -426,6 +426,18 @@ class HandlerController extends Controller
                 if ($request->field == 'recover' && $order->status == OtcOrder::RECEIVED) {
                     $remark = $orcStatus.' - '.'强制恢复';
                     $msg = $this->forceRecover($order);
+                }
+
+                // 已支付-搬砖工入金交易不认账或无法确认 - 从领导人资产中扣除
+                if ($request->field == 'leader' && $order->status == OtcOrder::PAID) {
+                    $remark = $orcStatus. ' - '.'从领导人资产中扣除';
+                    $msg = $this->forceLeader($order);
+
+                    // 领导人账户资产不足
+                    if (is_null($msg)) {
+                        $errorMsg = '领导人账户资产不足';
+                        return compact('msg', 'errorMsg');
+                    }
                 }
             }
 
@@ -452,6 +464,10 @@ class HandlerController extends Controller
             $ticket->remark = $remark.' - '."[说明：{$request->info}]";
             $ticket->save();
         });
+
+        if (is_null($res['msg']) && $res['errorMsg']) {
+            return back()->withErrors(['errorMsg'=>$res['errorMsg']]);
+        }
 
         return back();
     }
@@ -642,6 +658,85 @@ class HandlerController extends Controller
         });
 
         return '已强制恢复完成交易的订单';
+    }
+
+    /**
+     * 强制从领导人帐户中扣除
+     *
+     * @param $order
+     * @return string
+     * @throws \Throwable
+     */
+    public function forceLeader($order)
+    {
+        $order = DB::transaction(function () use ($order){
+
+            bcscale(config('app.bcmath_scale'));
+
+            /**
+             * ***************************************
+             * 搬砖工卖单，用户买入
+             * ***************************************
+             */
+
+            if ($order->type == OtcOrder::BUY) {
+
+                /* 领导人资产处理 */
+                // 不再扣除领导人押金 - 由领导人资产账户中直接扣除
+                $leaderId = User::find($order->from_user_id)->leader_id;
+                $leaderBalance = Balance::lockForUpdate()->where('user_id', $leaderId)
+                    ->where('user_wallet_currency_id', $order->currency_id)
+                    ->first();
+
+                // 账户余额不足
+                if (bccomp($leaderBalance->user_wallet_balance, $order->field_amount) == -1) {
+                    return null;
+                }
+
+                // 账户余额充足-直接扣除
+                $leaderBalance->user_wallet_balance = bcsub($leaderBalance->user_wallet_balance, $order->field_amount);
+                $leaderBalance->save();
+
+                /* 用户资产处理 */
+                // 是否为商户下用户(商户下用户需更新商户钱包)
+                $buyer = User::find($order->user_id);
+                $merchant = @$buyer->merchantAppKey->user;
+                $buyerId = $merchant->id ?? $buyer->id;
+
+                $balance = Balance::lockForUpdate()->where('user_id', $buyerId)
+                    ->where('user_wallet_currency_id', $order->currency_id)
+                    ->first();
+
+                $balance->user_wallet_balance = bcadd($balance->user_wallet_balance, $order->final_amount);
+                $balance->save();
+
+                /*// 更新广告进度 - 增加相应交易数量
+                $trade = Trade::lockForUpdate()->find($order->advertisement_id);
+                $trade->field_amount = bcadd($trade->field_amount, $order->field_amount);
+                $trade->field_order_count ++;
+                $trade->field_percentage = floor($trade->field_amount / $trade->amount * 10000) / 100;;
+
+                // 若已完成则标记广告为已完成
+                if ($trade->field_amount >= $trade->amount) {
+                    $trade->status = Trade::FINISHED;
+                }
+
+                $trade->save();*/
+
+                // 更新订单状态
+                $order->status = OtcOrder::RECEIVED;
+                $order->is_leader_finished = OtcOrder::LEADER_FINISHED;
+                $order->save();
+            }
+
+            return true;
+        });
+
+        if (is_null($order)) {
+            return null;
+        }
+
+        return '已从领导人押金中扣除';
     }
 
 

@@ -74,6 +74,10 @@ class OtcOrder extends Model
         'month' => ['name'=>'按月']
     ];
 
+    // 订单是否由领导人兜底完成，0否，1是
+    const TRADER_FINISHED = 0;
+    const LEADER_FINISHED = 1;
+
     /**
      * 广告所有者
      *

@@ -277,6 +277,59 @@
                                 </div>
                             </div>
 
+                            {{--领导人资产扣除(领导人团队OTC入金订单)--}}
+                            @if($order->from_user_type == \App\User::TYPE_TRADER)
+                            <!-- Button trigger modal -->
+                            <a href="####"  class="btn btn-danger ml-5" data-toggle="modal" data-target="#exampleModalMargin" title="扣除领导人资产"
+                                    {{$ticket->order_type==\App\Models\OTC\OtcTicket::OTC_QUICK ? 'disabled' : ''}}>扣除领导人
+                            </a>
+                            <!-- Modal -->
+                            <div class="modal fade" id="exampleModalMargin" tabindex="-1" role="dialog" aria-labelledby="exampleModalMarginTitle"
+                                 aria-hidden="true" width="auto">
+                                <div class="modal-dialog" role="document" width="auto">
+                                    <div class="modal-content" width="auto">
+                                        <form action="{{ url("ticket/handler/appealEnd/$ticket->id") }}" role="form" method="POST" >
+                                            {{ csrf_field() }}
+                                            {{  method_field('PATCH')}}
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalMarginTitle"><i class="fontello-warning"></i>扣除领导人资产</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="alert alert-danger">
+                                                    <button data-dismiss="alert" class="close" type="button">×</button>
+                                                    <span class="entypo-cancel-circled"></span>
+                                                    <strong>操作提示：进行操作前请先仔细核对订单信息并填写订单操作说明以备查</strong>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="col-md-12">
+                                                            <h4>是否确定该订单从领导人资产中扣除?</h4>
+                                                            <input type="hidden" name="id" value="{{ $ticket->id }}" >
+                                                            <input type="hidden" name="field" value="leader" >
+                                                            <input type="hidden" name="update" value="{{ $ticket->order_id }}" >
+                                                            <input type="hidden" name="orderType" value="{{ $ticket->order_type }}" >
+                                                            <input class="form-control input-lg" type="text" name="info"
+                                                                   value="{{ old('info') }}"  placeholder="请填写操所说明" required>
+                                                            @if ($errors->has('info'))
+                                                                <p class="" style="color: red;"><strong>{{ $errors->first('info') }}</strong></p>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                                <button type="submit" class="btn btn-secondary">确定</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+
                             {{--强制放币-暂不处理--}}
                             {{--<a href="####" class="btn btn-danger ml-5" onclick="itemUpdate('{{ $ticket->id }}',
                                         '{{ url("ticket/handler/appealEnd/$ticket->id") }}','release','{{ $ticket->order_id }}',
@@ -412,6 +465,12 @@
 @section('js-part')
 
 <script type="text/javascript">
+
+    $(function () {
+        // 异常消息
+        if('{{ $errors->first()}}'){ layer.msg('{{ $errors->first()}}'); }
+    });
+
   function ticketReply(ticketId, userId) {
     layer.prompt({title: '回复工单内容', formType: 2}, function(content, index){
       layer.close(index); // 关闭窗口
