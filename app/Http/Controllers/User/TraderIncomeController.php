@@ -451,7 +451,6 @@ class TraderIncomeController extends Controller
      */
     public function accountFrozen($uid)
     {
-        //dd($uid);
         /*
          * 3.1.1.1 搬砖工账号冻结
             为确保交易安全，后台管理员可以冻结（禁用/停用）搬砖工账号，冻结后的影响如下：
