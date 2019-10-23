@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Models\Currency;
 use App\Models\OTC\OtcConfig;
+use App\Models\OTC\Trade;
 use App\Models\UserFeeConfig;
 use App\Models\Wallet\Balance;
 use App\User;
@@ -11,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class TraderIncomeController extends Controller
@@ -49,11 +51,12 @@ class TraderIncomeController extends Controller
         $html .= '<ul'.($flag?'':' id="browser" class="filetree"').'>';
         foreach ($traders as $key=>$trader) {
             $modal = $this->edit($trader, $key);
+            //$confirm = $this->frozen($trader);
             if ($trader->pid == $pid) {
                 $html .= '<li uid="' . $trader->id . '" pid="'.$trader->pid.'" path="' . @$trader->path .($trader->id==88?'" class="collapsable"':''). '">'.
                     ($trader->leader_level > 0 ? '<i class="fontello-flag" title="领导人"></i>':'').'
                     <a title="查看收益记录" href="'.url("user/trader/income/$trader->id").'" '.($pid == 0 ? "class='topOne'" : "")
-                    .'onclick="nodeShow('.$trader->id.')">' .($trader->username?:($trader->phone?:$trader->email)).'</a>'.$modal;
+                    .'onclick="nodeShow('.$trader->id.')">' .($trader->username?:($trader->phone?:$trader->email)).'</a>'./*$confirm.*/$modal;
                 $html .= $this->tree($traders, $trader->id, true);
             }
         }
@@ -162,7 +165,8 @@ class TraderIncomeController extends Controller
     public function edit($trader, $key)
     {
        $modal = "
-        <a href=\"####\"  class=\"\" data-toggle=\"modal\" data-target=\"#exampleModalLong$key\"><i  title=\"编辑\" class=\"fa fa-edit\"></i></a >
+        <a href=\"####\"  class=\"\" data-toggle=\"modal\" data-target=\"#exampleModalLong$key\">
+        <i  title=\"编辑\" class=\"fa fa-edit\" style=\"color:#ccc\"></i></a >
         <!--Modal -->
         <div class=\"modal fade\" id =\"exampleModalLong$key\" tabindex =\"-1\" role = \"dialog\" 
             aria-labelledby =\"exampleModalLongTitle$key\" aria-hidden =\"true\" >
@@ -238,6 +242,29 @@ class TraderIncomeController extends Controller
         </div>";
 
        return $modal;
+    }
+
+    /**
+     * 冻结账户
+     *
+     * @param $trader
+     * @return string
+     */
+    public function frozen($trader)
+    {
+        $user = User::findOrFail($trader->id);
+        list($icon, $title) = ['fontello-lock', '冻结'];
+        if ($user->is_frozen) {
+            list($icon, $title) = ['fontello-lock-open', '取消冻结'];
+        }
+
+        $confirm = "
+        <a href=\"####\" onclick=\"itemUpdate(".$trader->id.",'".url("user/account/frozen/$trader->id")."','is_frozen',
+            ".($user->is_frozen??0).",'用户的账户为<b><strong> ".$title." </strong></b> 状态', '"
+            .csrf_token()."', '冻结 - ".str_limit($trader->username ?: ($trader->phone ?: $trader->email), 30)."');\">
+            <i class=\"$icon\" style=\"color:#ccc\" title=\"".$title."账户\"></i></a>";
+
+        return $confirm;
     }
 
     /**
@@ -414,6 +441,77 @@ class TraderIncomeController extends Controller
         });
 
         return $validator;
+    }
+
+    /**
+     * 币商账户冻结（含普通用户、领导人、搬砖工）
+     *
+     * @param $uid
+     * @return array
+     */
+    public function accountFrozen($uid)
+    {
+        //dd($uid);
+        /*
+         * 3.1.1.1 搬砖工账号冻结
+            为确保交易安全，后台管理员可以冻结（禁用/停用）搬砖工账号，冻结后的影响如下：
+            停止派单，该搬砖工将无法收到来自用户的下单
+            资产冻结，搬砖工的资产账户将被冻结，无法发起提币操作
+            广告冻结，搬砖工将无法创建广告，购入或出售 USDT，已有广告强制下架
+            正在进行的交易订单，强制撤回（具体的撤回办法有待考虑）
+           3.1.1.2 领导人账号冻结
+            后台管理员可以对领导人账号进行冻结，冻结后的影响如下：
+            资产冻结，领导人资产账户被冻结，无法发起提币操作
+            停止交易，搬砖工购买 USDT 订单无法向该领导人派送
+            广告冻结，领导人无法创建新的广告，现有广告被强制下架，资产退回冻结账户
+            正在进行的交易订单，强制撤回（具体的撤回办法有待考虑）
+         */
+
+        $user = User::findOrFail($uid);
+
+        $user->is_valid = $user->is_valid == User::ACTIVE ? User::FORBIDDEN : User::ACTIVE;
+        $user->save();
+
+        return ['code' => 0, 'msg' => '已冻结'];
+
+        // 搬砖工和领导人账户冻结或解冻 - 广告下架或上架
+        // 判断广告是否存在
+        /*$trade = $user->trades()
+            ->whereIn('status', [Trade::ON_SALE, Trade::OFF])
+            ->find($uid);
+
+        $frozen = DB::transaction(function () use ($user, $trade){
+
+            $success =  ['code' => 0, 'msg' => '已冻结'];
+
+            // 广告不存在
+            if (!$trade) {
+                $user->is_valid = $user->is_valid == User::ACTIVE ? User::FORBIDDEN : User::ACTIVE;
+                $user->save();
+                return $success;
+            }
+
+            // 广告下的订单是否被申诉且未处理完结-暂不能上架
+            if ($trade->status == Trade::OFF && $trade->appealOrders()->count()) {
+                return (['code' => 302, 'msg' => '广告下的订单正在申诉中 - 暂无法操作']);
+            }
+
+            // 判断是否有正在进行中的订单
+            if ($trade->pendingOrders()->count()) {
+                return (['code' => 302, 'msg' => '该广告有正在交易的订单，请在订单完成后操作']);
+            }
+
+            // 广告上架/下架状态
+            $trade->status = $trade->status == Trade::ON_SALE ? Trade::OFF : Trade::ON_SALE;
+            $trade->save();
+
+            $user->is_valid = $user->is_valid == User::ACTIVE ? User::FORBIDDEN : User::ACTIVE;
+            $user->save();
+
+            return $success;
+        });
+
+        return  $frozen;*/
     }
 
 }

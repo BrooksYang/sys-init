@@ -45,6 +45,9 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     // 更新手续费分润 - 系统默认配置
     Route::patch('trader/income/defConfig', 'User\TraderIncomeController@defaultConf');
 
+    // 领导人及搬砖工账号冻结
+    Route::patch('user/account/frozen/{uid}', 'User\TraderIncomeController@accountFrozen');
+
 });
 
 

@@ -4,6 +4,7 @@ namespace App;
 
 use App\Models\Bonuses\Bonuses;
 use App\Models\KycLevel;
+use App\Models\OTC\Trade;
 use App\Models\OTC\UserAppKey;
 use App\Models\UserFeeConfig;
 use App\Models\Wallet\Balance;
@@ -125,6 +126,16 @@ class User extends Authenticatable
     public function contributor()
     {
         return $this->hasMany(Bonuses::class, 'contributor_id');
+    }
+
+    /**
+     * otc 广告
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function trades()
+    {
+        return $this->hasMany(Trade::class, 'user_id');
     }
 
     /**
