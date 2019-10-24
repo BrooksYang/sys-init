@@ -31,11 +31,32 @@
                         <input type="hidden" name="user" value="{{ $user->user->id }}">
                         @endif
 
-                        {{-- 国家 --}}
+                        {{-- 商户类型 --}}
                         <div class="row">
                             <div class="col-md-12">
                             <div class="form-group {{ $errors->has('username') ? 'has-error' : '' }}">
-                                <div class="col-sm-12">
+                                <div class="col-md-6">
+                                    <div class="form-group {{ $errors->has('username') ? 'has-error' : '' }}">
+                                        <div class="col-sm-12">
+                                            <label>商户类型</label>
+                                            <select name="type" id="type" class="form-control margin-t-15" style="margin-right: 5px;">
+                                                @foreach($types as $flag=>$type)
+                                                    <option value="{{ $flag }}" {{--data-length="{{$country->length}}"--}}
+                                                    @if(@$editFlag)
+                                                        {{ @$user->type == $flag ? 'selected' :'' }}
+                                                    @else
+                                                        {{ $type == \App\Models\OTC\UserAppKey::COMMON ? 'selected' : ''}}
+                                                    @endif
+                                                    >
+                                                        {{$type['name']}}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6">
                                     <label>国家或地区</label>
                                     <select name="country_id" id="country_id" class="form-control margin-t-15" style="margin-right: 5px;">
                                         @foreach($countries as $key=>$country)

@@ -21,6 +21,11 @@ class UserAppKey extends Model
     const COMMON = 0;
     const BC     = 1;
 
+    const TYPE = [
+        self::COMMON => ['name' => '普通', 'class'=>''],
+        self::BC     => ['name' => 'BC',  'class'=>'']
+    ];
+
     /**
      * 商户密钥管理
      *

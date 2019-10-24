@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\OTC\UserAppKey;
 use App\Rules\VerifyIpFormat;
 use App\Rules\VerifyTimePeriod;
 use App\User;
@@ -31,6 +32,7 @@ class UserAppKeyRequest extends FormRequest
         $userTable = User::getModel()->getTable();
         $emailRule = $request->phone ? 'nullable' : 'required';
         $phoneRule = $request->email ? 'nullable' : 'required';
+        $typeRole = implode(',', array_keys(UserAppKey::TYPE));
 
         return [
             'country_id' => "required",
@@ -56,6 +58,8 @@ class UserAppKeyRequest extends FormRequest
                  new VerifyIpFormat($request->ip),
             ],
             'remark' => 'sometimes|max:255',
+
+            'type'   => 'required|in:'.$typeRole,
 
             'is_enabled' => "required|in:0,1",
             'start_time' => "sometimes|required_with:end_time",
