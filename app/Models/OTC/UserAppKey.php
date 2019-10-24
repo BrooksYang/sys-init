@@ -17,6 +17,10 @@ class UserAppKey extends Model
         self::OPEN  => ['name' => '开启', 'class'=>'success']
     ];
 
+    // 商户类型，0普通，1BC商户',
+    const COMMON = 0;
+    const BC     = 1;
+
     /**
      * 商户密钥管理
      *

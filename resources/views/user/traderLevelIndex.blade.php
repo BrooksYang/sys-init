@@ -159,9 +159,30 @@
                    }
                    jQuery(this).remove();
                }
-           })
+           });
 
+            //全选,设置chheckbox name='all' tbody id=tb
+            $("input[name=all]").click(function (e) {
+                if (this.checked) {
+                    $(this).next().children().prop("checked", true);
+                } else {
+                    $(this).next().children().prop("checked", false);
+                }
+            });
 
         })(jQuery);
+
+        //单选 设置name=id
+        function userCheck(ths) {
+            if (ths.checked == false) {
+                $("input[name=all]:checkbox").prop('checked', false);
+            }
+            else {
+                var count = $("input[name='id[]']:checkbox:checked").length;
+                if (count == $("input[name='id[]']:checkbox").length) {
+                    $(this).prevAll().$("input[name=all]:checkbox").prop("checked", true);
+                }
+            }
+        }
     </script>
 @endsection

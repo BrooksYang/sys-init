@@ -48,6 +48,9 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     // 领导人及搬砖工账号冻结
     Route::patch('user/account/frozen/{uid}', 'User\TraderIncomeController@accountFrozen');
 
+    // 领导人及搬砖工 - 关联商户
+    Route::patch('link/merchant/{uid}', 'User\TraderIncomeController@linkMerchant');
+
 });
 
 

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\User;
 
 use App\Models\Currency;
+use App\Models\OTC\MerchantUser;
 use App\Models\OTC\OtcConfig;
 use App\Models\OTC\Trade;
+use App\Models\OTC\UserAppKey;
 use App\Models\UserFeeConfig;
 use App\Models\Wallet\Balance;
 use App\User;
@@ -52,11 +54,12 @@ class TraderIncomeController extends Controller
         foreach ($traders as $key=>$trader) {
             $modal = $this->edit($trader, $key);
             $confirm = $this->frozen($trader);
+            //$linkModal = $this->link($trader, $key);
             if ($trader->pid == $pid) {
                 $html .= '<li uid="' . $trader->id . '" pid="'.$trader->pid.'" path="' . @$trader->path .($trader->id==88?'" class="collapsable"':''). '">'.
                     ($trader->leader_level > 0 ? '<i class="fontello-flag" title="领导人"></i>':'').'
                     <a title="查看收益记录" href="'.url("user/trader/income/$trader->id").'" '.($pid == 0 ? "class='topOne'" : "")
-                    .'onclick="nodeShow('.$trader->id.')">' .($trader->username?:($trader->phone?:$trader->email)).'</a>'.$confirm.$modal;
+                    .'onclick="nodeShow('.$trader->id.')">' .($trader->username?:($trader->phone?:$trader->email)).'</a>'.$confirm.$modal/*.$linkModal*/;
                 $html .= $this->tree($traders, $trader->id, true);
             }
         }
@@ -268,23 +271,97 @@ class TraderIncomeController extends Controller
     }
 
     /**
+     * 关联商户
+     *
+     * @param $trader
+     * @param $key
+     * @return string
+     */
+    public function link($trader, $key)
+    {
+        $modal = "
+        <a href=\"####\"  class=\"\" data-toggle=\"modal\" data-target=\"#exampleModalLink$key\">
+        <i  title=\"关联商户\" class=\"fontello-link\" style=\"color:#ccc\"></i></a >
+        <!--Modal -->
+        <div class=\"modal fade\" id =\"exampleModalLink$key\" tabindex =\"-1\" role = \"dialog\" 
+            aria-labelledby =\"exampleModalLinkTitle$key\" aria-hidden =\"true\" >
+            <div class=\"modal-dialog\" role = \"document\" >
+                <div class=\"modal-content\">
+                    <form action='". url('link/merchant').'/'.$trader->id ."' role=\"form\" method=\"POST\" id=\"chooseUser\">
+                        ".csrf_field() ."
+                        ".method_field('PATCH')."
+                        <div class=\"modal-header\" >
+                            <h5 class=\"modal-title\" id =\"exampleModalLinkTitle$key\" >
+                            商户关联 - ".str_limit($trader->username ?: ($trader->phone ?: $trader->email), 30)."</h5 >
+                            <button type =\"button\" class=\"close\" data-dismiss=\"modal\" aria-label =\"Close\" >
+                                <span aria-hidden =\"true\" >&times;</span >
+                            </button >
+                        </div >
+                        <div class=\"modal-body\" >
+                            <div class=\"row\">
+                                <div class=\"col-md-12\">
+                                    <div class=\"col-md-12\">
+                                        <label>选择关联商户</label>&nbsp;
+                                        ".(@$this->merchant($trader))."
+                                        </select>
+                                    </div>
+                             
+                                </div>
+                            </div>
+                        </div>
+                        <div class=\"modal-footer\" >
+                            <button type = \"button\" class=\"btn btn-secondary\" data-dismiss = \"modal\" > 关闭</button >
+                            <button type=\"submit\" class=\"btn btn-secondary\">确定</button>
+                        </div >
+                    </form>
+                </div>
+            </div>
+        </div>";
+
+        return $modal;
+    }
+
+    /**
      * 处理领导人信息
      *
      * @param $trader
-     * @param array $leaders
      * @return string
      */
-    public function leader($trader, $leaders=[1,2,3])
+    public function leader($trader)
     {
         $options = "<option value=''>请选择所属领导人</option>";
         $leaders = User::getLeaders();
-        //dd($leaders);
+
         foreach ($leaders as $key => $leader) {
             $options .= "<option value='$leader->id'".(@$trader->leader_id==$leader->id?'selected':'').">".
                 ($leader->username?:$leader->phone?:$leader->email)."(UID: #$leader->id)</option>";
         }
 
         return $options;
+    }
+
+    /**
+     * 选择商户
+     *
+     * @param $trader
+     * @return string
+     */
+    public function merchant($trader)
+    {
+        $inputs = "";
+        $merchants = UserAppKey::with('user')->select('user_id','type')->get();
+        $linkMerchants = @$trader->linkMerchant->pluck('merchant_id')->toArray();
+
+        foreach ($merchants as $key => $merchant) {
+            $inputs .= "<input type=\"checkbox\" name=\"id[]\" value=\"".$merchant->user_id."\" onclick=\"userCheck(this)\""
+                .(in_array($merchant->user_id, $linkMerchants)? 'checked' :'' ).">"
+                .(@$merchant->user->username ?:@$merchant->user->phone?:@$merchant->user->email)
+                . ($merchant->type == UserAppKey::BC ?'(BC商户)':'').'&nbsp;&nbsp;&nbsp;&nbsp;';
+        }
+
+        $checkbox = "<input type=\"checkbox\" name=\"all\">全选<div class=\"tb\">".$inputs." </div> ";
+
+        return $checkbox;
     }
 
     /**
@@ -450,7 +527,7 @@ class TraderIncomeController extends Controller
      * @return mixed
      * @throws \Throwable
      */
-    public function accountFrozen($uid, Request $request)
+    public function accountFrozen($uid)
     {
         /*
          * 3.1.1.1 搬砖工账号冻结
@@ -517,6 +594,37 @@ class TraderIncomeController extends Controller
         });
 
         return  $frozen;
+    }
+
+    /**
+     * 关联商户
+     *
+     * @param $uid
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Throwable
+     */
+    public function linkMerchant($uid, Request $request)
+    {
+        $user = User::findOrFail($uid);
+        $merchantIds = $request->id ?? [];
+
+        DB::transaction(function () use ($user, $merchantIds){
+            $links = $user->linkMerchant()->pluck('merchant_id');
+
+            // 取消所有关联
+            if ($links) {
+                $user->linkMerchant()->delete();
+            }
+
+            // 生成关联
+            foreach ($merchantIds as $merchantId) {
+                $user->linkMerchant()->create(['merchant_id' => $merchantId]);
+            }
+
+        });
+
+        return back();
     }
 
 }

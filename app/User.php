@@ -4,6 +4,7 @@ namespace App;
 
 use App\Models\Bonuses\Bonuses;
 use App\Models\KycLevel;
+use App\Models\OTC\MerchantUser;
 use App\Models\OTC\Trade;
 use App\Models\OTC\UserAppKey;
 use App\Models\UserFeeConfig;
@@ -187,7 +188,7 @@ class User extends Authenticatable
     public static function getTradersInfo()
     {
         // 排除模拟账户-包含测试账户
-        return self::with(['feeConfig'])
+        return self::with(['feeConfig','linkMerchant'])
             ->where('kyc_level_id', KycLevel::ADVANCED)
             ->where('id', '>=' ,133)
             ->orWhereIn('id', [88,89,122])
@@ -203,6 +204,27 @@ class User extends Authenticatable
     {
         return self::where('leader_level', '>',0)
             ->get(['username','phone','email','id','pid','leader_level']);
+    }
+
+    /**
+     * 获取系统商户
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getMerchants()
+    {
+        return self::where('is_merchant', self::MERCHANTS)
+            ->get(['username','phone','email','id']);
+    }
+
+    /**
+     * 获取关联商户
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function linkMerchant()
+    {
+        return $this->hasMany(MerchantUser::class, 'trader_id');
     }
 
     /**
