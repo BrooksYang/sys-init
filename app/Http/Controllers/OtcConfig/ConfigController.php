@@ -90,15 +90,17 @@ class ConfigController extends Controller
         $updateConfig = $request->except(['_token', '_method', 'editFlag']);
 
         Validator::make($request->all(),[
-            'payment_length'                => 'required|numeric|min:0',
-            'order_cancel_frequency'        => 'required|numeric|min:0',
-            'withdraw_fee_percentage'       => 'required|numeric|min:0',
-            'release_order_margin'          => 'required|numeric|min:0',
-            'merchant_order_fee_percentage' => 'required|numeric|min:0',
-            //'deposit_fee_percentage'        => 'required|numeric|min:0',
+            'payment_length'                   => 'required|numeric|min:0',
+            'order_cancel_frequency'           => 'required|numeric|min:0',
+            'withdraw_fee_percentage'          => 'required|numeric|min:0',
+            'release_order_margin'             => 'required|numeric|min:0',
+            'merchant_order_fee_percentage'    => 'required|numeric|min:0',
+            //'deposit_fee_percentage'         => 'required|numeric|min:0',
+            'bonus_percentage_leader_buy_back' => 'required|numeric|min:0',
+            'bonus_percentage_miner'           => 'required|numeric|min:0',
         ],[
-            'withdraw_fee_percentage.min'   => '期望一个合法的汇率值',
-            'release_order_margin.min'      => '期望一个合法的百分比值',
+            'withdraw_fee_percentage.min'      => '期望一个合法的汇率值',
+            'release_order_margin.min'         => '期望一个合法的百分比值',
             //'deposit_fee_percentage.min'    => '期望一个合法的百分比值'
         ])->validate();
 
@@ -140,6 +142,8 @@ class ConfigController extends Controller
             'release_order_margin',
             'merchant_order_fee_percentage',
             //'deposit_fee_percentage'
+            'bonus_percentage_leader_buy_back' ,
+            'bonus_percentage_miner',
         ];
     }
 }
