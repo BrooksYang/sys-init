@@ -44,6 +44,7 @@
                                 <th>序号</th>
                                 <th>UID</th>
                                 <th>商户</th>
+                                <th>类型</th>
                                 <th>联系方式</th>
                                 <th>入金收益({{config('conf.currency_usdt')}})</th>
                                 <th>出金收益({{config('conf.currency_usdt')}})</th>
@@ -53,6 +54,7 @@
                                     <td>{{ ($key + 1) + ($merchants->currentPage() - 1) * $merchants->perPage() }}</td>
                                     <td>#{{ $item->id ?: '--' }}</td>
                                     <td title="{{ $item->username }}"><strong>{{ str_limit(@$item->username ?:'--',11) }}</strong></td>
+                                    <td>{{ @$merchantType[@$item->appKey->type]['name'] ??'--' }}</td>
                                     <td title="{{$item->phone ?:$item->email}}">{{ str_limit($item->phone ?:$item->email ?:'--' ,13) }}</td>
                                     <td>{{ floatval(@$item->income['in']) }}</td>
                                     <td>{{ floatval(@$item->income['out']) }}</td>

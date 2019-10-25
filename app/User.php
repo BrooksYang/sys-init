@@ -161,9 +161,14 @@ class User extends Authenticatable
     public function scopeMerchant()
     {
         // 排除模拟及测试账户
-        return self::where('is_merchant', self::MERCHANTS)
+        $merchants =  self::with('appKey:user_id,type')->where('is_merchant', self::MERCHANTS)
             ->whereNotIn('id', [26])
             ->get(['username','phone','id']);
+
+        return $merchants->each(function ($item, $key) {
+            $type = $item->appKey->type == UserAppKey::BC ? '(BC)' :'';
+            return $item->username .= $type;
+        });
     }
 
     /**

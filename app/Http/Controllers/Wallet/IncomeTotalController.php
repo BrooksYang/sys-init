@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Wallet;
 use App\Models\Currency;
 use App\Models\OTC\OtcOrder;
 use App\Models\OTC\OtcOrderQuick;
+use App\Models\OTC\UserAppKey;
 use App\Models\Wallet\WalletTransaction;
 use App\User;
 use Illuminate\Http\Request;
@@ -25,12 +26,15 @@ class IncomeTotalController extends Controller
         $start = trim($request->start,'');
         $end = trim($request->end,'');
 
+        // 商户类型
+        $merchantType = UserAppKey::TYPE;
+
         $searchMerchants = User::merchant();
 
         bcscale(config('app.bcmath_scale'));
 
         // 获取商户列表
-        $merchants = User::where('is_merchant', User::MERCHANTS)
+        $merchants = User::with(['appKey:user_id,type'])->where('is_merchant', User::MERCHANTS)
             ->whereNotIn('id', [26])
             ->when($search, function ($query) use ($search) {
                 $query->where('id', $search);
@@ -61,7 +65,7 @@ class IncomeTotalController extends Controller
         $total = bcadd($transFee, bcadd($inTotal, $outTotal));
         $statistics = compact('total', 'inTotal', 'outTotal', 'transFee');
 
-        return view('wallet.sysIncomeTotalIndex', compact('merchants', 'statistics','search','searchMerchants'));
+        return view('wallet.sysIncomeTotalIndex', compact('merchants','merchantType', 'statistics','search','searchMerchants'));
     }
 
     /**
