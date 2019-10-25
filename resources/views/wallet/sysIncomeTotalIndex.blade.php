@@ -60,7 +60,7 @@
                                     <td>{{ floatval(@$item->income['out']) }}</td>
                                 </tr>
                             @empty
-                                @include('component.noData', ['colSpan'=>6])
+                                @include('component.noData', ['colSpan'=>7])
                             @endforelse
                         </table>
 
