@@ -179,15 +179,16 @@ class UserOtcOrderController extends Controller
     {
         //bcscale(config('app.bcmath_scale'));
 
-        list($totalFieldAmount, $totalCashAmount, $totalFee)= [0, 0, 0];
+        list($totalFieldAmount, $totalCashAmount, $totalFee, $totalBonus)= [0, 0, 0, 0];
 
         foreach ($otcOrder ?? [] as $key => $item){
             $totalFieldAmount += $item->field_amount;
             $totalCashAmount += $item->cash_amount;
             $totalFee += $item->fee;
+            $totalBonus += $item->team_bonus;
         }
 
-        return compact('totalFieldAmount','totalCashAmount','totalFee');
+        return compact('totalFieldAmount','totalCashAmount','totalFee','totalBonus');
     }
 
     /**
