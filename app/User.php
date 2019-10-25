@@ -4,8 +4,11 @@ namespace App;
 
 use App\Models\Bonuses\Bonuses;
 use App\Models\KycLevel;
+use App\Models\OTC\MerchantUser;
+use App\Models\OTC\Trade;
 use App\Models\OTC\UserAppKey;
 use App\Models\UserFeeConfig;
+use App\Models\Wallet\Balance;
 use App\Utilities\EtherScan;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -67,6 +70,15 @@ class User extends Authenticatable
     const COMMON           = 0;
     const LEADER_LEVEL_ONE = 1;
 
+    // 账户类型，0普通用户，1领导人，2搬砖工
+    const TYPE_USER   = 0;
+    const TYPE_LEADER = 1;
+    const TYPE_TRADER = 2;
+
+    // 是否已缴纳保证金，0否，1是
+    const NOT_MARGIN = 0;
+    const IS_MARGIN  = 1;
+
     /**
      * 关联 App Key（商户获取App Key）
      *
@@ -118,6 +130,30 @@ class User extends Authenticatable
     }
 
     /**
+     * otc 广告
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function trades()
+    {
+        return $this->hasMany(Trade::class, 'user_id');
+    }
+
+    /**
+     * 获取用户钱包指定币种余额
+     *
+     * @param $currency
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function balance($currency)
+    {
+        return $this->hasOne(Balance::class, 'user_id')
+            ->where('user_wallet_currency_id', $currency)
+            ->select('id','user_wallet_balance','user_wallet_balance_freeze_amount')
+            ->first();
+    }
+
+    /**
      * 获取商户
      *
      * @return \Illuminate\Support\Collection
@@ -125,9 +161,14 @@ class User extends Authenticatable
     public function scopeMerchant()
     {
         // 排除模拟及测试账户
-        return self::where('is_merchant', self::MERCHANTS)
+        $merchants =  self::with('appKey:user_id,type')->where('is_merchant', self::MERCHANTS)
             ->whereNotIn('id', [26])
             ->get(['username','phone','id']);
+
+        return $merchants->each(function ($item, $key) {
+            $type = $item->appKey->type == UserAppKey::BC ? '(BC)' :'';
+            return $item->username .= $type;
+        });
     }
 
     /**
@@ -152,6 +193,7 @@ class User extends Authenticatable
     public static function getTradersInfo()
     {
         // 排除模拟账户-包含测试账户
+        //return self::with(['feeConfig','linkMerchant'])
         return self::with(['feeConfig'])
             ->where('kyc_level_id', KycLevel::ADVANCED)
             ->where('id', '>=' ,133)
@@ -168,6 +210,27 @@ class User extends Authenticatable
     {
         return self::where('leader_level', '>',0)
             ->get(['username','phone','email','id','pid','leader_level']);
+    }
+
+    /**
+     * 获取系统商户
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getMerchants()
+    {
+        return self::where('is_merchant', self::MERCHANTS)
+            ->get(['username','phone','email','id']);
+    }
+
+    /**
+     * 获取关联商户
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function linkMerchant()
+    {
+        return $this->hasMany(MerchantUser::class, 'trader_id');
     }
 
     /**

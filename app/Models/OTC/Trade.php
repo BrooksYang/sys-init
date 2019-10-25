@@ -119,4 +119,26 @@ class Trade extends Model
     {
         return floatval($value);
     }
+
+    /**
+     * 获取进行中的订单
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function pendingOrders()
+    {
+        return $this->hasMany(OtcOrder::class, 'advertisement_id')
+            ->where('status', '<', OtcOrder::RECEIVED);
+    }
+
+    /**
+     * 申诉中的订单
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function appealOrders()
+    {
+        return $this->hasMany(OtcOrder::class, 'advertisement_id')
+            ->whereIn('appeal_status', [OtcOrder::APPEALED, OtcOrder::APPEALING]);
+    }
 }

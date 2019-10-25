@@ -30,6 +30,7 @@
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
+                                        <input type="hidden" name="decConf" value=1>
                                         <div class="modal-body">
                                             <div class="row">
                                                 <div class="col-md-12">
@@ -52,7 +53,7 @@
 
                                                     <div class="col-md-6">
                                                         <br>
-                                                        <label>平台手续费分润比例（百分比）</label>
+                                                        <label>充值手续费平台分润比例（百分比）</label>
                                                         <input class="form-control input-medium" type="text" name="percentage_sys"
                                                                value="{{@$sysFeeConf->percentage_sys??old('percentage_sys')}}"
                                                                placeholder='请填写平台手续费分润比例'>
@@ -62,12 +63,21 @@
                                                     </div>
                                                     <div class="col-md-6">
                                                         <br>
-                                                        <label>领导人手续费分润比例（百分比）</label>
+                                                        <label>充值手续费领导人分润比例（百分比）</label>
                                                         <input class="form-control input-medium" type="text" name="percentage_leader"
                                                                value="{{@$sysFeeConf->percentage_leader??old('percentage_leader')}}"
                                                                placeholder='请填写领导人手续费分润比例'>
                                                         @if ($errors->defConf->has('percentage_leader'))
                                                             <p class="" style="color: red;"><strong>{{ $errors->defConf->first('percentage_leader') }}</strong></p>
+                                                        @endif
+                                                    </div>
+
+                                                    <div class="col-md-12" style='margin-top: 10px'>
+                                                        <label>领导人团队入金交易手续费（百分比）</label>
+                                                        <input class="form-control input-medium" type="text" name="team"
+                                                               value="{{@$sysFeeConf->team??old('team') }}" placeholder='请填写领导人团队交易手续费比例'>
+                                                        @if ($errors->defConf->has('team'))
+                                                            <p class="" style="color: red;"><strong>{{ $errors->defConf->first('team') }}</strong></p>
                                                         @endif
                                                     </div>
 
@@ -149,9 +159,30 @@
                    }
                    jQuery(this).remove();
                }
-           })
+           });
 
+            //全选,设置chheckbox name='all' tbody id=tb
+            $("input[name=all]").click(function (e) {
+                if (this.checked) {
+                    $(this).next().children().prop("checked", true);
+                } else {
+                    $(this).next().children().prop("checked", false);
+                }
+            });
 
         })(jQuery);
+
+        //单选 设置name=id
+        function userCheck(ths) {
+            if (ths.checked == false) {
+                $("input[name=all]:checkbox").prop('checked', false);
+            }
+            else {
+                var count = $("input[name='id[]']:checkbox:checked").length;
+                if (count == $("input[name='id[]']:checkbox").length) {
+                    $(this).prevAll().$("input[name=all]:checkbox").prop("checked", true);
+                }
+            }
+        }
     </script>
 @endsection

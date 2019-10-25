@@ -51,6 +51,9 @@ class UserAppKeyController extends Controller
         // 账号状态
         $status = User::STATUS;
 
+        // 账号类型
+        $type = UserAppKey::TYPE;
+
         // 通道状态
         $isOpen = UserAppKey::IS_OPEN;
 
@@ -74,7 +77,7 @@ class UserAppKeyController extends Controller
             })
             ->paginate(config('app.pageSize'));
 
-        return view('user.userAppKeyIndex', compact('search','status','isOpen','users'));
+        return view('user.userAppKeyIndex', compact('search','status','type','isOpen','users'));
     }
 
     /**
@@ -85,8 +88,9 @@ class UserAppKeyController extends Controller
     public function create()
     {
         $countries = $this->countries;
+        $types = UserAppKey::TYPE;
 
-        return view('user.merchantCreate', compact('countries'));
+        return view('user.merchantCreate', compact('countries','types'));
     }
 
     /**
@@ -122,11 +126,12 @@ class UserAppKeyController extends Controller
                 'user_id'     => $uid,
                 'access_key'  => Str::uuid(),
                 'secret_key'  => Str::uuid(),
+                'type'        => $request->type,
                 'ip'          => $ip,
                 'expired_at'  => $expiredAt,
-                'is_enabled'     => $request->is_enabled,
-                'start_time'       => $request->start_time,
-                'end_time'         => $request->end_time,
+                'is_enabled'  => $request->is_enabled,
+                'start_time'  => $request->start_time,
+                'end_time'    => $request->end_time,
                 'remark'      => $request->remark
             ]);
 
@@ -149,6 +154,7 @@ class UserAppKeyController extends Controller
         return view('user.merchantCreate',[
             'editFlag' => true,
             'countries' => $this->countries,
+            'types' => UserAppKey::TYPE,
             'user' => $user
         ]);
     }
@@ -182,6 +188,7 @@ class UserAppKeyController extends Controller
             $expiredAt = $ip ? null : Carbon::parse('+90 days')->toDateTimeString();
 
             // 更新appKey相关信息
+            //$userAppKey->type = $request->type;
             $userAppKey->ip = $ip;
             $userAppKey->expired_at = $expiredAt;
             $userAppKey->remark = $request->remark;

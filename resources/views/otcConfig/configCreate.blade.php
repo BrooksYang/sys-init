@@ -1,7 +1,7 @@
 @extends('entrance::layouts.default')
 
 @section('css-import')
-    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/entrance/js/range-slider/juery.range2dslider.css') }}" />
+    {{--<link rel="stylesheet" type="text/css" href="{{ asset('vendor/entrance/js/range-slider/juery.range2dslider.css') }}" />--}}
 @endsection
 
 @section('content')

@@ -34,6 +34,7 @@
                                 <th>电话</th>
                                 <th>邮箱</th>
                                 <th>账户状态</th>
+                                <th>类型</th>
 
                                 <th>API 访问密钥</th>
                                 <th>API 签名密钥</th>
@@ -60,6 +61,7 @@
                                         <span class="label label-{{ $status[$item->user->is_valid]['class'] }}">
                                             {{ $status[$item->user->is_valid]['name'] }}</span>
                                     </td>
+                                    <td>{{ $type[$item->type]['name'] }}</td>
 
                                     <td title="{{ $item->access_key ?: '' }}" id="copyAK{{$key}}" data-attr="{{$item->access_key}}">
                                         @include('component.copy', ['eleId'=>'copyAK'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
@@ -110,7 +112,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                @include('component.noData',['colSpan'=>15])
+                                @include('component.noData',['colSpan'=>16])
                             @endforelse
                         </table>
 

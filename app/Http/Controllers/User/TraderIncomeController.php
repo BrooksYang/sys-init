@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Models\Currency;
+use App\Models\OTC\MerchantUser;
+use App\Models\OTC\OtcConfig;
+use App\Models\OTC\Trade;
+use App\Models\OTC\UserAppKey;
 use App\Models\UserFeeConfig;
+use App\Models\Wallet\Balance;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class TraderIncomeController extends Controller
@@ -46,11 +53,13 @@ class TraderIncomeController extends Controller
         $html .= '<ul'.($flag?'':' id="browser" class="filetree"').'>';
         foreach ($traders as $key=>$trader) {
             $modal = $this->edit($trader, $key);
+            $confirm = $this->frozen($trader);
+            //$linkModal = $this->link($trader, $key);
             if ($trader->pid == $pid) {
                 $html .= '<li uid="' . $trader->id . '" pid="'.$trader->pid.'" path="' . @$trader->path .($trader->id==88?'" class="collapsable"':''). '">'.
                     ($trader->leader_level > 0 ? '<i class="fontello-flag" title="领导人"></i>':'').'
                     <a title="查看收益记录" href="'.url("user/trader/income/$trader->id").'" '.($pid == 0 ? "class='topOne'" : "")
-                    .'onclick="nodeShow('.$trader->id.')">' .($trader->username?:($trader->phone?:$trader->email)).'</a>'.$modal;
+                    .'onclick="nodeShow('.$trader->id.')">' .($trader->username?:($trader->phone?:$trader->email)).'</a>'.$confirm.$modal/*.$linkModal*/;
                 $html .= $this->tree($traders, $trader->id, true);
             }
         }
@@ -159,7 +168,8 @@ class TraderIncomeController extends Controller
     public function edit($trader, $key)
     {
        $modal = "
-        <a href=\"####\"  class=\"\" data-toggle=\"modal\" data-target=\"#exampleModalLong$key\"><i  title=\"编辑\" class=\"fa fa-edit\"></i></a >
+        <a href=\"####\"  class=\"\" data-toggle=\"modal\" data-target=\"#exampleModalLong$key\">
+        <i  title=\"编辑\" class=\"fa fa-edit\" style=\"color:#ccc\"></i></a >
         <!--Modal -->
         <div class=\"modal fade\" id =\"exampleModalLong$key\" tabindex =\"-1\" role = \"dialog\" 
             aria-labelledby =\"exampleModalLongTitle$key\" aria-hidden =\"true\" >
@@ -194,7 +204,7 @@ class TraderIncomeController extends Controller
                                     
                                     <div class=\"col-md-6\">
                                         <br>
-                                        <label>领导人手续费分润比例（百分比）</label>
+                                        <label>充值手续费领导人分润比例（百分比）</label>
                                         <input class=\"form-control input-medium\" type=\"text\" id='percentage_leader'
                                                name=\"percentage_leader\" 
                                                value=\"".(@$trader->feeConfig->percentage_leader??old('percentage_leader'))."\"  placeholder='请填写领导人手续费分润比例'>
@@ -202,19 +212,26 @@ class TraderIncomeController extends Controller
                                      
                                      <div class=\"col-md-6\">
                                         <br>
-                                        <label>平台手续费分润比例（百分比）</label>
+                                        <label>充值手续费平台分润比例（百分比）</label>
                                         <input class=\"form-control input-medium\" type=\"text\" id='percentage_sys'
                                                name=\"percentage_sys\"
                                                value=\"".(@$trader->feeConfig->percentage_sys??old('percentage_sys'))."\"  placeholder='请填写平台手续费分润比例'>
                                     </div>
                                     
+                                    <div class=\"col-md-12\" style='margin-top: 10px'>
+                                        <label>领导人团队入金交易手续费（百分比）</label>
+                                        <input class=\"form-control input-medium\" type=\"text\" id='team'
+                                               name=\"team\" value=\"".(@$trader->feeConfig->team??old('team'))."\"  
+                                               placeholder='领导人团队交易手续费比例' ".(@$trader->pid!=0?'disabled':'').">
+                                    </div>
+                                       
                                     <div class=\"col-md-12\">
                                         <label>所属领导人</label>
                                         <select name='leader_id' id='leader_id' class='form-control input-medium' ".(@$trader->pid==0?'disabled':'').">".
                                             (@$this->leader($trader))."
                                         </select>
                                     </div>
-                                   
+                             
                                 </div>
                             </div>
                         </div>
@@ -231,23 +248,120 @@ class TraderIncomeController extends Controller
     }
 
     /**
+     * 冻结账户
+     *
+     * @param $trader
+     * @return string
+     */
+    public function frozen($trader)
+    {
+        $user = User::findOrFail($trader->id);
+        list($icon, $title) = ['fontello-lock', '冻结'];
+        if (!$user->is_valid) {
+            list($icon, $title) = ['fontello-lock-open', '取消冻结'];
+        }
+
+        $confirm = "
+        <a href=\"####\" onclick=\"itemUpdate(".$trader->id.",'".url("user/account/frozen/$trader->id")."','is_valid',
+            ".($user->is_valid??0).",'用户的账户为<b><strong> ".$title." </strong></b> 状态', '"
+            .csrf_token()."', '".$title." - ".str_limit($trader->username ?: ($trader->phone ?: $trader->email), 30)."');\">
+            <i class=\"$icon\" style=\"color:#ccc\" title=\"".$title."账户\"></i></a>";
+
+        return $confirm;
+    }
+
+    /**
+     * 关联商户
+     *
+     * @param $trader
+     * @param $key
+     * @return string
+     */
+    public function link($trader, $key)
+    {
+        $modal = "
+        <a href=\"####\"  class=\"\" data-toggle=\"modal\" data-target=\"#exampleModalLink$key\">
+        <i  title=\"关联商户\" class=\"fontello-link\" style=\"color:#ccc\"></i></a >
+        <!--Modal -->
+        <div class=\"modal fade\" id =\"exampleModalLink$key\" tabindex =\"-1\" role = \"dialog\" 
+            aria-labelledby =\"exampleModalLinkTitle$key\" aria-hidden =\"true\" >
+            <div class=\"modal-dialog\" role = \"document\" >
+                <div class=\"modal-content\">
+                    <form action='". url('link/merchant').'/'.$trader->id ."' role=\"form\" method=\"POST\" id=\"chooseUser\">
+                        ".csrf_field() ."
+                        ".method_field('PATCH')."
+                        <div class=\"modal-header\" >
+                            <h5 class=\"modal-title\" id =\"exampleModalLinkTitle$key\" >
+                            商户关联 - ".str_limit($trader->username ?: ($trader->phone ?: $trader->email), 30)."</h5 >
+                            <button type =\"button\" class=\"close\" data-dismiss=\"modal\" aria-label =\"Close\" >
+                                <span aria-hidden =\"true\" >&times;</span >
+                            </button >
+                        </div >
+                        <div class=\"modal-body\" >
+                            <div class=\"row\">
+                                <div class=\"col-md-12\">
+                                    <div class=\"col-md-12\">
+                                        <label>选择关联商户</label>&nbsp;
+                                        ".(@$this->merchant($trader))."
+                                        </select>
+                                    </div>
+                             
+                                </div>
+                            </div>
+                        </div>
+                        <div class=\"modal-footer\" >
+                            <button type = \"button\" class=\"btn btn-secondary\" data-dismiss = \"modal\" > 关闭</button >
+                            <button type=\"submit\" class=\"btn btn-secondary\">确定</button>
+                        </div >
+                    </form>
+                </div>
+            </div>
+        </div>";
+
+        return $modal;
+    }
+
+    /**
      * 处理领导人信息
      *
      * @param $trader
-     * @param array $leaders
      * @return string
      */
-    public function leader($trader, $leaders=[1,2,3])
+    public function leader($trader)
     {
         $options = "<option value=''>请选择所属领导人</option>";
         $leaders = User::getLeaders();
-        //dd($leaders);
+
         foreach ($leaders as $key => $leader) {
             $options .= "<option value='$leader->id'".(@$trader->leader_id==$leader->id?'selected':'').">".
                 ($leader->username?:$leader->phone?:$leader->email)."(UID: #$leader->id)</option>";
         }
 
         return $options;
+    }
+
+    /**
+     * 选择商户
+     *
+     * @param $trader
+     * @return string
+     */
+    public function merchant($trader)
+    {
+        $inputs = "";
+        $merchants = UserAppKey::with('user')->select('user_id','type')->get();
+        $linkMerchants = @$trader->linkMerchant->pluck('merchant_id')->toArray();
+
+        foreach ($merchants as $key => $merchant) {
+            $inputs .= "<input type=\"checkbox\" name=\"id[]\" value=\"".$merchant->user_id."\" onclick=\"userCheck(this)\""
+                .(in_array($merchant->user_id, $linkMerchants)? 'checked' :'' ).">"
+                .(@$merchant->user->username ?:@$merchant->user->phone?:@$merchant->user->email)
+                . ($merchant->type == UserAppKey::BC ?'(BC商户)':'').'&nbsp;&nbsp;&nbsp;&nbsp;';
+        }
+
+        $checkbox = "<input type=\"checkbox\" name=\"all\">全选<div class=\"tb\">".$inputs." </div> ";
+
+        return $checkbox;
     }
 
     /**
@@ -260,6 +374,8 @@ class TraderIncomeController extends Controller
      */
     public function update(Request $request, $id)
     {
+        bcscale(config('app.bcmath_scale'));
+
         // 验证
         $validator = $this->traderIncomeValidator($request);
 
@@ -268,17 +384,50 @@ class TraderIncomeController extends Controller
         }
 
         $user = User::findOrFail($id);
+        $balance = Balance::lockForUpdate()->firstOrNew(['user_id'=>$user->id,'user_wallet_currency_id' => Currency::USDT]);
+        $margin = OtcConfig::leaderMargin();
 
-        \DB::transaction(function () use ($user, $request){
+        // 账户可用余额是否充足
+        if ($balance->user_wallet_balance <= $margin) {
+            return back()->withErrors(['marginError' => '账户余额不足-无法扣除押金'])->withInput();
+        }
+
+        \DB::transaction(function () use ($user, $balance, $margin, $request){
             // 领导人设置
-            if ($request->leader_level) {
+            if ($request->leader_level != $user->leader_level && $request->leader_level == User::LEADER_LEVEL_ONE) {
                 $user->leader_level = $user->pid == 0 ? $request->leader_level : User::COMMON; // 是否领导人
                 if ($user->pid == 0) {
                     $user->leader_id =  $user->id; // 领导人id
                 }
+
+                // 更新账户类型及保证金相关数据
+                $user->account_type = User::TYPE_LEADER;
+                $user->margin_amount = $margin;
+                $user->is_margin = User::IS_MARGIN;
+
+                if ($user->is_margin == User::NOT_MARGIN) {
+                    $balance->user_wallet_balance = bcsub($balance->user_wallet_balance, $margin);
+                    $balance->save();
+                }
             }
 
-            // 设置或修改所属领导人及相关信息
+            // 领导人取消
+            if ($request->leader_level != $user->leader_level && $request->leader_level = User::COMMON) {
+                $user->leader_level = User::COMMON; // 普通成员
+                $user->leader_id = User::COMMON;
+
+                // 更新保证金相关数据及账户类型
+                if ($user->is_margin == User::IS_MARGIN) {
+                    $balance->user_wallet_balance = bcadd($balance->user_wallet_balance, $user->margin_amount);
+                    $balance->save();
+                }
+
+                $user->account_type = User::TYPE_USER;
+                $user->margin_amount = 0;
+                $user->is_margin = User::NOT_MARGIN;
+            }
+
+            // 修改所属领导人及相关信息
             if ($request->leader_id && ($user->leader_id !=$request->leader_id)) {
                 $newLeader = User::find($request->leader_id);
                 $srcLeader = User::find($user->leader_id);
@@ -300,11 +449,14 @@ class TraderIncomeController extends Controller
             $user->save();
 
             // 手续费设置
-            $user->feeConfig()->updateOrCreate(['user_id' => $user->id], [
-                'percentage_total'  => $request->percentage_total ?:0,
-                'percentage_sys'    => $request->percentage_sys ?:0,
-                'percentage_leader' => $request->percentage_leader ?:0,
-            ]);
+            if ($request->percentage_total) {
+                $user->feeConfig()->updateOrCreate(['user_id' => $user->id], [
+                    'percentage_total'  => $request->percentage_total ?:0,
+                    'percentage_sys'    => $request->percentage_sys ?:0,
+                    'percentage_leader' => $request->percentage_leader ?:0,
+                    'team'              => $request->team ?:0,
+                ]);
+            }
         });
 
 
@@ -328,9 +480,10 @@ class TraderIncomeController extends Controller
 
         // 更新系统默认配置
         UserFeeConfig::updateOrCreate(['user_id' => 0], [
-            'percentage_total' => $request->percentage_total,
-            'percentage_sys'   => $request->percentage_sys,
-            'percentage_leader'=> $request->percentage_leader,
+            'percentage_total'  => $request->percentage_total,
+            'percentage_sys'    => $request->percentage_sys,
+            'percentage_leader' => $request->percentage_leader,
+            'team'              => $request->team,
         ]);
 
         return back();
@@ -344,15 +497,16 @@ class TraderIncomeController extends Controller
      */
     public function traderIncomeValidator($request)
     {
-        $leaderRule = $request->leader_level ? 'required' : 'nullable';
+        $leaderRule = $request->decConf ? 'required' : 'nullable';
 
         // 验证
         $validator = Validator::make($request->all(),[
-            'leader_level'       => 'sometimes|in:0,1',
-            'percentage_total'   => $leaderRule.'|numeric|min:0',
-            'percentage_sys'     => $leaderRule.'|numeric|min:0',
-            'percentage_leader'  => 'sometimes|min:0',
-            'leader_id'          => $leaderRule.'|min:0',
+            'leader_level'      => 'sometimes|in:0,1',
+            'percentage_total'  => $leaderRule.'|numeric|min:0',
+            'percentage_sys'    => $leaderRule.'|numeric|min:0',
+            'percentage_leader' => $leaderRule.'|min:0',
+            'team'              => $leaderRule.'|min:0',
+            'leader_id'         => 'sometimes|min:0',
         ]);
 
         // 钩子验证 - 币商及系统手续费设置
@@ -364,6 +518,113 @@ class TraderIncomeController extends Controller
         });
 
         return $validator;
+    }
+
+    /**
+     * 币商账户冻结（含普通用户、领导人、搬砖工）
+     *
+     * @param $uid
+     * @return mixed
+     * @throws \Throwable
+     */
+    public function accountFrozen($uid)
+    {
+        /*
+         * 3.1.1.1 搬砖工账号冻结
+            为确保交易安全，后台管理员可以冻结（禁用/停用）搬砖工账号，冻结后的影响如下：
+            停止派单，该搬砖工将无法收到来自用户的下单
+            资产冻结，搬砖工的资产账户将被冻结，无法发起提币操作
+            广告冻结，搬砖工将无法创建广告，购入或出售 USDT，已有广告强制下架
+            正在进行的交易订单，强制撤回（具体的撤回办法有待考虑）
+           3.1.1.2 领导人账号冻结
+            后台管理员可以对领导人账号进行冻结，冻结后的影响如下：
+            资产冻结，领导人资产账户被冻结，无法发起提币操作
+            停止交易，搬砖工购买 USDT 订单无法向该领导人派送
+            广告冻结，领导人无法创建新的广告，现有广告被强制下架，资产退回冻结账户
+            正在进行的交易订单，强制撤回（具体的撤回办法有待考虑）
+         */
+
+        // 搬砖工和领导人账户冻结或解冻 - 广告下架或上架
+        $user = User::findOrFail($uid);
+
+        // 取消冻结
+        if (!$user->is_valid) {
+
+            $user->is_valid = User::ACTIVE;
+            $user->save();
+            return  ['code' => 0, 'msg' => '已解冻'];
+        }
+
+        // 冻结账户
+        $trades = $user->trades()
+            ->whereIn('status', [Trade::ON_SALE])
+            ->pluck('id');
+
+        $frozen = DB::transaction(function () use ($user, $trades){
+
+            $success =  ['code' => 0, 'msg' => '已冻结'];
+
+            // 广告不存在
+            if ($trades->isEmpty()) {
+                $user->is_valid = User::FORBIDDEN;
+                $user->save();
+                return $success;
+            }
+
+            foreach ($trades as $key => $tradeId) {
+
+                $trade = $user->trades()
+                    ->whereIn('status', [Trade::ON_SALE])
+                    ->find($tradeId);
+
+                // 判断是否有正在进行中的订单
+                if ($trade->pendingOrders()->count()) {
+                    continue;
+                }
+
+                // 广告下架
+                $trade->status = Trade::OFF;
+                $trade->save();
+
+                $user->is_valid = User::FORBIDDEN;
+                $user->save();
+            }
+
+            return $success;
+        });
+
+        return  $frozen;
+    }
+
+    /**
+     * 关联商户
+     *
+     * @param $uid
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Throwable
+     */
+    public function linkMerchant($uid, Request $request)
+    {
+        $user = User::findOrFail($uid);
+        $merchantIds = $request->id ?? [];
+
+        DB::transaction(function () use ($user, $merchantIds){
+            $links = $user->linkMerchant()->pluck('merchant_id');
+
+            // 取消所有关联
+            if ($links) {
+                $user->linkMerchant()->delete();
+            }
+
+            // 生成关联
+            foreach ($merchantIds as $merchantId) {
+                $user->linkMerchant()->create(['merchant_id' => $merchantId]);
+            }
+
+        });
+
+        return back();
     }
 
 }

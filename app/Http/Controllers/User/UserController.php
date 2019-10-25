@@ -8,6 +8,7 @@ use App\Models\KycLevel;
 use App\Models\LegalCurrency;
 use App\Models\OTC\OtcOrder;
 use App\Models\OTC\OtcOrderQuick;
+use App\Models\Wallet\Balance;
 use App\Models\Wallet\WalletTransaction;
 use App\User;
 use Illuminate\Http\Request;
@@ -295,8 +296,12 @@ class UserController extends Controller
         $contribution  = bcadd(bcadd($depositFee,$sellFee),$outIncome);
         $contributionRmb = bcmul($contribution, LegalCurrency::rmbRate());
 
+        // 累计团队红利
+        $balance = Balance::where('user_id', $uid)->currency(Currency::USDT)->first();
+        $bonusTotal = @$balance->bonus_total;
+
         return compact('deposit','withdraw','sell','out','depositFee','sellFee','outIncome',
-            'contribution','contributionRmb');
+            'contribution','contributionRmb','bonusTotal');
     }
 
 }
