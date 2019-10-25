@@ -650,27 +650,45 @@ class HandlerController extends Controller
             $buyerId = $order->type == OtcOrder::BUY ? $order->user_id : $order->from_user_id;
             $sellerId = $order->type == OtcOrder::BUY ? $order->from_user_id : $order->user_id;
 
-            // 是否为商户下用户(商户下用户需更新商户钱包)
+            // 获取购买者及所属商户 - 是否为商户下用户(商户下用户需更新商户钱包)
             $buyer = User::find($buyerId);
-            $merchant = @$buyer->merchantAppKey->user;
-            $buyerId = $merchant->id ?? $buyer->id;
+            $appKey = $buyer->merchantAppKey;
+            $merchant = @$appKey->user;
 
-            $balanceBuyer = Balance::lockForUpdate()->firstOrCreate(['user_id' => $buyerId, 'user_wallet_currency_id' => $order->currency_id]);
+            // 若为商户旗下用户，则购买者为商户
+            $buyer = $merchant ?: $buyer;
+
+            $balanceBuyer = Balance::lockForUpdate()->firstOrCreate(['user_id' => $buyer->id, 'user_wallet_currency_id' => $order->currency_id]);
             $balanceSeller = Balance::lockForUpdate()->firstOrCreate(['user_id' => $sellerId, 'user_wallet_currency_id' => $order->currency_id]);
 
-            // 恢复广告方钱包冻结或可用余额（所恢复数额为订单交易数额）
-            if ($trade->status == Trade::CANCELLED) {
-                // 原广告已下架
-                $balanceSeller->user_wallet_balance = bcadd($balanceSeller->user_wallet_balance, $order->field_amount);
-            }else{
-                // 原广告进行中或已完成重置为进行中
-                $balanceSeller->user_wallet_balance_freeze_amount = bcadd($balanceSeller->user_wallet_balance_freeze_amount, $order->field_amount);
-            }
-            $balanceSeller->save();
+            // 出售者
+            $seller = User::find($sellerId);
 
-            // 扣除商户钱包可用余额(所扣数额为实际到账金额)
+            // 领导人回购BC订单，扣除领导人所获收益
+            if (@$seller->appKey->type == UserAppKey::BC && $order->type == OtcOrder::SELL) {
+                $balanceBuyer->bonus_total = bcsub($balanceBuyer->bonus_total, $order->team_bonus);
+            }
+
+            // 购买者扣除可用余额
             $balanceBuyer->user_wallet_balance = bcsub($balanceBuyer->user_wallet_balance, $order->final_amount);
             $balanceBuyer->save();
+
+            // BC盘入金订单 - 领导人与搬砖工的收益不再直接结算
+            /*if (@$appKey->type == UserAppKey::BC && $order->type == OtcOrder::BUY && $order->team_bonus_status == OtcOrder::BONUS_PAID) {
+
+                // 恢复领导人可用余额
+                $leaderBalance = Balance::getUsdtBalance($seller->leader_id);
+                $leaderBalance->user_wallet_balance = bcadd($leaderBalance->user_wallet_balance, $order->team_bonus);
+                $leaderBalance->save();
+
+                // 扣除搬砖工所获收益（由领导人支付）
+                $balanceSeller->user_wallet_balance = bcsub($balanceSeller->user_wallet_balance, $order->team_bonus);
+                $balanceSeller->bonus_total = bcsub($balanceSeller->bonus_total, $order->team_bonus);
+            }*/
+
+            // 出售者增加可用金额（兼容BC盘-领导人回购，BC商户额外支出的收益部分）
+            $balanceSeller->user_wallet_balance = bcadd($balanceSeller->user_wallet_balance, max($order->field_amount, $order->final_amount));
+            $balanceSeller->save();
         });
 
         return '已强制恢复完成交易的订单';

@@ -78,6 +78,11 @@ class OtcOrder extends Model
     const TRADER_FINISHED = 0;
     const LEADER_FINISHED = 1;
 
+    // 团队红利结算状态，0无红利，1待结算，2已结算
+    const BONUS_NONE   = 0;
+    const BONUS_UNPAID = 1;
+    const BONUS_PAID   = 2;
+
     /**
      * 广告所有者
      *
