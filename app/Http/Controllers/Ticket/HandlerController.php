@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Ticket;
 
 use App\Http\Resources\OtcOrderResource;
+use App\Models\Currency;
 use App\Models\OTC\OtcOrder;
 use App\Models\OTC\OtcOrderQuick;
 use App\Models\OTC\OtcTicket;
@@ -540,6 +541,9 @@ class HandlerController extends Controller
 
             bcscale(config('app.bcmath_scale'));
 
+            $seller = $buyer = User::find($order->user_id);
+
+
             /**
              * ***************************************
              * 币商买单，用户卖，则需解冻用户相应金额
@@ -549,7 +553,6 @@ class HandlerController extends Controller
             if ($order->type == OtcOrder::SELL) {
 
                 // 是否为商户下用户(商户下用户需更新商户钱包)
-                $seller = User::find($order->user_id);
                 $merchant = @$seller->merchantAppKey->user;
                 $sellerId = $merchant->id ?? $seller->id;
 
@@ -557,8 +560,10 @@ class HandlerController extends Controller
                     ->where('user_wallet_currency_id', $order->currency_id)
                     ->lockForUpdate()
                     ->first();
-                $balance->user_wallet_balance_freeze_amount = bcsub($balance->user_wallet_balance_freeze_amount, $order->field_amount);
-                $balance->user_wallet_balance = bcadd($balance->user_wallet_balance, $order->field_amount);
+
+                // 解冻金额调整为final_amount - 兼容普通盘和BC盘 (BC盘领导人回购的收益部分 final_amount=field_amount-fee）
+                $balance->user_wallet_balance_freeze_amount = bcsub($balance->user_wallet_balance_freeze_amount, $order->final_amount);
+                $balance->user_wallet_balance = bcadd($balance->user_wallet_balance, $order->final_amount);
                 $balance->save();
             }
 
@@ -568,6 +573,17 @@ class HandlerController extends Controller
              * 币商卖单，用户买，则需解冻广告方相应金额
              * ***************************************
              */
+
+            // 若为BC盘、用户买单、同时需解冻领导人相应金额(领导人支付收益给搬砖工)
+            if ($order->type == OtcOrder::BUY && @$buyer->merchantAppKey->type == UserAppKey::BC && $order->team_bonus > 0) {
+                $tradeUser = User::find($order->from_user_id);
+                $leaderBalance = $tradeUser->balance(Currency::USDT);
+
+                // 解冻余额
+                $leaderBalance->user_wallet_balance = bcadd($leaderBalance->user_wallet_balance, $order->team_bonus);
+                $leaderBalance->user_wallet_balance_freeze_amount = bcsub($leaderBalance->user_wallet_balance_freeze_amount, $order->team_bonus);
+                $leaderBalance->save();
+            }
 
             // 取消订单
             $order->status = OtcOrder::CANCELED;
