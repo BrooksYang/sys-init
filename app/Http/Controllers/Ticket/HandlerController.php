@@ -577,7 +577,7 @@ class HandlerController extends Controller
             // 若为BC盘、用户买单、同时需解冻领导人相应金额(领导人支付收益给搬砖工)
             if ($order->type == OtcOrder::BUY && @$buyer->merchantAppKey->type == UserAppKey::BC && $order->team_bonus > 0) {
                 $tradeUser = User::find($order->from_user_id);
-                $leaderBalance = $tradeUser->balance(Currency::USDT);
+                $leaderBalance = Balance::getUsdtBalance($tradeUser->leader_id);
 
                 // 解冻余额
                 $leaderBalance->user_wallet_balance = bcadd($leaderBalance->user_wallet_balance, $order->team_bonus);

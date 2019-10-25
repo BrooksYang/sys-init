@@ -22,6 +22,17 @@ class Balance extends Model
     protected $guarded = [];
 
     /**
+     * 获取usdt余额
+     *
+     * @param $userId
+     * @return mixed
+     */
+    public static function getUsdtBalance($userId)
+    {
+        return self::lockForUpdate()->getBalance($userId, Currency::USDT);
+    }
+
+    /**
      * 获取币种信息
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
