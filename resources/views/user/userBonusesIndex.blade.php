@@ -16,7 +16,7 @@
 
                     {{-- Title --}}
                     <h3 class="box-title"><i class="fontello-doc"></i>
-                        <span>用户分润收益记录 -（UID: {{ $user->id }} | {{$user->username?:$user->phone?:$user->email}}）</span>
+                        <span>用户层级分润收益记录 -（UID: {{ $user->id }} | {{$user->username?:$user->phone?:$user->email}}）</span>
                     </h3>
                 </div>
 

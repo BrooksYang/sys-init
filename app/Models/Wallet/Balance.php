@@ -33,6 +33,18 @@ class Balance extends Model
     }
 
     /**
+     * 筛选币种
+     *
+     * @param $query
+     * @param $currency
+     * @return mixed
+     */
+    public function scopeCurrency($query, $currency)
+    {
+        return $query->where('user_wallet_currency_id', $currency);
+    }
+
+    /**
      * 获取币种信息
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

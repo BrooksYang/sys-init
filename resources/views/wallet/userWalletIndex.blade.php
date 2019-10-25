@@ -40,6 +40,7 @@
                                 <th>币种</th>
                                 <th>余额</th>
                                 <th>冻结金额</th>
+                                <th>团队累计红利</th>
                                 <th>误差金额</th>
                                 <th>操作</th>
                             </tr>
@@ -55,6 +56,7 @@
                                     </td>
                                     <td title="{{number_format($item->user_wallet_balance, 8)}}">{{ floatval($item->user_wallet_balance)}}</td>
                                     <td title="{{number_format($item->user_wallet_balance_freeze_amount,8)}}">{{ floatval($item->user_wallet_balance_freeze_amount) }}</td>
+                                    <td title="{{number_format($item->bonus_total,10)}}">{{ floatval($item->bonus_total) }}</td>
                                     <td title="{{number_format($item->lost,10)}}">{{ floatval($item->lost) }}</td>
                                     <td>
                                         <a href="{{ url("user/wallet/$item->id/edit") }}">

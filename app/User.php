@@ -188,7 +188,8 @@ class User extends Authenticatable
     public static function getTradersInfo()
     {
         // 排除模拟账户-包含测试账户
-        return self::with(['feeConfig','linkMerchant'])
+        //return self::with(['feeConfig','linkMerchant'])
+        return self::with(['feeConfig'])
             ->where('kyc_level_id', KycLevel::ADVANCED)
             ->where('id', '>=' ,133)
             ->orWhereIn('id', [88,89,122])

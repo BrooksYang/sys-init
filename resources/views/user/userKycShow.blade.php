@@ -58,6 +58,7 @@
                                 <p class="">
                                     <strong>【累计入金交易量】</strong>{{ number_format(@$transaction['sell']->amount,8) }}&nbsp;&nbsp;&nbsp;&nbsp;
                                     <strong>【累计出金交易量】</strong>{{ number_format(@$transaction['out']->amount,8)}}&nbsp;&nbsp;
+                                    <strong>【累计团队红利】</strong>{{ number_format(@$transaction['bonusTotal']->amount,8)}}
                                 </p>
                                 <p class="">
                                     <strong>【累计充值手续费】</strong>{{ number_format(@$transaction['depositFee'],8) }}&nbsp;&nbsp;&nbsp;&nbsp;
