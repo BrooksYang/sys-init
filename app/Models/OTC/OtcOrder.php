@@ -83,6 +83,13 @@ class OtcOrder extends Model
     const BONUS_UNPAID = 1;
     const BONUS_PAID   = 2;
 
+    //  团队红利结算状态文本
+    const TEAM_BONUS_STATUS = [
+        self::BONUS_NONE   => '无红利',
+        self::BONUS_UNPAID => '待结算',
+        self::BONUS_PAID   => '已结算',
+    ];
+
     /**
      * 广告所有者
      *
@@ -237,6 +244,17 @@ class OtcOrder extends Model
      * @return float
      */
     public function getFinalAmountAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 格式化数据
+     *
+     * @param $value
+     * @return float
+     */
+    public function getTeamBonusAttribute($value)
     {
         return floatval($value);
     }

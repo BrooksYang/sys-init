@@ -124,7 +124,9 @@
                                 <th>状态</th>
                                 <th>申诉</th>
                                 <th>商户订单</th>
-                                <th>回调</th>
+                               {{-- <th>回调</th>--}}
+                                <th title="团队红利">红利</th>
+                                <th title="团队红利结算状态">结算</th>
                                 <th>广告商</th>
                                 <th>创建时间 &nbsp;&nbsp;<a href="{{ url('order/otc')}}?orderC=desc">
                                         <i class="fa fa-sort-amount-desc" style="color:{{ Request::get('orderC') != 'desc' ? !Request::get('orderC') ? '' : 'gray' :'' }}" title="降序"></i></a> &nbsp;
@@ -154,8 +156,10 @@
                                     <td><span class="{{ $item->appeal_status ? "label label-".$appealStatus[$item->appeal_status]['class'] : '' }}">
                                             {{ $appealStatus[$item->appeal_status]['name'] ?? '--'}}</span>
                                     </td>
-                                    <td>{{ $item->merchant_order_id ?:'--'}}</td>
-                                    <td title="{{ $item->merchant_callback }}"><i class="fontello-globe-1"></i></td>
+                                    <td title="{{$item->merchant_order_id ?:'--'}}">{{ $item->merchant_order_id ?:'--'}}</td>
+                                    {{--<td title="{{ $item->merchant_callback }}"><i class="fontello-globe-1"></i></td>--}}
+                                    <td title="{{number_format($item->team_bonus, 8) }}">{{ $item->team_bonus?:'--' }}</td>
+                                    <td>{{ $item->team_bonus_status ?$teamBonusStatus[$item->team_bonus_status]:'--' }}</td>
                                     <td title="广告-{{ $item->advertisement_id }} | 广告商UID-{{ $item->from_user_id }} | {{ @$item->tradeOwner->username ?: @$item->tradeOwner->phone }}">
                                         {{ str_limit(@$item->tradeOwner->username ?: @$item->tradeOwner->phone,11) }}
                                     </td>
@@ -185,7 +189,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="19" class="text-center">
+                                <tr><td colspan="20" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
