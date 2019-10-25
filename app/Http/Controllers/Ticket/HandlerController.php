@@ -575,7 +575,8 @@ class HandlerController extends Controller
              */
 
             // 若为BC盘、用户买单、同时需解冻领导人相应金额(领导人支付收益给搬砖工)
-            if ($order->type == OtcOrder::BUY && @$buyer->merchantAppKey->type == UserAppKey::BC && $order->team_bonus > 0) {
+            // 领导人与搬砖工的收益不再直接结算(team_bonus_status)
+            /*if ($order->type == OtcOrder::BUY && @$buyer->merchantAppKey->type == UserAppKey::BC && $order->team_bonus_status == OtcOrder::BONUS_PAID) {
                 $tradeUser = User::find($order->from_user_id);
                 $leaderBalance = Balance::getUsdtBalance($tradeUser->leader_id);
 
@@ -583,7 +584,7 @@ class HandlerController extends Controller
                 $leaderBalance->user_wallet_balance = bcadd($leaderBalance->user_wallet_balance, $order->team_bonus);
                 $leaderBalance->user_wallet_balance_freeze_amount = bcsub($leaderBalance->user_wallet_balance_freeze_amount, $order->team_bonus);
                 $leaderBalance->save();
-            }
+            }*/
 
             // 取消订单
             $order->status = OtcOrder::CANCELED;
@@ -673,7 +674,7 @@ class HandlerController extends Controller
             $balanceBuyer->user_wallet_balance = bcsub($balanceBuyer->user_wallet_balance, $order->final_amount);
             $balanceBuyer->save();
 
-            // BC盘入金订单 - 领导人与搬砖工的收益不再直接结算
+            // BC盘入金订单 - 领导人与搬砖工的收益不再直接结算(team_bonus_status)
             /*if (@$appKey->type == UserAppKey::BC && $order->type == OtcOrder::BUY && $order->team_bonus_status == OtcOrder::BONUS_PAID) {
 
                 // 恢复领导人可用余额
