@@ -435,6 +435,7 @@ class TraderIncomeController extends Controller
                 $user->leader_id = $request->leader_id;
                 $user->pid = $request->leader_id;
                 $user->depth = $newLeader->depth + 1;
+                $user->account_type = User::TYPE_TRADER;
 
                 // 原领导人存在 - 即修改所属领导人则更新其邀请人数
                 if ($srcLeader) {
