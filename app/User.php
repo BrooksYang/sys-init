@@ -166,7 +166,7 @@ class User extends Authenticatable
             ->get(['username','phone','id']);
 
         return $merchants->each(function ($item, $key) {
-            $type = $item->appKey->type == UserAppKey::BC ? '(BC)' :'';
+            $type = @$item->appKey->type == UserAppKey::BC ? '(BC)' :'';
             return $item->username .= $type;
         });
     }
