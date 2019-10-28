@@ -1118,7 +1118,7 @@ class HomeController extends Controller
             $find = User::find($merchant->id);
 
             // 商户旗下用户id
-            $userIds = $find->appKey->users()->pluck('id')->toArray();
+            $userIds = @$find->appKey->users()->pluck('id')->toArray();
             $merchantUsers[$merchant->id] = $userIds;
         }
 
