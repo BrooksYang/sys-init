@@ -37,10 +37,13 @@ class UserController extends Controller
         // 认证等级
         $kycLevels = KycLevel::all();
 
+        // 账户类型
+        $accountType = User::ACCOUNT_TYPE;
+
         //用户名-电话检索
         $search = trim($request->search,'');
-        $filterObj = trim($request->filterObj,'');
-        $filter = trim($request->filter,'');
+        $filterType= trim($request->filterType,'');
+        $filterVerify= trim($request->filterVerify,'');
         $orderC = trim($request->orderC,'');
 
         $user = DB::table('users as u')
@@ -49,8 +52,11 @@ class UserController extends Controller
                     ->orwhere('email','like',"%$search%")
                     ->orwhere('phone', 'like', "%$search%");
             })
-            ->when($filterObj, function ($query) use ($filterObj,$filter){
-                return $query->where($filterObj, $filter);
+            ->when($filterType, function ($query) use ($filterType){
+                return $query->where('account_type', $filterType);
+            })
+            ->when($filterVerify, function ($query) use ($filterVerify){
+                return $query->where('verify_status', $filterVerify);
             })
             ->when($orderC, function ($query) use ($orderC) {
                 return $query->orderBy('created_at', $orderC);
@@ -59,7 +65,7 @@ class UserController extends Controller
             })
             ->paginate(USER_LIST_SIZE );
 
-        return view('user.userIndex', compact('userStatus', 'kycLevels', 'search','user'));
+        return view('user.userIndex', compact('userStatus', 'kycLevels', 'accountType','search','user'));
     }
 
     /**
@@ -190,6 +196,9 @@ class UserController extends Controller
         // 认证等级
         $kycLevels = KycLevel::all();
 
+        // 账户类型
+        $accountType = User::ACCOUNT_TYPE;
+
         $user = DB::table('users as u')
             ->where('verify_status',2)
             ->when($search, function ($query) use ($search){
@@ -204,7 +213,7 @@ class UserController extends Controller
             })
             ->paginate(USER_LIST_SIZE );
 
-        return view('user.userIndex', compact('userStatus', 'search', 'kycLevels','user'));
+        return view('user.userIndex', compact('userStatus', 'search', 'kycLevels','accountType','user'));
     }
 
     /**

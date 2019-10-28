@@ -18,44 +18,15 @@
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
                         </form>
-                        {{--筛选领导人--}}
-                        <div style="display: inline-block;position: relative">
-                            <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="按类别筛选用户">
-                                <span class="box-btn"><i class="fontello-menu" title="按类别筛选用户"></i></span>
-                            </a>
-                            <ul role="menu" class="dropdown-menu pull-right">
-                                <li>
-                                    <a href="{{ url('user/manage') }}">全部
-                                        {!! !Request::get('filterObj') || !Request::get('filter') ? Request::path() == 'user/manage/pending' ? '' : '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ url('user/manage') }}?filterObj=leader_level&filter={{ \App\User::LEADER_LEVEL_ONE }}">领导人
-                                        {!!  Request::get('filterObj') && Request::get('filter') == 1 ? '&nbsp;<i class="fa fa-check txt-info"></i>' :
-                                             Request::path() == 'user/manage/pending' &&  Request::get('filterObj') && Request::get('filter') ==1 ? '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
 
-                        <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="筛选认证用户">
-                            <span class="box-btn"><i class="fa fa-filter" title="筛选认证用户"></i></span>
-                        </a>
-                        <ul role="menu" class="dropdown-menu">
-                            <li>
-                                <a href="{{ url('user/manage') }}">全部
-                                    {!! !Request::get('filterObj') || !Request::get('filter') ? Request::path() == 'user/manage/pending' ? '' : '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
-                                </a>
-                            </li>
-                        @foreach($userStatus['verify_status'] as $key=>$item)
-                            <li>
-                                <a href="{{ url('user/manage') }}?filterObj=verify_status&filter={{$key}}">{{$item['name']}}
-                                {!!  Request::get('filterObj') && Request::get('filter') == $key ? '&nbsp;<i class="fa fa-check txt-info"></i>' :
-                                     Request::path() == 'user/manage/pending' && $key ==2 ? '&nbsp;<i class="fa fa-check txt-info"></i>' : '' !!}
-                                </a>
-                            </li>
-                        @endforeach
-                        </ul>
+                        @if(Request::path() == 'user/manage')
+                            {{--筛选认证状态--}}
+                            @include('component.filter', ['url'=>url('user/manage'), 'filter'=>'filterVerify','filters'=>$userStatus['verify_status'],
+                                'title'=>'筛选认证用户', 'icon'=>'fontello-menu', 'isInline'=>true])
+                            {{--筛选领导人--}}
+                            @include('component.filter', ['url'=>url('user/manage'),'filter'=>'filterType','filters'=>$accountType,
+                                'title'=>'筛选领导人','isInline'=>true, 'mr'=>12])
+                        @endif
                     </div>
 
                     {{-- Title --}}
@@ -76,7 +47,7 @@
                                 <th>邮箱</th>
                                 <th>身份信息</th>
                                 <th>证件及交易</th>
-                            <th>领导人</th>
+                            <th>类型</th>
                             <th>邀请码</th>
                             <th>邀请人数</th>
                                 {{--<th>真实姓名</th>
@@ -147,7 +118,7 @@
                                         </div>
                                     </td>
                                     <td title="其它证件信息"><a href="{{ url("user/manage/$item->id") }}?uri={{ Request::getRequestUri() }}">详情</a></td>
-                                    <td>{{ !$item->leader_level ? '否' : '是' }}</td>
+                                    <td>{{ @$accountType[$item->account_type]['name'] }}</td>
                                     <td>{{ $item->invite_code ?:'--' }}</td>
                                     <td>{{ $item->invite_count }}</td>
                                     <td><span class="label label-{{ $userStatus['email_phone_status'][$item->email_status]['class'] }}">

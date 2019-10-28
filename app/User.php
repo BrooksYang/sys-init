@@ -75,6 +75,12 @@ class User extends Authenticatable
     const TYPE_LEADER = 1;
     const TYPE_TRADER = 2;
 
+    const ACCOUNT_TYPE = [
+        self::TYPE_USER    => ['name' => '普通用户', 'class' => ''],
+        self::TYPE_LEADER  => ['name' => '领导人',   'class' => ''],
+        self::TYPE_TRADER  => ['name' => '搬砖工',   'class' => '']
+    ];
+
     // 是否已缴纳保证金，0否，1是
     const NOT_MARGIN = 0;
     const IS_MARGIN  = 1;

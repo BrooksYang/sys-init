@@ -1,7 +1,7 @@
 
 {{-- 筛选--}}
 @if($isInline ?? '')
-    <div style="display: inline-block;position: relative">
+    <div style="display: inline-block;position: relative;margin-right:{{ $mr ?? 0 }}px;">
 @endif
 <a data-toggle="dropdown" class="dropdown-toggle" type="button" title="{{ $title ?? '筛选' }}">
     <span class="box-btn"><i class=" {{ $icon ?? 'fa fa-filter' }}" title="{{ $title ?? '筛选'}}"></i></span>
