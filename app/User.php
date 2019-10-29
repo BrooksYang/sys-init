@@ -232,11 +232,11 @@ class User extends Authenticatable
     /**
      * 获取关联商户
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\belongsToMany
      */
     public function linkMerchant()
     {
-        return $this->hasMany(MerchantUser::class, 'trader_id');
+        return $this->belongsToMany(UserAppKey::class,'merchant_trader','user_id','merchant_id');
     }
 
     /**

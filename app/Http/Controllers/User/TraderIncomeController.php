@@ -350,7 +350,7 @@ class TraderIncomeController extends Controller
     {
         $inputs = "";
         $merchants = UserAppKey::with('user')->select('user_id','type')->get();
-        $linkMerchants = @$trader->linkMerchant->pluck('merchant_id')->toArray();
+        $linkMerchants = @$trader->linkMerchant->pluck('user_id')->toArray();
 
         foreach ($merchants as $key => $merchant) {
             $inputs .= "<input type=\"checkbox\" name=\"id[]\" value=\"".$merchant->user_id."\" onclick=\"userCheck(this)\""
@@ -611,17 +611,19 @@ class TraderIncomeController extends Controller
         $merchantIds = $request->id ?? [];
 
         DB::transaction(function () use ($user, $merchantIds){
-            $links = $user->linkMerchant()->pluck('merchant_id');
+            $links = $user->linkMerchant->pluck('user_id');
 
             // 取消所有关联
             if ($links) {
-                $user->linkMerchant()->delete();
+                //$user->linkMerchant()->delete();
+                $user->linkMerchant()->detach();
             }
 
             // 生成关联
-            foreach ($merchantIds as $merchantId) {
-                $user->linkMerchant()->create(['merchant_id' => $merchantId]);
-            }
+            /*foreach ($merchantIds as $merchantId) {
+                $user->linkMerchant->create(['merchant_id' => $merchantId]);
+            }*/
+            $user->linkMerchant()->attach($merchantIds);
 
         });
 
