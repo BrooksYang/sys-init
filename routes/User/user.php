@@ -27,6 +27,9 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     // 修改商户账户状态
     Route::patch('change/merchant/status/{id}', 'User\UserAppKeyController@changeAccountStatus');
 
+    // 设置或取消用户账户类型为商户
+    Route::patch('user/set/merchant/{id}', 'User\UserAppKeyController@setMerchant');
+
 });
 
 /*

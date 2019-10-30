@@ -48,6 +48,7 @@
                                 <th>身份信息</th>
                                 <th>证件及交易</th>
                             <th>类型</th>
+                            <th>商户</th>
                             <th>邀请码</th>
                             <th>邀请人数</th>
                                 {{--<th>真实姓名</th>
@@ -119,6 +120,7 @@
                                     </td>
                                     <td title="其它证件信息"><a href="{{ url("user/manage/$item->id") }}?uri={{ Request::getRequestUri() }}">详情</a></td>
                                     <td>{{ @$accountType[$item->account_type]['name'] }}</td>
+                                    <td>{{ $item->is_merchant ? '是' : '否' }}</td>
                                     <td>{{ $item->invite_code ?:'--' }}</td>
                                     <td>{{ $item->invite_count }}</td>
                                     <td><span class="label label-{{ $userStatus['email_phone_status'][$item->email_status]['class'] }}">
@@ -148,7 +150,8 @@
                                             <i class="fontello-ok" title="认证通过"></i>
                                         </a>
                                         <!-- Modal -->
-                                        <div class="modal fade" id="exampleModalLongVerify{{$key+1}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongVerify{{$key+1}}" aria-hidden="true">
+                                        <div class="modal fade" id="exampleModalLongVerify{{$key+1}}" tabindex="-1" role="dialog"
+                                             aria-labelledby="exampleModalLongVerify{{$key+1}}" aria-hidden="true">
                                             <div class="modal-dialog" role="document">
                                                 <form role="form" method="POST" action="{{ url("user/manage/$item->id") }}">
                                                     {{ csrf_field() }}
@@ -199,6 +202,13 @@
                                                 '用户账号为<b><strong> 正常 </strong></b> 状态',
                                                 '{{ csrf_token() }}', '正常');"> <i class="fontello-lock-open-filled" title="解禁"></i></a>
                                         @endif
+
+                                        <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
+                                                '{{ url("user/set/merchant/$item->id") }}','is_merchant',0,
+                                                '用户账号类型为<b><strong> {{ $item->is_merchant==\App\User::NOT_MARGIN ? '商户' : '非商户' }} </strong></b> ',
+                                                '{{ csrf_token() }}', '{{ $item->is_merchant==\App\User::NOT_MARGIN ? "设置" : "取消" }}');">
+                                                    <i class="fa fa-gear" title="设置或取消商户"></i></a>
+
                                         <a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
                                                 '{{ url("user/manage/$item->id") }}',
                                                 '{{ csrf_token() }}');">
@@ -207,7 +217,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="18" class="text-center">
+                                <tr><td colspan="19" class="text-center">
                                     <div class="noDataValue">
                                         暂无数据
                                     </div>

@@ -184,12 +184,12 @@ class UserAppKeyController extends Controller
             $user->save();
 
             // 绑定ip后系统生成的key永久有效，未绑定ip过期时间为90天
-            $ip = $request->ip ? json_encode(explode(',', $request->ip)) : null;
-            $expiredAt = $ip ? null : Carbon::parse('+90 days')->toDateTimeString();
+            $ip = $request->ip ? json_encode(explode(',', $request->ip)) : [];
+            $expiredAt = $ip ? null : ($request->expired_at ?: Carbon::parse('+90 days')->toDateTimeString());
 
             // 更新appKey相关信息
             //$userAppKey->type = $request->type;
-            $userAppKey->ip = $ip;
+            $userAppKey->ip = $ip ?: '[]';
             $userAppKey->expired_at = $expiredAt;
             $userAppKey->remark = $request->remark;
             $userAppKey->is_enabled = $request->is_enabled;
@@ -363,6 +363,40 @@ class UserAppKeyController extends Controller
             ->sum('income_sys');
 
         return compact('in','out');
+    }
+
+    /**
+     * 设置或取消用户账户类型为商户
+     *
+     * @param $id
+     * @return array
+     * @throws \Throwable
+     */
+    public function setMerchant($id)
+    {
+        $user = User::findOrFail($id);
+
+        DB::transaction(function () use ($user) {
+            // 账户类型
+            $user->is_merchant = $user->is_merchant == User::NOT_MERCHANT ? User::MERCHANT : User::NOT_MERCHANT;
+            $user->save();
+
+            // 生成key - 默认普通商户
+            if ($user->is_merchant == User::MERCHANT) {
+                $user->appKey()->create([
+                    'access_key'  => Str::uuid(),
+                    'secret_key'  => Str::uuid(),
+                    //'type'      => $request->type
+                ]);
+            }
+
+            // 删除key
+            if ($user->is_merchant == User::NOT_MERCHANT) {
+                $user->appKey->delete();
+            }
+        });
+
+        return ['code'=>200, 'msg'=>'更新成功'];
     }
 
 }

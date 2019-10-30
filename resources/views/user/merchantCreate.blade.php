@@ -174,6 +174,27 @@
                             </div>
                         </div>
 
+                        {{-- 过期时间 --}}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group {{ $errors->has('expired_at') ? 'has-error' : '' }}">
+                                    <div class="col-sm-12">
+                                        <label>过期时间</label>
+                                        <div id="datetimepicker1" class="input-group date">
+                                            <input class="form-control input-sm" id="expired_at" name="expired_at" size="16" type="text"
+                                                   value="{{ $user->expired_at ?? old('expired_at') }}"
+                                                   placeholder="请选择过期时间" data-format="yyyy-MM-dd hh:mm:ss"  >
+                                            <span class="input-group-addon add-on">
+                                            <i style="font-style:normal;" data-time-icon="entypo-clock" data-date-icon="entypo-calendar"> </i></span>
+                                        </div>
+                                        @if ($errors->has('expired_at'))
+                                            <span class="help-block"><strong>{{ $errors->first('expired_at') }}</strong></span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         {{-- 交易开始和结束时间 --}}
                         <div class="row">
                             <div class="col-md-6">
@@ -237,6 +258,13 @@
 
     <script>
         $(function () {
+
+            //日期时间插件
+            $('#datetimepicker1').datetimepicker({
+                language: 'zh'
+            });
+
+
             // 初始化timePicker
             $('#start_time').clockface();
             $('#end_time').clockface();
