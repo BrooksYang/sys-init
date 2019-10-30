@@ -143,7 +143,7 @@
                                     <div class="col-sm-12">
                                         <label>绑定IP(可选)</label>
                                         <?php
-                                            if(@$editFlag){
+                                            if(@$editFlag && is_null(json_decode($user->ip, true))){
                                                 $ip = json_decode($user->ip, true);
                                                 $ip = count($ip) == 1 ? $ip[0] : (count($ip) > 1 ? implode(',', $ip) : null);
                                             }

@@ -976,10 +976,10 @@ class HomeController extends Controller
      * @param $owners
      * @return mixed
      */
-    public function otcQuickIncomeSysOfDay($owners = [])
+    public function otcQuickIncomeSysOfDay($owners = null)
     {
         $otcQuickIncomeSysOfDay = OtcOrderQuick::status(OtcOrderQuick::RECEIVED)
-            ->when($owners, function ($query) use ($owners){
+            ->when(is_array($owners), function ($query) use ($owners){
                 $query->whereIn('owner_id', $owners);
             })
             ->select(\DB::raw("DATE_FORMAT(updated_at, '%Y-%m-%d') as time,sum(income_sys) as income"))
@@ -997,12 +997,12 @@ class HomeController extends Controller
      * @param $users
      * @return mixed
      */
-    public function otcOrderOfDay($type, $currency = Currency::USDT, $users = [])
+    public function otcOrderOfDay($type, $currency = Currency::USDT, $users = null)
     {
         $otcOrderOfDay = OtcOrder::type($type)
             ->currency($currency)
             ->status(OtcOrder::RECEIVED)
-            ->when($users, function ($query) use ($users){
+            ->when(is_array($users), function ($query) use ($users){
                 $query->whereIn('user_id', $users);
             })
             ->select(\DB::raw("DATE_FORMAT(updated_at, '%Y-%m-%d') as time,sum(field_amount) as amount,sum(fee) as fee"))
