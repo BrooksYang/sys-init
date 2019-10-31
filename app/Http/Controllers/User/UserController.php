@@ -8,6 +8,7 @@ use App\Models\KycLevel;
 use App\Models\LegalCurrency;
 use App\Models\OTC\OtcOrder;
 use App\Models\OTC\OtcOrderQuick;
+use App\Models\OTC\Trade;
 use App\Models\Wallet\Balance;
 use App\Models\Wallet\WalletTransaction;
 use App\User;
@@ -162,6 +163,66 @@ class UserController extends Controller
             }
             return response()->json(['code' =>0, 'msg' => '更新成功' ]);
         }
+    }
+
+    /**
+     * 用户账户冻结
+     *
+     * @param $uid
+     * @return array|mixed
+     * @throws \Throwable
+     */
+    public function accountFrozen($uid)
+    {
+        $user = User::findOrFail($uid);
+
+        // 取消冻结
+        if (!$user->is_valid) {
+
+            $user->is_valid = User::ACTIVE;
+            $user->save();
+            return  ['code' => 0, 'msg' => '已解冻'];
+        }
+
+        // 冻结账户
+        $trades = $user->trades()
+            ->whereIn('status', [Trade::ON_SALE])
+            ->pluck('id');
+
+        $frozen = DB::transaction(function () use ($user, $trades){
+
+            $success =  ['code' => 0, 'msg' => '已冻结'];
+
+            // 广告不存在
+            if ($trades->isEmpty()) {
+                $user->is_valid = User::FORBIDDEN;
+                $user->save();
+                return $success;
+            }
+
+            foreach ($trades as $key => $tradeId) {
+
+                $trade = $user->trades()
+                    ->whereIn('status', [Trade::ON_SALE])
+                    ->find($tradeId);
+
+                // 判断是否有正在进行中的订单
+                if ($trade->pendingOrders()->count()) {
+                    continue;
+                }
+
+                // 广告下架
+                $trade->status = Trade::OFF;
+                $trade->save();
+
+                $user->is_valid = User::FORBIDDEN;
+                $user->save();
+            }
+
+            return $success;
+        });
+
+        return $frozen;
     }
 
     /**

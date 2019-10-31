@@ -193,12 +193,12 @@
 
                                         @if($item->is_valid)
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
-                                                '{{ url("user/manage/$item->id") }}','is_valid',0,
+                                                '{{ url("user/frozen/$item->id") }}','is_valid',0,
                                                 '用户账号为<b><strong> 禁用 </strong></b> 状态',
                                                 '{{ csrf_token() }}', '禁用');"> <i class="fontello-lock-filled" title="禁用"></i></a>
                                         @else
                                             <a href="javascript:;" onclick="itemUpdate('{{ $item->id }}',
-                                                '{{ url("user/manage/$item->id") }}','is_valid',1,
+                                                '{{ url("user/frozen/$item->id") }}','is_valid',1,
                                                 '用户账号为<b><strong> 正常 </strong></b> 状态',
                                                 '{{ csrf_token() }}', '正常');"> <i class="fontello-lock-open-filled" title="解禁"></i></a>
                                         @endif
