@@ -396,7 +396,7 @@ class UserAppKeyController extends Controller
             }
         });
 
-        return ['code'=>200, 'msg'=>'更新成功'];
+        return response()->json(['code'=>200, 'msg'=>'更新成功']);
     }
 
 }
