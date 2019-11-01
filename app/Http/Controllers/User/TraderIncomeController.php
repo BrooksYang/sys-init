@@ -224,6 +224,13 @@ class TraderIncomeController extends Controller
                                                name=\"team\" value=\"".(@$trader->feeConfig->team??old('team'))."\"  
                                                placeholder='领导人团队交易手续费比例' ".(@$trader->pid!=0?'disabled':'').">
                                     </div>
+                                    
+                                    <div class=\"col-md-12\" style='margin-top: 10px'>
+                                        <label>币商入金单日最大限额（USDT）</label>
+                                        <input class=\"form-control input-medium\" type=\"text\" id='in_limit_daily'
+                                               name=\"in_limit_daily\" value=\"".(@$trader->feeConfig->in_limit_daily??old('in_limit_daily'))."\"  
+                                               placeholder='币商入金单日最大限额'>
+                                    </div>
                                        
                                     <div class=\"col-md-12\">
                                         <label>所属领导人</label>
@@ -387,15 +394,16 @@ class TraderIncomeController extends Controller
         $balance = Balance::lockForUpdate()->firstOrNew(['user_id'=>$user->id,'user_wallet_currency_id' => Currency::USDT]);
         $margin = OtcConfig::leaderMargin();
 
-        // 账户可用余额是否充足
-        if ($balance->user_wallet_balance <= $margin) {
-            return back()->withErrors(['marginError' => '账户余额不足-无法扣除押金'])->withInput();
-        }
-
-        \DB::transaction(function () use ($user, $balance, $margin, $request){
+        $res = \DB::transaction(function () use ($user, $balance, $margin, $request){
             // 领导人设置
             if ($request->leader_level != $user->leader_level && $request->leader_level == User::LEADER_LEVEL_ONE) {
                 $user->leader_level = $user->pid == 0 ? $request->leader_level : User::COMMON; // 是否领导人
+
+                // 账户可用余额是否充足
+                if ($balance->user_wallet_balance <= $margin) {
+                    return ['code'=>302, 'msg' => '账户余额不足-无法扣除押金'];
+                }
+
                 if ($user->pid == 0) {
                     $user->leader_id =  $user->id; // 领导人id
                 }
@@ -456,10 +464,16 @@ class TraderIncomeController extends Controller
                     'percentage_sys'    => $request->percentage_sys ?:0,
                     'percentage_leader' => $request->percentage_leader ?:0,
                     'team'              => $request->team ?:0,
+                    'in_limit_daily'    => $request->in_limit_daily ?:0
                 ]);
             }
+
+            return ['code'=>0, 'msg'=>null];
         });
 
+        if ($res['code'] ) {
+            return back()->withErrors(['msg' => $res['msg']])->withInput();
+        }
 
         return back();
     }
@@ -507,6 +521,7 @@ class TraderIncomeController extends Controller
             'percentage_sys'    => $leaderRule.'|numeric|min:0',
             'percentage_leader' => $leaderRule.'|min:0',
             'team'              => $leaderRule.'|min:0',
+            'in_limit_daily'    => 'nullable|min:0',
             'leader_id'         => 'sometimes|min:0',
         ]);
 
