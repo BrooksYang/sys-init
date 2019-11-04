@@ -120,7 +120,7 @@ class WalletTransaction extends Model
      */
     public function scopeFrom($query, $from)
     {
-        return $query->where('from','like', $from);
+        return $query->where('from','like', "%$from%");
     }
 
     /**
@@ -132,7 +132,7 @@ class WalletTransaction extends Model
      */
     public function scopeTo($query, $to)
     {
-        return $query->where('to','like', $to);
+        return $query->where('to','like', "%$to%");
     }
 
     /**
