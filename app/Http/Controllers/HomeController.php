@@ -1005,7 +1005,7 @@ class HomeController extends Controller
             ->when(is_array($users), function ($query) use ($users){
                 $query->whereIn('user_id', $users);
             })
-            ->select(\DB::raw("DATE_FORMAT(updated_at, '%Y-%m-%d') as time,sum(field_amount) as amount,sum(fee) as fee"))
+            ->select(\DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as time,sum(field_amount) as amount,sum(fee) as fee"))
             ->groupBy('time')
             ->get();
 

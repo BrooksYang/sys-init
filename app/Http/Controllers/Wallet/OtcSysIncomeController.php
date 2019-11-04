@@ -148,10 +148,10 @@ class OtcSysIncomeController extends Controller
                 return $query->currency($searchCurrency);
             })
             ->when($start, function ($query) use ($start){
-                return $query->where('updated_at', '>=', $start);
+                return $query->where('created_at', '>=', $start);
             })
             ->when($end, function ($query) use ($end){
-                return $query->where('updated_at', '<=', $end);
+                return $query->where('created_at', '<=', $end);
             })
             ->when($filterType, function ($query) use ($filterType){
                 return $query->type($filterType);

@@ -222,7 +222,7 @@ class IncomeController extends Controller
         $otcOrderOfDay = OtcOrder::type($type)
             ->currency($currency)
             ->status(OtcOrder::RECEIVED)
-            ->select(\DB::raw("DATE_FORMAT(updated_at, '$dateFormat') as time,sum(field_amount) as amount,sum(fee) as fee"))
+            ->select(\DB::raw("DATE_FORMAT(created_at, '$dateFormat') as time,sum(field_amount) as amount,sum(fee) as fee"))
             ->when($uIds, function ($query) use ($uIds) {
                 $query->whereIn('user_id', $uIds);
             })

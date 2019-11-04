@@ -124,7 +124,7 @@
                                 <th>商户订单</th>
                                 <th>回调</th>
                                 <th>广告商</th>
-                                <th>更新时间
+                                <th>创建时间
                                     @include('component.sort', ['url'=>url('otc/sys/income')])
                                 </th>
                             </tr>

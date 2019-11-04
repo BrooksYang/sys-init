@@ -89,10 +89,10 @@ class IncomeTotalController extends Controller
             ->currency(Currency::USDT)
             ->status(OtcOrder::RECEIVED)
             ->when($start, function ($query) use ($start) {
-                $query->where('updated_at', '>=', $start);
+                $query->where('created_at', '>=', $start);
             })
             ->when($end, function ($query) use ($end) {
-                $query->where('updated_at', '<=', $end);
+                $query->where('created_at', '<=', $end);
             })
             ->sum('fee');
 
