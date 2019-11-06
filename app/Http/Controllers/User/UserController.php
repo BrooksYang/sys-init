@@ -41,17 +41,23 @@ class UserController extends Controller
         // 账户类型
         $accountType = User::ACCOUNT_TYPE;
 
-        //用户名-电话检索
+        //用户UID或用户名-电话检索
         $search = trim($request->search,'');
+        $searchId = trim($request->searchId,'');
         $filterType= trim($request->filterType,'');
         $filterVerify= trim($request->filterVerify,'');
         $orderC = trim($request->orderC,'');
 
         $user = DB::table('users as u')
+            ->when($searchId, function ($query) use ($searchId){
+                return $query->where('id', $searchId);
+            })
             ->when($search, function ($query) use ($search){
-                return $query->where('username','like',"%$search%")
-                    ->orwhere('email','like',"%$search%")
-                    ->orwhere('phone', 'like', "%$search%");
+                $query->where(function ($query) use ($search) {
+                    $query->where('username','like',"%$search%")
+                        ->orwhere('email','like',"%$search%")
+                        ->orwhere('phone', 'like', "%$search%");
+                });
             })
             ->when($filterType, function ($query) use ($filterType){
                 return $query->where('account_type', $filterType);

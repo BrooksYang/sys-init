@@ -182,6 +182,11 @@
             $('#search-span').click(function () {
                 $('#search_input').toggleClass('searchHideInput')
             })
+
+            //        搜索框
+            $('#search-span2').click(function () {
+                $('#search_input2').toggleClass('searchHideInput')
+            })
         })
 
         /*点击-图片旋转*/

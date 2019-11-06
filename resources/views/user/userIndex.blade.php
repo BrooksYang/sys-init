@@ -12,8 +12,13 @@
                         {{--<a href="{{ url('user/manage/create') }}">
                             <span class="box-btn"><i class="fa fa-plus"></i></span>
                         </a>--}}
-                        <form action="{{ Request::path() != 'user/manage/pending' ? url('user/manage') : url('user/manage/pending') }}" class="in-block">
-                            <input id="search_input" type="text" class="form-control width-0" placeholder="搜索用户名或邮箱或电话" name="search" value="{{ $search }}">
+                        <form action="{{ Request::path() != 'user/manage/pending' ? url('user/manage') : url('user/manage/pending') }}" class="in-block" id="searchForm">
+                            <input id="search_input2" type="text" class="form-control width-0" name="searchId" value="{{ $searchId }}" placeholder="搜索用户UID" >
+                            <a href="javascript:;" title="搜索用户UID">
+                                <span class="box-btn" id="search-span2"><i class="fontello-vcard"></i></span>
+                            </a>
+
+                            <input id="search_input" type="text" class="form-control width-0" name="search" value="{{ $search }}" placeholder="搜索用户名或邮箱或电话">
                             <a href="javascript:;" title="搜索用户名或邮箱或电话">
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
@@ -243,5 +248,27 @@
 
 @section('js-part')
     <script>
+        $(function () {
+            // 回车搜索
+            $("#searchForm").bind("keypress",function(e){
+                // 兼容FF和IE和Opera
+                var theEvent = e || window.event;
+                var code = theEvent.keyCode || theEvent.which || theEvent.charCode;
+                if (code == 13) {
+                    console.log('{{ Request::url() }}');
+                    e.preventDefault();
+                    //回车执行查询
+                    var uri = implodeUri();
+                    window.location.href = '{{ Request::url() }}'+uri;
+                }
+            });
+
+            // 整理uri searchTeam
+            function implodeUri() {
+                var uri = '?search='+$('#search_input').val()
+                    +'&searchId='+$('#search_input2').val()
+                return uri;
+            }
+        });
     </script>
 @endsection
