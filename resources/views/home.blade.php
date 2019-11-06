@@ -480,6 +480,14 @@
                         <hr>
                         <div class="row">
                             <div class="col-md-10">
+                                <!-- OTC订单买入及手续费统计 - 默认USDT -->
+                                <div id="otcBuyOfDay" style="width: 100%;height:600px;"></div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-10">
                                 <!-- OTC订单卖出及手续费统计 - 默认USDT -->
                                 <div id="otcSellOfDay" style="width: 100%;height:600px;"></div>
                             </div>
@@ -1184,6 +1192,79 @@
             ]
         };
         feeByMerchantOfDay.setOption(feeByMerchantOfDayOption);
+    </script>
+
+    {{--OTC订单买入及手续费统计 - 默认USDT--}}
+    <script>
+        var otcBuyOfDay = echarts.init(document.getElementById('otcBuyOfDay'));
+        var otcBuyOfDayOption = {
+            title : {
+                text: 'OTC 订单买入及手续费',
+                subtext: 'USDT',
+            },
+            tooltip : {
+                trigger: 'axis'
+            },
+            legend: {
+                data:['买入量','手续费']
+            },
+            toolbox: {
+                show : true,
+                feature : {
+                    dataView : {show: true, readOnly: false},
+                    magicType : {show: true, type: ['line', 'bar']},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
+            calculable : true,
+            xAxis : [
+                {
+                    type : 'category',
+                    data : [@foreach($otcBuyOfDay as $buyKey=>$buyItem) '{{date('n/d', strtotime($buyItem->time))}}', @endforeach],
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+                {
+                    name:'买入量',
+                    type:'bar',
+                    data:[@foreach($otcBuyOfDay as $key=>$item) {{round($item->amount, 2)}}, @endforeach],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                {
+                    name:'手续费',
+                    type:'bar',
+                    data:[@foreach($otcBuyOfDay as $key=>$item) {{round($item->fee, 2)}}, @endforeach],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                }
+            ]
+        };
+        otcBuyOfDay.setOption(otcBuyOfDayOption);
     </script>
 
     {{--OTC订单卖出及手续费统计 - 默认USDT--}}
