@@ -72,7 +72,7 @@ class UserController extends Controller
             })
             ->paginate(USER_LIST_SIZE );
 
-        return view('user.userIndex', compact('userStatus', 'kycLevels', 'accountType','search','user'));
+        return view('user.userIndex', compact('userStatus', 'kycLevels', 'accountType','search','searchId', 'user'));
     }
 
     /**
