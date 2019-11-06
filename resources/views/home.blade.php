@@ -464,6 +464,22 @@
                         <hr>
                         <div class="row">
                             <div class="col-md-10">
+                                <!-- OTC 各商户入金总额统计 - 每天 默认USDT -->
+                                <div id="inByMerchantOfDay" style="width: 100%;height:600px;"></div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <!-- OTC 各商户入金贡献手续费总额统计 - 每天 默认USDT -->
+                                <div id="feeByMerchantOfDay" style="width: 100%;height:600px;"></div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-10">
                                 <!-- OTC订单买入及手续费统计 - 默认USDT -->
                                 <div id="otcBuyOfDay" style="width: 100%;height:600px;"></div>
                             </div>
@@ -1036,6 +1052,146 @@
             ]
         };
         incomeByMerchant.setOption(incomeByMerchantOption);
+    </script>
+
+    {{--OTC 各商户入金总额统计 - 每天 默认USDT--}}
+    <script>
+        var inByMerchantOfDay = echarts.init(document.getElementById('inByMerchantOfDay'));
+        var inByMerchantOfDayOption = {
+            title : {
+                text: 'OTC 平台商户入金',
+                subtext: 'USDT',
+            },
+            tooltip : {
+                trigger: 'axis',
+                axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            toolbox: {
+                show : true,
+                feature : {
+                    dataView : {show: true, readOnly: false},
+                    magicType : {show: true, type: ['line', 'bar']},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
+            calculable : true,
+            legend: {
+                //data:['商户1入金','商户2入金',....,入金总额']
+                data:[@foreach($inByMerchantOfDay['merchant'] as $merchant) '{{$merchant=='today_buy_amount'?'入金总额':$merchant}}', @endforeach]
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis : [
+                {
+                    type : 'category',
+                    data : [@foreach($inByMerchantOfDay['data'] as $incomeKey=>$incomeItem) '{{date('n/d', strtotime($incomeKey))}}', @endforeach]
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+                    @foreach($inByMerchantOfDay['merchant'] as $merchant)
+                {
+                    name:'{{$merchant=='today_buy_amount'?'入金总额':$merchant}}',
+                    type:'bar',
+                    data:[@foreach($inByMerchantOfDay['data'] as $incomeKey=>$incomeItem) {{
+                        round($merchant=='today_buy_amount' ? $incomeItem[$merchant] : $incomeItem[$merchant]['otc_buy_amount'], 2)}}, @endforeach],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                @endforeach
+            ]
+        };
+        inByMerchantOfDay.setOption(inByMerchantOfDayOption);
+    </script>
+
+    {{--OTC 各商户入金贡献手续费总额统计 - 每天 默认USDT--}}
+    <script>
+        var feeByMerchantOfDay = echarts.init(document.getElementById('feeByMerchantOfDay'));
+        var feeByMerchantOfDayOption = {
+            title : {
+                text: 'OTC 平台商户入金手续费',
+                subtext: 'USDT',
+            },
+            tooltip : {
+                trigger: 'axis',
+                axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            toolbox: {
+                show : true,
+                feature : {
+                    dataView : {show: true, readOnly: false},
+                    magicType : {show: true, type: ['line', 'bar']},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
+            calculable : true,
+            legend: {
+                //data:['商户1入金手续费','商户2入金手续覅',....,总手续费']
+                data:[@foreach($feeByMerchantOfDay['merchant'] as $merchant) '{{$merchant=='today_fee'?'总手续费':$merchant}}', @endforeach]
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis : [
+                {
+                    type : 'category',
+                    data : [@foreach($feeByMerchantOfDay['data'] as $incomeKey=>$incomeItem) '{{date('n/d', strtotime($incomeKey))}}', @endforeach]
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+                    @foreach($feeByMerchantOfDay['merchant'] as $merchant)
+                {
+                    name:'{{$merchant=='today_fee'?'总手续费':$merchant}}',
+                    type:'bar',
+                    data:[@foreach($feeByMerchantOfDay['data'] as $incomeKey=>$incomeItem) {{
+                        round($merchant=='today_fee' ? $incomeItem[$merchant] : $incomeItem[$merchant]['otc_buy_fee'], 2)}}, @endforeach],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                @endforeach
+            ]
+        };
+        feeByMerchantOfDay.setOption(feeByMerchantOfDayOption);
     </script>
 
     {{--OTC订单买入及手续费统计 - 默认USDT--}}
