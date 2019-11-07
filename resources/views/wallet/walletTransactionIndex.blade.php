@@ -183,8 +183,14 @@
                                     @endforeach
                                 </select>
                             </div>
-                            @include('component.dateTimePicker', ['colMdNum'=>3, 'id'=>1, 'label'=>'','name'=>'start','placeholder'=>'请选择开始时间'])
-                            @include('component.dateTimePicker', ['colMdNum'=>3, 'id'=>2, 'label'=>'','name'=>'end','placeholder'=>'请选择结束时间'])
+
+                            {{--备注--}}
+                            <div class="col-sm-2">
+                                <input class="form-control input-sm"  placeholder="请输入备注"
+                                       name="remark" id="remark" type="text" value="{{ Request::get('remark')?? '' }}"/>
+                            </div>
+                            @include('component.dateTimePicker', ['colMdNum'=>2, 'id'=>1, 'label'=>'','name'=>'start','placeholder'=>'请选择开始时间'])
+                            @include('component.dateTimePicker', ['colMdNum'=>2, 'id'=>2, 'label'=>'','name'=>'end','placeholder'=>'请选择结束时间'])
                         </div>
 
                     </form>
@@ -193,9 +199,11 @@
                         <table class="table table-hover table-striped">
                             <tr>
                                 <th>序号</th>
+                                @if(Request::path() != 'otc/sys/withdrawLog')
                                 <th>UID</th>
                                 <th>用户名</th>
                                 <th>联系方式</th>
+                                @endif
                                 <th>币种</th>
                                 <th>金额</th>
                                 <th>手续费</th>
@@ -213,11 +221,13 @@
                             @forelse($transDetails as $key => $item)
                                 <tr>
                                     <td>{{ ($key + 1) + ($transDetails->currentPage() - 1) * $transDetails->perPage() }}</td>
+                                    @if(Request::path() != 'otc/sys/withdrawLog')
                                     <td>{{ $item->user_id ? '#':'' }}{{ $item->user_id ?: '--' }}</td>
                                     <td title="{{ @$item->user->username }}"><strong>{{ str_limit(@$item->user->username ?:'--',11) }}</strong></td>
                                     <td title="{{@$item->user->email ?:(@$item->user->phone ?:'--')}}">
                                         {{ str_limit(@$item->user->phone ?:@$item->user->email ?:'--' ,13) }}
                                     </td>
+                                    @endif
                                     <td><span class="label label-success">{{ str_limit(@$item->currency->currency_title_en_abbr,15) }}</span></td>
                                     <td>{{ $item->amount}}</td>
                                     <td>{{ $item->fee }}</td>
@@ -242,12 +252,16 @@
                                     </td>
                                     <td title="结算平台交易记录ID">{{ $item->neu_txid ?:'--' }}</td>
                                     {{--备注--}}
-                                    <td>
+                                    <td title="{{$item->remark ?: '暂无'}}">
+                                        @if(Request::path() == 'otc/sys/withdrawLog')
+                                            {{ str_limit($item->remark ?: '暂无',26) }}
+                                        @else
                                         <!-- Button trigger modal -->
                                         <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLong{{$key}}"
                                            title="{{$item->remark ?: '暂无'}}">查看</a>
                                         <!-- Modal -->
-                                        <div class="modal fade" id="exampleModalLong{{$key}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle{{$key}}" aria-hidden="true" width="auto">
+                                        <div class="modal fade" id="exampleModalLong{{$key}}" tabindex="-1" role="dialog"
+                                             aria-labelledby="exampleModalLongTitle{{$key}}" aria-hidden="true" width="auto">
                                             <div class="modal-dialog" role="document" width="auto">
                                                 <div class="modal-content" width="auto">
                                                     <div class="modal-header">
@@ -268,6 +282,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        @endif
                                     </td>
                                     <td><span class="">{{ $type[$item->type]['name'] }}</span></td>
                                     <td>
@@ -276,7 +291,7 @@
                                     <td>{{ $item->created_at ?: '--' }}</td>
                                 </tr>
                             @empty
-                                @include('component.noData', ['colSpan'=>15])
+                                @include('component.noData', ['colSpan'=> Request::path() == 'otc/sys/withdrawLog' ? 12:15])
                             @endforelse
                         </table>
 
@@ -352,6 +367,7 @@
                     +'&filterCurrency='+$('#filterCurrency').val()
                     +'&filterType='+$('#filterType').val()
                     +'&filterStatus='+$('#filterStatus').val()
+                    +'&remark='+$('#remark').val()
                     +'&start='+$('#start').val()
                     +'&end='+$('#end').val();
 

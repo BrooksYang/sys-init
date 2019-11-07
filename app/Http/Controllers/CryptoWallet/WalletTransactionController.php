@@ -48,6 +48,7 @@ class WalletTransactionController extends Controller
         $filterCurrency = trim($request->filterCurrency,'');
         $filterStatus = trim($request->filterStatus,'');
         $filterType = trim($request->filterType ?: $filterType,'');
+        $remark = trim($request->remark,'');
         $start = trim($request->start,'');
         $end = trim($request->end,'');
         $orderC = trim($request->orderC,'') ?: 'desc';
@@ -109,6 +110,9 @@ class WalletTransactionController extends Controller
             })
             ->when($filterType, function ($query) use ($filterType){
                 return $query->type($filterType);
+            })
+            ->when($remark, function ($query) use ($remark){
+                return $query->where('remark', 'like', "%$remark%");
             })
             ->when($start, function ($query) use ($start){
                 return $query->where('created_at', '>=', $start);
