@@ -82,6 +82,9 @@ class OtcOrderQuickController extends Controller
             ->when($filterAppeal, function ($query) use ($filterAppeal){
                 return $query->appealStatus($filterAppeal);
             })
+            ->when($filterAppeal==0, function ($query) use ($filterAppeal){
+                return $query->whereNull('appeal_status');
+            })
             ->when($searchFromUser, function ($query) use ($searchFromUser) {
                 return $query->where('owner_phone', 'like', "%$searchFromUser%");
             })

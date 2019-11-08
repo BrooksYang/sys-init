@@ -107,6 +107,7 @@
                                 <th>平台收益</th>
                                 <th>商户收益</th>
                                 <th>币商收益</th>
+                                <th title="火币降价商户向币商支付补贴">补贴</th>
                                 <th>备注</th>
                                 <th>卡号</th>
                                 <th>凭证</th>
@@ -136,6 +137,7 @@
                                     <td>{{ $item->income_sys }}</td>
                                     <td>{{ $item->income_merchant }}</td>
                                     <td>{{ $item->income_user }}</td>
+                                    <td title="火币降价商户向币商支付补贴">{{ $item->subsidy }}</td>
                                     <td title="{{$item->remark}}">{{ str_limit($item->remark ?: '--', 8) }}</td>
                                     <td title="{{$item->card_number}}">{{ str_limit($item->card_number ?: '--', 8) }}</td>
 
@@ -194,7 +196,7 @@
                                     <td title="下单时间{{ $item->created_at }}">{{ $item->updated_at ?: '--' }}</td>
                                 </tr>
                             @empty
-                                <tr><td colspan="20" class="text-center">
+                                <tr><td colspan="21" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
