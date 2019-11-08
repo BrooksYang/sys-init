@@ -58,7 +58,7 @@ class OtcOrderQuick extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id')
-            ->select('id','username','phone');
+            ->select('id','username','phone','email');
     }
 
     /**
@@ -69,7 +69,7 @@ class OtcOrderQuick extends Model
     public function merchant()
     {
         return $this->belongsTo(User::class, 'merchant_id')
-            ->select('id','username','phone');
+            ->select('id','username', 'email', 'phone');
     }
 
     /**

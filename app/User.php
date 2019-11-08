@@ -169,7 +169,7 @@ class User extends Authenticatable
         // 排除模拟及测试账户
         $merchants =  self::with('appKey:user_id,type')->where('is_merchant', self::MERCHANTS)
             ->whereNotIn('id', [26])
-            ->get(['username','phone','id']);
+            ->get(['username','phone','email','id']);
 
         return $merchants->each(function ($item, $key) {
             $type = @$item->appKey->type == UserAppKey::BC ? '(BC)' :'';

@@ -82,8 +82,8 @@
                                 <select class="flter-status form-control input-sm" id="searchMerchant" name="searchMerchant">
                                     <option value="" {{ !Request::get('searchMerchant') ? 'selected':'' }}>请选择商户</option>
                                     @foreach($merchants as $key => $item)
-                                        <option value="{{$item->id}}" {{ Request::get('searchMerchant')==$item->id
-                                            ? 'selected' : ''}}>{{ $item->phone }} - {{ $item->username }}</option>
+                                        <option value="{{$item->id}}" title="{{$item->phone?:$item->email}}" {{ Request::get('searchMerchant')==$item->id
+                                            ? 'selected' : ''}}>{{ $item->phone?:str_limit($item->email,10) }} - {{ $item->username }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -190,7 +190,7 @@
                                     <td><span class="label label-{{$orderStatus[$item->status]['class']}}">{{ $orderStatus[$item->status]['name'] ?? '--'}}</span></td>
                                     <td><span class="{{ $item->appeal_status ? "label label-".$appealStatus[$item->appeal_status]['class'] : '' }}">
                                             {{ $appealStatus[$item->appeal_status]['name'] ?? '--'}}</span>
-                                    <td title="所属商户UID：{{ $item->merchant_id }} | 联系方式：{{ @$item->merchant->phone ?: @$item->merchant->email}}">
+                                    <td title="所属商户UID：{{$item->merchant_id}} | 商户信息：{{@$item->merchant->username?:'--'}} | {{@$item->merchant->phone ?: @$item->merchant->email}}">
                                         {{ $item->merchant_order_id ?:'--'}}
                                     </td>
                                    {{-- <td title="UID：{{ $item->merchant_id }} | 联系方式：{{ @$item->merchant->phone ?: @$item->merchant->email}}">

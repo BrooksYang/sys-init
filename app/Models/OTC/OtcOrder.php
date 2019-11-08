@@ -113,6 +113,17 @@ class OtcOrder extends Model
     }
 
     /**
+     * 关联商户
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function merchant()
+    {
+        return $this->belongsTo(User::class, 'merchant_id')
+            ->select('id', 'username', 'email', 'phone');
+    }
+
+    /**
      * 获取该订单的币种信息
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
