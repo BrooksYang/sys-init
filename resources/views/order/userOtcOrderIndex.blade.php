@@ -156,7 +156,9 @@
                                     <td><span class="{{ $item->appeal_status ? "label label-".$appealStatus[$item->appeal_status]['class'] : '' }}">
                                             {{ $appealStatus[$item->appeal_status]['name'] ?? '--'}}</span>
                                     </td>
-                                    <td title="{{$item->merchant_order_id ?:'--'}}">{{ $item->merchant_order_id ?:'--'}}</td>
+                                    <td title="所属商户UID：{{$item->merchant_id}} | 商户信息：{{@$item->merchant->username?:'--'}} | {{@$item->merchant->phone ?: @$item->merchant->email}}">
+                                        {{ $item->merchant_order_id ?:'--'}}
+                                    </td>
                                     {{--<td title="{{ $item->merchant_callback }}"><i class="fontello-globe-1"></i></td>--}}
                                     <td title="{{number_format($item->team_bonus, 8) }}">{{ $item->team_bonus?:'--' }}</td>
                                     <td>{{ $item->team_bonus_status ?$teamBonusStatus[$item->team_bonus_status]:'--' }}</td>
