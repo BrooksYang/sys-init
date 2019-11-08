@@ -145,7 +145,7 @@ class OtcOrderQuickController extends Controller
     public static function sum($otcOrder)
     {
         //bcscale(config('app.bcmath_scale'));
-        list($totalFieldAmount, $totalIncome, $totalIncomeSys,$totalIncomeMerchant, $totalIncomeUser)= [0, 0, 0, 0, 0];
+        list($totalFieldAmount, $totalIncome, $totalIncomeSys,$totalIncomeMerchant, $totalIncomeUser,$totalSubsidy)= [0,0,0,0,0,0];
 
         foreach ($otcOrder ?? [] as $key => $item){
             $totalFieldAmount += $item->field_amount; // 累计交易数量
@@ -153,9 +153,10 @@ class OtcOrderQuickController extends Controller
             $totalIncomeSys += $item->income_sys;  // 累计平台收益
             $totalIncomeMerchant += $item->income_merchant;  // 累计商户收益
             $totalIncomeUser += $item->income_user;  // 累计币商收益
+            $totalSubsidy += $item->subsidy;  // 累计商户向币商支付补贴
         }
 
-        return compact('totalFieldAmount','totalIncome','totalIncomeSys','totalIncomeMerchant','totalIncomeUser');
+        return compact('totalFieldAmount','totalIncome','totalIncomeSys','totalIncomeMerchant','totalIncomeUser','totalSubsidy');
     }
 
 }
