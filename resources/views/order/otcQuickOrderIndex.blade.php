@@ -71,7 +71,9 @@
                                 <select class="flter-status form-control input-sm" id="filterAppeal" name="filterAppeal">
                                     <option value="">请选择申诉状态</option>
                                     @foreach($appealStatus as $key => $item)
-                                        <option value="{{$key}}" {{ Request::get('filterAppeal')==$key ? 'selected' :''}}>{{ $item['name'] }}</option>
+                                        <option value="{{$key}}"
+                                            {{!is_null(Request::get('filterAppeal')) && Request::get('filterAppeal')==$key ? 'selected' :''}}>{{ $item['name'] }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
