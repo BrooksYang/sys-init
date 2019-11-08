@@ -96,8 +96,8 @@
                                 <select class="flter-status form-control input-sm" id="searchMerchant" name="searchMerchant">
                                     <option value="" {{ !Request::get('searchMerchant') ? 'selected':'' }}>请选择商户</option>
                                     @foreach($merchants as $key => $item)
-                                        <option value="{{$item->id}}" {{ Request::get('searchMerchant')==$item->id
-                                            ? 'selected' : ''}}>{{ $item->phone }} - {{ $item->username }}</option>
+                                        <option value="{{$item->id}}" title="{{$item->phone?:$item->email}}" {{ Request::get('searchMerchant')==$item->id
+                                            ? 'selected' : ''}}>{{ $item->phone?: str_limit($item->email,10) }} - {{ $item->username }}</option>
                                     @endforeach
                                 </select>
                             </div>
