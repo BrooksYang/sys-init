@@ -1353,7 +1353,6 @@
         };
         otcSellOfDay.setOption(otcSellOfDayOption);
     </script>
-    @endif
 
     {{--OTC充值及手续费统计 - 默认USDT--}}
     <script>
@@ -1427,6 +1426,7 @@
         };
         transFeeDepositOfDay.setOption(transFeeDepositOfDayOption);
     </script>
+    @endif
 
     {{--币种信息统计--}}
     <script>
