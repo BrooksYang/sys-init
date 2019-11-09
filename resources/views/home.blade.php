@@ -607,11 +607,23 @@
             </div>
         </div>
     </div>--}}
-
+    <style>
+        .celebrate{
+            position: fixed;width: 100%;height: 100%;background-color: rgba(0,0,0,.4);left: 0;top: 0;
+            display: flex;align-items: center;justify-content: center;flex-direction: column;z-index: 10000;
+        }
+    </style>
+    <div class="celebrate" onclick="$('.celebrate').hide()">
+        <i class="fa fa-close" style="font-size: 40px;"></i>
+        <div class="js-odoo"></div>
+    </div>
 @endsection
 
 @section('js-part')
     <script src="{{ asset('/assets/Echarts/echarts.min.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{asset('/assets/odoo/normalize.css')}}" />
+    <script src="{{asset('/assets/odoo/odoo.js')}}"></script>
+    <script>odoo.default({ el:'.js-odoo',value:'￥{{number_format(bcmul($otcBuyTotal->field_amount, $rate,8),2)}}' })</script>
     {{--用户验证状态--}}
     <script type="text/javascript">
         var userEmailPhoneStatus = echarts.init(document.getElementById('userEmailPhoneStatus'));
