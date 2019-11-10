@@ -4,10 +4,19 @@ article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,su
     src: url(./itvreem.woff) format('woff');
 }
 .js-odoo{
-    width: 600px;
-    margin: 50px auto;
+    width: 750px;
+    margin: 20px auto;
     font-family: 'ITV Reem';
     font-size: 82px;
     text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
     fill: #fff;
+}
+.js-odoo-title{
+    width: 750px;
+    font-family: 'ITV Reem';
+    font-size: 82px;
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+    fill: #fff;
+    color:#fff;
+    text-align: center;
 }

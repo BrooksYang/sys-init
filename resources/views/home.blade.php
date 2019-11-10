@@ -595,12 +595,12 @@
     </div>--}}
     <style>
         .celebrate{
-            position: fixed;width: 100%;height: 100%;background-color: rgba(0,0,0,.4);left: 0;top: 0;
+            position: fixed;width: 100%;height: 100%;background-color: rgba(0,0,0,.95);left: 0;top: 0;
             display: flex;align-items: center;justify-content: center;flex-direction: column;z-index: 10000;
         }
     </style>
     <div class="celebrate" onclick="$('.celebrate').hide()">
-        <i class="fa fa-close" style="font-size: 40px;"></i>
+        <p class="js-odoo-title"> NEU Contract</p>
         <div class="js-odoo"></div>
     </div>
 @endsection
