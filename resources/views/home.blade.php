@@ -611,11 +611,11 @@
 
 @section('js-part')
     <script src="{{ asset('/assets/Echarts/echarts.min.js') }}"></script>
-    <link rel="stylesheet" type="text/css" href="{{asset('/assets/odoo/normalize.css')}}" />
-    <script src="{{asset('/assets/odoo/odoo.js')}}"></script>
+    {{--<link rel="stylesheet" type="text/css" href="{{asset('/assets/odoo/normalize.css')}}" />--}}
+    {{--<script src="{{asset('/assets/odoo/odoo.js')}}"></script>--}}
     <script>
-        $('.celebrate').css('display','flex');
-        odoo.default({ el:'.js-odoo',value:'￥{{number_format(bcmul($otcBuyTotal->field_amount, $rate,8),2)}}' })
+//        $('.celebrate').css('display','flex');
+        {{--odoo.default({ el:'.js-odoo',value:'￥{{number_format(bcmul($otcBuyTotal->field_amount, $rate,8),2)}}' })--}}
     </script>
     {{--用户验证状态--}}
     <script type="text/javascript">
