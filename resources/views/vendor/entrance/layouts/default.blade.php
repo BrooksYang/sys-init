@@ -42,6 +42,26 @@
     <script src="{{ asset('vendor/entrance/js/pace/pace.js') }}"></script>
     <link href="{{ asset('vendor/entrance/js/pace/themes/orange/pace-theme-flash.css') }}" rel="stylesheet" />
     <style>
+        /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+            background-color: rgba(0,0,0,1);
+        }
+
+        /*定义滚动条轨道 内阴影+圆角*/
+        ::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.4);
+            border-radius: 5px;
+            background-color: rgba(0,0,0,.90);
+        }
+
+        /*定义滑块 内阴影+圆角*/
+        ::-webkit-scrollbar-thumb {
+            border-radius: 5px;
+            -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.4);
+            background-color: rgba(0,0,0,1);
+        }
         @media screen and (max-width: 1600px) {
             .table-responsive {
                 overflow-x: auto;
@@ -91,6 +111,16 @@
             @include('entrance::layouts.include.side_menu')
             @include('entrance::layouts.include.breadcrumb')
 
+            <style>
+                .celebrate{
+                    position: fixed;width: 100%;height: 100%;background-color: rgba(0,0,0,.95);left: 0;top: 0;right:0;bottom: 0;
+                    display: none;align-items: center;justify-content: center;flex-direction: column;z-index: 10000;
+                }
+            </style>
+            <div class="celebrate" onclick="$('.celebrate').hide()">
+                <p class="js-odoo-title">NEU Contract</p>
+                <div class="js-odoo"></div>
+            </div>
             <!-- CONTENT -->
             <div class="wrap-fluid" id="paper-bg">
                 @section('content')
