@@ -54,7 +54,7 @@ class OtcOrders extends Command
             ->currency(Currency::USDT)
             ->status(OtcOrder::RECEIVED)
             ->latest()
-            ->take(1000)
+            ->take(100)
             ->get();
 
         $otcOrders = $otcOrders->sortBy('created_at');
