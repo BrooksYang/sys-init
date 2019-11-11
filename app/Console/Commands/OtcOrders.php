@@ -75,7 +75,7 @@ class OtcOrders extends Command
                 '交易量: '.$order->field_amount.$currency.'|'.
                 '总价: '.$order->cash_amount.'|'.
                 '手续费: '.$order->fee.'|'.
-                '团队红利: '.$order->team_bonus.'|'.
+                //'团队红利: '.$order->team_bonus.'|'.
                 '到账: '.$order->final_amount.'|'.
                 '状态: 成功|'.
                 '备注: '.str_limit($order->remark,4).'|'.
