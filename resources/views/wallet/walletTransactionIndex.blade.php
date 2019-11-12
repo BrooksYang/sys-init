@@ -9,7 +9,8 @@
 
                     {{-- Filter and Add Button --}}
                     <div class="pull-right box-tools">
-                        @include('component.conditionSearch', ['url'=>url('wallet/transaction')])
+                        @include('component.conditionSearch',
+                            ['url'=>Request::path() == 'otc/sys/withdrawLog' ? url('otc/sys/withdrawLog'): url('wallet/transaction')])
 
                         {{--添加收益科目--}}
                         @if(Request::path() == 'otc/sys/withdrawLog')
