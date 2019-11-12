@@ -494,6 +494,22 @@
                         <hr>
                         <div class="row">
                             <div class="col-md-10">
+                                <!-- OTC 币商出金分布 - 默认USDT -->
+                                <div id="outByTrader" style="width: 100%;height:600px;"></div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <!-- OTC 各币商出金总额统计 - 每天 默认USDT -->
+                                <div id="outByTraderOfDay" style="width: 100%;height:600px;"></div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-10">
                                 <!-- OTC订单买入及手续费统计 - 默认USDT -->
                                 <div id="otcBuyOfDay" style="width: 100%;height:600px;"></div>
                             </div>
@@ -1211,6 +1227,127 @@
             ]
         };
         feeByMerchantOfDay.setOption(feeByMerchantOfDayOption);
+    </script>
+
+    {{--OTC 币商出金分布 - 默认USDT--}}
+    <script>
+        var outByTrader = echarts.init(document.getElementById('outByTrader'));
+        var outByTraderOption = {
+            title : {
+                text: '币商出金分布',
+                subtext: '出金占比',
+                x:'center'
+            },
+            tooltip : {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                top:'50',
+                bottom:'70',
+                type:'scroll',
+                data: [@foreach($outByTrader as $trader => $out) '{{$trader}}', @endforeach]
+            },
+            series : [
+                {
+                    name: '出金数额',
+                    type: 'pie',
+                    radius : '55%',
+                    center: ['50%', '60%'],
+                    data:[
+                        @foreach($outByTrader as $trader => $out)
+                        {value:'{{round(@$out['total_amount'],2)}}', name:'{{ $trader }}'},
+                        @endforeach
+                    ],
+                    itemStyle: {
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+        outByTrader.setOption(outByTraderOption);
+    </script>
+
+    {{--OTC 各币商出金总额统计 - 每天 默认USDT--}}
+    <script>
+        var outByTraderOfDay = echarts.init(document.getElementById('outByTraderOfDay'));
+        var outByTraderOfDayOption = {
+            title : {
+                text: 'OTC 币商出金数额',
+                subtext: 'USDT',
+            },
+            tooltip : {
+                trigger: 'axis',
+                axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            toolbox: {
+                show : true,
+                feature : {
+                    dataView : {show: true, readOnly: false},
+                    magicType : {show: true, type: ['line', 'bar']},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
+            calculable : true,
+            legend: {
+                //data:['币商1出金','币商2出金',....,总出金额']
+                //orient: 'vertical',
+                //left: 'top',
+                //top:'50',
+                bottom:'532',
+                type:'scroll',
+                data:[@foreach($outByTraderOfDay['trader'] as $trader) '{{$trader=='today_amount'?'总额':$trader}}', @endforeach]
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                top: '15%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis : [
+                {
+                    type : 'category',
+                    data : [@foreach($outByTraderOfDay['data'] as $outKey=>$outItem) '{{date('n/d', strtotime($outKey))}}', @endforeach]
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+                    @foreach($outByTraderOfDay['trader'] as $trader)
+                {
+                    name:'{{$trader=='today_amount'?'总额':$trader}}',
+                    type:'bar',
+                    data:[@foreach($outByTraderOfDay['data'] as $outKey=>$outItem) {{
+                        round($trader=='today_amount' ? $outItem[$trader] : $outItem[$trader]['amount'], 2)}}, @endforeach],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                @endforeach
+            ]
+        };
+        outByTraderOfDay.setOption(outByTraderOfDayOption);
     </script>
 
     {{--OTC订单买入及手续费统计 - 默认USDT--}}

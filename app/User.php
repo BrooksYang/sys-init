@@ -51,6 +51,10 @@ class User extends Authenticatable
     const VERIFIED = 3;
     const VERIFY_FAILED = 4;
 
+    // 是否为测试账户，0否，1是
+    const NORMAL = 0;
+    const TEST = 1;
+
     // 是否为商户，0否，1是
     const NOT_MERCHANT = 0;
     const MERCHANT = 1;
@@ -178,7 +182,8 @@ class User extends Authenticatable
     }
 
     /**
-     * 获取认证的币商
+     * 获取认证的币商 - 不含团队模式中的搬砖工（账户类型：普通用户或领导人）
+     * 搬砖工不参与商户的出金的交易
      *
      * @return \Illuminate\Support\Collection
      */
@@ -186,13 +191,17 @@ class User extends Authenticatable
     {
         // 排除模拟账户-包含测试账户
         return self::where('kyc_level_id', KycLevel::ADVANCED)
-            ->where('id', '>=' ,133)
-            ->orWhereIn('id', [88,89,122])
+            ->where('is_merchant', User::NOT_MERCHANT)
+            ->whereNull('access_key')
+            ->where('account_type', '<', User::TYPE_TRADER) // 普通用户或领导人
+            ->where('is_test', User::NORMAL)
+            //->where('id', '>=' ,133)
+            //->orWhereIn('id', [88,89,121,122])
             ->get(['username','phone','email','id','pid']);
     }
 
     /**
-     * 获取认证的币商
+     * 获取认证的币商 - 含团队模式中的搬砖工（账户类型：普通用户或领导人或搬砖工）
      *
      * @return \Illuminate\Support\Collection
      */
@@ -202,8 +211,11 @@ class User extends Authenticatable
         //return self::with(['feeConfig','linkMerchant'])
         return self::with(['feeConfig'])
             ->where('kyc_level_id', KycLevel::ADVANCED)
-            ->where('id', '>=' ,133)
-            ->orWhereIn('id', [88,89,122])
+            ->where('is_merchant', User::NOT_MERCHANT)
+            ->whereNull('access_key')
+            ->where('is_test', User::NORMAL)
+            //->where('id', '>=' ,133)
+            //->orWhereIn('id', [88,89,121,122])
             ->get(['username','phone','email','id','pid','leader_level','leader_id']);
     }
 

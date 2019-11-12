@@ -350,6 +350,16 @@ class HomeController extends Controller
             return $inAndOutByMerchantOfDay;
         });
 
+        // OTC 各币商出金数额及所获收益统计 - 每天 默认USDT
+        $outByTraderOfDay = Cache::remember('outByTraderOfDay', $cacheLength, function () {
+            return $this->outByTraderOfDay('today_amount');
+        });
+
+        // OTC 各币商出金数额占比分布 - 饼图
+        $outByTrader = Cache::remember('outByTrader', $cacheLength, function () {
+            return $this->outByTrader();
+        });
+
         // OTC 平台累计提币（外部地址）
         $otcSysWithdraw = Cache::remember('otcSysWithdraw', $cacheLength, function () {
             return $this->otcSysIncomeWithdraw();
@@ -379,6 +389,7 @@ class HomeController extends Controller
             'otcBuyTotal', 'otcSellTotal','otcBuyOfDay','otcSellOfDay',
             'transFeeDepositOfDay','transFeeDeposit', 'transFeeWithdraw', 'otcQuickIncomeSys','otcSysIncomeOfDay',
             'incomeByMerchantOfDay','incomeByMerchant', 'inByMerchantOfDay', 'feeByMerchantOfDay',
+            'outByTraderOfDay','outByTrader',
             'otcSysIncomeTotal','otcSysIncomeRmbTotal', 'otcSysIncomeCurrent','otcSysIncomeCurrentRmb'
         );
     }
@@ -1337,6 +1348,89 @@ class HomeController extends Controller
         ///$inAndOutDaily['merchant'][$outField]= $outField;
 
         return $inAndOutDaily;
+    }
+
+    /**
+     * 币商出金及所获收益 - 每天
+     *
+     * @param $totalField
+     * @return mixed
+     */
+    public function outByTraderOfDay($totalField)
+    {
+        $out = [];
+        $traders = User::getTraders();
+
+        foreach ($traders as $trader) {
+            $data = $this->otcQuickOrderOfDay($trader->id);
+            foreach ($data as $item) {
+                $out[$trader->id][$item->time]['amount'] = $item->amount;
+                $out[$trader->id][$item->time]['income'] = $item->income;
+            }
+        }
+
+        // 按时间合并处理各币商出金数额及所贡献收益
+        $times= [];
+        foreach ($out as $traderId => $outData) {
+            $times += array_keys($outData);
+        }
+
+        foreach ($times as $time) {
+            foreach ($traders as $trader) {
+                $name = @$trader->username ?: @$trader->phone ?: @$trader->email;
+                $outByTraderOfDay['data'][$time][$name]['amount'] = $out[$trader->id][$time]['amount'] ?? 0;
+                $outByTraderOfDay['data'][$time][$name]['income'] = $out[$trader->id][$time]['income'] ?? 0;
+                $outByTraderOfDay['data'][$time]['today_amount'] = bcadd($outByTraderOfDay['data'][$time][$name]['amount'], $outByTraderOfDay['data'][$time]['today_amount']??0);
+                $outByTraderOfDay['data'][$time]['today_income'] = bcadd($outByTraderOfDay['data'][$time][$name]['income'], $outByTraderOfDay['data'][$time]['today_income']??0);
+            }
+        }
+
+        // 处理币商信息
+        foreach ($traders as $trader) {
+            $outByTraderOfDay['trader'][]=  @$trader->username ?: @$trader->phone ?: @$trader->email;
+        }
+        $outByTraderOfDay['trader'][$totalField]= $totalField;
+
+        return $outByTraderOfDay;
+    }
+
+    /**
+     *  币商出金及所获收益总额
+     *
+     * @return array
+     */
+    public function outByTrader()
+    {
+        $out = [];
+        $traders = User::getTraders();
+
+        foreach ($traders as $trader) {
+            $data = $this->otcQuickOrderOfDay($trader->id);
+            $name = @$trader->username ?: @$trader->phone ?: @$trader->email;
+            $out[$name]['total_amount'] = $data->sum('amount');
+            $out[$name]['total_income'] = $data->sum('income');
+        }
+
+        return $out;
+    }
+
+    /**
+     * OTC出金-币商快捷抢单数据统计
+     *
+     * @param $trader
+     * @return mixed
+     */
+    public function otcQuickOrderOfDay($trader)
+    {
+        $otcQuickOrderOfDay = OtcOrderQuick::status(OtcOrderQuick::RECEIVED)
+            ->when($trader, function ($query) use ($trader) {
+                $query->where('user_id', $trader);
+            })
+            ->select(\DB::raw("DATE_FORMAT(updated_at, '%Y-%m-%d') as time,sum(field_amount) as amount,sum(income_user) as income"))
+            ->groupBy('time')
+            ->get();
+
+        return $otcQuickOrderOfDay;
     }
 
     /**
