@@ -25,6 +25,7 @@ class OtcSysWithdrawRequest extends FormRequest
     {
         return [
             'currency_id' => 'required',
+            'subject_id' => 'required',
             'amount' => 'required|numeric',
             'to' => 'required',
             'remark' => 'nullable|max:500',

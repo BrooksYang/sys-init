@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Wallet;
 use App\Http\Requests\OtcSysWithdrawRequest;
 use App\Http\Requests\WalletExternalRequest;
 use App\Models\Currency;
+use App\Models\Wallet\FinanceSubject;
 use App\Models\Wallet\WalletExternal;
 use App\Models\Wallet\WalletTransaction;
 use Illuminate\Http\Request;
@@ -36,13 +37,14 @@ class OtcSysWithdrawAddrController extends Controller
         $type = WalletExternal::TYPE;
 
         $currencies = Currency::getCurrencies();
+        $subject = FinanceSubject::all();
 
         $external = WalletExternal::with(['user'])
             ->when($search, function ($query) use ($search){
                 return $query->whereHas('user', function ($query) use ($search) {
-                    return $query->where('username','like', "$search")
-                        ->orWhere('phone','like',"$search")
-                        ->orWhere('email','like',"$search");
+                    return $query->where('username','like', "%$search%")
+                        ->orWhere('phone','like',"%$search%")
+                        ->orWhere('email','like',"%$search%");
                 });
             })
             ->when($filterStatus, function ($query) use ($filterStatus) {
@@ -56,7 +58,7 @@ class OtcSysWithdrawAddrController extends Controller
             })
             ->paginate(config('app.pageSize'));
 
-        return view('wallet.walletExternalIndex', compact('currencies','status','type','external'));
+        return view('wallet.walletExternalIndex', compact('currencies','status','type','external','subject'));
     }
 
 
@@ -168,6 +170,7 @@ class OtcSysWithdrawAddrController extends Controller
         WalletTransaction::create([
             'user_id'     => 0,
             'currency_id' => $request->currency_id,
+            'subject_id'  => $request->subject_id,
             'type'        => WalletTransaction::WITHDRAW,
             'amount'      => $request->amount,
             'to'          => $request->to,

@@ -41,8 +41,11 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
  */
 Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']], function()
 {
+    // OTC 财务收益科目管理
+    Route::resource('otc/sys/finance/subject', 'Wallet\OtcFinanceSubjectController', ['except' => ['create','edit','show']]);
+
     // OTC 运营方提币地址管理（外部地址）
-    Route::resource('otc/sys/withdrawAddr', 'Wallet\OtcSysWithdrawAddrController',['except' => ['create','edit','show']]);
+    Route::resource('otc/sys/withdrawAddr', 'Wallet\OtcSysWithdrawAddrController', ['except' => ['create','edit','show']]);
 
     // 更新外部提币地址状态 - 启用或停用
     Route::patch('otc/sys/withdrawAddr/toggle/{id}', 'Wallet\OtcSysWithdrawAddrController@toggle');

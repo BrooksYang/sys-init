@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\CryptoWallet;
 
 use App\Models\Currency;
+use App\Models\Wallet\FinanceSubject;
 use App\Models\Wallet\WalletExternal;
 use App\Models\Wallet\WalletTransaction;
 use App\User;
@@ -46,6 +47,7 @@ class WalletTransactionController extends Controller
         $to = trim($request->to,'');
         $filterWithdrawType = trim($request->filterWithdrawType ?:$filterSys,'');
         $filterCurrency = trim($request->filterCurrency,'');
+        $filterSubject = trim($request->filterSubject,'');
         $filterStatus = trim($request->filterStatus,'');
         $filterType = trim($request->filterType ?: $filterType,'');
         $remark = trim($request->remark,'');
@@ -63,8 +65,9 @@ class WalletTransactionController extends Controller
         $withdrawType = WalletTransaction::WITHDRAW_TYPE;
         $currencies = Currency::getCurrencies();
         $external = WalletExternal::getAddr();
+        $subject = FinanceSubject::all();
 
-        $transDetails = WalletTransaction::with(['user','currency'])
+        $transDetails = WalletTransaction::with(['user','currency','subject'])
             ->when($filterSys , function ($query) use ($search){
                 return $query->where('user_id',0);
             })
@@ -100,6 +103,9 @@ class WalletTransactionController extends Controller
             ->when($to, function ($query) use ($to){
                 return $query->to($to);
             })
+            ->when($filterSubject, function ($query) use ($filterSubject){
+                return $query->where('subject_id', $filterSubject);
+            })
             ->when($filterCurrency, function ($query) use ($filterCurrency){
                 return $query->whereHas('currency', function ($query) use ($filterCurrency) {
                     return $query->where('id',$filterCurrency);
@@ -125,7 +131,7 @@ class WalletTransactionController extends Controller
             });
         //->paginate(self::WALLET_TRANS_PAGE_SIZE );
 
-        $search = $search || $from || $to || $start || $end || $filterSys || $filterMerchant;
+        $search = $search || $from || $to || $start || $end || $filterSys || $filterMerchant || $filterSubject;
 
         if ($search) {
             $statistics = $transDetails;
@@ -135,7 +141,7 @@ class WalletTransactionController extends Controller
         $transDetails = $transDetails->paginate(config('app.pageSize'));
 
         return compact('status','type','withdrawType','currencies','transDetails',
-            'search','statistics','external');
+            'search','statistics','external','subject');
     }
 
 

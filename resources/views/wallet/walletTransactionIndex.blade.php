@@ -11,9 +11,69 @@
                     <div class="pull-right box-tools">
                         @include('component.conditionSearch', ['url'=>url('wallet/transaction')])
 
+                        {{--添加收益科目--}}
+                        @if(Request::path() == 'otc/sys/withdrawLog')
+                        <!-- Button trigger modal -->
+                            <a href="javascript:void(0);" style="color: #fff;margin-left: 3px" class="btn btn-warning"
+                               data-toggle="modal" data-target="#exampleModalLongSubject">
+                                <i class="fa fa-plus" title="添加科目"></i>&nbsp;添加科目
+                            </a>
+                            <!-- Modal -->
+                            <div class="modal fade" id="exampleModalLongSubject" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongSubjectTitle"
+                                 aria-hidden="true" width="auto">
+                                <div class="modal-dialog" role="document" width="auto">
+                                    <div class="modal-content" width="auto">
+                                        <form action="{{ url('otc/sys/finance/subject') }}" method="post" role="form">
+                                            {{ csrf_field() }}
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongSubjectTitle">添加科目</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-12">
+                                                                <label>科目名称</label>
+                                                                <input class="form-control input-md" type="text" name="title" value="{{ old('title') ?? '' }}"
+                                                                       placeholder="请填写科目名称" required>
+                                                                @if ($errors->has('title'))
+                                                                    <e class="help-block" style="color: red;"><strong>{{ $errors->first('title') }}</strong></e>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-12">
+                                                                <label>描述</label>
+                                                                <input class="form-control input-lg" type="text" name="desc"
+                                                                       value="{{ old('desc') ?? '' }}"
+                                                                       placeholder="请填写描述">
+                                                                @if ($errors->has('desc'))
+                                                                    <e class="help-block" style="color: red;"><strong>{{ $errors->first('desc') }}</strong></e>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                                <button type="submit" class="btn btn-secondary">确定</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
                         {{--添加提币申请--}}
                         <!-- Button trigger modal -->
-                        <a href="javascript:void(0);" style="color: #fff; margin-left: 8px;" class="btn btn-danger"
+                        <a href="javascript:void(0);" style="color: #fff; margin-left: 10px;" class="btn btn-danger"
                            data-toggle="modal" data-target="#exampleModalLongWithdraw">
                             <i class="fontello-export-outline" title="提币申请"></i>&nbsp;提币申请
                         </a>
@@ -53,12 +113,28 @@
                                                             <select class="filter-status form-control input-sm" id="to" name="to" required>
                                                                 <option value="">请选择转入目标地址</option>
                                                                 @foreach($external as $key => $item)
+                                                                    @if($item->status == \App\Models\Wallet\WalletExternal::ENABLE)
                                                                     <option value="{{$item->address }}" {{ old('to') == $item->address ? 'selected' : ''}}
-                                                                            title="{{ str_limit($item->desc,15) }}">{{ $item->address }}</option>
+                                                                            title="{{$item->desc}}">{{ $item->address }}</option>
+                                                                    @endif
                                                                 @endforeach
                                                             </select>
                                                             @if ($errors->has('to'))
                                                                 <e class="help-block" style="color: red;"><strong>{{ $errors->first('to') }}</strong></e>
+                                                            @endif
+                                                        </div>
+
+                                                        <div class="col-md-12">
+                                                            <label>请选择科目</label>
+                                                            <select class="filter-status form-control input-sm" id="subject_id" name="subject_id" required>
+                                                                <option value="">请选择科目</option>
+                                                                @foreach($subject as $key => $item)
+                                                                    <option value="{{$item->id }}" {{ old('subject_id') == $item->id ? 'selected' : ''}}
+                                                                    title="{{$item->title}}">{{ str_limit($item->title, 16) }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                            @if ($errors->has('subject_id'))
+                                                                <e class="help-block" style="color: red;"><strong>{{ $errors->first('subject_id') }}</strong></e>
                                                             @endif
                                                         </div>
                                                     </div>
@@ -152,7 +228,7 @@
 
                         <div class="row">
                             {{--币种--}}
-                            <div class="col-sm-2">
+                            <div class="{{(Request::path() == 'otc/sys/withdrawLog')?'col-sm-1':'col-sm-2'}}">
                                 <select class="filter-status form-control input-sm" id="filterCurrency" name="filterCurrency">
                                     <option value="">请选择币种</option>
                                     @foreach($currencies as $key => $currency)
@@ -161,8 +237,20 @@
                                 </select>
                             </div>
 
-                            {{--交易记录状态--}}
+                            {{--科目--}}
+                            @if(Request::path() == 'otc/sys/withdrawLog')
                             <div class="col-sm-2">
+                                <select class="filter-status form-control input-sm" id="filterSubject" name="filterSubject">
+                                    <option value="">请选择科目</option>
+                                    @foreach($subject as $key => $sub)
+                                        <option value="{{$sub->id}}" {{ Request::get('filterSubject')==$sub->id ? 'selected' :''}}>{{ $sub->title }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @endif
+
+                            {{--交易记录状态--}}
+                            <div class="{{(Request::path() == 'otc/sys/withdrawLog')?'col-sm-1':'col-sm-2'}}">
                                 <select class="filter-status form-control input-sm" id="filterStatus" name="filterStatus">
                                     <option value="">请选择状态</option>
                                     @foreach($status as $key => $itemStatus)
@@ -203,6 +291,8 @@
                                 <th>UID</th>
                                 <th>用户名</th>
                                 <th>联系方式</th>
+                                @else
+                                <th>科目</th>
                                 @endif
                                 <th>币种</th>
                                 <th>金额</th>
@@ -227,6 +317,8 @@
                                     <td title="{{@$item->user->email ?:(@$item->user->phone ?:'--')}}">
                                         {{ str_limit(@$item->user->phone ?:@$item->user->email ?:'--' ,13) }}
                                     </td>
+                                    @else
+                                        <td title="{{@$item->subject->title}}">{{@$item->subject->title?:'--'}}</td>
                                     @endif
                                     <td><span class="label label-success">{{ str_limit(@$item->currency->currency_title_en_abbr,15) }}</span></td>
                                     <td>{{ $item->amount}}</td>
@@ -291,7 +383,7 @@
                                     <td>{{ $item->created_at ?: '--' }}</td>
                                 </tr>
                             @empty
-                                @include('component.noData', ['colSpan'=> Request::path() == 'otc/sys/withdrawLog' ? 12:15])
+                                @include('component.noData', ['colSpan'=> Request::path() == 'otc/sys/withdrawLog' ? 13:15])
                             @endforelse
                         </table>
 
@@ -365,6 +457,7 @@
                     +'&to='+$('#searchTo').val()
                     +'&filterWithdrawType='+$('#filterWithdrawType').val()
                     +'&filterCurrency='+$('#filterCurrency').val()
+                    {!! Request::path() == 'otc/sys/withdrawLog' ?"+'&filterSubject='+$('#filterSubject').val()":''!!}
                     +'&filterType='+$('#filterType').val()
                     +'&filterStatus='+$('#filterStatus').val()
                     +'&remark='+$('#remark').val()

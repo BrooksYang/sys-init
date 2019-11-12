@@ -83,7 +83,7 @@ class WalletExternal extends Model
      */
     public static function getAddr()
     {
-        return self::get(['id','address', 'desc']);
+        return self::get(['id','address', 'desc','status']);
     }
 
     /**

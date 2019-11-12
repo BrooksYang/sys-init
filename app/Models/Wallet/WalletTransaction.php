@@ -76,6 +76,16 @@ class WalletTransaction extends Model
     }
 
     /**
+     * 关联科目
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function subject()
+    {
+        return $this->belongsTo(FinanceSubject::class, 'subject_id');
+    }
+
+    /**
      * 筛选状态
      *
      * @param $query
@@ -109,6 +119,18 @@ class WalletTransaction extends Model
     public function scopeCurrency($query, $currency)
     {
         return $query->where('currency_id', $currency);
+    }
+
+    /**
+     * 筛选科目
+     *
+     * @param $query
+     * @param $subject
+     * @return mixed
+     */
+    public function scopeSubject($query, $subject)
+    {
+        return $query->where('subject_id', $subject);
     }
 
     /**
