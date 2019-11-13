@@ -1242,6 +1242,8 @@
                 trigger: 'item',
                 formatter: "{a} <br/>{b} : {c} ({d}%)"
             },
+            //设置饼图的颜色
+            //color: function (value){return "#"+("00000"+((Math.random()*16777215+0.5)>>0).toString(16)).slice(-6); },
             legend: {
                 orient: 'vertical',
                 left: 'left',
@@ -1276,6 +1278,20 @@
 
     {{--OTC 各币商出金总额统计 - 每天 默认USDT--}}
     <script>
+        var colorArr = ["#2F9323","#D9B63A","#2E2AA4","#9F2E61","#4D670C","#BF675F","#1F814A","#357F88","#673509","#310937","#1B9637","#F7393C"];
+        var color=createColorCode('#'+Math.floor(Math.random()*16777215).toString(16),colorArr);
+        console.log(color);
+        //生成不同的颜色代码
+        function createColorCode(code,colorArr){
+            if($.inArray(code, colorArr)==-1 && code.length>6){
+                colorArr[0]=code;
+            }else{
+                code='#'+Math.floor(Math.random()*16777215).toString(16);
+                createColorCode(code,colorArr);
+            }
+            return colorArr;
+        }
+
         var outByTraderOfDay = echarts.init(document.getElementById('outByTraderOfDay'));
         var outByTraderOfDayOption = {
             title : {
@@ -1288,6 +1304,9 @@
                     type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                 }
             },
+            //设置柱状图的颜色
+            //color: function (value){return "#"+("00000"+((Math.random()*16777215+0.5)>>0).toString(16)).slice(-6); },
+            //color: color,
             toolbox: {
                 show : true,
                 feature : {
