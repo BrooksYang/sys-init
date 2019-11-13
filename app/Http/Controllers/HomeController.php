@@ -1378,6 +1378,9 @@ class HomeController extends Controller
             $times += array_keys($outData);
         }
 
+        $times =  array_unique($times);
+        sort($times);
+
         foreach ($times as $time) {
             foreach ($traders as $trader) {
                 $name = @$trader->username ?: @$trader->phone ?: @$trader->email;
