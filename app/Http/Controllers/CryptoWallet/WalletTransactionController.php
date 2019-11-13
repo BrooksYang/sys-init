@@ -91,6 +91,11 @@ class WalletTransactionController extends Controller
                 });
             })
             ->when($search && !$filterUser && !$filterSys && !$filterMerchant, function ($query) use ($search){
+                // 兼容按“用户名”搜索运营方对外提币（运营方对外提币即user_id=0）
+                if (str_contains('system', $search)) {
+                    return $query->where('user_id',0);
+                }
+
                 return $query->whereHas('user', function ($query) use ($search) {
                     $query->where('username', 'like', "%$search%")
                         ->orwhere('email', 'like', "%$search%")
