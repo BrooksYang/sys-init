@@ -20,6 +20,9 @@ return [
     // 领导人保证金 - USDT
     'leader_margin' => env('LEADER_MARGIN', 10000),
 
+    // 出金-快捷抢单白名单
+    'otc_quick_order_white_list' => env('OTC_QUICK_ORDER_WHITE_LIST', '121,122,133,277,361,369,617,1715'),
+
     // 系统环境
     'app_debug' => env('APP_DEBUG', true),
 

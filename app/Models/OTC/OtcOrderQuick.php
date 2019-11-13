@@ -108,6 +108,29 @@ class OtcOrderQuick extends Model
     }
 
     /**
+     * 币商检查 - 白名单或有交易额
+     *
+     * @param $traders
+     * @return mixed
+     */
+    public static function traderCheck($traders)
+    {
+        // 在白名单或虽不在白名单但有交易额的币商
+        $whiteList = explode(',', config('conf.otc_quick_order_white_list'));
+
+        $traders = $traders->filter(function ($item) use ($whiteList){
+            $inWhiteList = in_array($item->id, $whiteList);
+            $amount = self::status(self::RECEIVED)
+                ->where('user_id', $item->id)
+                ->sum('field_amount');
+
+            return $inWhiteList || $amount;
+        });
+
+        return $traders;
+    }
+
+    /**
      * 数值格式化
      *
      * @param $value

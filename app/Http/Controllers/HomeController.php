@@ -1361,6 +1361,9 @@ class HomeController extends Controller
         $out = [];
         $traders = User::getTraders();
 
+        // 在白名单或不在白名单但有交易额的币商
+        $traders = OtcOrderQuick::traderCheck($traders);
+
         foreach ($traders as $trader) {
             $data = $this->otcQuickOrderOfDay($trader->id);
             foreach ($data as $item) {
@@ -1403,6 +1406,9 @@ class HomeController extends Controller
     {
         $out = [];
         $traders = User::getTraders();
+
+        // 在白名单或虽不在白名单但有交易额的币商
+        $traders = OtcOrderQuick::traderCheck($traders);
 
         foreach ($traders as $trader) {
             $data = $this->otcQuickOrderOfDay($trader->id);
