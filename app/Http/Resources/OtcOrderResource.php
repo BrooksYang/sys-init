@@ -57,6 +57,7 @@ class OtcOrderResource
         return [
             'id'                    => $order->id,
             'user_id'               => $order->user_id,
+            'from_user_type'        => User::find($order->user_id)->account_type,
             'merchant_id'           => $order->merchant_id,
             'user'                  => (@$order->user->username ?:'--').' | '.(@$order->user->email?:'--').' | '.(@$order->user->phone ?:'--'),
             'owner_phone'           => $order->owner_phone,
