@@ -510,6 +510,14 @@
                         <hr>
                         <div class="row">
                             <div class="col-md-10">
+                                <!-- OTC 出金完成情况统计 - 每天 默认USDT -->
+                                <div id="outFinish" style="width: 100%;height:600px;"></div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-10">
                                 <!-- OTC订单买入及手续费统计 - 默认USDT -->
                                 <div id="otcBuyOfDay" style="width: 100%;height:600px;"></div>
                             </div>
@@ -1367,6 +1375,141 @@
             ]
         };
         outByTraderOfDay.setOption(outByTraderOfDayOption);
+    </script>
+
+    {{--OTC出金完成情况统计 - 每天 默认USDT--}}
+    <script>
+        var outFinish = echarts.init(document.getElementById('outFinish'));
+        var outFinishOption = {
+            title : {
+                text: 'OTC 出金完成情况',
+                subtext: 'USDT',
+            },
+            tooltip : {
+                trigger: 'axis',
+                axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            toolbox: {
+                show : true,
+                feature : {
+                    dataView : {show: true, readOnly: false},
+                    magicType : {show: true, type: ['line', 'bar']},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
+            calculable : true,
+            legend: {
+                //data:[]
+                bottom:'532',
+                type:'scroll',
+                data:['待抢单','待支付','已完成','处理中','订单数']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                top: '15%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis : [
+                {
+                    type : 'category',
+                    data : [@foreach($outFinish as $outKey=>$outItem) '{{date('n/d', strtotime($outKey))}}', @endforeach]
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+                {
+                    name:'待抢单',
+                    type:'bar',
+                    data:[@foreach($outFinish as $outKey=>$outItem) {{$outItem['unGrab']}}, @endforeach],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                {
+                    name:'待支付',
+                    type:'bar',
+                    data:[@foreach($outFinish as $outKey=>$outItem) {{$outItem['unPay']}}, @endforeach],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                {
+                    name:'已完成',
+                    type:'bar',
+                    data:[@foreach($outFinish as $outKey=>$outItem) {{$outItem['finished']}}, @endforeach],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                {
+                    name:'处理中',
+                    type:'bar',
+                    data:[@foreach($outFinish as $outKey=>$outItem) {{$outItem['appealing']}}, @endforeach],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                {
+                    name:'订单数',
+                    type:'bar',
+                    data:[@foreach($outFinish as $outKey=>$outItem) {{$outItem['total']}}, @endforeach],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+
+            ]
+        };
+        outFinish.setOption(outFinishOption);
     </script>
 
     {{--OTC订单买入及手续费统计 - 默认USDT--}}

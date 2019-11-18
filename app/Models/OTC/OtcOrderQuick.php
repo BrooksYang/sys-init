@@ -131,6 +131,71 @@ class OtcOrderQuick extends Model
     }
 
     /**
+     * 待抢单数量
+     *
+     * @param $query
+     * @param $time
+     * @return mixed
+     */
+    public function scopeUnGrab($query, $time)
+    {
+        return  $query->status(self::ORDERED)->whereNull('user_id')
+            ->where('updated_at','like',"$time%")->count();
+    }
+
+    /**
+     * 待支付订单数量
+     *
+     * @param $query
+     * @param $time
+     * @return mixed
+     */
+    public function scopeUnPay($query, $time)
+    {
+        return $query->status(self::ORDERED)->whereNotNull('user_id')
+            ->where(function ($query) {
+                $query->whereNull('appeal_status')->orWhere('appeal_status',self::APPEAL_CANCELED);
+            })->where('updated_at','like',"$time%")->count();
+    }
+
+    /**
+     * 已完成订单数量
+     *
+     * @param $query
+     * @param $time
+     * @return mixed
+     */
+    public function scopeFinished($query,$time)
+    {
+        return $query->status(self::RECEIVED)->where('updated_at','like',"$time%")->count();
+    }
+
+    /**
+     * 问题订单数量
+     *
+     * @param $query
+     * @param $time
+     * @return mixed
+     */
+    public function scopeAppealing($query, $time)
+    {
+        return $query->status(self::ORDERED)->appealStatus(self::APPEALING)
+            ->where('updated_at','like',"$time%")->count();
+    }
+
+    /**
+     * 订单总数量
+     *
+     * @param $query
+     * @param $time
+     * @return mixed
+     */
+    public function scopeTotal($query, $time)
+    {
+        return $query->where('updated_at','like',"$time%")->count();
+    }
+
+    /**
      * 数值格式化
      *
      * @param $value

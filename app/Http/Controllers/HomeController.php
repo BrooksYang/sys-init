@@ -360,6 +360,11 @@ class HomeController extends Controller
             return $this->outByTrader();
         });
 
+        // OTC 出金-完成情况统计 每天
+        $outFinish = Cache::remember('outFinish', $cacheLength, function () {
+            return $this->otcQuickOrderFinish();
+        });
+
         // OTC 平台累计提币（外部地址）
         $otcSysWithdraw = Cache::remember('otcSysWithdraw', $cacheLength, function () {
             return $this->otcSysIncomeWithdraw();
@@ -389,7 +394,7 @@ class HomeController extends Controller
             'otcBuyTotal', 'otcSellTotal','otcBuyOfDay','otcSellOfDay',
             'transFeeDepositOfDay','transFeeDeposit', 'transFeeWithdraw', 'otcQuickIncomeSys','otcSysIncomeOfDay',
             'incomeByMerchantOfDay','incomeByMerchant', 'inByMerchantOfDay', 'feeByMerchantOfDay',
-            'outByTraderOfDay','outByTrader',
+            'outByTraderOfDay','outByTrader','outFinish',
             'otcSysIncomeTotal','otcSysIncomeRmbTotal', 'otcSysIncomeCurrent','otcSysIncomeCurrentRmb'
         );
     }
@@ -1441,6 +1446,36 @@ class HomeController extends Controller
 
         return $otcQuickOrderOfDay;
     }
+
+    /**
+     * OTC出金-完成情况统计 每天
+     *
+     * @return array
+     */
+    public function otcQuickOrderFinish()
+    {
+        $times = OtcOrderQuick::select(\DB::raw("DATE_FORMAT(updated_at, '%Y-%m-%d') as time"))
+            ->groupBy('time')
+            ->pluck('time');
+
+        $finish = [];
+
+        /*已下单 + user_id(NUll) = 待抢单
+        已下单 + user_id(NOT NULL) = 待支付
+        已完成 = 已完成
+        已下单 +　申诉处理中 = 问题订单*/
+
+        foreach ($times as $key => $time) {
+            $finish[$time]['unGrab'] = OtcOrderQuick::unGrab($time);
+            $finish[$time]['unPay'] = OtcOrderQuick::unPay($time);
+            $finish[$time]['finished'] = OtcOrderQuick::finished($time);
+            $finish[$time]['appealing'] = OtcOrderQuick::appealing($time);
+            $finish[$time]['total'] = OtcOrderQuick::total($time);
+        }
+
+        return $finish;
+    }
+
 
     /**
      * 各商户贡献收益及出入金总额
