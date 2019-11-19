@@ -15,6 +15,11 @@
                     {{-- Filter and Search  Button --}}
                     <div class="pull-right" style="margin: 20px 20px;">
                         @include('component.conditionSearch', ['url'=>url('order/quick/otc')])
+
+                        <a href="{{url('order/quick/otc/byTrader')}}" style="margin-right:12px;;color: darkgray;" class="btn btn-default" title="重置">
+                            {{--币商完成情况--}}
+                            <i class="fa fa-user"></i>&nbsp;&nbsp;币商完成情况
+                        </a>
                     </div>
 
                 </div>

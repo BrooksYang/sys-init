@@ -49,6 +49,9 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
 
     // OTC 币商快捷抢单列表
     Route::resource('order/quick/otc', 'Order\OtcOrderQuickController',['only' => ['index']]);
+
+    // OTC 出金-各币商完成情况统计
+    Route::get('order/quick/otc/byTrader', 'Order\OtcOrderQuickController@byTrader');
 });
 
 
