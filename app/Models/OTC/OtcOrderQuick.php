@@ -139,7 +139,7 @@ class OtcOrderQuick extends Model
      */
     public function scopeUnGrab($query, $time)
     {
-        return  $query->status(self::ORDERED)->whereNull('user_id')
+        return  $query->status(self::ORDERED)->where('user_id',0)
             ->where('updated_at','like',"$time%")->count();
     }
 
@@ -152,7 +152,7 @@ class OtcOrderQuick extends Model
      */
     public function scopeUnPay($query, $time)
     {
-        return $query->status(self::ORDERED)->whereNotNull('user_id')
+        return $query->status(self::ORDERED)->where('user_id','>',0)
             ->where(function ($query) {
                 $query->whereNull('appeal_status')->orWhere('appeal_status',self::APPEAL_CANCELED);
             })->where('updated_at','like',"$time%")->count();
@@ -179,7 +179,7 @@ class OtcOrderQuick extends Model
      */
     public function scopeAppealing($query, $time)
     {
-        return $query->status(self::ORDERED)->appealStatus(self::APPEALING)
+        return $query->status(self::ORDERED)->whereIn('appeal_status',[self::APPEALED,self::APPEALING])
             ->where('updated_at','like',"$time%")->count();
     }
 
