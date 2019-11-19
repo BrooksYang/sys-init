@@ -130,7 +130,7 @@
                                 <tr>
                                     <td>{{ ($key + 1) + ($otcQuickOrder->currentPage() - 1) * $otcQuickOrder->perPage() }}</td>
                                     <td>#{{ $item->id }}</td>
-                                    <td title="UID：{{ $item->user_id }} | 联系方式：{{ @$item->user->phone ?: @$item->user->email}}">
+                                    <td title="UID：{{ $item->user_id }} | {{ @$item->user->username ?:'--'}} | 联系方式：{{ @$item->user->phone ?: @$item->user->email}}">
                                         <strong>{{ str_limit(@$item->user->username ?: (@$item->user->phone ?:@$item->user->email) ?:'--',8) }}</strong></td>
                                     <td>{{ str_limit($item->owner_phone ?:'--', 11) }}</td>
                                     <td>{{ $item->merchant_amount }}</td>
