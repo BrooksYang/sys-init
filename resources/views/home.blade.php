@@ -80,9 +80,9 @@
         {{--财务预警相关数据--}}
         <div class="row">
             <div class="col-lg-3">
-                <div class="content-bg">
+                <div class="content-bg" style="min-height: 120px;">
                     <div class="content-icon">
-                        <i class="fontello-warning-empty bg-red"></i>
+                      {{-- <i class="fontello-warning-empty bg-red"></i>--}}
                         <h2 class="text-red">{{ number_format($otcToBeWithdrawPending, 2) }}</h2>
                         <p class="text-blue">OTC 提币待处理数额({{ config('conf.currency_usdt') }})&nbsp;&nbsp;&nbsp;&nbsp;
                             <span style="color: #32526E !important;">{{number_format(bcmul($otcToBeWithdrawPending, $rate,8),2)}}</span>(RMB)</p>
@@ -92,9 +92,9 @@
             </div>
 
             <div class="col-lg-3">
-                <div class="content-bg">
+                <div class="content-bg" style="min-height: 120px;">
                     <div class="content-icon">
-                        <i class="fontello-warning-empty bg-aqua"></i>
+                        {{--<i class="fontello-warning-empty bg-aqua"></i>--}}
                         <h2 class="text-aqua">{{ number_format(@$otcSysWithDrawAddrBalance, 2) }}</h2>
                         <p class="text-blue">
                             <a href="https://etherscan.io/address/{{config('blockChain.sys_withdraw_addr')}}" target="_blank">
@@ -106,9 +106,9 @@
             </div>
 
             <div class="col-lg-3">
-                <div class="content-bg">
+                <div class="content-bg" style="min-height: 120px;">
                     <div class="content-icon">
-                        <i class="fontello-warning-empty bg-yellow"></i>
+                        {{--<i class="fontello-warning-empty bg-yellow"></i>--}}
                         <h2 class="text-yellow">{{ number_format($neuCollectPending, 2) }}</h2>
                         <p class="text-blue">OTC 系统待归集数额({{ config('conf.currency_usdt') }})&nbsp;&nbsp;&nbsp;&nbsp;
                             <span style="color: #32526E !important;">{{number_format(bcmul($neuCollectPending, $rate,8),2)}}</span>(RMB)</p>
@@ -119,9 +119,9 @@
             </div>
 
             <div class="col-lg-3">
-                <div class="content-bg">
+                <div class="content-bg" style="min-height: 120px;">
                     <div class="content-icon">
-                        <i class="fontello-warning-empty bg-blue"></i>
+                       {{-- <i class="fontello-warning-empty bg-blue"></i>--}}
                         <h2 class="text-blue">{{ number_format($neuCollectionBalance, 2) }}</h2>
                         <p class="text-blue">系统归集账户余额({{ config('conf.currency_usdt') }})&nbsp;&nbsp;&nbsp;&nbsp;
                             <span style="color: #32526E !important;">{{number_format(bcmul($neuCollectionBalance, $rate,8),2)}}</span>(RMB)</p>
