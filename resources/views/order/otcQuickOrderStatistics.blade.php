@@ -20,6 +20,11 @@
                             {{--重置搜索项--}}
                             <i class="fontello-cancel"></i>&nbsp;&nbsp;重置
                         </a>
+
+                        <a href="{{url('order/quick/otc')}}" style="margin-right:12px;;color: darkgray;" class="btn btn-default" title="返回">
+                            {{--返回快捷抢单--}}
+                            <i class="fa fa-arrow-left"></i>&nbsp;&nbsp;返回
+                        </a>
                     </div>
 
                 </div>
