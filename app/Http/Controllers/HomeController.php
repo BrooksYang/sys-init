@@ -222,8 +222,6 @@ class HomeController extends Controller
      */
     public function otcStatisticItem($cacheLength)
     {
-        dd($this->otcQuickOrderFinish());
-
         // 当天 OTC 订单成交数量及价格--按状态
         $otcOrder = Cache::remember('otcOrder', $cacheLength, function () {
             return $this->getOtcOrder();
