@@ -391,7 +391,8 @@
                             {{--取消订单(普通OTC订单)--}}
                             <!-- Button trigger modal -->
                             <a href="####"  class="btn btn-default ml-5" data-toggle="modal" data-target="#exampleModalCancel" title="取消OTC订单"
-                                {{$ticket->order_type==\App\Models\OTC\OtcTicket::OTC_QUICK ? 'disabled' : ''}}>取消订单
+                                {{$ticket->order_type==\App\Models\OTC\OtcTicket::OTC_QUICK || $order->status==\App\Models\OTC\OtcOrder::CANCELED? 'disabled' : ''}}>
+                                取消订单
                             </a>
                             <!-- Modal -->
                             <div class="modal fade" id="exampleModalCancel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCancelTitle"
