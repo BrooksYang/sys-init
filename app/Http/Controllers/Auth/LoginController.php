@@ -55,12 +55,7 @@ class LoginController extends Controller
         }
 
         /*$this->guard()->logout();
-
         $request->session()->flush();*/
-
-        /*$this->guard()->logout();
-
-            $request->session()->invalidate();*/
 
         auth('admin')->logout();
         $request->session()->invalidate();
