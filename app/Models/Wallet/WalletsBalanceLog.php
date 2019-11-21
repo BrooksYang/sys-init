@@ -20,9 +20,11 @@ class WalletsBalanceLog extends Model
 
     // 记录类型，1划转
     const TRANSFER = 1;
+    const FROZEN   = 2;
 
     const TYPE = [
-        self::TRANSFER => ['name' => '划转']
+        self::TRANSFER => ['name' => '划转'],
+        self::FROZEN   => ['name' => '冻结']
     ];
 
     /**

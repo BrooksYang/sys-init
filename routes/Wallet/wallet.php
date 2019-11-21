@@ -18,6 +18,9 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     // 运营方记账钱包
     Route::resource('sys/wallet', 'Wallet\SysWalletController');
 
+    // 冻结用户钱包资产
+    Route::patch('user/walletFrozen/{wallet}','Wallet\UserWalletController@frozen');
+
     // 用户钱包余额变更记录 - 划转
     Route::get('wallet/balance/log', 'Wallet\UserWalletController@balanceLog');
 });

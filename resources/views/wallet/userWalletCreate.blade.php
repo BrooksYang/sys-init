@@ -13,8 +13,61 @@
                     </h3>
 
                     <div class="pull-right box-tools">
+                        {{--冻结用户钱包资产--}}
                         <!-- Button trigger modal -->
-                        <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalEdit" title="编辑用户记账钱包">
+                        <a href="####"  class="" data-toggle="modal" data-target="#exampleModalFrozen" title="冻结用户钱包资产">
+                            <i class="fontello-lock-filled"></i> 冻结
+                        </a>
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModalFrozen" tabindex="-1" role="dialog" aria-labelledby="exampleModalFrozenTitle"
+                             aria-hidden="true" width="auto">
+                            <div class="modal-dialog" role="document" width="auto">
+                                <div class="modal-content" width="auto">
+                                    <form action="{{ url('user/walletFrozen').'/'.$userWallet->id }}" role="form" method="POST" >
+                                        {{ csrf_field() }}
+                                        {{  method_field('PATCH')}}
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalFrozenTitle"><i class="fontello-lock-filled"></i>冻结用户钱包资产</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="col-md-12">
+                                                        <br>
+                                                        <label>填写冻结数额</label>
+                                                        <input class="form-control input-sm" type="number" name="amount" min=0 placeholder="请填写数额"
+                                                               value="{{ $item->amount ?? old('amount') }}"  required>
+                                                        @if ($errors->has('amount'))
+                                                            <p class="" style="color: red;"><strong>{{ $errors->first('amount') }}</strong></p>
+                                                        @endif
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <br>
+                                                        <label>备注信息</label>
+                                                        <input class="form-control input-lg" type="text" name="remark" placeholder="建议填写备注或说明原由"
+                                                               value="{{ $item->remark ?? old('remark') }}"  required>
+                                                        @if ($errors->has('remark'))
+                                                            <p class="" style="color: red;"><strong>{{ $errors->first('remark') }}</strong></p>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                            <button type="submit" class="btn btn-secondary">确定</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{--编辑用户钱包资产--}}
+                        <!-- Button trigger modal -->
+                        <a href="####"  class="" data-toggle="modal" data-target="#exampleModalEdit" title="编辑用户记账钱包资产" style="margin-left: 20px">
                             <i class="fontello-edit"></i> 编辑
                         </a>
                         <!-- Modal -->
@@ -120,7 +173,7 @@
                             </div>
 
                             {{--用户邮箱账号--}}
-                            <div class="col-md-6">`
+                            <div class="col-md-6">
                                 <label>用户邮箱账号</label>
                                 <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
                                     <div class="col-sm-12">
@@ -205,6 +258,6 @@
 
 @section('js-part')
     <script>
-        if('{{$errors->first()}}'){ layer.msg('验证失败') }
+        if('{{$errors->first()}}'){ layer.msg('验证失败 '+'{{$errors->first()}}') }
     </script>
 @endsection

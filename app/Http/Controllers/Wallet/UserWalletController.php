@@ -118,6 +118,10 @@ class UserWalletController extends Controller
 
         $balance = Balance::lockForUpdate()->find($id);
 
+        if ($action == 'bcsub' && $request->amount > $balance->user_wallet_balance) {
+            return back()->withErrors(['amount' => '可用余额不足']);
+        }
+
         DB::transaction(function () use ($request, $id, $action, $balance){
 
             // 更新余额
@@ -134,6 +138,50 @@ class UserWalletController extends Controller
                'from' => $from,
                'to' => $to,
                'remark' => $request->remark
+            ]);
+        });
+
+        return back();
+    }
+
+    /**
+     * 冻结用户钱包可用资产
+     *
+     * @param Request $request
+     * @param $wallet
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Throwable
+     */
+    public function frozen(Request $request, $wallet)
+    {
+        bcscale(config('app.bcmath_scale'));
+
+        $balance =  Balance::lockForUpdate()->find($wallet);
+
+        if ($request->amount > $balance->user_wallet_balance) {
+            return back()->withErrors(['amount' => '可用余额不足']);
+        }
+
+        DB::transaction(function () use ($request, $balance) {
+
+            // 冻结钱包余额
+            $from = $balance->user_wallet_balance;
+
+            $balance->user_wallet_balance = bcsub($balance->user_wallet_balance, $request->amount);
+            $balance->user_wallet_balance_freeze_amount = bcadd($balance->user_wallet_balance_freeze_amount, $request->amount);
+            $balance->save();
+
+            $to = $balance->user_wallet_balance;
+
+            // 冻结记录
+            WalletsBalanceLog::create([
+                'user_id' => $balance->user_id,
+                'currency_id' => $balance->user_wallet_currency_id,
+                'amount' => $request->amount,
+                'from' => $from,
+                'to' => $to,
+                'type' => WalletsBalanceLog::FROZEN,
+                'remark' => $request->remark
             ]);
         });
 
