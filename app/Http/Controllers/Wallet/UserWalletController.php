@@ -166,12 +166,14 @@ class UserWalletController extends Controller
 
             // 冻结钱包余额
             $from = $balance->user_wallet_balance;
+            $frozenFrom = $balance->user_wallet_balance_freeze_amount;
 
             $balance->user_wallet_balance = bcsub($balance->user_wallet_balance, $request->amount);
             $balance->user_wallet_balance_freeze_amount = bcadd($balance->user_wallet_balance_freeze_amount, $request->amount);
             $balance->save();
 
             $to = $balance->user_wallet_balance;
+            $frozenTo = $balance->user_wallet_balance_freeze_amount;
 
             // 冻结记录
             WalletsBalanceLog::create([
@@ -181,7 +183,7 @@ class UserWalletController extends Controller
                 'from' => $from,
                 'to' => $to,
                 'type' => WalletsBalanceLog::FROZEN,
-                'remark' => $request->remark
+                'remark' => $request->remark. "[冻结变化{$frozenFrom}->{$frozenTo} ]"
             ]);
         });
 
