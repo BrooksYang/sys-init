@@ -21,6 +21,9 @@ Route::group(['middleware' => ['web', 'auth:admin', 'entrance', 'lock.screen','m
     // 数字钱包交易记录
     Route::resource('wallet/transaction','CryptoWallet\WalletTransactionController');
 
+    // 取消提币
+    Route::patch('withdraw/cancel/{withdrawId}', 'CryptoWallet\WalletTransactionController@cancelWithdraw');
+
 });
 
 

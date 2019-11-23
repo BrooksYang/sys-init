@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\CryptoWallet;
 
 use App\Models\Currency;
+use App\Models\Wallet\Balance;
 use App\Models\Wallet\FinanceSubject;
 use App\Models\Wallet\WalletExternal;
 use App\Models\Wallet\WalletTransaction;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 /**
  * 用户数字钱包交易记录
@@ -219,6 +221,61 @@ class WalletTransactionController extends Controller
         $data = $this->walletTransaction($request, $filterSys, $filterType);
 
         return view('wallet.walletTransactionIndex', $data);
+    }
+
+    /**
+     * 取消提币
+     *
+     * @param Request $request
+     * @param $withdrawId
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function cancelWithdraw(Request $request, $withdrawId)
+    {
+        // 判断是否在提币时间，01:00-02:00
+        $now = now('PRC')->toTimeString();
+        if ($now >= '01:00:00' && $now <= '02:00:00') {
+             return response()->json(['code' => 302, 'msg' => '当前为系统对账期-请稍后操作']);
+        }
+
+        $res = DB::transaction(function () use ($withdrawId) {
+
+            $transaction = WalletTransaction::type(WalletTransaction::WITHDRAW)
+                ->lockForUpdate()
+                ->findOrFail($withdrawId);
+
+            // 判断是否正在处理中
+            if ($transaction->status != WalletTransaction::PENDING || $transaction->hash) {
+                return ['code' => 419,'msg' => '提币已受理-暂无法撤销'];
+            }
+
+            // 提币地址余额是否充足
+            $sysBalance = User::getSysWithDrawAddrBalance(config('blockChain.sys_withdraw_addr'));
+            if ($transaction->amount <= $sysBalance) {
+                return ['code' => 419, 'msg' => '余额充足-暂无法取消'];
+            }
+
+            // 撤销
+            $transaction->status = WalletTransaction::CANCELED;
+            $transaction->save();
+
+            // 回复冻结金额
+            $balance = Balance::where('user_id', $transaction->user_id)
+                ->where('user_wallet_currency_id', $transaction->currency_id)
+                ->lockForUpdate()
+                ->first();
+
+            // 解冻金额
+            $cost = bcadd($transaction->amount, $transaction->fee);
+            $balance->user_wallet_balance = bcadd($balance->user_wallet_balance, $cost);
+            $balance->user_wallet_balance_freeze_amount = bcsub($balance->user_wallet_balance_freeze_amount, $cost);
+            $balance->save();
+
+            return ['code' => 0,' msg' => '提币已撤销'];
+        });
+
+        return response()->json($res);
     }
 
 
