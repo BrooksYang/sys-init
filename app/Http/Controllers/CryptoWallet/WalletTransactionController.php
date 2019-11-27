@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\CryptoWallet;
 
+use App\Http\Controllers\HomeController;
 use App\Models\Currency;
 use App\Models\Wallet\Balance;
 use App\Models\Wallet\FinanceSubject;
@@ -68,6 +69,12 @@ class WalletTransactionController extends Controller
         $currencies = Currency::getCurrencies();
         $external = WalletExternal::getAddr();
         $subject = FinanceSubject::all();
+
+        // 系统提币支出分布统计
+        $otcSysExpend = null;
+        if ($filterSys) {
+            $otcSysExpend = HomeController::otcSysExpendDistribute();
+        }
 
         $transDetails = WalletTransaction::with(['user','currency','subject'])
             ->when($filterSys , function ($query) use ($search){
@@ -148,7 +155,7 @@ class WalletTransactionController extends Controller
         $transDetails = $transDetails->paginate(config('app.pageSize'));
 
         return compact('status','type','withdrawType','currencies','transDetails',
-            'search','statistics','external','subject');
+            'search','statistics','external','subject','otcSysExpend');
     }
 
 

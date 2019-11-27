@@ -415,6 +415,15 @@
                             </div>
                         </div>
                         {{-- Paginaton End --}}
+
+                        @if(Request::path() == 'otc/sys/withdrawLog')
+                        <div class="row">
+                            <div class="col-md-10">
+                                <!-- OTC 支出分布 - 默认USDT -->
+                                <div id="otcSysExpend" style="width: 100%;height:220px;"></div>
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -480,4 +489,54 @@
             });
         })
     </script>
+
+    {{--OTC 币商支出分布 - 默认USDT--}}
+    @if(Request::path() == 'otc/sys/withdrawLog')
+    <script src="{{ asset('/assets/Echarts/echarts.min.js') }}"></script>
+    <script>
+        var otcSysExpend = echarts.init(document.getElementById('otcSysExpend'));
+        var otcSysExpendOption = {
+            title : {
+                text: '平台支出分布',
+                subtext: '支出占比',
+                x:'center'
+            },
+            tooltip : {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            //设置饼图的颜色
+            //color: function (value){return "#"+("00000"+((Math.random()*16777215+0.5)>>0).toString(16)).slice(-6); },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                top:'50',
+                bottom:'70',
+                type:'scroll',
+                data: [@foreach($otcSysExpend as $expend) '{{@$expend->subject->title}}', @endforeach]
+            },
+            series : [
+                {
+                    name: '支出数额',
+                    type: 'pie',
+                    radius : '55%',
+                    center: ['50%', '60%'],
+                    data:[
+                        @foreach($otcSysExpend as $expend)
+                        {value:'{{round(@$expend->amount,2)}}', name:'{{ @$expend->subject->title }}'},
+                        @endforeach
+                    ],
+                    itemStyle: {
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+        otcSysExpend.setOption(otcSysExpendOption);
+    </script>
+    @endif
 @endsection

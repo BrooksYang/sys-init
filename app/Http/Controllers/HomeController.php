@@ -1101,6 +1101,24 @@ class HomeController extends Controller
     }
 
     /**
+     * 平台累计支出分布
+     *
+     * @param $cacheLength
+     * @return mixed
+     */
+    public static function otcSysExpendDistribute($cacheLength = null)
+    {
+        $cacheLength = $cacheLength?:intval(config('app.cache_length'));
+
+        return  Cache::remember('otcSysExpendDistribute',$cacheLength, function () {
+            return WalletTransaction::where('user_id',0)->with('subject:id,title')
+           ->groupBy('subject_id')
+           ->select('subject_id', DB::raw('sum(amount) as amount'))
+           ->get();
+        });
+    }
+
+    /**
      * 按状态获取客服或系统工单
      *
      * @param $state
