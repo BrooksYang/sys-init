@@ -367,11 +367,13 @@
                     <div class="box-body">
                         <div class="news-widget">
                             <h2>
-                                <span class="bg-danger">Current</span>
+                                <span class="bg-aqua">Current</span>
                             </h2>
                             <i class="fontello-money"></i>
-                            <h2 class="text-danger">{{ number_format($grandOtcWithdrawOrder, 2) }}</h2>
-                            <p>OTC 累计提现数额</p>
+                            <h2 class="text-aqua"  title="{{$otcSysIncomeTotal}}">{{ number_format($otcSysIncomeTotal, 2) }}</h2>
+                            <p>OTC 平台累计收益({{ config('conf.currency_usdt') }})&nbsp;&nbsp;
+                                <span style="color: #32526E !important;">{{number_format($otcSysIncomeRmbTotal,2)}}</span>(RMB)
+                            </p>
                             <div style="clear:both;"></div>
                         </div>
                     </div>
@@ -385,12 +387,12 @@
                     <div class="box-body">
                         <div class="news-widget">
                             <h2>
-                                <span class="bg-aqua">Current</span>
+                                <span class="bg-danger">Current</span>
                             </h2>
                             <i class="fontello-money"></i>
-                            <h2 class="text-aqua"  title="{{$otcSysIncomeTotal}}">{{ number_format($otcSysIncomeTotal, 2) }}</h2>
-                            <p>OTC 平台累计收益({{ config('conf.currency_usdt') }})&nbsp;&nbsp;
-                                <span style="color: #32526E !important;">{{number_format($otcSysIncomeRmbTotal,2)}}</span>(RMB)
+                            <h2 class="text-danger"  title="{{$otcSysExpend}}">{{ number_format($otcSysExpend, 2) }}</h2>
+                            <p>OTC 平台累计支出({{ config('conf.currency_usdt') }})&nbsp;&nbsp;
+                                <span style="color: #32526E !important;">{{number_format($otcSysExpendRmb,2)}}</span>(RMB)
                             </p>
                             <div style="clear:both;"></div>
                         </div>

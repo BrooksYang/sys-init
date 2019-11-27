@@ -378,6 +378,12 @@ class HomeController extends Controller
         $otcSysIncomeTotal = bcadd($otcFeeTotal, $otcQuickIncomeSys); // 平台累计总收益=手续费收入+溢价收益
         $otcSysIncomeRmbTotal = bcmul($otcSysIncomeTotal, LegalCurrency::rmbRate() ?: 0);
 
+        // OTC 平台累计支出
+        $otcSysExpend = Cache::remember('otcSysExpend', $cacheLength, function () {
+            return $this->otcSysExpend();
+        });
+        $otcSysExpendRmb = bcmul($otcSysExpend, LegalCurrency::rmbRate() ?: 0);
+
         // OTC 平台当前收益 默认USDT
         $otcSysIncomeCurrent = Cache::remember('otcSysIncomeCurrent', $cacheLength, function () use ($otcSysIncomeTotal, $otcSysWithdraw) {
             return bcsub($otcSysIncomeTotal, $otcSysWithdraw);
@@ -395,7 +401,8 @@ class HomeController extends Controller
             'transFeeDepositOfDay','transFeeDeposit', 'transFeeWithdraw', 'otcQuickIncomeSys','otcSysIncomeOfDay',
             'incomeByMerchantOfDay','incomeByMerchant', 'inByMerchantOfDay', 'feeByMerchantOfDay',
             'outByTraderOfDay','outByTrader','outFinish',
-            'otcSysIncomeTotal','otcSysIncomeRmbTotal', 'otcSysIncomeCurrent','otcSysIncomeCurrentRmb'
+            'otcSysIncomeTotal','otcSysIncomeRmbTotal', 'otcSysExpend','otcSysExpendRmb',
+            'otcSysIncomeCurrent','otcSysIncomeCurrentRmb'
         );
     }
 
@@ -1077,6 +1084,20 @@ class HomeController extends Controller
             ->sum('fee');
 
         return $walletTransFee;
+    }
+
+    /**
+     * 平台累计支出
+     *
+     * @return mixed
+     */
+    public function otcSysExpend()
+    {
+        return WalletTransaction::where('user_id',0)
+            ->currency(Currency::USDT)
+            ->type(WalletTransaction::WITHDRAW)
+            ->status(WalletTransaction::SUCCESS)
+            ->sum('amount');
     }
 
     /**
