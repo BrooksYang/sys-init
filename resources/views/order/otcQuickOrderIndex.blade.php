@@ -195,7 +195,7 @@
                                     <td><span class="label label-{{$orderStatus[$item->status]['class']}}">{{ $orderStatus[$item->status]['name'] ?? '--'}}</span></td>
                                     <td><span class="{{ $item->appeal_status ? "label label-".$appealStatus[$item->appeal_status]['class'] : '' }}">
                                             {{ $appealStatus[$item->appeal_status]['name'] ?? '--'}}</span>
-                                    <td title="所属商户UID：{{$item->merchant_id}} | 商户信息：{{@$item->merchant->username?:'--'}} | {{@$item->merchant->phone ?: @$item->merchant->email}}">
+                                    <td title="商户订单：{{$item->merchant_order_id}} | 所属商户UID：{{$item->merchant_id}} | {{@$item->merchant->username?:'--'}} | {{@$item->merchant->phone ?: @$item->merchant->email}}">
                                         {{ $item->merchant_order_id ? substr_replace($item->merchant_order_id, '***', 4, 14):'--'}}
                                     </td>
                                    {{-- <td title="UID：{{ $item->merchant_id }} | 联系方式：{{ @$item->merchant->phone ?: @$item->merchant->email}}">
