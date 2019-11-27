@@ -329,20 +329,20 @@
                                         @if($item->from)
                                             @include('component.copy', ['eleId'=>'copyFrom'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
                                         @endif
-                                        <strong>{{ str_limit($item->from ?: '--',20) }}</strong>
+                                        <strong>{{ $item->from ?substr_replace($item->from, '***', 6, 30): '--' }}</strong>
                                     </td>
                                     <td title="{{ $item->to }}" id="copyTo{{$key}}" data-attr="{{$item->to}}">
                                         @if($item->to)
                                             @include('component.copy', ['eleId'=>'copyTo'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
                                         @endif
-                                        <strong>{{ str_limit($item->to ?: '--',20) }}</strong>
+                                        <strong>{{ $item->to ?substr_replace($item->to, '***', 6, 30): '--' }}</strong>
                                     </td>
                                     <td title="{{ $item->hash }}" id="copyHash{{$key}}" data-attr="{{$item->hash}}">
                                         @if($item->hash)
                                             @include('component.copy', ['eleId'=>'copyHash'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
                                         @endif
                                         <strong><a {!! $item->hash ? 'href="https://etherscan.io/tx/'.$item->hash.'"'.' target="_blank"' : '####' !!}>
-                                                {{ str_limit($item->hash ?: '--',15) }}</a></strong>
+                                                {{ $item->hash ?substr_replace($item->hash, '***', 6, 54): '--' }}</a></strong>
                                     </td>
                                     <td title="结算平台交易记录ID">{{ $item->neu_txid ?:'--' }}</td>
                                     {{--备注--}}

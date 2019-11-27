@@ -314,7 +314,7 @@
                                             @include('component.copy', ['eleId'=>'copyAddr'.$key, 'eleType'=>'attr', 'attr'=>'data-attr'])
                                         @endif
                                         <strong><a {!! $item->address ? 'href="https://etherscan.io/tx/'.$item->address.'"'.' target="_blank"' : '####' !!}>
-                                                {{ str_limit($item->address ?: '--',15) }}</a></strong>
+                                                {{ $item->address ?substr_replace($item->address, '***', 6, 30): '--' }}</a></strong>
                                     </td>
                                     <td title="{{ number_format($item->total,8) }}">{{ floatval($item->total) }}</td>
                                     <td title="{{ number_format($item->amount,8) }}">{{ floatval($item->amount) }}</td>
