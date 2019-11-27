@@ -387,10 +387,10 @@
                     <div class="box-body">
                         <div class="news-widget">
                             <h2>
-                                <span class="bg-danger">Current</span>
+                                <span class="bg-red">Current</span>
                             </h2>
                             <i class="fontello-money"></i>
-                            <h2 class="text-danger"  title="{{$otcSysExpend}}">{{ number_format($otcSysExpend, 2) }}</h2>
+                            <h2 class="text-red"  title="{{$otcSysExpend}}">{{ number_format($otcSysExpend, 2) }}</h2>
                             <p>OTC 平台累计支出({{ config('conf.currency_usdt') }})&nbsp;&nbsp;
                                 <span style="color: #32526E !important;">{{number_format($otcSysExpendRmb,2)}}</span>(RMB)
                             </p>
