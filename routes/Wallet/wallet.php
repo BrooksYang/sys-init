@@ -21,6 +21,9 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     // 冻结用户钱包资产
     Route::patch('user/walletFrozen/{wallet}','Wallet\UserWalletController@frozen');
 
+    // 恢复冻结用户钱包资产
+    Route::patch('user/walletResume/{logId}','Wallet\UserWalletController@resume');
+
     // 用户钱包余额变更记录 - 划转
     Route::get('wallet/balance/log', 'Wallet\UserWalletController@balanceLog');
 });

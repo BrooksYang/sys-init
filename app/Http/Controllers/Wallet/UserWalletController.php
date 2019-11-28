@@ -145,7 +145,7 @@ class UserWalletController extends Controller
     }
 
     /**
-     * 冻结用户钱包可用资产
+     * 冻结用户钱包可用资产 - 异常资产冻结
      *
      * @param Request $request
      * @param $wallet
@@ -156,7 +156,7 @@ class UserWalletController extends Controller
     {
         bcscale(config('app.bcmath_scale'));
 
-        $balance =  Balance::lockForUpdate()->find($wallet);
+        $balance = Balance::lockForUpdate()->find($wallet);
 
         if ($request->amount > $balance->user_wallet_balance) {
             return back()->withErrors(['amount' => '可用余额不足']);
@@ -187,7 +187,54 @@ class UserWalletController extends Controller
             ]);
         });
 
-        return back();
+        return redirect('wallet/balance/log');
+    }
+
+    /**
+     *  恢复冻结
+     *
+     * @param Request $request
+     * @param $logId
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Throwable
+     */
+    public function resume(Request $request, $logId)
+    {
+        bcscale(config('app.bcmath_scale'));
+
+        $log = WalletsBalanceLog::findOrFail($logId);
+        $balance = Balance::lockForUpdate()->where('user_id',$log->user_id)->currency($log->currency_id)->first();
+
+        DB::transaction(function () use ($request, $balance, $log) {
+
+            // 恢复冻结余额
+            $from = $balance->user_wallet_balance;
+            $frozenFrom = $balance->user_wallet_balance_freeze_amount;
+
+            $balance->user_wallet_balance = bcadd($balance->user_wallet_balance, $log->amount);
+            $balance->user_wallet_balance_freeze_amount = bcsub($balance->user_wallet_balance_freeze_amount,  $log->amount);
+            $balance->save();
+
+            $to = $balance->user_wallet_balance;
+            $frozenTo = $balance->user_wallet_balance_freeze_amount;
+
+            // 标记原冻结记录为已恢复
+            $log->is_resume = WalletsBalanceLog::RESUMED;
+            $log->save();
+
+            // 恢复记录
+            WalletsBalanceLog::create([
+                'user_id' => $balance->user_id,
+                'currency_id' => $balance->user_wallet_currency_id,
+                'amount' => $log->amount,
+                'from' => $from,
+                'to' => $to,
+                'type' => WalletsBalanceLog::RESUME,
+                'remark' => '恢复冻结'. "[冻结变化{$frozenFrom}->{$frozenTo} ]"
+            ]);
+        });
+
+        return  response()->json(['code'=>0, 'msg'=>'已恢复']);
     }
 
     /**

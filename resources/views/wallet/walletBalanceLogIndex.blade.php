@@ -39,6 +39,8 @@
                                 <th>变更时间
                                     @include('component.sort',['url'=>url('wallet/balance/log')])
                                 </th>
+                                <th>恢复</th>
+                                <th>操作</th>
                             </tr>
                             @forelse($balanceLog as $key => $item)
                                 <tr>
@@ -79,9 +81,20 @@
                                         </div>
                                     </td>
                                     <td>{{ $item->created_at ?:'--' }}</td>
+                                    <td>{{ $item->is_resume ? '已恢复':'--' }}</td>
+                                    <td>
+                                        @if($item->type == \App\Models\Wallet\WalletsBalanceLog::FROZEN && !$item->is_resume)
+                                        <a href="####" onclick="itemUpdate('{{ $item->id }}',
+                                                '{{ url("user/walletResume/$item->id") }}?','amount','resume',
+                                                '用户资产冻结为<b><strong> 恢复 </strong></b> 状态',
+                                                '{{ csrf_token() }}', '恢复冻结');"><i class="fontello-cancel" title="恢复冻结"></i></a>
+                                        @else
+                                         &nbsp;--
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="12" class="text-center">
+                                <tr><td colspan="14" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>

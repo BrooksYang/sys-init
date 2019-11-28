@@ -18,14 +18,20 @@ class WalletsBalanceLog extends Model
      */
     protected $guarded= [];
 
-    // 记录类型，1划转
+    // 类型, 1划转，2冻结，3恢复冻结
     const TRANSFER = 1;
     const FROZEN   = 2;
+    const RESUME   = 3;
 
     const TYPE = [
         self::TRANSFER => ['name' => '划转'],
-        self::FROZEN   => ['name' => '冻结']
+        self::FROZEN   => ['name' => '冻结'],
+        self::RESUME   => ['name' => '恢复']
     ];
+
+    // 冻结是否已恢复；0-否，1-是
+    const NOT_RESUME = 0;
+    const RESUMED    = 1;
 
     /**
      * 关联用户
