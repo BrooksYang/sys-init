@@ -381,12 +381,12 @@
                                     <td><span class="">{{ $type[$item->type]['name'] }}</span></td>
                                     <td>
                                         <span class="label label-{{ $status[$item->status]['class'] }}">{{ $status[$item->status]['name'] }}</span>
-                                        {{--@if($item->status==\App\Models\Wallet\WalletTransaction::PENDING && !$item->hash)
+                                        @if($item->status==\App\Models\Wallet\WalletTransaction::PENDING && !$item->hash)
                                             <a href="####" onclick="itemUpdate('{{ $item->id }}',
                                                     '{{ url("withdraw/cancel/$item->id") }}?','status','{{\App\Models\Wallet\WalletTransaction::CANCELED}}',
                                                     '提币申请为<b><strong> 取消 </strong></b> 状态',
                                                     '{{ csrf_token() }}', '取消提币');">&nbsp; <i class="fontello-cancel" title="取消提币"></i></a>
-                                        @endif--}}
+                                        @endif
                                     </td>
                                     <td>{{ $item->created_at ?: '--' }}</td>
                                 </tr>
