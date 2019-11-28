@@ -279,7 +279,7 @@ class WalletTransactionController extends Controller
             $balance->user_wallet_balance_freeze_amount = bcsub($balance->user_wallet_balance_freeze_amount, $cost);
             $balance->save();
 
-            return ['code' => 0,' msg' => '提币已撤销'];
+            return ['code' => 0, 'msg' => '提币已撤销'];
         });
 
         return response()->json($res);
