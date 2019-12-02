@@ -96,6 +96,17 @@
                                         <div class="modal-body">
                                             <div class="row">
                                                 <div class="col-md-12">
+                                                    <div class="col-sm-12">
+                                                        <div class="alert alert-info">
+                                                            <button data-dismiss="alert" class="close" type="button">×</button>
+                                                            {{--<span class="entypo-info-circled"></span>--}}
+                                                            <strong>提示：提币限额区间为最小额{{$withdrawMin}}, 最大额{{$withdrawMax}}；</strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
                                                     <div class="form-group">
                                                         <div class="col-sm-12">
                                                             <label>请选择币种类型</label>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Wallet;
 
 use App\Http\Requests\FinanceSubjectRequest;
 use App\Models\Currency;
+use App\Models\OTC\OtcConfig;
 use App\Models\Wallet\FinanceSubject;
 use App\Models\Wallet\WalletExternal;
 use App\Models\Wallet\WalletTransaction;
@@ -33,6 +34,9 @@ class OtcFinanceSubjectController extends Controller
         $currencies = Currency::getCurrencies();
         $external = WalletExternal::status(WalletExternal::ENABLE)->get();
 
+        $withdrawMin = OtcConfig::withdrawMin();
+        $withdrawMax = OtcConfig::withdrawMax();
+
         $subject = FinanceSubject::when($search, function ($query) use ($search){
                 $query->where('title','like', "%$search%");
             })
@@ -41,7 +45,8 @@ class OtcFinanceSubjectController extends Controller
             })
             ->paginate(config('app.pageSize'));
 
-        return view('wallet.financeSubjectIndex', compact('subject','search','currencies','external'));
+        return view('wallet.financeSubjectIndex', compact('subject','search','currencies','external',
+            'withdrawMin', 'withdrawMax'));
     }
 
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Wallet;
 use App\Http\Requests\OtcSysWithdrawRequest;
 use App\Http\Requests\WalletExternalRequest;
 use App\Models\Currency;
+use App\Models\OTC\OtcConfig;
 use App\Models\Wallet\FinanceSubject;
 use App\Models\Wallet\WalletExternal;
 use App\Models\Wallet\WalletTransaction;
@@ -39,6 +40,9 @@ class OtcSysWithdrawAddrController extends Controller
         $currencies = Currency::getCurrencies();
         $subject = FinanceSubject::all();
 
+        $withdrawMin = OtcConfig::withdrawMin();
+        $withdrawMax = OtcConfig::withdrawMax();
+
         $external = WalletExternal::with(['user'])
             ->when($search, function ($query) use ($search){
                 return $query->whereHas('user', function ($query) use ($search) {
@@ -58,7 +62,8 @@ class OtcSysWithdrawAddrController extends Controller
             })
             ->paginate(config('app.pageSize'));
 
-        return view('wallet.walletExternalIndex', compact('currencies','status','type','external','subject'));
+        return view('wallet.walletExternalIndex', compact('currencies','status','type','external','subject',
+            'withdrawMin','withdrawMax'));
     }
 
 
@@ -156,9 +161,17 @@ class OtcSysWithdrawAddrController extends Controller
      */
     public function withdraw(OtcSysWithdrawRequest $request)
     {
-         // TODO 运营方提币开关配置
+
+        bcscale(config('app.bcmath_scale'));
+
+        // TODO 运营方提币开关配置
         if (!config('conf.enable_sys_withdraw')) {
             return back()->withInput()->withErrors(['amount' => '系统暂未开启对外提币']);
+        }
+
+        // 是否满足系统提币限额（最低最高限额）
+        if (bccomp($request->amount, OtcConfig::withdrawMin())==-1 || bccomp($request->amount, OtcConfig::withdrawMax()==1) ) {
+            return back()->withInput()->withErrors(['amount' => '提币限额受限']);
         }
 
         // 判定可提币数量

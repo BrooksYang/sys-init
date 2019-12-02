@@ -4,6 +4,7 @@ namespace App\Http\Controllers\CryptoWallet;
 
 use App\Http\Controllers\HomeController;
 use App\Models\Currency;
+use App\Models\OTC\OtcConfig;
 use App\Models\Wallet\Balance;
 use App\Models\Wallet\FinanceSubject;
 use App\Models\Wallet\WalletExternal;
@@ -69,6 +70,9 @@ class WalletTransactionController extends Controller
         $currencies = Currency::getCurrencies();
         $external = WalletExternal::getAddr();
         $subject = FinanceSubject::all();
+
+        $withdrawMin = OtcConfig::withdrawMin();
+        $withdrawMax = OtcConfig::withdrawMax();
 
         // 系统提币支出分布统计
         $otcSysExpend = null;
@@ -155,7 +159,7 @@ class WalletTransactionController extends Controller
         $transDetails = $transDetails->paginate(config('app.pageSize'));
 
         return compact('status','type','withdrawType','currencies','transDetails',
-            'search','statistics','external','subject','otcSysExpend');
+            'search','statistics','external','subject','otcSysExpend','withdrawMin','withdrawMax');
     }
 
 

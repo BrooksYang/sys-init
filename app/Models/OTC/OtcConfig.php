@@ -28,4 +28,30 @@ class OtcConfig extends Model
 
         return $margin->value;
     }
+
+    /**
+     * 获取otc最小提币额（USDT）
+     *
+     * @return mixed
+     */
+    public static function withdrawMin()
+    {
+        $margin = self::firstOrNew(['key'=> 'withdraw_min'], ['value' => config('conf.withdraw_min'),
+            'title' => 'otc最小提币额（USDT）']);
+
+        return $margin->value;
+    }
+
+    /**
+     * 获取otc最小提币额（USDT）
+     *
+     * @return mixed
+     */
+    public static function withdrawMax()
+    {
+        $margin = self::firstOrNew(['key'=> 'withdraw_max'], ['value' => config('conf.withdraw_max'),
+            'title' => 'otc最大提币额（USDT）']);
+
+        return $margin->value;
+    }
 }

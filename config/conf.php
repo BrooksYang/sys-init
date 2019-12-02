@@ -20,6 +20,12 @@ return [
     // 领导人保证金 - USDT
     'leader_margin' => env('LEADER_MARGIN', 10000),
 
+    // otc最小提币额 - USDT
+    'withdraw_min' => env('WITHDRAW_MIN', 300),
+
+    // otc最大提币额 - USDT
+    'withdraw_max' => env('WITHDRAW_MAX', 30000),
+
     // 出金-快捷抢单白名单
     'otc_quick_order_white_list' => env('OTC_QUICK_ORDER_WHITE_LIST', '121,122,133,277,361,369,617,1715'),
 
