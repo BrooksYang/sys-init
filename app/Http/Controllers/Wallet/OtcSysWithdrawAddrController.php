@@ -171,7 +171,7 @@ class OtcSysWithdrawAddrController extends Controller
 
         // 是否满足系统提币限额（最低最高限额）
         if (bccomp($request->amount, OtcConfig::withdrawMin())==-1 || bccomp($request->amount, OtcConfig::withdrawMax()==1) ) {
-            return back()->withInput()->withErrors(['amount' => '提币限额受限']);
+            return back()->withInput()->withErrors(['amount' => '提币数额受限']);
         }
 
         // 判定可提币数量
