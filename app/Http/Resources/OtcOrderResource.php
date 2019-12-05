@@ -45,6 +45,7 @@ class OtcOrderResource
             'merchant_order'    => $order->merchant_order_id,
             'merchant_currency' => $order->merchant_currency,
             'rate'              => $order->rate,
+            'send_amount'       => $order->send_amount,
             'address'           => $order->address,
             'hash'              => $order->hash,
             'created_at'        => $order->created_at->toDateTimeString(),

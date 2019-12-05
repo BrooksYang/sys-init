@@ -290,4 +290,18 @@ class OtcOrder extends Model
         return floatval($value);
     }
 
+
+    /**
+     * 格式化数据
+     *
+     * @param $value
+     * @return float
+     */
+    public function getSendAmountAttribute($value)
+    {
+        return floatval($value);
+    }
+
+
+
 }

@@ -163,6 +163,7 @@
                                                 'header'=>'商户订单信息', 'icon'=>'fa fa-info-circle', 'color'=>'gray'])
                                             <p>商户币种：{{ $item->merchant_currency ?: '暂无' }}</p>
                                             <p>币种汇率：{{ $item->rate ?: '暂无' }}</p>
+                                            <p>到账数量：{{ $item->send_amount }}</p>
                                             <p>用户地址：{{ $item->address ?: '暂无' }}</p>
                                             <p>交易哈希：{{ $item->hash ?: '暂无' }}</p>
                                             <p>状态：{{ @$hashStatus[$item->hash_status]['name'] ?: '暂无' }}</p>
