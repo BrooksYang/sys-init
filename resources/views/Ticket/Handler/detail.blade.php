@@ -40,6 +40,7 @@
             </p>
             <p>【订单号】#{{ $order->id }}</p>
             <p>【商户订单】{{ @$order->merchant_order ?: @$order->merchant_order_id ?:'--' }}</p>
+            <p>【所属商户】{{ @$order->merchant ?:'--' }}</p>
             <P>【订单日期】{{ $order->created_at }}&nbsp;&nbsp;&nbsp;&nbsp;
                 {{--{{ \Carbon\Carbon::parse($order->created_at)->addHour(8)->toDateTimeString() }}--}}
                 {{ \Carbon\Carbon::parse($order->created_at)->diffForHumans() }}

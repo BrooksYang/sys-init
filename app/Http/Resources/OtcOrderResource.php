@@ -22,6 +22,7 @@ class OtcOrderResource
     {
         return [
             'id'             => $order->id,
+            'merchant'       => @$order->merchant->username ?: @$order->merchant->phone,
             'currency'       => $order->currency->abbr,
             'legal_currency' => $order->legalCurrency->abbr,
             'type'           => $order->type,
@@ -56,6 +57,7 @@ class OtcOrderResource
     {
         return [
             'id'                    => $order->id,
+            'merchant'              => @$order->merchant->username ?: @$order->merchant->phone,
             'user_id'               => $order->user_id,
             'from_user_type'        => User::find($order->user_id)->account_type,
             'merchant_id'           => $order->merchant_id,

@@ -61,4 +61,15 @@ class OtcTicket extends Model
             ->select('id','username','email','phone');
     }
 
+    /**
+     * 关联商户
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function merchant()
+    {
+        return $this->belongsTo(User::class, 'merchant_id')
+            ->select('id','username','email','phone');
+    }
+
 }

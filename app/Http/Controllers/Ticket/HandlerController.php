@@ -62,7 +62,7 @@ class HandlerController extends Controller
     {
 
         if(Entrance::user()->role_id == $this->supervisor) {
-            $task = DB::table('otc_ticket')
+            $task = OtcTicket::with(['merchant'])
                                 ->where('supervisor_id', Entrance::user()->id)
                                 ->where('ticket_state',2)
                                 ->orWhere('ticket_state',6)
@@ -70,7 +70,7 @@ class HandlerController extends Controller
                                 ->get();
 
         } elseif(Entrance::user()->role_id == $this->admin) {
-            $task = DB::table('otc_ticket')->orderByDesc('created_at')->get();
+            $task = OtcTicket::with(['merchant'])->orderByDesc('created_at')->get();
         }
 
         return response()->json(['task'=>$task]);
@@ -264,7 +264,7 @@ class HandlerController extends Controller
         $data['role'] = Entrance::user()->role_id;
 
         if(Entrance::user()->role_id == $this->supervisor) {
-            $data['tickets'] = DB::table('otc_ticket')
+            $data['tickets'] = OtcTicket::with(['merchant'])
                                 ->when($search, function ($query) use ($search){
                                     return $query->where('order_id', $search);
                                 })
@@ -279,7 +279,7 @@ class HandlerController extends Controller
                                 ->paginate('30');
 
         } elseif(Entrance::user()->role_id == $this->admin) {
-            $data['tickets'] = DB::table('otc_ticket')
+            $data['tickets'] = OtcTicket::with(['merchant'])
                 ->when($search, function ($query) use ($search){
                     return $query->where('order_id', $search);
                 })
