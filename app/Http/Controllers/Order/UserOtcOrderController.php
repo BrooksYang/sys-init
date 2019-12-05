@@ -53,6 +53,9 @@ class UserOtcOrderController extends Controller
         // 团队红利结算状态
         $teamBonusStatus = OtcOrder::TEAM_BONUS_STATUS;
 
+        // 商户币种交易状态
+        $hashStatus = OtcOrder::HASH_STATUS;
+
         // 币种
         $currencies = Currency::getCurrencies();
 
@@ -145,8 +148,8 @@ class UserOtcOrderController extends Controller
         $statistics = $this->sum($userOtcOrder);
         $userOtcOrder = self::selfPage($userOtcOrder, OTC_ORDER_PAGE_SIZE);
 
-        return view('order.userOtcOrderIndex',compact('orderStatus', 'appealStatus', 'teamBonusStatus','currencies',
-            'orderType','merchants','userOtcOrder','statistics','search'));
+        return view('order.userOtcOrderIndex', compact('orderStatus', 'appealStatus', 'teamBonusStatus', 'hashStatus',
+            'currencies', 'orderType','merchants','userOtcOrder','statistics','search'));
     }
 
 

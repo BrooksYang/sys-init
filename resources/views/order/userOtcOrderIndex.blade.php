@@ -158,6 +158,15 @@
                                     </td>
                                     <td title="商户订单：{{$item->merchant_order_id}} | 所属商户UID：{{$item->merchant_id}} | {{@$item->merchant->username?:'--'}} | {{@$item->merchant->phone ?: @$item->merchant->email}}">
                                         {{ $item->merchant_order_id ? substr_replace($item->merchant_order_id, '***', 4, 14):'--'}}
+                                            <!-- Button trigger modal -->
+                                            @include('component.modalHeader', ['modal'=>'Remark','title'=>'商户订单信息',
+                                                'header'=>'商户订单信息', 'icon'=>'fa fa-info-circle', 'color'=>'gray'])
+                                            <p>商户币种：{{ $item->merchant_currency ?: '暂无' }}</p>
+                                            <p>币种汇率：{{ $item->rate ?: '暂无' }}</p>
+                                            <p>用户地址：{{ $item->address ?: '暂无' }}</p>
+                                            <p>交易哈希：{{ $item->hash ?: '暂无' }}</p>
+                                            <p>状态：{{ @$hashStatus[$item->hash_status]['name'] ?: '暂无' }}</p>
+                                            @include('component.modalFooter',['form'=>false])
                                     </td>
                                     {{--<td title="{{ $item->merchant_callback }}"><i class="fontello-globe-1"></i></td>--}}
                                     <td title="{{number_format($item->team_bonus, 8) }}">{{ $item->team_bonus?:'--' }}</td>

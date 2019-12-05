@@ -1,7 +1,7 @@
 
 <!-- Button trigger modal -->
 <a href="####"  class="" data-toggle="modal" data-target="#exampleModal{{$modal}}{{$key ?? $keyNew}}" title="{{ $title ?? '' }}">
-    @if( $icon ?? '') <i class="{{ $icon }}"></i> @else 查看 @endif
+    @if( $icon ?? '') <i class="{{ $icon }}" style="color: {{$color ?? ''}}"></i> @else 查看 @endif
 </a>
 <!-- Modal -->
 <div class="modal fade" id="exampleModal{{$modal}}{{$key ?? $keyNew}}" tabindex="-1" role="dialog" aria-labelledby="exampleModal{{$modal}}Title{{$key ?? $keyNew}}" aria-hidden="true" width="auto">

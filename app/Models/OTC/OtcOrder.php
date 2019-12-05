@@ -90,6 +90,15 @@ class OtcOrder extends Model
         self::BONUS_PAID   => '已结算',
     ];
 
+    // TTK交易收币状态，1确认中，2完成
+    const CONFIRMING = 1;
+    const FINISHED   = 2;
+
+    const HASH_STATUS = [
+        self::CONFIRMING => ['name'=>'确认中', 'class'=>''],
+        self::FINISHED   => ['name'=>'完成',   'class'=>''],
+    ];
+
     /**
      * 广告所有者
      *
@@ -266,6 +275,17 @@ class OtcOrder extends Model
      * @return float
      */
     public function getTeamBonusAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 格式化数据
+     *
+     * @param $value
+     * @return float
+     */
+    public function getRateAttribute($value)
     {
         return floatval($value);
     }
