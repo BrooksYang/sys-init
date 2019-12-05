@@ -252,6 +252,17 @@ class User extends Authenticatable
     }
 
     /**
+     * 格式化用户名
+     *
+     * @param $value
+     * @return string
+     */
+    public function getUserNameAttribute($value)
+    {
+        return preg_match('/^(0x)[0-9a-fA-F]{40}$/', $value) ? '*'.substr($value, -7) : $value;
+    }
+
+    /**
      * 获取系统提币地址余额 - Erc20-token(USDT)
      *
      * @param string $address

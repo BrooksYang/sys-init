@@ -48,8 +48,7 @@ class UserController extends Controller
         $filterVerify= trim($request->filterVerify,'');
         $orderC = trim($request->orderC,'');
 
-        $user = DB::table('users as u')
-            ->when($searchId, function ($query) use ($searchId){
+        $user = User::when($searchId, function ($query) use ($searchId){
                 return $query->where('id', $searchId);
             })
             ->when($search, function ($query) use ($search){
