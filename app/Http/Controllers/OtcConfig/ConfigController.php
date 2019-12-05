@@ -101,6 +101,7 @@ class ConfigController extends Controller
             'order_fee_percentage'             => 'required|numeric|min:0',
             'withdraw_min'                     => 'required|numeric|min:0',
             'withdraw_max'                     => 'required|numeric|min:0',
+            'ttk_usdt_rate'                    => 'required|numeric|min:1',
         ],[
             'withdraw_fee_percentage.min'      => '期望一个合法的汇率值',
             'release_order_margin.min'         => '期望一个合法的百分比值',
@@ -150,6 +151,7 @@ class ConfigController extends Controller
             'order_fee_percentage',
             'withdraw_min',
             'withdraw_max',
+            'ttk_usdt_rate',
         ];
     }
 }
