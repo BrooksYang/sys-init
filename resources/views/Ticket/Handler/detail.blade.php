@@ -43,7 +43,7 @@
             @if(@$order->merchant_currency)
             <p>【商户币种】{{ @$order->merchant_currency ?: '--' }}</p>
             <p>【币种汇率】{{ @$order->rate ?: '--' }}</p>
-            <p>【到账数量】{{ @$item->send_amount }}</p>
+            <p>【发币数量】{{ @$item->send_amount }}</p>
             <p>【用户地址】{{ @$order->address ?: '--' }}</p>
             <p>【交易哈希】{{ @$order->hash ?:'--' }}</p>
             @endif
