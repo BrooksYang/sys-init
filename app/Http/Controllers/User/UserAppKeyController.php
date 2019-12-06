@@ -316,9 +316,12 @@ class UserAppKeyController extends Controller
             ->get();
         $totalLeft = $trades->sum('amount') - $trades->sum('field_amount');
 
-        return compact('merchant', 'totalTradesSell','field','final','withdraw',
-            'sell','out','correctBalance','currentBalance', 'currentBalanceRmb','available','frozen',
-            'totalDeposit','totalBalance','totalLeft');
+        return compact('merchant', // 商户信息
+            'totalTradesSell','field','final',  // 累计广告卖出、商户买入、商户到账
+            'withdraw','sell','out', // 商户提币、 广告卖出、商户出金
+            'correctBalance','currentBalance', 'frozen','totalDeposit', // 商户正常余额、商户当前余额、冻结、用户累计充值
+            'totalBalance','totalLeft', // 用户总余额、广告累计余量
+            'currentBalanceRmb','available');
     }
 
     /**
