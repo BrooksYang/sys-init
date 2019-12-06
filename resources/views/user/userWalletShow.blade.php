@@ -55,44 +55,46 @@
                             【累计广告卖出】<strong>{{ number_format($totalTradesSell, 8) }}</strong>
                         </div>
                         <div class="col-md-4">
-                            【商户买入】 <strong>{{ number_format($field, 8)}}</strong>
+                            【商户买入】<strong>{{ number_format($field, 8)}}</strong>
                         </div>
                         <div class="col-md-4">
-                            【商户到账】 <strong>{{ number_format($final, 8) }}</strong>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-md-4">
-                            【商户提币】 <strong>{{ number_format($withdraw, 8) }}</strong>
-                        </div>
-                        <div class="col-md-4">
-                            【广告卖出】 <strong>{{ number_format($sell, 8) }}</strong>
-                        </div>
-                        <div class="col-md-4">
-                            【商户出金】 <strong>{{ number_format($out, 8) }}</strong>
+                            【商户到账】<strong>{{ number_format($final, 8) }}</strong>
                         </div>
                     </div>
                     <hr>
                     <div class="row">
                         <div class="col-md-4">
-                            【商户正常余额】 <strong>{{ number_format($correctBalance, 8) }}</strong>
+                            【商户提币】<strong>{{ number_format($withdraw, 8) }}</strong>
                         </div>
                         <div class="col-md-4">
-                            【商户当前余额】 <strong style="color: #45B6B0">{{ number_format($currentBalance, 8) }}&nbsp;</strong>
-                            【冻结】<strong style="color: #FF6B6B">{{ number_format($frozen, 8) }}</strong>
+                            【广告卖出】<strong>{{ number_format($sell, 8) }}</strong>
                         </div>
                         <div class="col-md-4">
-                            【用户累计充值】 <strong>{{ number_format($totalDeposit, 8) }}</strong>
+                            【商户出金】<strong>{{ number_format($out, 8) }}</strong>
                         </div>
                     </div>
                     <hr>
                     <div class="row">
                         <div class="col-md-4">
-                            【用户总余额】 <strong style="color: #32526E">{{ number_format($totalBalance, 8) }}</strong>
+                            【商户正常余额】<strong>{{ number_format($correctBalance, 8) }}</strong>
                         </div>
                         <div class="col-md-4">
-                            【广告累计余量】 <strong>{{ number_format($totalLeft, 8) }}</strong>
+                            【商户当前余额】<strong style="color: #45B6B0">{{ number_format($currentBalance, 8) }}&nbsp;{{config('conf.currency_usdt')}}</strong>
+                        </div>
+                        <div class="col-md-4">
+                            【商户冻结数额】<strong style="color: #FF6B6B">{{ number_format($frozen, 8) }}&nbsp;{{config('conf.currency_usdt')}}</strong>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-4">
+                            【用户累计充值】<strong>{{ number_format($totalDeposit, 8) }}</strong>
+                        </div>
+                        <div class="col-md-4">
+                            【用户总余额】<strong style="color: #32526E">{{ number_format($totalBalance, 8) }}</strong>
+                        </div>
+                        <div class="col-md-4">
+                            【广告累计余量】<strong>{{ number_format($totalLeft, 8) }}</strong>
                         </div>
                     </div>
                     <div style="height: 50px"></div>
