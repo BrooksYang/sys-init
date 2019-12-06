@@ -344,8 +344,8 @@
                                         '订单为<b><strong> 强制发币 </strong></b> 状态',
                                         '{{ csrf_token() }}','强制发币 - 请慎重操作！');" title="已支付-未放币" disabled>强制发币</a>--}}
 
-                            {{--强制恢复(普通OTC订单)--}}
-                            @if($ticket->order_type == \App\Models\OTC\OtcTicket::OTC_COMMON)
+                            {{--强制恢复(普通OTC订单)--排除ttk订单--}}
+                            @if($ticket->order_type == \App\Models\OTC\OtcTicket::OTC_COMMON && empty($order->merchant_currency))
                             <a href="####"  class="btn btn-info ml-5" data-toggle="modal" data-target="#exampleModalRecover" title="强制恢复"
                                {{ $order->status == \App\Models\OTC\OtcOrder::RECEIVED ? '': 'disabled'}}>强制恢复
                             </a>

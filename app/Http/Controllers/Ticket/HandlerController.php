@@ -670,9 +670,11 @@ class HandlerController extends Controller
                 $balanceBuyer->bonus_total = bcsub($balanceBuyer->bonus_total, $order->team_bonus);
             }
 
-            // 购买者扣除可用余额
-            $balanceBuyer->user_wallet_balance = bcsub($balanceBuyer->user_wallet_balance, $order->final_amount);
-            $balanceBuyer->save();
+            // 购买者扣除可用余额 - 排除TTK订单
+            if (empty($order->merchant_currency)) {
+                $balanceBuyer->user_wallet_balance = bcsub($balanceBuyer->user_wallet_balance, $order->final_amount);
+                $balanceBuyer->save();
+            }
 
             // BC盘入金订单 - 领导人与搬砖工的收益不再直接结算(team_bonus_status)
             /*if (@$appKey->type == UserAppKey::BC && $order->type == OtcOrder::BUY && $order->team_bonus_status == OtcOrder::BONUS_PAID) {
