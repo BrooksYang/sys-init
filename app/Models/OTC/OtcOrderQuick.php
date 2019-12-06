@@ -49,6 +49,16 @@ class OtcOrderQuick extends Model
         self::APPEAL_CANCELED => ['name' => '已撤诉', 'class' => 'default'],
     ];
 
+    // TTK交易转账状态，1确认中，2成功，3失败
+    const PENDING = 1;
+    const SUCCESS = 2;
+    const FAILED  = 3;
+
+    const HASH_STATUS = [
+        self::PENDING => ['name'=>'确认中', 'class'=>''],
+        self::SUCCESS => ['name'=>'成功',   'class'=>''],
+        self::FAILED  => ['name'=>'失败',   'class'=>''],
+    ];
 
     /**
      * 关联币商
@@ -323,6 +333,29 @@ class OtcOrderQuick extends Model
      * @return float
      */
     public function getSubsidyAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 格式化数据
+     *
+     * @param $value
+     * @return float
+     */
+    public function getCurrencyRateAttribute($value)
+    {
+        return floatval($value);
+    }
+
+
+    /**
+     * 格式化数据
+     *
+     * @param $value
+     * @return float
+     */
+    public function getSendAmountAttribute($value)
     {
         return floatval($value);
     }

@@ -91,12 +91,14 @@ class OtcOrder extends Model
     ];
 
     // TTK交易收币状态，1确认中，2完成
-    const CONFIRMING = 1;
-    const FINISHED   = 2;
+    const HASH_NOT_RELEASE = 0;
+    const CONFIRMING       = 1;
+    const FINISHED         = 2;
 
     const HASH_STATUS = [
-        self::CONFIRMING => ['name'=>'确认中', 'class'=>''],
-        self::FINISHED   => ['name'=>'完成',   'class'=>''],
+        self::HASH_NOT_RELEASE => ['name'=>'未发币', 'class'=>''],
+        self::CONFIRMING       => ['name'=>'确认中', 'class'=>''],
+        self::FINISHED         => ['name'=>'完成',   'class'=>''],
     ];
 
     /**

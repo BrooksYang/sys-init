@@ -44,10 +44,11 @@ class OtcOrderResource
             'appeal_content'    => $order->content,
             'merchant_order'    => $order->merchant_order_id,
             'merchant_currency' => $order->merchant_currency,
-            'rate'              => $order->rate,
+            'currency_rate'     => $order->rate,
             'send_amount'       => $order->send_amount,
             'address'           => $order->address,
             'hash'              => $order->hash,
+            'hash_status'       => @OtcOrder::HASH_STATUS[$order->hash_status]['name'],
             'created_at'        => $order->created_at->toDateTimeString(),
         ];
     }
@@ -89,6 +90,12 @@ class OtcOrderResource
             'card_number'           => $order->card_number,
             'payment_url'           => $order->payment_url,
             'merchant_order_id'     => $order->merchant_order_id,
+            'merchant_currency'     => $order->merchant_currency,
+            'currency_rate'         => $order->currency_rate,
+            'send_amount'           => $order->send_amount,
+            'address'               => $order->address,
+            'hash'                  => $order->hash,
+            'hash_status'           => @OtcOrderQuick::HASH_STATUS[$order->hash_status]['name'],
             'created_at'            => $order->created_at->toDateTimeString(),
         ];
     }
