@@ -61,6 +61,9 @@ class OtcOrderQuickController extends Controller
         // 申诉状态，1已申诉，2申诉处理中，3申诉完结
         $appealStatus = OtcOrderQuick::APPEAL_STATUS;
 
+        // TTK交易转账状态，1确认中，2成功，3失败
+        $hashStatus = OtcOrderQuick::HASH_STATUS;
+
         // 系统商户
         $merchants = User::merchant();
 
@@ -115,7 +118,8 @@ class OtcOrderQuickController extends Controller
         $statistics = self::sum($otcQuickOrder);
         $otcQuickOrder = self::selfPage($otcQuickOrder, config('app.pageSize'));
 
-        return compact('orderStatus', 'appealStatus', 'merchants', 'otcQuickOrder','statistics','search', 'incomeType');
+        return compact('orderStatus', 'appealStatus', 'hashStatus', 'merchants', 'otcQuickOrder',
+            'statistics','search', 'incomeType');
     }
 
     /**

@@ -16,7 +16,8 @@ class OtcOrderQuick extends Model
 
     protected $guarded = [];
 
-    // 定义状态，1已下单，2已支付，3已发币，4已完成，5已取消
+    // 定义状态，0确认中，1已下单，2已支付，3已发币，4已完成，5已取消
+    const PENDING = 0;
     const ORDERED = 1;
     const PAID = 2;
     const RELEASED = 3;
@@ -25,6 +26,7 @@ class OtcOrderQuick extends Model
 
     // 状态文本
     const STATUS = [
+        self::PENDING  => ['name' => '确认中', 'class' => 'info'], //ttk订单
         self::ORDERED  => ['name' => '已下单', 'class' => 'info'],
         self::PAID     => ['name' => '已支付', 'class' => 'primary'],
         self::RELEASED => ['name' => '已发币', 'class' => 'warning'], // 3确认收款(已发币)
@@ -49,6 +51,16 @@ class OtcOrderQuick extends Model
         self::APPEAL_CANCELED => ['name' => '已撤诉', 'class' => 'default'],
     ];
 
+    // TTK交易转账状态，1确认中，2成功，3失败
+    const HASH_PENDING = 1;
+    const HASH_SUCCESS = 2;
+    const HASH_FAILED  = 3;
+
+    const HASH_STATUS = [
+        self::HASH_PENDING => ['name'=>'确认中', 'class'=>''],
+        self::HASH_SUCCESS => ['name'=>'成功',   'class'=>''],
+        self::HASH_FAILED  => ['name'=>'失败',   'class'=>''],
+    ];
 
     /**
      * 关联币商
@@ -323,6 +335,29 @@ class OtcOrderQuick extends Model
      * @return float
      */
     public function getSubsidyAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 格式化数据
+     *
+     * @param $value
+     * @return float
+     */
+    public function getCurrencyRateAttribute($value)
+    {
+        return floatval($value);
+    }
+
+
+    /**
+     * 格式化数据
+     *
+     * @param $value
+     * @return float
+     */
+    public function getSendAmountAttribute($value)
     {
         return floatval($value);
     }

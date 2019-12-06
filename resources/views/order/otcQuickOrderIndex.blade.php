@@ -197,6 +197,18 @@
                                             {{ $appealStatus[$item->appeal_status]['name'] ?? '--'}}</span>
                                     <td title="商户订单：{{$item->merchant_order_id}} | 所属商户UID：{{$item->merchant_id}} | {{@$item->merchant->username?:'--'}} | {{@$item->merchant->phone ?: @$item->merchant->email}}">
                                         {{ $item->merchant_order_id ? substr_replace($item->merchant_order_id, '***', 4, 14):'--'}}
+                                            <!-- Button trigger modal -->
+                                            @if($item->merchant_currency)
+                                                @include('component.modalHeader', ['modal'=>'Remark','title'=>'商户订单信息',
+                                                    'header'=>'商户订单信息', 'icon'=>'fa fa-info-circle', 'color'=>'gray'])
+                                                <p>商户币种：{{ $item->merchant_currency }}</p>
+                                                <p>币种汇率：{{ $item->currency_rate ?: '暂无' }}</p>
+                                                <p>发币数量：{{ $item->send_amount }}</p>
+                                                <p>用户地址：{{ $item->address ?: '暂无' }}</p>
+                                                <p>交易哈希：{{ $item->hash ?: '暂无' }}</p>
+                                                <p>状态：{{ @$hashStatus[$item->hash_status]['name'] ?: '暂无' }}</p>
+                                                @include('component.modalFooter',['form'=>false])
+                                            @endif
                                     </td>
                                    {{-- <td title="UID：{{ $item->merchant_id }} | 联系方式：{{ @$item->merchant->phone ?: @$item->merchant->email}}">
                                         <strong>{{ str_limit(@$item->merchant->username ?: (@$item->merchant->phone ?:@$item->merchant->email),15) }}</strong></td>--}}
