@@ -17,13 +17,15 @@ class UserAppKey extends Model
         self::OPEN  => ['name' => '开启', 'class'=>'success']
     ];
 
-    // 商户类型，0普通，1BC商户',
+    // 商户类型，0普通，1BC商户, 2TTK商户
     const COMMON = 0;
     const BC     = 1;
+    const TTK    = 3;
 
     const TYPE = [
-        self::COMMON => ['name' => '普通', 'class'=>''],
-        self::BC     => ['name' => 'BC',  'class'=>'']
+        self::COMMON => ['name' => '普通',  'class'=>''],
+        self::BC     => ['name' => 'BC',   'class'=>''],
+        self::TTK    => ['name' => 'TTK',  'class'=>''],
     ];
 
     /**

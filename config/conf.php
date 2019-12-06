@@ -13,6 +13,7 @@ return [
 
     // 系統显示币种
     'currency_usdt' => 'USDT',
+    'currency_ttk'  => 'TTK',
 
     // 是否开启OTC运营方提币
     'enable_sys_withdraw' => env('ENABLE_SYS_WITHDRAW', false),
