@@ -20,7 +20,7 @@ class UserAppKey extends Model
     // 商户类型，0普通，1BC商户, 2TTK商户
     const COMMON = 0;
     const BC     = 1;
-    const TTK    = 3;
+    const TTK    = 2;
 
     const TYPE = [
         self::COMMON => ['name' => '普通',  'class'=>''],
