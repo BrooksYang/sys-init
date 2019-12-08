@@ -51,12 +51,14 @@ class OtcOrderQuick extends Model
         self::APPEAL_CANCELED => ['name' => '已撤诉', 'class' => 'default'],
     ];
 
-    // TTK交易转账状态，1确认中，2成功，3失败
-    const HASH_PENDING = 1;
-    const HASH_SUCCESS = 2;
-    const HASH_FAILED  = 3;
+    // TTK交易转账状态，1确认中，2成功，3失败，默认0
+    const HASH_NOT_RELEASE = 0;
+    const HASH_PENDING     = 1;
+    const HASH_SUCCESS     = 2;
+    const HASH_FAILED      = 3;
 
     const HASH_STATUS = [
+        self::HASH_NOT_RELEASE => ['name'=>'未发币', 'class'=>''],
         self::HASH_PENDING => ['name'=>'确认中', 'class'=>''],
         self::HASH_SUCCESS => ['name'=>'成功',   'class'=>''],
         self::HASH_FAILED  => ['name'=>'失败',   'class'=>''],
