@@ -97,7 +97,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <div class="col-md-12">
-                                        <label>汇率（相对于USDT的单位价值）（即1USDT=***RMB；汇率即为***）</label>
+                                        <label>火币汇率（相对于USDT的单位价值）（即1USDT=***RMB；汇率即为***）</label>
                                         <input class="form-control input-lg" placeholder="请填写汇率" type="text"  required
                                                name="rate" value="{{ $flag->rate ?? old('rate')  }}">
                                         @if ($errors->has('rate'))
@@ -109,8 +109,21 @@
                         </div>
 
                         <div class="row">
+                            {{--平台买入汇率--}}
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <label>平台买入汇率（相对于USDT的单位价值）（即1USDT=***RMB；汇率即为***）</label>
+                                        <input class="form-control input-lg" placeholder="请填写平台买入汇率" type="text"  required
+                                               name="rate_buy" value="{{ $flag->rate_buy ?? old('rate_buy')  }}">
+                                        @if ($errors->has('rate_buy'))
+                                            <p style="color: red"><strong>{{ $errors->first('rate_buy') }}</strong></p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                             {{--出售汇率--}}
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="col-md-12">
                                         <label>出售汇率（相对于USDT的单位价值）（即1USDT=***RMB；汇率即为***）</label>

@@ -155,7 +155,8 @@
                                 <th>序号</th>
                                 <th>法币名称</th>
                                 <th>英文缩写</th>
-                                <th>汇率</th>
+                                <th>火币汇率</th>
+                                <th>平台买入汇率</th>
                                 <th>出售汇率</th>
                                 <th>货币符号 </th>
                                 <th>默认法币_中文 </th>
@@ -173,6 +174,7 @@
                                     <td title="{{$item->name}}">{{ str_limit($item->name,15) }}</td>
                                     <td title="{{$item->abbr?:'暂无'}}">{{ str_limit($item->abbr ?:'--',15) }}</td>
                                     <td title="{{number_format($item->rate,8)}}"> {{ floatval($item->rate) }}</td>
+                                    <td title="{{number_format($item->rate_buy,8)}}"> {{ floatval($item->rate_buy) }}</td>
                                     <td title="{{number_format($item->rate_sell,8)}}"> {{ floatval($item->rate_sell) }}</td>
                                     <td>{{ $item->symbol ?: '--' }}</td>
                                     <td title="是否为中文版默认法币">
@@ -195,7 +197,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="10" class="text-center">
+                                <tr><td colspan="11" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
