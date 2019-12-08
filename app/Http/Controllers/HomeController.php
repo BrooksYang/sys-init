@@ -228,9 +228,9 @@ class HomeController extends Controller
         });
 
         // 当天 OTC 提币订单数量及金额-按处理状态区分
-        $otcWithdrawOrderStatus = Cache::remember('otcWithdrawOrderStatus', $cacheLength, function () {
+        /*$otcWithdrawOrderStatus = Cache::remember('otcWithdrawOrderStatus', $cacheLength, function () {
             return $this->getOtcWithdrawOrder();
-        });
+        });*/
 
         // 当天 OTC 累计成功提现金额
         $grandOtcWithdrawOrder = Cache::remember('grandOtcWithdrawOrder', $cacheLength, function () {
@@ -393,7 +393,7 @@ class HomeController extends Controller
 
         return compact(
             'otcOrder',
-            'otcWithdrawOrderStatus',
+            //'otcWithdrawOrderStatus',
             'grandOtcWithdrawOrder',
             'otcDepositAmount','otcWithdrawAmount','otcTobeWithdraw','neuCollectPending','neuCollectionBalance',
             'otcToBeWithdrawPending','otcSysWithDrawAddrBalance','otcSysDepositAddrBalance',
@@ -711,6 +711,7 @@ class HomeController extends Controller
 
     /**
      * 当天提币订单数量及金额-按处理状态区分
+     * otc_withdraws 用户提现订单
      *
      * @return mixed
      */

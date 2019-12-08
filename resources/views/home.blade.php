@@ -604,14 +604,14 @@
                                 <div id="otcOrder" style="width: 100%;height:600px;"></div>
                             </div>
                         </div>
-                        <hr>
 
+                        {{--<hr>
                         <div class="row">
                             <div class="col-md-10">
                                 <!-- OTC 充值订单成交数量及价格统计--按状态 -->
                                 <div id="otcWithdrawOrderStatus" style="width: 100%;height:600px;"></div>
                             </div>
-                        </div>
+                        </div>--}}
                     @endif
                     <!-- END OTC 统计区域 -->
 
@@ -2295,7 +2295,7 @@
         </script>
 
         {{--OTC 提币订单数量及额度统计-按状态--}}
-        <script>
+        {{--<script>
             var otcWithdrawOrderStatus = echarts.init(document.getElementById('otcWithdrawOrderStatus'));
             var otcWithdrawOrderStatusOption = {
                 title: {
@@ -2383,6 +2383,6 @@
                 ]
             };
             otcWithdrawOrderStatus.setOption(otcWithdrawOrderStatusOption);
-        </script>
+        </script>--}}
     @endif
 @endsection
