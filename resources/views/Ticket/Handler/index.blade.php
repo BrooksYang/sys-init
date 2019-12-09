@@ -69,6 +69,7 @@
                         <a href="{{ url('ticket/handler/ticketTransfer').'/'.$ticket->id }}">转移</a>&nbsp;&nbsp;
                         <a href="####" onclick="ticketDel('{{ $ticket->id }}')">删除</a>&nbsp;&nbsp;
 
+                        @if($ticket->ticket_state == \App\Models\OTC\OtcTicket::CLOSED && $ticket->order_type==\App\Models\OTC\OtcTicket::OTC_QUICK)
                         <!-- Button trigger modal -->
                         <a href="####"  class="" data-toggle="modal" data-target="#exampleModalReopen{{$key}}" title="开启工单">
                             开启
@@ -118,7 +119,7 @@
                                 </div>
                             </div>
                         </div>
-
+                        @endif
                       </td>
                       @endif
                   </tr>
