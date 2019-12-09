@@ -67,7 +67,58 @@
                       <td>
                         <a href="{{ url('ticket/handler/detail').'/'.$ticket->id }}">处理</a>&nbsp;&nbsp;
                         <a href="{{ url('ticket/handler/ticketTransfer').'/'.$ticket->id }}">转移</a>&nbsp;&nbsp;
-                        <a href="#javascript:;" onclick="ticketDel('{{ $ticket->id }}')">删除</a>
+                        <a href="####" onclick="ticketDel('{{ $ticket->id }}')">删除</a>&nbsp;&nbsp;
+
+                        <!-- Button trigger modal -->
+                        <a href="####"  class="" data-toggle="modal" data-target="#exampleModalReopen{{$key}}" title="开启工单">
+                            开启
+                        </a>
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModalReopen{{$key}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalReopen{{$key}}Title"
+                             aria-hidden="true" width="auto">
+                            <div class="modal-dialog" role="document" width="auto">
+                                <div class="modal-content" width="auto">
+                                    <form action="{{ url("ticket/handler/appealReopen/$ticket->id") }}" role="form" method="POST" >
+                                        {{ csrf_field() }}
+                                        {{  method_field('PATCH')}}
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalReopenTitle{{$key}}"><i class="fontello-warning"></i>开启工单</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="alert alert-info">
+                                                <button data-dismiss="alert" class="close" type="button">×</button>
+                                                <span class="entypo-cancel-circled"></span>
+                                                <strong>操作提示：进行操作前请先仔细核对订单信息并填写订单操作说明以备查</strong>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="col-md-12">
+                                                        <h4>是否确定重新打开工单?</h4>
+                                                        <input type="hidden" name="id" value="{{ $ticket->id }}" >
+                                                        <input type="hidden" name="field" value="reopen" >
+                                                        <input type="hidden" name="update" value="{{ $ticket->order_id }}" >
+                                                        <input type="hidden" name="orderType" value="{{ $ticket->order_type }}" >
+                                                        <input class="form-control input-lg" type="text" name="info"
+                                                               value="{{ old('info') }}"  placeholder="请填写操所说明" required>
+                                                        @if ($errors->has('info'))
+                                                            <p class="" style="color: red;"><strong>{{ $errors->first('info') }}</strong></p>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                            <button type="submit" class="btn btn-secondary">确定</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
                       </td>
                       @endif
                   </tr>

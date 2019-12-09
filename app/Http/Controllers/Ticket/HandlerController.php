@@ -778,6 +778,31 @@ class HandlerController extends Controller
         return '已从领导人押金中扣除';
     }
 
+    /**
+     * 重新打开工单 - 快捷抢单
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Throwable
+     */
+    public function forceReopen(Request $request)
+    {
+        $ticket = OtcTicket::findOrFail($request->id);
+        $orderQuick = OtcOrderQuick::findOrFail($request->update);
+
+        DB::transaction(function () use ($ticket, $orderQuick){
+            // 打开工单
+            $ticket->ticket_state = OtcTicket::ASSIGNED;
+            $ticket->save();
+
+            // 恢复订单申诉状态
+            $orderQuick->appeal_status = OtcOrderQuick::APPEALING;
+            $orderQuick->save();
+        });
+
+        return back();
+    }
+
 
     // 快捷抢单购买 - 取消
     public function forceCancelOfQuick($order)

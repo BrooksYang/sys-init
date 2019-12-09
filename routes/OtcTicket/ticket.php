@@ -43,6 +43,7 @@ Route::group(['prefix' => 'ticket/handler', 'middleware' => ['web',  'auth:admin
      Route::post('ticketReply','Ticket\HandlerController@ticketReply'); // 回复工单
      Route::post('replyLevelTwo','Ticket\HandlerController@replyLevelTwo'); // 回复工单二级
      Route::patch('appealEnd/{id}', 'Ticket\HandlerController@appealEnd'); // 申诉完结并强制执行
+     Route::patch('appealReopen/{id}', 'Ticket\HandlerController@forceReopen'); // 重新打开工单
 
 });
 
