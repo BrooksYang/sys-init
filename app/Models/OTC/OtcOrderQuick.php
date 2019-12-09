@@ -51,6 +51,10 @@ class OtcOrderQuick extends Model
         self::APPEAL_CANCELED => ['name' => '已撤诉', 'class' => 'default'],
     ];
 
+    // 给币商额外补贴状态 0未比对，1已比对
+    const SUBSIDY_EXTRA_NULL = 0;
+    const SUBSIDY_EXTRA_DONE = 1;
+
     // TTK交易转账状态，1确认中，2成功，3失败，默认0
     const HASH_NOT_RELEASE = 0;
     const HASH_PENDING     = 1;
@@ -359,6 +363,17 @@ class OtcOrderQuick extends Model
      * @return float
      */
     public function getSubsidySysAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 数值格式化
+     *
+     * @param $value
+     * @return float
+     */
+    public function getSubsidyTraderExtraAttribute($value)
     {
         return floatval($value);
     }
