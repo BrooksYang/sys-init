@@ -143,7 +143,7 @@
                                     <td>{{ $item->income_sys }}</td>
                                     <td>{{ $item->income_merchant }}</td>
                                     <td>{{ $item->income_user }}</td>
-                                    <td title="币商{{$item->subsidy_trader}}|平台{{$item->subsidy_sys}}|币商额外补贴{{$item->subsidy_trader_extra}}">{{ $item->subsidy }}</td>
+                                    <td title="币商{{$item->subsidy_trader}} | 平台{{$item->subsidy_sys}} | 币商额外补贴{{$item->subsidy_trader_extra}}">{{ $item->subsidy }}</td>
                                     <td title="{{$item->remark}}">
                                         {{--凭证--}}
                                         <!-- Button trigger modal -->
