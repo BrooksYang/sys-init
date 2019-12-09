@@ -7,6 +7,7 @@ use App\Models\Currency;
 use App\Models\OTC\OtcOrder;
 use App\Models\OTC\OtcOrderQuick;
 use App\Models\OTC\OtcTicket;
+use App\Models\OTC\OtcTicketReply;
 use App\Models\OTC\Trade;
 use App\Models\OTC\UserAppKey;
 use App\Models\Wallet\Balance;
@@ -181,7 +182,7 @@ class HandlerController extends Controller
             $data['order'] = $this->orderDetail($ticket->order_type, $ticket->order_id);
         }
 
-        $replyMatrix = DB::table('otc_ticket_reply')
+       /* $replyMatrix = DB::table('otc_ticket_reply')
                             ->where('ticket_id',$id)
                             ->where('reply_parent_id',0)
                             ->get();
@@ -189,59 +190,60 @@ class HandlerController extends Controller
         $replyGroup = [];
         //一级回复
         foreach ($replyMatrix as $reply) {
-            // 二次回复不存在的情况
-            if ( DB::table('otc_ticket_reply')->where('reply_parent_id', $reply->id)->exists()==false ) {
-                $levelOne = [
-                    'id' => $reply->id,
+        // 二次回复不存在的情况
+        if ( DB::table('otc_ticket_reply')->where('reply_parent_id', $reply->id)->exists()==false ) {
+            $levelOne = [
+                'id' => $reply->id,
+                'userId' => $reply->user_id,
+                'ticketId' => $reply->ticket_id,
+                'ownerId' => $reply->owner_id,
+                'reply_type' => $reply->reply_type,
+                'reply_content' => $reply->reply_content,
+                'reply_parent_id' => $reply->reply_parent_id,
+                'created_at' => $reply->created_at,
+                'levelTwo' => 0,
+            ];
+        } else {
+            // 二级回复存在则获取相关的内容
+            $res = DB::table('otc_ticket_reply')
+                ->where('ticket_id',$id)
+                ->where('reply_parent_id',$reply->id)
+                ->get();
+            $levelTwo = [];
+            foreach($res as $replyLtwo) {
+                $tmp = [
+                    'id' => $replyLtwo->id,
                     'userId' => $reply->user_id,
-                    'ticketId' => $reply->ticket_id,
-                    'ownerId' => $reply->owner_id,
-                    'reply_type' => $reply->reply_type,
-                    'reply_content' => $reply->reply_content,
-                    'reply_parent_id' => $reply->reply_parent_id,
-                    'created_at' => $reply->created_at,
-                    'levelTwo' => 0,
+                    'ticketId' => $replyLtwo->ticket_id,
+                    'ownerId' => $replyLtwo->owner_id,
+                    'reply_type' => $replyLtwo->reply_type,
+                    'reply_content' => $replyLtwo->reply_content,
+                    'reply_parent_id' => $replyLtwo->reply_parent_id,
+                    'created_at' => $replyLtwo->created_at,
+                    'levelThree' => 0,
                 ];
-            } else {
-                // 二级回复存在则获取相关的内容
-                $res = DB::table('otc_ticket_reply')
-                                        ->where('ticket_id',$id)
-                                        ->where('reply_parent_id',$reply->id)
-                                        ->get();
-                $levelTwo = [];
-                foreach($res as $replyLtwo) {
-                    $tmp = [
-                        'id' => $replyLtwo->id,
-                        'userId' => $reply->user_id,
-                        'ticketId' => $replyLtwo->ticket_id,
-                        'ownerId' => $replyLtwo->owner_id,
-                        'reply_type' => $replyLtwo->reply_type,
-                        'reply_content' => $replyLtwo->reply_content,
-                        'reply_parent_id' => $replyLtwo->reply_parent_id,
-                        'created_at' => $replyLtwo->created_at,
-                        'levelThree' => 0,
-                    ];
-                    array_push($levelTwo,$tmp);
-                }
-
-                $levelOne = [
-                    'id' => $reply->id,
-                    'userId' => $reply->user_id,
-                    'ticketId' => $reply->ticket_id,
-                    'ownerId' => $reply->owner_id,
-                    'reply_type' => $reply->reply_type,
-                    'reply_content' => $reply->reply_content,
-                    'reply_parent_id' => $reply->reply_parent_id,
-                    'created_at' => $reply->created_at,
-                    'levelTwo' => $levelTwo,
-                ];
+                array_push($levelTwo,$tmp);
             }
 
-            array_push($replyGroup, $levelOne);
+            $levelOne = [
+                'id' => $reply->id,
+                'userId' => $reply->user_id,
+                'ticketId' => $reply->ticket_id,
+                'ownerId' => $reply->owner_id,
+                'reply_type' => $reply->reply_type,
+                'reply_content' => $reply->reply_content,
+                'reply_parent_id' => $reply->reply_parent_id,
+                'created_at' => $reply->created_at,
+                'levelTwo' => $levelTwo,
+            ];
         }
 
+        array_push($replyGroup, $levelOne);
+    }*/
+
         // dd($replyGroup);
-        $data['replyMatrix'] = $replyGroup;
+        $data['replyMatrix'] = OtcTicketReply::with(['user'])->where('ticket_id', $id)->get();
+
         return view('Ticket.Handler.detail',$data);
     }
 

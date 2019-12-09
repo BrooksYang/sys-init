@@ -148,13 +148,10 @@
                     </a>
                   </div>
                   <div class="media-body">
-                    <p class="media-heading">【<strong>工单日期：{{ $ticket->created_at }} &nbsp;&nbsp;
-                      状态：                        
-                        @if($ticket->ticket_state != null)
-                        {{ $ticketStatus[$ticket->ticket_state] }}
-                        @else
-                        未处理
-                        @endif</strong>】&nbsp;【操作备注：{{$ticket->remark ?:'--'}}】</p>
+                    <p class="media-heading">
+                     【<strong>工单日期：{{ $ticket->created_at }} &nbsp;&nbsp;
+                      状态：{{$ticket->ticket_state != null ? $ticketStatus[$ticket->ticket_state] :'未处理'}}</strong>】&nbsp;
+                     【操作备注：{{$ticket->remark ?:'--'}}】</p>
                     <p>内容：<b>{{ $ticket->content}}</b></p>
                     @if($role == config('conf.supervisor_role'))
                     <p> <a href="####" title="回复工单" onclick="ticketReply('{{ $ticket->id }}', '{{ $ticket->user_id }}')">回复</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#####" onclick="ticketDel('{{ $ticket->id }}')">删除</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="{{ url('ticket/handler/ticketTransfer').'/'.$ticket->id }}" title="">转移</a></p>
@@ -174,283 +171,249 @@
                             @endif
                       </div>
                     </div>
+
+                   {{--申诉操作--}}
+                    @if((isset($order) && $role == config('conf.supervisor_role')) && ($order->appeal_status==\App\Models\OTC\OtcOrder::APPEALING))
+                          <div class="pull-right">
+
+                          {{--申诉完结--}}
+                          <!-- Button trigger modal -->
+                              <a href="####"  class="btn btn-success ml-5" data-toggle="modal" data-target="#exampleModalEnd" title="申诉完结">
+                                  申诉完结
+                              </a>
+                              <!-- Modal -->
+                              <div class="modal fade" id="exampleModalEnd" tabindex="-1" role="dialog" aria-labelledby="exampleModalEndTitle"
+                                   aria-hidden="true" width="auto">
+                                  <div class="modal-dialog" role="document" width="auto">
+                                      <div class="modal-content" width="auto">
+                                          <form action="{{ url("ticket/handler/appealEnd/$ticket->id") }}" role="form" method="POST" >
+                                              {{ csrf_field() }}
+                                              {{  method_field('PATCH')}}
+                                              <div class="modal-header">
+                                                  <h5 class="modal-title" id="exampleModalEndTitle"><i class="fontello-warning"></i>申诉完结</h5>
+                                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                      <span aria-hidden="true">&times;</span>
+                                                  </button>
+                                              </div>
+                                              <div class="modal-body">
+                                                  <div class="alert alert-info">
+                                                      <button data-dismiss="alert" class="close" type="button">×</button>
+                                                      <span class="entypo-cancel-circled"></span>
+                                                      <strong>操作提示：进行操作前请先仔细核对订单信息并填写订单操作说明以备查</strong>
+                                                  </div>
+                                                  <div class="row">
+                                                      <div class="col-md-12">
+                                                          <div class="col-md-12">
+                                                              <h4>是否确定更新订单为申诉完结状态?</h4>
+                                                              <input type="hidden" name="id" value="{{ $ticket->id }}" >
+                                                              <input type="hidden" name="field" value="normal" >
+                                                              <input type="hidden" name="update" value="{{ $ticket->order_id }}" >
+                                                              <input type="hidden" name="orderType" value="{{ $ticket->order_type }}" >
+                                                              <input class="form-control input-lg" type="text" name="info"
+                                                                     value="{{ old('info') }}"  placeholder="请填写操所说明" required>
+                                                              @if ($errors->has('info'))
+                                                                  <p class="" style="color: red;"><strong>{{ $errors->first('info') }}</strong></p>
+                                                              @endif
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                              </div>
+                                              <div class="modal-footer">
+                                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                                  <button type="submit" class="btn btn-secondary">确定</button>
+                                              </div>
+                                          </form>
+                                      </div>
+                                  </div>
+                              </div>
+
+                          {{--领导人资产扣除(领导人团队OTC入金订单)--}}
+                          @if($order->from_user_type == \App\User::TYPE_TRADER)
+                              <!-- Button trigger modal -->
+                                  <a href="####"  class="btn btn-danger ml-5" data-toggle="modal" data-target="#exampleModalMargin" title="扣除领导人资产"
+                                          {{$ticket->order_type==\App\Models\OTC\OtcTicket::OTC_QUICK ? 'disabled' : ''}}>扣除领导人
+                                  </a>
+                                  <!-- Modal -->
+                                  <div class="modal fade" id="exampleModalMargin" tabindex="-1" role="dialog" aria-labelledby="exampleModalMarginTitle"
+                                       aria-hidden="true" width="auto">
+                                      <div class="modal-dialog" role="document" width="auto">
+                                          <div class="modal-content" width="auto">
+                                              <form action="{{ url("ticket/handler/appealEnd/$ticket->id") }}" role="form" method="POST" >
+                                                  {{ csrf_field() }}
+                                                  {{  method_field('PATCH')}}
+                                                  <div class="modal-header">
+                                                      <h5 class="modal-title" id="exampleModalMarginTitle"><i class="fontello-warning"></i>扣除领导人资产</h5>
+                                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                          <span aria-hidden="true">&times;</span>
+                                                      </button>
+                                                  </div>
+                                                  <div class="modal-body">
+                                                      <div class="alert alert-danger">
+                                                          <button data-dismiss="alert" class="close" type="button">×</button>
+                                                          <span class="entypo-cancel-circled"></span>
+                                                          <strong>操作提示：进行操作前请先仔细核对订单信息并填写订单操作说明以备查</strong>
+                                                      </div>
+                                                      <div class="row">
+                                                          <div class="col-md-12">
+                                                              <div class="col-md-12">
+                                                                  <h4>是否确定该订单从领导人资产中扣除?</h4>
+                                                                  <input type="hidden" name="id" value="{{ $ticket->id }}" >
+                                                                  <input type="hidden" name="field" value="leader" >
+                                                                  <input type="hidden" name="update" value="{{ $ticket->order_id }}" >
+                                                                  <input type="hidden" name="orderType" value="{{ $ticket->order_type }}" >
+                                                                  <input class="form-control input-lg" type="text" name="info"
+                                                                         value="{{ old('info') }}"  placeholder="请填写操所说明" required>
+                                                                  @if ($errors->has('info'))
+                                                                      <p class="" style="color: red;"><strong>{{ $errors->first('info') }}</strong></p>
+                                                                  @endif
+                                                              </div>
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                                  <div class="modal-footer">
+                                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                                      <button type="submit" class="btn btn-secondary">确定</button>
+                                                  </div>
+                                              </form>
+                                          </div>
+                                      </div>
+                                  </div>
+                              @endif
+
+                              {{--强制放币-暂不处理--}}
+                              {{--<a href="####" class="btn btn-danger ml-5" onclick="itemUpdate('{{ $ticket->id }}',
+                                          '{{ url("ticket/handler/appealEnd/$ticket->id") }}','release','{{ $ticket->order_id }}',
+                                          '订单为<b><strong> 强制发币 </strong></b> 状态',
+                                          '{{ csrf_token() }}','强制发币 - 请慎重操作！');" title="已支付-未放币" disabled>强制发币</a>--}}
+
+                              {{--强制恢复(普通OTC订单)--排除ttk订单--}}
+                              @if($ticket->order_type == \App\Models\OTC\OtcTicket::OTC_COMMON && empty($order->merchant_currency))
+                                  <a href="####"  class="btn btn-info ml-5" data-toggle="modal" data-target="#exampleModalRecover" title="强制恢复"
+                                          {{ $order->status == \App\Models\OTC\OtcOrder::RECEIVED ? '': 'disabled'}}>强制恢复
+                                  </a>
+                                  <!-- Modal -->
+                                  <div class="modal fade" id="exampleModalRecover" tabindex="-1" role="dialog" aria-labelledby="exampleModalRecoverTitle"
+                                       aria-hidden="true" width="auto">
+                                      <div class="modal-dialog" role="document" width="auto">
+                                          <div class="modal-content" width="auto">
+                                              <form action="{{ url("ticket/handler/appealEnd/$ticket->id") }}" role="form" method="POST" >
+                                                  {{ csrf_field() }}
+                                                  {{  method_field('PATCH')}}
+                                                  <div class="modal-header">
+                                                      <h5 class="modal-title" id="exampleModalRecoverTitle" ><i class="fontello-warning"></i>强制恢复</h5>
+                                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                          <span aria-hidden="true">&times;</span>
+                                                      </button>
+                                                  </div>
+                                                  <div class="modal-body">
+                                                      <div class="alert alert-danger">
+                                                          <button data-dismiss="alert" class="close" type="button">×</button>
+                                                          <span class="entypo-cancel-circled"></span>
+                                                          <strong>操作提示：进行操作前请先仔细核对订单信息并填写订单操作说明以备查</strong>
+                                                      </div>
+                                                      <div class="row">
+                                                          <div class="col-md-12">
+                                                              <div class="col-md-12">
+                                                                  <h4>是否确定更新订单为取消<span style="color: red">（强制恢复）</span>状态?</h4>
+                                                                  <input type="hidden" name="id" value="{{ $ticket->id }}" >
+                                                                  <input type="hidden" name="field" value="recover" >
+                                                                  <input type="hidden" name="update" value="{{ $ticket->order_id }}" >
+                                                                  <input type="hidden" name="orderType" value="{{ $ticket->order_type }}" >
+                                                                  <input class="form-control input-lg" type="text" name="info"
+                                                                         value="{{ old('info') }}"  placeholder="请填写操所说明" required>
+                                                                  @if ($errors->has('info'))
+                                                                      <p class="" style="color: red;"><strong>{{ $errors->first('info') }}</strong></p>
+                                                                  @endif
+                                                              </div>
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                                  <div class="modal-footer">
+                                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                                      <button type="submit" class="btn btn-secondary">确定</button>
+                                                  </div>
+                                              </form>
+                                          </div>
+                                      </div>
+                                  </div>
+                          @endif
+
+                          {{--取消订单(普通OTC订单)--}}
+                          <!-- Button trigger modal -->
+                              <a href="####"  class="btn btn-default ml-5" data-toggle="modal" data-target="#exampleModalCancel" title="取消OTC订单"
+                                      {{$ticket->order_type==\App\Models\OTC\OtcTicket::OTC_QUICK || $order->status==\App\Models\OTC\OtcOrder::CANCELED? 'disabled' : ''}}>
+                                  取消订单
+                              </a>
+                              <!-- Modal -->
+                              <div class="modal fade" id="exampleModalCancel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCancelTitle"
+                                   aria-hidden="true" width="auto">
+                                  <div class="modal-dialog" role="document" width="auto">
+                                      <div class="modal-content" width="auto">
+                                          <form action="{{ url("ticket/handler/appealEnd/$ticket->id") }}" role="form" method="POST" >
+                                              {{ csrf_field() }}
+                                              {{  method_field('PATCH')}}
+                                              <div class="modal-header">
+                                                  <h5 class="modal-title" id="exampleModalCancelTitle"><i class="fontello-warning"></i>取消订单</h5>
+                                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                      <span aria-hidden="true">&times;</span>
+                                                  </button>
+                                              </div>
+                                              <div class="modal-body">
+                                                  <div class="alert alert-warning">
+                                                      <button data-dismiss="alert" class="close" type="button">×</button>
+                                                      <span class="entypo-cancel-circled"></span>
+                                                      <strong>操作提示：进行操作前请先仔细核对订单信息并填写订单操作说明以备查</strong>
+                                                  </div>
+                                                  <div class="row">
+                                                      <div class="col-md-12">
+                                                          <div class="col-md-12">
+                                                              <h4>是否确定更新订单为取消状态?</h4>
+                                                              <input type="hidden" name="id" value="{{ $ticket->id }}" >
+                                                              <input type="hidden" name="field" value="cancel" >
+                                                              <input type="hidden" name="update" value="{{ $ticket->order_id }}" >
+                                                              <input type="hidden" name="orderType" value="{{ $ticket->order_type }}" >
+                                                              <input class="form-control input-lg" type="text" name="info"
+                                                                     value="{{ old('info') }}"  placeholder="请填写操所说明" required>
+                                                              @if ($errors->has('info'))
+                                                                  <p class="" style="color: red;"><strong>{{ $errors->first('info') }}</strong></p>
+                                                              @endif
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                              </div>
+                                              <div class="modal-footer">
+                                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                                  <button type="submit" class="btn btn-secondary">确定</button>
+                                              </div>
+                                          </form>
+                                      </div>
+                                  </div>
+                              </div>
+
+                          </div>
+                    @endif
+                    <div class="row" style="margin-bottom:30px"></div>
+
                     <!-- Nested media object -->
 
                     <!-- 工单回复列表展示 -->
-                    @foreach($replyMatrix as $reply)
-                      @if($reply['levelTwo'] == 0)
-                        <div class="media">
-                          <div class="media-left">
-                            <a href="####">
-                              <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('img/supervisor.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
-                            </a>
+                      @forelse($replyMatrix as $key => $item)
+                      <div class="row">
+                          <div class="col-md-6" style="padding: 0 15px 5px;">
+                              <img  style="width: 24px; height: 24px;vertical-align: middle;"
+                                    src="{{ $item->reply_type ==0 ? url('img/supervisor.jpg'): (@$item->user->is_merchant == 1?url('img/merchant.png'):url('img/customer.png'))}}">
+                              @if($item->reply_type ==0)
+                                  <strong>{{str_limit(@$item->owner->name ?:@$item->owner->email,11)}}</strong>
+                              @else
+                                  <strong>{{str_limit(@$item->user->username ?:@$item->user->phone ?: @$item->user->email,11)}}</strong>
+                              @endif
+                              【<span style="color:gray;">{{ $item->created_at }}</span>】
                           </div>
-                          <div class="media-body">
-                            <h6 class="media-heading"><strong>回复时间：{{ $reply['created_at'] }}</strong></h6>
-                            {{ $reply['reply_content'] }}
-
-
-                            <!-- 检查是否有 sub replay，如果有则嵌套显示 -->
-
-                          </div>
-                        </div>
-                     @else
-                        <div class="media">
-                          <div class="media-left">
-                            <a href="####">
-                              <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('img/supervisor.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
-                            </a>
-                          </div>
-                          <div class="media-body">
-                            <h6 class="media-heading"><strong>回复时间：{{ $reply['created_at'] }}</strong></h6>
-                            {{ $reply['reply_content'] }}
-
-
-                            <!-- 检查是否有 sub replay，如果有则嵌套显示 -->
-                            @foreach($reply['levelTwo'] as $replyLtwo)
-                              <div class="media" id="reply_cell_{{ $replyLtwo['id'] }}">
-                                <div class="media-left">
-                                  <a href="#">
-                                    @if($replyLtwo['reply_type']==1)
-                                    <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('img/customer.png') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
-                                    @else
-                                    <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="{{ url('img/supervisor.jpg') }}" data-holder-rendered="true" style="width: 64px; height: 64px;">
-                                    @endif
-                                  </a>
-                                </div>
-                                <div class="media-body">
-                                  <h6 class="media-heading"><strong>回复时间：{{ $replyLtwo['created_at']}} &nbsp;&nbsp; 
-                                    @if($replyLtwo['reply_type']==1)
-                                    <a href="#####" onclick="replyLevelTwo('{{ $replyLtwo['userId'] }}','{{ $replyLtwo['ticketId'] }}','{{ $replyLtwo['reply_parent_id'] }}','{{ $replyLtwo['ownerId'] }}')">回复</a>&nbsp;&nbsp;
-                                    @endif
-                                    <a href="#####" onclick="deleteReply('{{ $replyLtwo['id'] }}')">删除</a></strong></h6>
-                                  {{ $replyLtwo['reply_content'] }}
-                                </div>
-                              </div>
-                            @endforeach 
-                          </div>
-                        </div>
-                     @endif
-                    @endforeach
-                    @if((isset($order) && $role == config('conf.supervisor_role')) && ($order->appeal_status==\App\Models\OTC\OtcOrder::APPEALING))
-                        <div class="pull-right">
-
-                            {{--申诉完结--}}
-                            <!-- Button trigger modal -->
-                            <a href="####"  class="btn btn-success ml-5" data-toggle="modal" data-target="#exampleModalEnd" title="申诉完结">
-                                申诉完结
-                            </a>
-                            <!-- Modal -->
-                            <div class="modal fade" id="exampleModalEnd" tabindex="-1" role="dialog" aria-labelledby="exampleModalEndTitle"
-                                 aria-hidden="true" width="auto">
-                                <div class="modal-dialog" role="document" width="auto">
-                                    <div class="modal-content" width="auto">
-                                        <form action="{{ url("ticket/handler/appealEnd/$ticket->id") }}" role="form" method="POST" >
-                                            {{ csrf_field() }}
-                                            {{  method_field('PATCH')}}
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalEndTitle"><i class="fontello-warning"></i>申诉完结</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="alert alert-info">
-                                                    <button data-dismiss="alert" class="close" type="button">×</button>
-                                                    <span class="entypo-cancel-circled"></span>
-                                                    <strong>操作提示：进行操作前请先仔细核对订单信息并填写订单操作说明以备查</strong>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <div class="col-md-12">
-                                                            <h4>是否确定更新订单为申诉完结状态?</h4>
-                                                            <input type="hidden" name="id" value="{{ $ticket->id }}" >
-                                                            <input type="hidden" name="field" value="normal" >
-                                                            <input type="hidden" name="update" value="{{ $ticket->order_id }}" >
-                                                            <input type="hidden" name="orderType" value="{{ $ticket->order_type }}" >
-                                                            <input class="form-control input-lg" type="text" name="info"
-                                                                   value="{{ old('info') }}"  placeholder="请填写操所说明" required>
-                                                            @if ($errors->has('info'))
-                                                                <p class="" style="color: red;"><strong>{{ $errors->first('info') }}</strong></p>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                                                <button type="submit" class="btn btn-secondary">确定</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{--领导人资产扣除(领导人团队OTC入金订单)--}}
-                            @if($order->from_user_type == \App\User::TYPE_TRADER)
-                            <!-- Button trigger modal -->
-                            <a href="####"  class="btn btn-danger ml-5" data-toggle="modal" data-target="#exampleModalMargin" title="扣除领导人资产"
-                                    {{$ticket->order_type==\App\Models\OTC\OtcTicket::OTC_QUICK ? 'disabled' : ''}}>扣除领导人
-                            </a>
-                            <!-- Modal -->
-                            <div class="modal fade" id="exampleModalMargin" tabindex="-1" role="dialog" aria-labelledby="exampleModalMarginTitle"
-                                 aria-hidden="true" width="auto">
-                                <div class="modal-dialog" role="document" width="auto">
-                                    <div class="modal-content" width="auto">
-                                        <form action="{{ url("ticket/handler/appealEnd/$ticket->id") }}" role="form" method="POST" >
-                                            {{ csrf_field() }}
-                                            {{  method_field('PATCH')}}
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalMarginTitle"><i class="fontello-warning"></i>扣除领导人资产</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="alert alert-danger">
-                                                    <button data-dismiss="alert" class="close" type="button">×</button>
-                                                    <span class="entypo-cancel-circled"></span>
-                                                    <strong>操作提示：进行操作前请先仔细核对订单信息并填写订单操作说明以备查</strong>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <div class="col-md-12">
-                                                            <h4>是否确定该订单从领导人资产中扣除?</h4>
-                                                            <input type="hidden" name="id" value="{{ $ticket->id }}" >
-                                                            <input type="hidden" name="field" value="leader" >
-                                                            <input type="hidden" name="update" value="{{ $ticket->order_id }}" >
-                                                            <input type="hidden" name="orderType" value="{{ $ticket->order_type }}" >
-                                                            <input class="form-control input-lg" type="text" name="info"
-                                                                   value="{{ old('info') }}"  placeholder="请填写操所说明" required>
-                                                            @if ($errors->has('info'))
-                                                                <p class="" style="color: red;"><strong>{{ $errors->first('info') }}</strong></p>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                                                <button type="submit" class="btn btn-secondary">确定</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            @endif
-
-                            {{--强制放币-暂不处理--}}
-                            {{--<a href="####" class="btn btn-danger ml-5" onclick="itemUpdate('{{ $ticket->id }}',
-                                        '{{ url("ticket/handler/appealEnd/$ticket->id") }}','release','{{ $ticket->order_id }}',
-                                        '订单为<b><strong> 强制发币 </strong></b> 状态',
-                                        '{{ csrf_token() }}','强制发币 - 请慎重操作！');" title="已支付-未放币" disabled>强制发币</a>--}}
-
-                            {{--强制恢复(普通OTC订单)--排除ttk订单--}}
-                            @if($ticket->order_type == \App\Models\OTC\OtcTicket::OTC_COMMON && empty($order->merchant_currency))
-                            <a href="####"  class="btn btn-info ml-5" data-toggle="modal" data-target="#exampleModalRecover" title="强制恢复"
-                               {{ $order->status == \App\Models\OTC\OtcOrder::RECEIVED ? '': 'disabled'}}>强制恢复
-                            </a>
-                            <!-- Modal -->
-                            <div class="modal fade" id="exampleModalRecover" tabindex="-1" role="dialog" aria-labelledby="exampleModalRecoverTitle"
-                                 aria-hidden="true" width="auto">
-                                <div class="modal-dialog" role="document" width="auto">
-                                    <div class="modal-content" width="auto">
-                                        <form action="{{ url("ticket/handler/appealEnd/$ticket->id") }}" role="form" method="POST" >
-                                            {{ csrf_field() }}
-                                            {{  method_field('PATCH')}}
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalRecoverTitle" ><i class="fontello-warning"></i>强制恢复</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="alert alert-danger">
-                                                    <button data-dismiss="alert" class="close" type="button">×</button>
-                                                    <span class="entypo-cancel-circled"></span>
-                                                    <strong>操作提示：进行操作前请先仔细核对订单信息并填写订单操作说明以备查</strong>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <div class="col-md-12">
-                                                            <h4>是否确定更新订单为取消<span style="color: red">（强制恢复）</span>状态?</h4>
-                                                            <input type="hidden" name="id" value="{{ $ticket->id }}" >
-                                                            <input type="hidden" name="field" value="recover" >
-                                                            <input type="hidden" name="update" value="{{ $ticket->order_id }}" >
-                                                            <input type="hidden" name="orderType" value="{{ $ticket->order_type }}" >
-                                                            <input class="form-control input-lg" type="text" name="info"
-                                                                   value="{{ old('info') }}"  placeholder="请填写操所说明" required>
-                                                            @if ($errors->has('info'))
-                                                                <p class="" style="color: red;"><strong>{{ $errors->first('info') }}</strong></p>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                                                <button type="submit" class="btn btn-secondary">确定</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            @endif
-
-                            {{--取消订单(普通OTC订单)--}}
-                            <!-- Button trigger modal -->
-                            <a href="####"  class="btn btn-default ml-5" data-toggle="modal" data-target="#exampleModalCancel" title="取消OTC订单"
-                                {{$ticket->order_type==\App\Models\OTC\OtcTicket::OTC_QUICK || $order->status==\App\Models\OTC\OtcOrder::CANCELED? 'disabled' : ''}}>
-                                取消订单
-                            </a>
-                            <!-- Modal -->
-                            <div class="modal fade" id="exampleModalCancel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCancelTitle"
-                                 aria-hidden="true" width="auto">
-                                <div class="modal-dialog" role="document" width="auto">
-                                    <div class="modal-content" width="auto">
-                                        <form action="{{ url("ticket/handler/appealEnd/$ticket->id") }}" role="form" method="POST" >
-                                            {{ csrf_field() }}
-                                            {{  method_field('PATCH')}}
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalCancelTitle"><i class="fontello-warning"></i>取消订单</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="alert alert-warning">
-                                                    <button data-dismiss="alert" class="close" type="button">×</button>
-                                                    <span class="entypo-cancel-circled"></span>
-                                                    <strong>操作提示：进行操作前请先仔细核对订单信息并填写订单操作说明以备查</strong>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <div class="col-md-12">
-                                                            <h4>是否确定更新订单为取消状态?</h4>
-                                                            <input type="hidden" name="id" value="{{ $ticket->id }}" >
-                                                            <input type="hidden" name="field" value="cancel" >
-                                                            <input type="hidden" name="update" value="{{ $ticket->order_id }}" >
-                                                            <input type="hidden" name="orderType" value="{{ $ticket->order_type }}" >
-                                                            <input class="form-control input-lg" type="text" name="info"
-                                                                   value="{{ old('info') }}"  placeholder="请填写操所说明" required>
-                                                            @if ($errors->has('info'))
-                                                                <p class="" style="color: red;"><strong>{{ $errors->first('info') }}</strong></p>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                                                <button type="submit" class="btn btn-secondary">确定</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    @endif
+                          <div class="col-md-6" style="padding: 0 15px 5px;">{{ $item->reply_content }}</div>
+                      </div>
+                      <hr style="margin: 5px 5px;">
+                      @empty
+                      @endforelse
                   </div>
                 </li>
               </ul>
