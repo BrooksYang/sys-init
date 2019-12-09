@@ -11,7 +11,7 @@
                     <div class="pull-right box-tools">
                         <form action="{{ url('otc/legalCurrency') }}" class="in-block">
                             <input id="search_input" type="text" class="form-control width-0" placeholder="搜索法币名称" name="search" value="{{ $search ?? Request::get('search')}}">
-                            <a href="javascript:;" title="搜索法币名称">
+                            <a href="####" title="搜索法币名称">
                                 <span class="box-btn" id="search-span"><i class="fa fa-search"></i></span>
                             </a>
                         </form>
@@ -19,7 +19,7 @@
                         <a href="{{ url('otc/legalCurrency/create') }}">
                             <span class="box-btn"><i class="fa fa-plus" title="添加法币"></i></span>
                            {{-- <!-- Button trigger modal -->
-                            <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLong">
+                            <a href="####"  class="" data-toggle="modal" data-target="#exampleModalLong">
                                 <span class="box-btn" title="添加法币汇率"><i class="fa fa-plus"></i></span>
                             </a>
                             <!-- Modal -->
@@ -189,7 +189,7 @@
                                             <span class="box-btn"><i class="fontello-edit"></i></span>
                                         </a>
 
-                                        <a href="javascript:;" onclick="itemDelete('{{ $item->id }}',
+                                        <a href="####" onclick="itemDelete('{{ $item->id }}',
                                                 '{{ url("otc/legalCurrency/$item->id") }}',
                                                 '{{ csrf_token() }}');">
                                             <i class="fontello-trash-2" title="删除"></i>
