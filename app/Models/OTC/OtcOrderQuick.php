@@ -342,6 +342,28 @@ class OtcOrderQuick extends Model
     }
 
     /**
+     * 数值格式化
+     *
+     * @param $value
+     * @return float
+     */
+    public function getSubsidyTraderAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
+     * 数值格式化
+     *
+     * @param $value
+     * @return float
+     */
+    public function getSubsidySysAttribute($value)
+    {
+        return floatval($value);
+    }
+
+    /**
      * 格式化数据
      *
      * @param $value

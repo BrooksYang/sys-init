@@ -103,9 +103,9 @@
                                 <th>订单</th>
                                 <th>币商</th>
                                 <th>发布者</th>
-                                <th>发布数量</th>
+                                <th title="发布数量">数量</th>
                                 {{--<th title="商户结算数量">结算数量</th>--}}
-                                <th>发布汇率</th>
+                                <th title="发布汇率">汇率</th>
                                 <th>总价</th>
                                 <th>交易数量</th>
                                 <th>币商价</th>
@@ -114,10 +114,9 @@
                                 <th>平台收益</th>
                                 <th>商户收益</th>
                                 <th>币商收益</th>
-                                <th title="火币降价商户向币商支付补贴">补贴</th>
+                                <th title="火币降价商户向币商和平台补贴">补贴</th>
                                 <th>备注</th>
                                 <th>卡号</th>
-                                <th>凭证</th>
                                 <th>状态</th>
                                 <th>申诉</th>
                                 <th>商户订单</th>
@@ -133,9 +132,9 @@
                                     <td title="UID：{{ $item->user_id }} | {{ @$item->user->username ?:'--'}} | 联系方式：{{ @$item->user->phone ?: @$item->user->email}}">
                                         <strong>{{ str_limit(@$item->user->username ?: (@$item->user->phone ?:@$item->user->email) ?:'--',8) }}</strong></td>
                                     <td>{{ str_limit($item->owner_phone ?:'--', 11) }}</td>
-                                    <td>{{ $item->merchant_amount }}</td>
+                                    <td title="发布数量">{{ $item->merchant_amount }}</td>
                                     {{--<td title="商户结算数量">{{ number_format($item->merchant_final_amount, 8) }}</td>--}}
-                                    <td>{{ $item->merchant_rate}}</td>
+                                    <td title="发布汇率">{{ $item->merchant_rate}}</td>
                                     <td>{{ $item->cash_amount }}</td>
                                     <td>{{ $item->field_amount }}</td>
                                     <td>{{ $item->price }}</td>
@@ -144,15 +143,12 @@
                                     <td>{{ $item->income_sys }}</td>
                                     <td>{{ $item->income_merchant }}</td>
                                     <td>{{ $item->income_user }}</td>
-                                    <td title="火币降价商户向币商支付补贴">{{ $item->subsidy }}</td>
-                                    <td title="{{$item->remark}}">{{ str_limit($item->remark ?: '--', 8) }}</td>
-                                    <td title="{{$item->card_number}}">{{ str_limit($item->card_number ?: '--', 8) }}</td>
-
-                                    <td >
+                                    <td title="{{$item->subsidy_trader}}/{{$item->subsidy_sys}}(币商/平台)">{{ $item->subsidy }}</td>
+                                    <td title="{{$item->remark}}">
                                         {{--凭证--}}
                                         <!-- Button trigger modal -->
                                         <a href="javascript:;"  class="" data-toggle="modal" data-target="#exampleModalLong{{$key}}">
-                                           <i class="fontello-ticket"></i>
+                                            <i class="fontello-ticket"></i>
                                         </a>
                                         <!-- Modal -->
                                         <div class="modal fade" id="exampleModalLong{{$key}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle{{$key}}" aria-hidden="true" width="auto">
@@ -167,6 +163,8 @@
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
+                                                        <span><b>【备注】</b></span>{{ $item->remark ?: '暂无' }}
+                                                        <p></p>
                                                         <span><b>【快捷订单】</b></span>#{{ $item->id }}
                                                         <p></p>
                                                         <span><b>【商户订单】</b></span>{{ $item->merchant_order_id ?:'--'}}
@@ -178,20 +176,20 @@
                                                         <div style="height: 20px"></div>
                                                         {{--凭证开放路由--}}
                                                         <span style="margin-left: 98px">
-                                                            <img id="" src="{{ config('app.api_res_url') }}/{{ $item->payment_url }}" style="width:370px;border-radius:20px"
-                                                                 onerror="this.src='http://placehold.it/370x802'" onclick="rotate(this)"/>
-                                                        </span>
+                                                        <img id="" src="{{ config('app.api_res_url') }}/{{ $item->payment_url }}" style="width:370px;border-radius:20px"
+                                                             onerror="this.src='http://placehold.it/370x802'" onclick="rotate(this)"/>
+                                                    </span>
                                                         <p></p>
                                                     </div>
                                                     <div style="height: 55px"></div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
+                                    <td title="{{$item->card_number}}">{{ str_limit($item->card_number ?: '--', 8) }}</td>
                                     <td><span class="label label-{{$orderStatus[$item->status]['class']}}">{{ $orderStatus[$item->status]['name'] ?? '--'}}</span></td>
                                     <td><span class="{{ $item->appeal_status ? "label label-".$appealStatus[$item->appeal_status]['class'] : '' }}">
                                             {{ $appealStatus[$item->appeal_status]['name'] ?? '--'}}</span>
@@ -215,7 +213,7 @@
                                     <td title="下单时间{{ $item->created_at }}">{{ $item->updated_at ?: '--' }}</td>
                                 </tr>
                             @empty
-                                <tr><td colspan="21" class="text-center">
+                                <tr><td colspan="20" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>
