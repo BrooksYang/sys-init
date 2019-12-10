@@ -26,7 +26,7 @@ class OtcTicketReply extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id')
-            ->select('id','username','phone','email','is_merchant');
+            ->select('id','username','phone','email','is_merchant','access_key');
     }
 
     /**

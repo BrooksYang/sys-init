@@ -397,7 +397,7 @@
                     <!-- Nested media object -->
 
                     <!-- 工单回复列表展示 -->
-                      @forelse($replyMatrix as $key => $item)
+                    {{--@forelse($replyMatrix as $key => $item)
                       <div class="row">
                           <div class="col-md-6" style="padding: 0 15px 5px;">
                               <img  style="width: 24px; height: 24px;vertical-align: middle;"
@@ -413,12 +413,94 @@
                       </div>
                       <hr style="margin: 5px 5px;">
                       @empty
-                      @endforelse
+                      @endforelse--}}
                   </div>
                 </li>
               </ul>
 		    </div>
 		</div>
+
+    {{--工单回复time-line展示--}}
+    <div class="row">
+        <div class="col-lg-12">
+            <ul class="timeline">
+                @forelse($replyMatrix as $key => $item)
+                @if($item->reply_type ==1 && !(@$item->user->is_merchant))
+                <!-- timeline item -->
+                <li>
+                    <i class="fa fontello-sunrise bg-green"></i>
+                    <div class="timeline-item bg-green">
+                        <h3 style="padding: 15px 20px 0 20px;" class="timeline-header text-green no-border">
+                            {{--客户--}}
+                            <span class=""><img alt="20x20" src="{{url('img/customer.png')}}" style="width: 20px;vertical-align: middle">&nbsp;&nbsp;
+                               {{str_limit(@$item->user->username ?:@$item->user->phone ?: @$item->user->email,10)}}
+                            </span>
+                            <span class="text-white pull-right fontello-wrench-outline"></span>
+                        </h3>
+                        <div class="timeline-body">
+                            {{--时间--}}
+                            <span class="text-gray">
+                                <strong>留言 </strong>from<i> {{@$item->user->access_key?'客户':'币商'}}</i>
+                                <small>{{\Carbon\Carbon::parse($item->created_at)->diffForHumans()}}</small>
+                            </span>
+                            <br>{{ $item->reply_content }}
+                        </div>
+                    </div>
+                </li>
+                <!-- END timeline item -->
+                @endif
+                @if($item->reply_type ==1 && @$item->user->is_merchant == 1)
+                <!-- timeline item -->
+                <li>
+                    <i class="fa fontello-sun-1 bg-aqua"></i>
+                    <div class="timeline-item bg-aqua">
+                        <h3 style="padding: 15px 20px 0 20px;" class="timeline-header text-aqua no-border">
+                            {{--商户--}}
+                            <span><img alt="20x20" src="{{url('img/merchant.png')}}" style="width: 20px;vertical-align: middle">&nbsp;&nbsp;
+                               {{str_limit(@$item->user->username ?:@$item->user->phone ?: @$item->user->email,10)}}
+                            </span>
+                            <span class="text-white pull-right fontello-wrench-outline"></span>
+                        </h3>
+                        <div class="timeline-body ">
+                            {{--时间--}}
+                            <span class="text-gray">
+                                <strong>留言&nbsp;&nbsp;</strong>from<i> &nbsp;商户</i>
+                                <small>{{\Carbon\Carbon::parse($item->created_at)->diffForHumans()}}</small>
+                            </span>
+                            <br>{{ $item->reply_content }}
+                        </div>
+                    </div>
+                </li>
+                <!-- END timeline item -->
+                @endif
+                @if($item->reply_type ==0)
+                <!-- timeline item -->
+                <li>
+                    <i class="fa fontello-star bg-orange"></i>
+                    <div class="timeline-item bg-orange">
+                        <h3 style="padding: 15px 20px 0 20px;" class="timeline-header text-orange no-border">
+                            <span><img alt="20x20" src="{{ url('img/supervisor.jpg') }}" style="width: 20px;vertical-align: middle">&nbsp;&nbsp;
+                                {{str_limit(@$item->owner->name ?:@$item->owner->email,10)}}
+                            </span>
+                            <span class="text-white pull-right fontello-wrench-outline"></span>
+                        </h3>
+                        <div class="timeline-body">
+                            <span class="text-gray">
+                                <strong>留言&nbsp;&nbsp;</strong>from<i> &nbsp;客服</i>
+                                <small>{{\Carbon\Carbon::parse($item->created_at)->diffForHumans()}}</small>
+                            </span>
+                          <br>{{ $item->reply_content }}
+                        </div>
+                    </div>
+                </li>
+                <!-- END timeline item -->
+                @endif
+                @empty
+                @endforelse
+            </ul>
+        </div>
+    </div>
+
     </div>
     <!-- /.box-body -->
 </div>
