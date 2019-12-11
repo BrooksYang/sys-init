@@ -178,7 +178,7 @@
                                     <p>商户回调接口：{{ $item->merchant_callback }}</p>
                                     <p>回调状态：{{ $item->is_callback ?'已回调':'未回调' }}</p>
                                     <p>手动回调响应：@if($item->callback_response)<?php dump(json_decode($item->callback_response,true))?>@else暂无@endif</p>
-                                        @if(!$item->is_callback && !$item->merchant_currency)
+                                        @if($item->status==\App\Models\OTC\OtcOrder::RECEIVED && !$item->is_callback && !$item->merchant_currency)
                                         <a href="####" class="pull-right" style="color: orangered" onclick="itemUpdate('{{ $item->id }}',
                                                 '{{ url("order/merchant-callback/$item->id") }}','call_back',true,
                                                 '商户订单<b><strong> 回调 </strong></b> 状态',
