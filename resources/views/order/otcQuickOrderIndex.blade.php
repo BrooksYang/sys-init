@@ -120,7 +120,7 @@
                                 <th>状态</th>
                                 <th>申诉</th>
                                 <th>商户订单</th>
-                                {{--<th>商户</th>--}}
+                                <th>回调</th>
                                 <th>更新时间
                                     @include('component.sort', ['url'=>url('order/quick/otc')])
                                 </th>
@@ -208,12 +208,25 @@
                                                 @include('component.modalFooter',['form'=>false])
                                             @endif
                                     </td>
-                                   {{-- <td title="UID：{{ $item->merchant_id }} | 联系方式：{{ @$item->merchant->phone ?: @$item->merchant->email}}">
-                                        <strong>{{ str_limit(@$item->merchant->username ?: (@$item->merchant->phone ?:@$item->merchant->email),15) }}</strong></td>--}}
+                                    <td title="{{ $item->merchant_callback }}">
+                                        <!-- Button trigger modal -->
+                                        @include('component.modalHeader', ['modal'=>'callback','title'=>'商户回调信息',
+                                            'header'=>'回调信息', 'icon'=>'fontello-globe-1', 'color'=>$item->is_callback?'black':'orange'])
+                                        <p>商户回调接口：{{ $item->merchant_callback }}</p>
+                                        <p>回调状态：{{ $item->is_callback ?'已回调':'未回调' }}</p>
+                                        <p>手动回调响应：@if($item->callback_response)<?php dump(json_decode($item->callback_response,true))?>@else暂无@endif</p>
+                                            @if(!$item->is_callback && !$item->merchant_currency)
+                                                <a href="####" class="pull-right" style="color: orangered" onclick="itemUpdate('{{ $item->id }}',
+                                                        '{{ url("order/sell/merchant-callback/$item->id") }}','call_back',true,
+                                                        '商户订单<b><strong> 回调 </strong></b> 状态',
+                                                        '{{ csrf_token() }}','回调');"><i class="icon-return"></i>回调</a><br>
+                                            @endif
+                                        @include('component.modalFooter',['form'=>false])
+                                    </td>
                                     <td title="下单时间{{ $item->created_at }}">{{ $item->updated_at ?: '--' }}</td>
                                 </tr>
                             @empty
-                                <tr><td colspan="20" class="text-center">
+                                <tr><td colspan="21" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>

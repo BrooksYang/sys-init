@@ -90,6 +90,10 @@ class OtcOrder extends Model
         self::BONUS_PAID   => '已结算',
     ];
 
+    // 回调状态
+    const NOT_CALLBACK = 0;
+    const CALLBACK = 1;
+
     // TTK交易收币状态，1确认中，2完成，默认为0
     const HASH_NOT_RELEASE = 0;
     const CONFIRMING       = 1;

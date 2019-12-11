@@ -51,6 +51,10 @@ class OtcOrderQuick extends Model
         self::APPEAL_CANCELED => ['name' => '已撤诉', 'class' => 'default'],
     ];
 
+    // 回调状态
+    const NOT_CALLBACK = 0;
+    const CALLBACK = 1;
+
     // 给币商额外补贴状态 0未比对，1已比对
     const SUBSIDY_EXTRA_NULL = 0;
     const SUBSIDY_EXTRA_DONE = 1;

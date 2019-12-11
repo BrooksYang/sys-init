@@ -124,7 +124,7 @@
                                 <th>状态</th>
                                 <th>申诉</th>
                                 <th>商户订单</th>
-                               {{-- <th>回调</th>--}}
+                                <th>回调</th>
                                 <th title="团队红利">红利</th>
                                 <th title="团队红利结算状态">结算</th>
                                 <th>广告商</th>
@@ -171,7 +171,21 @@
                                                 @include('component.modalFooter',['form'=>false]).
                                             @endif
                                     </td>
-                                    {{--<td title="{{ $item->merchant_callback }}"><i class="fontello-globe-1"></i></td>--}}
+                                <td title="{{ $item->merchant_callback }}">
+                                    <!-- Button trigger modal -->
+                                    @include('component.modalHeader', ['modal'=>'callback','title'=>'商户回调信息',
+                                        'header'=>'回调信息', 'icon'=>'fontello-globe-1', 'color'=>$item->is_callback?'black':'orange'])
+                                    <p>商户回调接口：{{ $item->merchant_callback }}</p>
+                                    <p>回调状态：{{ $item->is_callback ?'已回调':'未回调' }}</p>
+                                    <p>手动回调响应：@if($item->callback_response)<?php dump(json_decode($item->callback_response,true))?>@else暂无@endif</p>
+                                        @if(!$item->is_callback && !$item->merchant_currency)
+                                        <a href="####" class="pull-right" style="color: orangered" onclick="itemUpdate('{{ $item->id }}',
+                                                '{{ url("order/merchant-callback/$item->id") }}','call_back',true,
+                                                '商户订单<b><strong> 回调 </strong></b> 状态',
+                                                '{{ csrf_token() }}','回调');"><i class="icon-return"></i>回调</a><br>
+                                        @endif
+                                    @include('component.modalFooter',['form'=>false])
+                                </td>
                                     <td title="{{number_format($item->team_bonus, 8) }}">{{ $item->team_bonus?:'--' }}</td>
                                     <td>{{ $item->team_bonus_status ?$teamBonusStatus[$item->team_bonus_status]:'--' }}</td>
                                     <td title="广告-{{ $item->advertisement_id }} | 广告商UID-{{ $item->from_user_id }} | {{ @$item->tradeOwner->username ?: @$item->tradeOwner->phone }}">
@@ -203,7 +217,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="20" class="text-center">
+                                <tr><td colspan="21" class="text-center">
                                         <div class="noDataValue">
                                             暂无数据
                                         </div>

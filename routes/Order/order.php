@@ -52,6 +52,12 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
 
     // OTC 出金-各币商完成情况统计
     Route::get('order/quick/otc/byTrader', 'Order\OtcOrderQuickController@byTrader');
+
+    // OTC 商户入金手动回调（不含TTK-hub集成）
+    Route::patch('order/merchant-callback/{order}','Order\MerchantCallbackController@callback');
+
+    // OTC 商户出金手动回调（不含TTK-hub集成）
+    Route::patch('order/sell/merchant-callback/{order}','Order\MerchantSellCallbackController@callback');
 });
 
 
