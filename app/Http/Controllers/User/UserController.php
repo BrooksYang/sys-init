@@ -191,7 +191,7 @@ class UserController extends Controller
 
         $user->save();
 
-        return back()->with('msg', '重置成功');
+        return back()->with('msg', '操作成功');
     }
 
     /**
