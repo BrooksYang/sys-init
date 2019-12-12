@@ -171,6 +171,30 @@ class UserController extends Controller
     }
 
     /**
+     * 重置用户密码及认证
+     *
+     * @param Request $request
+     * @param $uid
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function accountReset(Request $request, $uid)
+    {
+        $user = User::findOrFail($uid);
+
+        if ($request->has('paypwd')) {
+            $user->pay_password = bcrypt($request->paypwd ? trim($request->paypwd):config('conf.def_user_pay_pwd'));
+        }
+
+        if ($request->has('pwd')) {
+            $user->password = bcrypt($request->pwd ? trim($request->pwd):config('conf.def_user_pwd'));
+        }
+
+        $user->save();
+
+        return back()->with('msg', '重置成功');
+    }
+
+    /**
      * 用户账户冻结
      *
      * @param $uid

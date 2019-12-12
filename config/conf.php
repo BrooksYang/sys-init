@@ -11,6 +11,10 @@ return [
     // 商户默认密码
     'merchant_pwd' => env('MERCHANT_PWD', 'otc@merchant2019'),
 
+    // 默认登录及支付密码
+    'def_user_pwd' => env('DEFAULT_PWD', 'otc@2020'),
+    'def_user_pay_pwd' => env('DEFAULT_PAY_PWD', 'otcpay@2020'),
+
     // 系統显示币种
     'currency_usdt' => 'USDT',
     'currency_ttk'  => 'TTK',

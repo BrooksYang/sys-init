@@ -144,65 +144,182 @@
                         </div>
                     </div>
 
-                    {{-- Paginaton --}}
+                    {{-- 认证及重置账户 --}}
                     <div class="row">
                         <div class="col-xs-12">
-                            <div class="pull-right">
-                                <a href="{{ url('').$uri }}" class="btn btn-default">返回</a>
-
-                                <!-- Button trigger modal -->
-                                <a href="javascript:;"  class="btn btn-default" data-toggle="modal" data-target="#exampleModalLongVerify">
-                                    <i class="fontello-ok" title="认证通过"></i>认证通过
-                                </a>
-                                <!-- Modal -->
-                                <div class="modal fade" id="exampleModalLongVerify" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongVerify" aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                        <form role="form" method="POST" action="{{ url("user/manage/$user->id") }}">
-                                            {{ csrf_field() }}
-                                            {{ method_field('PATCH') }}
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLongVerifyTitle">KYC认证等级</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
+                            <div class="pull-right" style="margin:35px 15px;">
+                                {{--启用/禁用--}}
+                                <div class="col-md-2">
+                                    @if($user->is_valid == \App\User::ACTIVE)
+                                        <a class="btn btn-default" href="####" style="" onclick="itemUpdate('{{ $user->id }}',
+                                                '{{ url("user/frozen/$user->id") }}','is_valid', '{{ \App\User::FORBIDDEN }}',
+                                                '用户登录账号为 <b><strong>禁用状态</strong></b>',
+                                                '{{ csrf_token() }}', '禁用登录账号');"> 禁用登录账号 </a>
+                                    @elseif($user->is_valid == \App\User::FORBIDDEN)
+                                        <a class="btn btn-success" href="####" style="" onclick="itemUpdate('{{ $user->id }}',
+                                                '{{ url("user/frozen/$user->id") }}','is_valid', '{{ \App\User::ACTIVE }}',
+                                                '用户登录账号为 <b><strong>启用状态</strong></b>',
+                                                '{{ csrf_token() }}', '启用登录账号');"> 启用登录账号 </a>
+                                    @endif
+                                </div>
+                                {{--认证审核--}}
+                                <div class="col-md-2">
+                                    <!-- Button trigger modal -->
+                                    <a href="####"  class="btn btn-default" data-toggle="modal" data-target="#exampleModalLongVerify">
+                                        <i class="fontello-ok" title="认证通过"></i>认证通过
+                                    </a>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="exampleModalLongVerify" tabindex="-1" role="dialog"
+                                         aria-labelledby="exampleModalLongVerify" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <form role="form" method="POST" action="{{ url("user/manage/$user->id") }}">
+                                                {{ csrf_field() }}
+                                                {{ method_field('PATCH') }}
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLongVerifyTitle">KYC认证等级</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <label>修改KYC认证等级</label>
+                                                        <input type="hidden" name="field" value="kyc_level_id">
+                                                        <select name="update" id="" style="width: 80%" required>
+                                                            <option value="">请选择认证等级</option>
+                                                            @foreach($kycLevels as $flag=>$kycLevel)
+                                                                <option value="{{ $kycLevel->id }}" {{ $user->kyc_level_id == $kycLevel->id ? 'selected':'' }} >
+                                                                    {{ $kycLevel->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                        @if ($errors->has("kyc_level_id"))
+                                                            <span class="help-block" style="color: #a94442"><strong>{{ $errors->first("kyc_level_id") }}</strong></span>
+                                                        @endif
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                                        <button type="submit" class="btn btn-secondary" >保存</button>
+                                                    </div>
                                                 </div>
-                                                <div class="modal-body">
-                                                    <label>修改KYC认证等级</label>
-                                                    <input type="hidden" name="field" value="kyc_level_id">
-                                                    <select name="update" id="" style="width: 80%" required>
-                                                        <option value="">请选择认证等级</option>
-                                                        @foreach($kycLevels as $flag=>$kycLevel)
-                                                            <option value="{{ $kycLevel->id }}" {{ $user->kyc_level_id == $kycLevel->id ? 'selected':'' }} >
-                                                                {{ $kycLevel->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @if ($errors->has("kyc_level_id"))
-                                                        <span class="help-block" style="color: #a94442"><strong>{{ $errors->first("kyc_level_id") }}</strong></span>
-                                                    @endif
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                                                    <button type="submit" class="btn btn-secondary" >保存</button>
-                                                </div>
-                                            </div>
-                                        </form>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
-
-                                <a href="javascript:;" class="btn btn-default" onclick="itemUpdate('{{ $user->id }}',
-                                        '{{ url("user/manage/$user->id") }}','verify_status',4,
-                                        '用户账号为<b><strong> 认证失败 </strong></b> 状态',
-                                        '{{ csrf_token() }}', '认证失败');"> <i class="fontello-cancel-circled" title="认证失败"></i>认证失败</a>
+                                <div class="col-md-2">
+                                    <a href="####" class="btn btn-default" onclick="itemUpdate('{{ $user->id }}',
+                                            '{{ url("user/manage/$user->id") }}','verify_status','4',
+                                            '用户账号为<b><strong> 认证失败 </strong></b> 状态',
+                                            '{{ csrf_token() }}', '认证失败');"> <i class="fontello-cancel-circled" title="认证失败"></i>认证失败</a>
+                                </div>
+                                {{--重置登录及支付--}}
+                                <div class="col-md-2">
+                                    <!-- Button trigger modal -->
+                                    <a href="####" class="btn btn-warning" data-toggle="modal" data-target="#exampleModalLongResetLogin">重置登录密码</a>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="exampleModalLongResetLogin" tabindex="-1" role="dialog"
+                                         aria-labelledby="exampleModalLongResetLogin" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <form role="form" method="POST" action="{{ url("user/manage/info/$user->id") }}">
+                                                {{ csrf_field() }}
+                                                {{ method_field('PATCH') }}
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLongResetLoginTitle">重置登录密码</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <div class="col-md-12">
+                                                                        <p>*系统重置后默认登录密码为 <strong>{{config('conf.def_user_pwd')}}</strong></p>
+                                                                        <input class="form-control input-sm" type="text" name="pwd" value="{{old('pwd')??''}}"
+                                                                               placeholder="填写新的登录密码（选填）">
+                                                                        @if ($errors->has('pwd'))
+                                                                            <e class="help-block" style="color: red;"><strong>{{ $errors->first('pwd') }}</strong></e>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                                        <button type="submit" class="btn btn-secondary">确定</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <!-- Button trigger modal -->
+                                    <a href="####" class="btn btn-danger" data-toggle="modal" data-target="#exampleModalLongResetPay">重置支付密码</a>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="exampleModalLongResetPay" tabindex="-1" role="dialog"
+                                         aria-labelledby="exampleModalLongResetPay" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <form role="form" method="POST" action="{{ url("user/manage/info/$user->id") }}">
+                                                {{ csrf_field() }}
+                                                {{ method_field('PATCH') }}
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLongResetPayTitle">重置支付密码</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <div class="col-md-12">
+                                                                        <p>*系统重置后默认支付密码为 <strong>{{config('conf.def_user_pay_pwd')}}</strong></p>
+                                                                        <input class="form-control input-sm" type="text" name="paypwd" value="{{old('pwd')??''}}"
+                                                                               placeholder="填写新的支付密码（选填）">
+                                                                        @if ($errors->has('paypwd'))
+                                                                            <e class="help-block" style="color: red;"><strong>{{ $errors->first('paypwd') }}</strong></e>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                                        <button type="submit" class="btn btn-secondary">确定</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <a href="{{ url('').$uri }}" class="btn btn-info">返回</a>
+                                </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
 
             </div>
         </div>
     </div>
-
-
 @endsection
+
+@section('js-part')
+    <script>
+        if('{{session('msg')}}'){
+            layer.msg('{{session('msg')}}');
+            <?php session()->put('msg',''); ?>
+        }
+
+        $(function () {
+        });
+    </script>
+@endsection
+

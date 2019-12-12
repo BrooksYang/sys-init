@@ -18,6 +18,9 @@ Route::group(['middleware' => ['web', 'auth:admin', 'lock.screen','mongo.log']],
     // 用户管理
     Route::resource('user/manage', 'User\UserController');
 
+    // 重置用户账户
+    Route::patch('user/manage/info/{uid}', 'User\UserController@accountReset');
+
     // 用户账户冻结
     Route::patch('user/frozen/{id}', 'User\UserController@accountFrozen');
 
